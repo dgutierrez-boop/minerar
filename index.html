@@ -18,12 +18,17 @@
         .kpi-cyan { border-left: 5px solid #06b6d4; }
         .kpi-amber { border-left: 5px solid #f59e0b; }
         .kpi-blue { border-left: 5px solid #3b82f6; }
+        .kpi-pink { border-left: 5px solid #ec4899; }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; }
         .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
         .category-card:hover { transform: scale(1.05); }
         .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); transform: scale(1.05); }
         .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-ok { background: #dcfce7; color: #16a34a; }
+        .status-warn { background: #fef3c7; color: #d97706; }
+        .status-low { background: #fee2e2; color: #dc2626; }
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
     </style>
@@ -56,38 +61,48 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <!-- KPIs CON INDICADORES DE CUMPLIMIENTO MENSUAL -->
         <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
-                <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
+                    <span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                </div>
+                <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2; margin: 8px 0;">0</div>
                 <div style="margin-top: 10px;">
                     <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
-                        <span>Progreso</span>
-                        <span>Obj: 66</span>
+                        <span>Objetivo Mensual: 66</span>
+                        <span id="actosPctLabel" style="font-weight: 800;">0%</span>
                     </div>
                     <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div id="actosBar" style="background: #0891b2; height: 100%; width: 0%;"></div>
+                        <div id="actosBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
                     </div>
                 </div>
             </div>
 
             <div class="glass-card kpi-amber" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
-                <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
+                    <span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                </div>
+                <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706; margin: 8px 0;">0</div>
                 <div style="margin-top: 10px;">
                     <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
-                        <span>Progreso</span>
-                        <span>Obj: 44</span>
+                        <span>Objetivo Mensual: 44</span>
+                        <span id="condPctLabel" style="font-weight: 800;">0%</span>
                     </div>
                     <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div id="condBar" style="background: #d97706; height: 100%; width: 0%;"></div>
+                        <div id="condBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
                     </div>
                 </div>
             </div>
 
             <div class="glass-card kpi-blue" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
-                <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb;">0</div>
+                <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb; margin: 8px 0;">0</div>
+                <div style="margin-top: 10px; font-size: 10px; color: #64748b;">
+                    <span>⚠ Requieren atención inmediata</span>
+                </div>
             </div>
         </section>
 
@@ -192,16 +207,23 @@
                         <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
                     </div>
                     
-                    <div class="glass-card" style="padding: 24px;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🎯 VCP - PERSONAS INVOLUCRADAS</h3>
+                    <div class="glass-card kpi-pink" style="padding: 24px;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                            <h3 style="font-weight: 900; text-transform: uppercase; color: #db2777;">🎯 VCP - PERSONAS</h3>
+                            <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                        </div>
                         
                         <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO: 30 MENSUALES</span>
                                 <span style="font-size: 28px; font-weight: 900; color: #ec4899;" id="vcpCurrent">0</span>
                             </div>
-                            <div style="background: #e2e8f0; height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden;">
-                                <div id="vcpBar" style="background: #ec4899; height: 100%; width: 0%;"></div>
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin: 8px 0;">
+                                <span>Progreso</span>
+                                <span id="vcpPctLabel" style="font-weight: 800;">0%</span>
+                            </div>
+                            <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
                             </div>
                         </div>
                         
@@ -281,6 +303,24 @@ const CATEGORIES = [
     { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
 ];
 
+function getStatusClass(pct) {
+    if (pct >= 100) return 'status-ok';
+    if (pct >= 70) return 'status-warn';
+    return 'status-low';
+}
+
+function getStatusText(pct) {
+    if (pct >= 100) return '✅ Cumplido';
+    if (pct >= 70) return '⚠ Casi';
+    return '⚠ Pendiente';
+}
+
+function getBarColor(pct, baseColor) {
+    if (pct >= 100) return '#16a34a';
+    if (pct >= 70) return baseColor;
+    return '#ef4444';
+}
+
 async function loadData() {
     try {
         const res = await fetch(SHEET_URL);
@@ -359,10 +399,20 @@ function applyGeneralFilters() {
     document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
-    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
-    
+    document.getElementById('actosStatus').textContent = getStatusText(actosPct);
+    document.getElementById('actosStatus').className = 'status-badge ' + getStatusClass(actosPct);
+    document.getElementById('actosPctLabel').textContent = Math.round(actosPct) + '%';
+    document.getElementById('actosPctLabel').style.color = actosPct >= 100 ? '#16a34a' : actosPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('actosBar').style.width = actosPct + '%';
+    document.getElementById('actosBar').style.background = getBarColor(actosPct, '#0891b2');
+    
+    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
+    document.getElementById('condStatus').textContent = getStatusText(condPct);
+    document.getElementById('condStatus').className = 'status-badge ' + getStatusClass(condPct);
+    document.getElementById('condPctLabel').textContent = Math.round(condPct) + '%';
+    document.getElementById('condPctLabel').style.color = condPct >= 100 ? '#16a34a' : condPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('condBar').style.width = condPct + '%';
+    document.getElementById('condBar').style.background = getBarColor(condPct, '#d97706');
     
     updateCategoryCards(filtered);
     updateCharts(filtered);
@@ -384,13 +434,17 @@ function applyVCPFilters() {
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
-    document.getElementById('vcpCurrent').textContent = vcpData.length;
+    document.getElementById('vcpStatus').textContent = getStatusText(vcpPct);
+    document.getElementById('vcpStatus').className = 'status-badge ' + getStatusClass(vcpPct);
+    document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
+    document.getElementById('vcpPctLabel').style.color = vcpPct >= 100 ? '#16a34a' : vcpPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('vcpBar').style.width = vcpPct + '%';
+    document.getElementById('vcpBar').style.background = getBarColor(vcpPct, '#ec4899');
+    document.getElementById('vcpCurrent').textContent = vcpData.length;
     
     updateVCPList(vcpData);
 }
 
-// SETTERS
 function setSector(s, btn) {
     state.sector = s;
     updateButtons('sectorButtons', btn, '#2563eb');
@@ -412,7 +466,6 @@ function setVCPStatus(s, btn) {
     applyAllFilters();
 }
 
-// Event listeners for dropdowns
 document.getElementById('monthFilter').addEventListener('change', (e) => {
     state.mes = e.target.value;
     applyAllFilters();
@@ -490,8 +543,6 @@ function updateCharts(data) {
     
     const actosData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'acto').length);
     const condData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'condicion').length);
-    
-    // VCP data for main chart
     const vcpData = meses.map(m => DB_ENTRIES.filter(e => e.isVCP && e.mes === m && 
         (state.vcpMes === 'todo' || e.mes === state.vcpMes) &&
         (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) &&
@@ -502,12 +553,12 @@ function updateCharts(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         trendChart = new Chart(ctx, {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
-                    { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'VCP',  vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -527,9 +578,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
