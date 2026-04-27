@@ -154,6 +154,16 @@
                             <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
+
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR VCP</label>
+                        <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setVCPSector('general', this)" class="btn-filter" style="background: #ec4899; color: white;">🏭 GENERAL</button>
+                            <button onclick="setVCPSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
+                            <button onclick="setVCPSector('taller', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🔧 TALLER</button>
+                            <button onclick="setVCPSector('obrador', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🏢 OBRADOR</button>
+                        </div>
+                    </div>
                     
                     <div>
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO VCP</label>
@@ -261,7 +271,7 @@ let trendChart = null;
 let categoryChart = null;
 let vcpPeopleChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos' };
-let vcpState = { mes: 'todo', estado: 'todos' };
+let vcpState = { mes: 'todo', sector: 'general', estado: 'todos' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -363,14 +373,16 @@ function applyGeneralFilters() {
 
 function applyVCPFilters() {
     const m = document.getElementById('vcpMonthFilter').value;
+    const s = vcpState.sector;
     const st = vcpState.estado;
     
     const vcpData = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
+        const matchSector = (s === 'general' || e.sector.includes(s));
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        return e.isVCP && matchMes && matchStatus;
+        return e.isVCP && matchMes && matchSector && matchStatus;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -407,6 +419,20 @@ function setStatus(s, btn) {
     btn.style.color = 'white';
     btn.style.border = 'none';
     applyGeneralFilters();
+}
+
+function setVCPSector(s, btn) {
+    vcpState.sector = s;
+    const buttons = document.getElementById('vcpSectorButtons').querySelectorAll('.btn-filter');
+    buttons.forEach(b => {
+        b.style.background = 'white';
+        b.style.color = '#475569';
+        b.style.border = '2px solid #e2e8f0';
+    });
+    btn.style.background = '#ec4899';
+    btn.style.color = 'white';
+    btn.style.border = 'none';
+    applyVCPFilters();
 }
 
 function setVCPFilter(s, btn) {
