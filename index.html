@@ -17,7 +17,6 @@
         .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .kpi-cyan { border-left: 5px solid #06b6d4; }
         .kpi-amber { border-left: 5px solid #f59e0b; }
-        .kpi-pink { border-left: 5px solid #ec4899; }
         .kpi-blue { border-left: 5px solid #3b82f6; }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; }
         .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; }
@@ -42,7 +41,8 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
+        <!-- KPIs - SIN VCP -->
+        <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
                 <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2;">0</div>
@@ -50,10 +50,6 @@
             <div class="glass-card kpi-amber" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
                 <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706;">0</div>
-            </div>
-            <div class="glass-card kpi-pink" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #db2777; text-transform: uppercase;">VCP</div>
-                <div id="kpiVCP" style="font-size: 2.5rem; font-weight: 900; color: #db2777;">0</div>
             </div>
             <div class="glass-card kpi-blue" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
@@ -74,6 +70,14 @@
                             <option value="febrero">📅 Febrero</option>
                             <option value="marzo">📅 Marzo</option>
                             <option value="abril">📅 Abril</option>
+                            <option value="mayo">📅 Mayo</option>
+                            <option value="junio">📅 Junio</option>
+                            <option value="julio">📅 Julio</option>
+                            <option value="agosto">📅 Agosto</option>
+                            <option value="septiembre">📅 Septiembre</option>
+                            <option value="octubre">📅 Octubre</option>
+                            <option value="noviembre">📅 Noviembre</option>
+                            <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
                     
@@ -84,13 +88,6 @@
                             <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
                             <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🔧 TALLER</button>
                         </div>
-                    </div>
-
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">👤 OBSERVADOR</label>
-                        <select id="observerFilter" onchange="applyFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
-                            <option value="todos">👥 Todos</option>
-                        </select>
                     </div>
 
                     <div>
@@ -105,6 +102,7 @@
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                <!-- OBJETIVOS MENSUALES -->
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 OBJETIVOS MENSUALES (110)</h3>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
@@ -127,30 +125,56 @@
                     </div>
                 </div>
                 
+                <!-- CLASIFICACIÓN POR CAUSA RAÍZ - CON GRÁFICO -->
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
-                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;"></div>
+                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
+                    <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <!-- EVOLUCIÓN -->
                     <div class="glass-card" style="padding: 24px;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📈 EVOLUCIÓN</h3>
                         <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
                     </div>
+                    
+                    <!-- VCP - PERSONAS (CON FILTROS) -->
                     <div class="glass-card" style="padding: 24px;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🎯 VCP - PERSONAS</h3>
-                        <div id="vcpPeopleList" style="max-height: 250px; overflow-y: auto;"></div>
+                        <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO: 30 MENSUALES</span>
+                                <span style="font-size: 28px; font-weight: 900; color: #ec4899;" id="vcpCurrent">0</span>
+                            </div>
+                            <div style="background: #e2e8f0; height: 8px; border-radius: 4px; margin-top: 8px; overflow: hidden;">
+                                <div id="vcpBar" style="background: #ec4899; height: 100%; width: 0%;"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- FILTROS VCP -->
+                        <div style="margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+                            <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 8px; text-transform: uppercase;">Filtrar VCP por:</label>
+                            <select id="vcpFilter" onchange="updateVCPList()" style="width: 100%; padding: 8px; border-radius: 6px; border: 2px solid #e2e8f0; font-size: 12px;">
+                                <option value="todos">👥 Todas las Personas</option>
+                            </select>
+                        </div>
+                        
+                        <div id="vcpPeopleList" style="max-height: 200px; overflow-y: auto;"></div>
                     </div>
                 </div>
                 
+                <!-- DETALLE + RANKING OCULTO -->
                 <div class="glass-card" style="padding: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                         <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE</h3>
                         <button onclick="showRanking()" style="background: none; border: none; font-size: 28px; cursor: pointer;">🔒</button>
                     </div>
+                    
                     <div id="rankingSection" class="hidden-section" style="margin-bottom: 20px; padding: 20px; background: #f8fafc; border-radius: 12px;">
                         <div id="rankingList"></div>
                     </div>
+                    
                     <div style="overflow-x: auto;">
                         <table class="w-full text-left">
                             <thead>
@@ -171,6 +195,7 @@
     </div>
 </div>
 
+<!-- MODAL CONTRASEÑA -->
 <div id="passwordModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div style="background: white; padding: 32px; border-radius: 24px; max-width: 400px; width: 90%;">
         <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">🔐 Contraseña</h2>
@@ -186,18 +211,19 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?output=csv';
 const OBJETIVO_ACTOS = 66;
 const OBJETIVO_CONDICIONES = 44;
+const OBJETIVO_VCP = 30;
 
 let DB_ENTRIES = [];
-let trendChart;
-let state = { mes: 'todo', sector: 'general', observer: 'todos', estado: 'todos' };
+let trendChart, categoryChart;
+let state = { mes: 'todo', sector: 'general', estado: 'todos' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
-    { id: 'orden', name: 'Orden', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro'] },
+    { id: 'orden', name: 'Orden/Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro'] },
     { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'permiso'] },
-    { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor'] },
+    { id: 'equip', name: 'Equipos/Herramientas', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor'] },
     { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'camioneta'] },
-    { id: 'area', name: 'Condiciones', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
+    { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
 ];
 
 async function loadData() {
@@ -246,7 +272,7 @@ async function loadData() {
             }
         }
         
-        populateObserverFilter();
+        populateVCPFilter();
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
         applyFilters();
     } catch(e) { 
@@ -255,13 +281,13 @@ async function loadData() {
     }
 }
 
-function populateObserverFilter() {
-    const observers = [...new Set(DB_ENTRIES.map(e => e.observador))].sort();
-    const select = document.getElementById('observerFilter');
-    observers.forEach(obs => {
+function populateVCPFilter() {
+    const vcpPeople = [...new Set(DB_ENTRIES.filter(e => e.isVCP).map(e => e.observador))].sort();
+    const select = document.getElementById('vcpFilter');
+    vcpPeople.forEach(person => {
         const option = document.createElement('option');
-        option.value = obs;
-        option.textContent = '👤 ' + obs;
+        option.value = person;
+        option.textContent = '👤 ' + person;
         select.appendChild(option);
     });
 }
@@ -269,17 +295,15 @@ function populateObserverFilter() {
 function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
-    const obs = document.getElementById('observerFilter').value;
     const st = state.estado;
     
     const filtered = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
-        const matchObserver = (obs === 'todos' || e.observador === obs);
         let matchStatus = true;
         if(st === 'cerrados') matchStatus = e.cerrado === true;
         else if(st === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchObserver && matchStatus;
+        return matchMes && matchSector && matchStatus;
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
@@ -288,9 +312,9 @@ function applyFilters() {
     
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('kpiCondiciones').textContent = cond.length;
-    document.getElementById('kpiVCP').textContent = vcp.length;
     document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
+    // OBJETIVOS
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
     const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
     
@@ -300,40 +324,85 @@ function applyFilters() {
     document.getElementById('condBar').style.width = condPct + '%';
     
     // VCP
-    const vcpPeople = {};
-    vcp.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
-    const vcpHtml = Object.entries(vcpPeople).sort((a,b) => b[1] - a[1])
-        .map(([name, count]) => '<div style="display: flex; justify-content: space-between; padding: 8px; background: #fce7f3; border-radius: 8px; margin-bottom: 8px;"><span style="font-size: 12px; font-weight: 700;">' + name + '</span><span style="font-size: 12px; font-weight: 900; color: #ec4899;">' + count + ' VCP</span></div>').join('');
-    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8;">Sin VCP</p>';
+    const vcpPct = Math.min((vcp.length / OBJETIVO_VCP) * 100, 100);
+    document.getElementById('vcpCurrent').textContent = vcp.length;
+    document.getElementById('vcpBar').style.width = vcpPct + '%';
     
-    // Categorías
+    updateVCPList();
+    updateCategoryCards(filtered);
+    updateCharts(filtered);
+    renderDetailTable(filtered);
+}
+
+function updateVCPList() {
+    const selectedPerson = document.getElementById('vcpFilter').value;
+    const vcpData = DB_ENTRIES.filter(e => e.isVCP);
+    const filteredVCP = selectedPerson === 'todos' ? vcpData : vcpData.filter(v => v.observador === selectedPerson);
+    
+    const vcpPeople = {};
+    filteredVCP.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
+    
+    const vcpHtml = Object.entries(vcpPeople).sort((a,b) => b[1] - a[1])
+        .map(([name, count]) => '<div style="display: flex; justify-content: space-between; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 8px;"><span style="font-size: 12px; font-weight: 700;">' + name + '</span><span style="font-size: 12px; font-weight: 900; color: #ec4899;">' + count + ' VCP</span></div>').join('');
+    
+    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
+}
+
+function setSector(s, btn) {
+    state.sector = s;
+    document.querySelectorAll('.btn-filter').forEach(b => {
+        if(b.textContent.includes('GENERAL') || b.textContent.includes('CANTERA') || b.textContent.includes('TALLER')) {
+            b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
+        }
+    });
+    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
+    applyFilters();
+}
+
+function setStatus(s, btn) {
+    state.estado = s;
+    const buttons = document.querySelectorAll('.btn-filter');
+    buttons.forEach(b => {
+        if(b.textContent.includes('TODOS') || b.textContent.includes('CERRADOS') || b.textContent.includes('ABIERTOS')) {
+            b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
+        }
+    });
+    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
+    applyFilters();
+}
+
+function updateCategoryCards(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
-    filtered.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
-    const total = filtered.length || 1;
+    data.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    const total = data.length || 1;
     
-    const catContainer = document.getElementById('categoryCards');
-    catContainer.innerHTML = '';
+    const container = document.getElementById('categoryCards');
+    container.innerHTML = '';
+    
     CATEGORIES.forEach(c => {
         const val = counts[c.id] || 0;
         const pct = Math.round((val/total)*100);
         const div = document.createElement('div');
         div.className = 'category-card';
         div.style.borderColor = c.color;
-        div.innerHTML = '<div style="font-size: 2rem;">' + c.icon + '</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">' + c.name + '</div><div style="font-size: 1.5rem; font-weight: 900; color: ' + c.color + ';">' + val + '</div><div style="font-size: 10px; color: #94a3b8;">' + pct + '%</div>';
-        catContainer.appendChild(div);
+        div.innerHTML = '<div style="font-size: 2rem;">' + c.icon + '</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569; text-transform: uppercase;">' + c.name + '</div><div style="font-size: 1.5rem; font-weight: 900; color: ' + c.color + ';">' + val + '</div><div style="font-size: 10px; color: #94a3b8;">' + pct + '%</div>';
+        container.appendChild(div);
     });
+}
+
+function updateCharts(data) {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const labels = meses.map(m => m.substring(0,3));
     
-    // Gráfico
-    const meses = ['enero','febrero','marzo','abril'];
-    const actosData = meses.map(m => filtered.filter(e => e.mes === m && e.tipo === 'acto').length);
-    const condData = meses.map(m => filtered.filter(e => e.mes === m && e.tipo === 'condicion').length);
+    const actosData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'acto').length);
+    const condData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'condicion').length);
     
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line',
-            data: {
-                labels: meses,
+             {
+                labels: labels,
                 datasets: [
                     {label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)'},
                     {label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5,5]}
@@ -346,35 +415,36 @@ function applyFilters() {
         trendChart.data.datasets[1].data = condData;
         trendChart.update();
     }
+
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
     
-    // Tabla
+    if(!categoryChart) {
+        categoryChart = new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+             {
+                labels: CATEGORIES.map(c => c.name),
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
+        });
+    } else {
+        categoryChart.data.datasets[0].data = CATEGORIES.map(c => counts[c.id] || 0);
+        categoryChart.update();
+    }
+}
+
+function renderDetailTable(data) {
     const tbody = document.getElementById('detailTableBody');
     tbody.innerHTML = '';
-    filtered.slice(0, 50).forEach(e => {
+    
+    data.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
-        tr.innerHTML = '<td style="padding: 12px; font-weight: 700;">' + e.dia + '/' + e.mes + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.tipo==='acto'?'#dbeafe':'#ffedd5') + '; color: ' + (e.tipo==='acto'?'#2563eb':'#ea580c') + ';">' + e.tipo.toUpperCase() + '</span></td><td style="padding: 12px; font-weight: 800;">' + e.observador + '</td><td style="padding: 12px;">' + e.descripcion + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.cerrado?'#dcfce7':'#fee2e2') + '; color: ' + (e.cerrado?'#16a34a':'#dc2626') + ';">' + (e.cerrado?'CERRADO':'ABIERTO') + '</span></td>';
+        tr.innerHTML = '<td style="padding: 12px; font-weight: 700;">' + e.dia + '/' + e.mes + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.tipo==='acto'?'#dbeafe':e.tipo==='vcp'?'#fce7f3':'#ffedd5') + '; color: ' + (e.tipo==='acto'?'#2563eb':e.tipo==='vcp'?'#ec4899':'#ea580c') + ';">' + e.tipo.toUpperCase() + '</span></td><td style="padding: 12px; font-weight: 800;">' + e.observador + '</td><td style="padding: 12px;">' + e.descripcion + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.cerrado?'#dcfce7':'#fee2e2') + '; color: ' + (e.cerrado?'#16a34a':'#dc2626') + ';">' + (e.cerrado?'CERRADO':'ABIERTO') + '</span></td>';
         tbody.appendChild(tr);
     });
-}
-
-function setSector(s, btn) {
-    state.sector = s;
-    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => {
-        b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
-    });
-    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
-    applyFilters();
-}
-
-function setStatus(s, btn) {
-    state.estado = s;
-    const buttons = document.querySelectorAll('#statusButtons .btn-filter');
-    buttons.forEach(b => {
-        b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
-    });
-    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
-    applyFilters();
 }
 
 function showRanking() {
