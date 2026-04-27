@@ -30,10 +30,26 @@
         .category-card.active { border-width: 4px !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); background: #f0f9ff; }
         .champion-row { animation: championPulse 2s infinite; cursor: pointer; }
         .champion-row:hover { background-color: rgba(251, 191, 36, 0.2) !important; }
+        
+        /* MODAL CON EFECTO REBOTE */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-overlay.active { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 24px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: modalBounce 0.5s; overflow: hidden; }
-        @keyframes modalBounce { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .modal-content { 
+            background: white; 
+            width: 90%; 
+            max-width: 600px; 
+            border-radius: 24px; 
+            padding: 0; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
+            animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            overflow: hidden; 
+        }
+        @keyframes modalBounce { 
+            0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 
+            50% { transform: scale(1.05) translateY(10px); }
+            70% { transform: scale(0.98) translateY(-5px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; } 
+        }
         canvas { cursor: pointer; }
     </style>
 </head>
@@ -41,7 +57,7 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <!-- LOGO MINERAR - SVG SIMPLE -->
+            <!-- LOGO MINERAR -->
             <div style="width: 70px; height: 60px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🏔️</div>
             <div>
                 <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; color: #1e293b;">PANEL SEGURIDAD MINERA 2026</h1>
@@ -56,22 +72,72 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <!-- TARJETAS KPI MEJORADAS CON CERRADOS/ABIERTOS -->
         <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase; margin-bottom: 8px;">ACTOS</div>
-                <div id="kpiActos" class="kpi-value" style="font-size: 3rem; font-weight: 900;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
+                    <div style="background: #cffafe; padding: 6px; border-radius: 6px; color: #0891b2;">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3.01 1.732 3.01z"/></svg>
+                    </div>
+                </div>
+                <div id="kpiActos" class="kpi-value" style="font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 8px;">0</div>
+                <div style="display: flex; gap: 12px; font-size: 11px;">
+                    <div style="background: #dcfce7; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #16a34a;">
+                        <span id="actosCerrados">0</span> ✓ Cerrados
+                    </div>
+                    <div style="background: #fee2e2; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #dc2626;">
+                        <span id="actosAbiertos">0</span> ⚠ Abiertos
+                    </div>
+                </div>
             </div>
+            
             <div class="glass-card kpi-amber" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase; margin-bottom: 8px;">CONDICIONES</div>
-                <div id="kpiCondiciones" class="kpi-value" style="font-size: 3rem; font-weight: 900;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
+                    <div style="background: #fef3c7; padding: 6px; border-radius: 6px; color: #d97706;">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                </div>
+                <div id="kpiCondiciones" class="kpi-value" style="font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 8px;">0</div>
+                <div style="display: flex; gap: 12px; font-size: 11px;">
+                    <div style="background: #dcfce7; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #16a34a;">
+                        <span id="condCerrados">0</span> ✓ Cerrados
+                    </div>
+                    <div style="background: #fee2e2; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #dc2626;">
+                        <span id="condAbiertos">0</span> ⚠ Abiertos
+                    </div>
+                </div>
             </div>
+            
             <div class="glass-card kpi-pink" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #db2777; text-transform: uppercase; margin-bottom: 8px;">VCP</div>
-                <div id="kpiVCP" class="kpi-value" style="font-size: 3rem; font-weight: 900;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="font-size: 11px; font-weight: 900; color: #db2777; text-transform: uppercase;">VCP</div>
+                    <div style="background: #fce7f3; padding: 6px; border-radius: 6px; color: #db2777;">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                </div>
+                <div id="kpiVCP" class="kpi-value" style="font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 8px;">0</div>
+                <div style="background: linear-gradient(90deg, #f472b6, #db2777); height: 6px; border-radius: 99px; width: 100%;"></div>
+                <div style="text-align: center; font-size: 10px; color: #94a3b8; font-weight: 700; margin-top: 6px; text-transform: uppercase;">Seguimiento 100%</div>
             </div>
+            
             <div class="glass-card kpi-blue" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; margin-bottom: 8px;">CRÍTICOS</div>
-                <div id="kpiCriticos" class="kpi-value" style="font-size: 3rem; font-weight: 900;">0</div>
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
+                    <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
+                    <div style="background: #dbeafe; padding: 6px; border-radius: 6px; color: #2563eb;">
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    </div>
+                </div>
+                <div id="kpiCriticos" class="kpi-value" style="font-size: 2.5rem; font-weight: 900; line-height: 1; margin-bottom: 8px;">0</div>
+                <div style="display: flex; gap: 12px; font-size: 11px;">
+                    <div style="background: #dcfce7; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #16a34a;">
+                        <span id="critCerrados">0</span> ✓ Resueltos
+                    </div>
+                    <div style="background: #fee2e2; padding: 4px 10px; border-radius: 6px; font-weight: 800; color: #dc2626;">
+                        <span id="critAbiertos">0</span> ⚠ Pendientes
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -169,7 +235,7 @@
     </div>
 </div>
 
-<!-- MODAL -->
+<!-- MODAL CON EFECTO REBOTE -->
 <div id="reportModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div style="background: linear-gradient(90deg, #2563eb, #1e40af); padding: 24px; display: flex; justify-content: space-between; align-items: center;">
@@ -177,7 +243,7 @@
                 <h2 style="color: white; font-size: 1.25rem; font-weight: 900; text-transform: uppercase; margin: 0;">📋 Detalle del Reporte</h2>
                 <p id="modalDate" style="color: #bfdbfe; font-size: 12px; font-weight: 700; margin: 4px 0 0 0;">Fecha del evento</p>
             </div>
-            <button onclick="closeModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px;">✕</button>
+            <button onclick="closeModal()" style="background: rgba(255,255,255,0.2); border: none; color: white; border-radius: 50%; width: 40px; height: 40px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'; this.style.transform='rotate(90deg)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'; this.style.transform='rotate(0deg)'">✕</button>
         </div>
         
         <div style="padding: 32px;">
@@ -217,7 +283,7 @@
         </div>
         
         <div style="background: #f8fafc; padding: 20px; text-align: center; border-top: 2px solid #e2e8f0;">
-            <button onclick="closeModal()" style="background: #2563eb; color: white; border: none; padding: 14px 40px; border-radius: 99px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);">Cerrar Ventana</button>
+            <button onclick="closeModal()" style="background: #2563eb; color: white; border: none; padding: 14px 40px; border-radius: 99px; font-weight: 900; cursor: pointer; font-size: 14px; text-transform: uppercase; letter-spacing: 0.5px; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); transition: all 0.2s;" onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 6px 16px rgba(37, 99, 235, 0.4)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 12px rgba(37, 99, 235, 0.3)'">Cerrar Ventana</button>
         </div>
     </div>
 </div>
@@ -306,10 +372,28 @@ function applyFilters() {
     const cond = filtered.filter(e=>e.tipo==='condicion');
     const criticos = filtered.filter(e=>e.descripcion.toLowerCase().includes('alto'));
     
+    // Calcular cerrados y abiertos
+    const actosCerrados = actos.filter(a=>a.cerrado).length;
+    const actosAbiertos = actos.filter(a=>!a.cerrado).length;
+    const condCerrados = cond.filter(c=>c.cerrado).length;
+    const condAbiertos = cond.filter(c=>!c.cerrado).length;
+    const critCerrados = criticos.filter(c=>c.cerrado).length;
+    const critAbiertos = criticos.filter(c=>!c.cerrado).length;
+    
+    // Actualizar KPIs con totales y desglose
     document.getElementById('kpiActos').textContent = actos.length;
+    document.getElementById('actosCerrados').textContent = actosCerrados;
+    document.getElementById('actosAbiertos').textContent = actosAbiertos;
+    
     document.getElementById('kpiCondiciones').textContent = cond.length;
-    document.getElementById('kpiVCP').textContent = Math.round(filtered.length * 0.3);
+    document.getElementById('condCerrados').textContent = condCerrados;
+    document.getElementById('condAbiertos').textContent = condAbiertos;
+    
     document.getElementById('kpiCriticos').textContent = criticos.length;
+    document.getElementById('critCerrados').textContent = critCerrados;
+    document.getElementById('critAbiertos').textContent = critAbiertos;
+    
+    document.getElementById('kpiVCP').textContent = Math.round(filtered.length * 0.3);
     
     const rank = {};
     filtered.forEach(e => rank[e.observador] = (rank[e.observador]||0)+1);
@@ -346,17 +430,14 @@ function setSector(s, btn) {
     applyFilters();
 }
 
-// FUNCIÓN PARA FILTRAR POR CATEGORÍA - AHORA FUNCIONA
 function setCategoryFilter(categoryId) {
     console.log('Filtrando por categoría:', categoryId);
     state.categoria = categoryId;
     const cat = CATEGORIES.find(c => c.id === categoryId);
     
-    // Mostrar aviso de filtro activo
     document.getElementById('filterCategoryName').textContent = cat ? cat.name : '';
     document.getElementById('activeCategoryFilter').style.display = 'block';
     
-    // Actualizar visualmente las tarjetas
     document.querySelectorAll('.category-card').forEach(card => {
         card.classList.remove('active');
         if(card.dataset.category === categoryId) {
@@ -364,10 +445,7 @@ function setCategoryFilter(categoryId) {
         }
     });
     
-    // Aplicar filtros
     applyFilters();
-    
-    // Alerta visual
     alert('📊 Filtrando por: ' + (cat ? cat.name : 'Todas'));
 }
 
@@ -396,12 +474,10 @@ function updateCategoryCards(data) {
         div.className = 'glass-card category-card';
         div.dataset.category = c.id;
         
-        // Si esta categoría está activa, marcarla
         if(state.categoria === c.id) {
             div.classList.add('active');
         }
         
-        // HACER CLICKEABLE - ESTO ES LO QUE FALTABA
         div.onclick = function() {
             setCategoryFilter(c.id);
         };
@@ -427,11 +503,11 @@ function updateCharts(data) {
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line', 
-            data: { 
+             { 
                 labels: labels, 
                 datasets: [
-                    {label:'Actos', data: actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
-                    {label:'Condiciones', data: condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
+                    {label:'Actos',  actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
+                    {label:'Condiciones',  condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
                 ] 
             },
             options: { 
@@ -454,9 +530,9 @@ function updateCharts(data) {
     if(!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
-            data: { 
+             { 
                 labels: CATEGORIES.map(c=>c.name), 
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
             },
             options: { 
                 responsive: true, 
@@ -472,7 +548,6 @@ function updateCharts(data) {
                         }
                     }
                 },
-                // HACER EL GRÁFICO CLICKEABLE
                 onClick: (e, elements) => {
                     if(elements.length > 0) {
                         const index = elements[0].index;
@@ -591,7 +666,6 @@ function closeModalOnOverlay(event) {
     }
 }
 
-// Inicializar
 window.onload = loadData;
 </script>
 </body>
