@@ -285,12 +285,16 @@
 </div>
 
 <script>
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?output=csv';
+// URLs separadas para cada tipo de dato
+const ACTOS_COND_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
+const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
+
 const OBJETIVO_ACTOS = 66;
 const OBJETIVO_CONDICIONES = 44;
 const OBJETIVO_VCP = 30;
 
-let DB_ENTRIES = [];
+let ACTOS_COND_DATA = [];
+let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
 let state = { 
@@ -327,13 +331,14 @@ function getBarColor(pct, baseColor) {
 
 async function loadData() {
     try {
-        const res = await fetch(SHEET_URL);
-        const csv = await res.text();
-        const lines = csv.split('\n').filter(l => l.trim());
-        DB_ENTRIES = [];
+        // Cargar datos de Actos y Condiciones
+        const resActos = await fetch(ACTOS_COND_URL);
+        const csvActos = await resActos.text();
+        const linesActos = csvActos.split('\n').filter(l => l.trim());
+        ACTOS_COND_DATA = [];
         
-        for (let i = 1; i < lines.length; i++) {
-            const cols = lines[i].split(',');
+        for (let i = 1; i < linesActos.length; i++) {
+            const cols = linesActos[i].split(',');
             if (cols.length > 5 && cols[5]) {
                 const fecha = cols[3] || '';
                 const partes = fecha.split('/');
@@ -343,10 +348,11 @@ async function loadData() {
                 
                 const tipoRaw = cols[1] || '';
                 const desc = cols[6] || '';
-                const cerrado = (cols[8] || '').toLowerCase().includes('sí') || (cols[8] || '').toLowerCase().includes('si');
+                const cerrado = (cols[23] || '').toLowerCase().includes('sí') || (cols[23] || '').toLowerCase().includes('si');
                 
-                const isVCP = desc.toLowerCase().includes('vcp');
-                const tipo = isVCP ? 'vcp' : (tipoRaw.toLowerCase().includes('acto') ? 'acto' : 'condicion');
+                const esActo = tipoRaw.toLowerCase().includes('acto inseguro');
+                const esCondicion = tipoRaw.toLowerCase().includes('condicion insegura');
+                const tipo = esActo ? 'acto' : (esCondicion ? 'condicion' : 'otro');
                 
                 let cat = CATEGORIES[0];
                 let maxS = 0;
@@ -358,15 +364,43 @@ async function loadData() {
                     if (s > maxS) { maxS = s; cat = c; }
                 }
                 
-                DB_ENTRIES.push({
+                ACTOS_COND_DATA.push({
                     mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, 
                     sector: (cols[2] || '').toLowerCase(), observador: cols[5].trim(), 
-                    descripcion: desc, cerrado, isVCP, categoria: cat
+                    descripcion: desc, cerrado, isVCP: false, categoria: cat
                 });
             }
         }
         
-        document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
+        // Cargar datos de VCP
+        const resVCP = await fetch(VCP_URL);
+        const csvVCP = await resVCP.text();
+        const linesVCP = csvVCP.split('\n').filter(l => l.trim());
+        VCP_DATA = [];
+        
+        for (let i = 1; i < linesVCP.length; i++) {
+            const cols = linesVCP[i].split(',');
+            if (cols.length > 5 && cols[1]) {
+                const fecha = cols[2] || '';
+                const partes = fecha.split('/');
+                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                let mesIdx = parseInt(partes[1]) - 1;
+                if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+                
+                const observador = cols[1] || '';
+                const sector = (cols[3] || '').toLowerCase();
+                const personaVCP = cols[29] || observador; // Nombre de la persona observada
+                
+                VCP_DATA.push({
+                    mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo: 'vcp',
+                    sector: sector, observador: observador.trim(),
+                    descripcion: `VCP a ${personaVCP}`, cerrado: true, isVCP: true,
+                    categoria: CATEGORIES[0], personaObservada: personaVCP
+                });
+            }
+        }
+        
+        document.getElementById('totalRecords').textContent = ACTOS_COND_DATA.length + VCP_DATA.length;
         
         // Setup event listeners
         setupEventListeners();
@@ -403,14 +437,14 @@ function applyGeneralFilters() {
     const st = state.estado;
     const cr = state.causaRaiz;
     
-    const filtered = DB_ENTRIES.filter(e => {
+    const filtered = ACTOS_COND_DATA.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
         const matchCausa = (cr === 'todas' || e.categoria.id === cr);
-        return matchMes && matchSector && matchStatus && matchCausa && !e.isVCP;
+        return matchMes && matchSector && matchStatus && matchCausa;
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
@@ -446,16 +480,10 @@ function applyVCPFilters() {
     const s = state.vcpSector;
     const st = state.vcpEstado;
     
-    const vcpData = DB_ENTRIES.filter(e => {
-        if (!e.isVCP) return false;
-        
+    const vcpData = VCP_DATA.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
-        let matchStatus = true;
-        if (st === 'cerrados') matchStatus = e.cerrado === true;
-        else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        
-        return matchMes && matchSector && matchStatus;
+        return matchMes && matchSector;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -513,7 +541,10 @@ function toggleCausaRaiz(id) {
 
 function updateVCPList(vcpData) {
     const vcpPeople = {};
-    vcpData.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
+    vcpData.forEach(v => { 
+        const person = v.personaObservada || v.observador;
+        vcpPeople[person] = (vcpPeople[person] || 0) + 1; 
+    });
     
     const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
         .map(([name, count]) => `
@@ -562,10 +593,9 @@ function updateCharts(data) {
     
     const actosData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'acto').length);
     const condData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'condicion').length);
-    const vcpData = meses.map(m => DB_ENTRIES.filter(e => e.isVCP && e.mes === m && 
+    const vcpData = meses.map(m => VCP_DATA.filter(e => e.mes === m && 
         (state.vcpMes === 'todo' || e.mes === state.vcpMes) &&
-        (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) &&
-        (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado))
+        (state.vcpSector === 'general' || e.sector.includes(state.vcpSector))
     ).length);
     
     if (!trendChart) {
@@ -659,7 +689,7 @@ function checkPassword() {
         closePasswordModal();
         document.getElementById('rankingSection').classList.remove('hidden-section');
         const rank = {};
-        DB_ENTRIES.forEach(e => rank[e.observador] = (rank[e.observador] || 0) + 1);
+        [...ACTOS_COND_DATA, ...VCP_DATA].forEach(e => rank[e.observador] = (rank[e.observador] || 0) + 1);
         const sorted = Object.entries(rank).sort((a, b) => b[1] - a[1]);
         const container = document.getElementById('rankingList');
         container.innerHTML = '';
