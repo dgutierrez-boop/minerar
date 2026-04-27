@@ -96,7 +96,7 @@
                     
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
-                        <select id="monthFilter" onchange="applyAllFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                        <select id="monthFilter" onchange="applyGeneralFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">📅 Enero</option>
                             <option value="febrero">📅 Febrero</option>
@@ -138,7 +138,7 @@
                     
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES VCP</label>
-                        <select id="vcpMonthFilter" onchange="applyAllFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                        <select id="vcpMonthFilter" onchange="applyVCPFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">📅 Enero</option>
                             <option value="febrero">📅 Febrero</option>
@@ -167,6 +167,7 @@
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
@@ -196,7 +197,7 @@
                             <canvas id="vcpPeopleChart"></canvas>
                         </div>
                         
-                        <div id="vcpPeopleList" style="max-height: 100px; overflow-y: auto; font-size: 11px;"></div>
+                        <div id="vcpPeopleList" style="max-height: 150px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
                 </div>
                 
@@ -320,16 +321,12 @@ async function loadData() {
         }
         
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
-        applyAllFilters();
+        applyGeneralFilters();
+        applyVCPFilters();
     } catch (e) {
         console.error('Error:', e);
         document.getElementById('totalRecords').textContent = 'Error';
     }
-}
-
-function applyAllFilters() {
-    applyGeneralFilters();
-    applyVCPFilters();
 }
 
 function applyGeneralFilters() {
@@ -395,7 +392,7 @@ function setSector(s, btn) {
     btn.style.background = '#2563eb';
     btn.style.color = 'white';
     btn.style.border = 'none';
-    applyAllFilters();
+    applyGeneralFilters();
 }
 
 function setStatus(s, btn) {
@@ -409,7 +406,7 @@ function setStatus(s, btn) {
     btn.style.background = '#2563eb';
     btn.style.color = 'white';
     btn.style.border = 'none';
-    applyAllFilters();
+    applyGeneralFilters();
 }
 
 function setVCPFilter(s, btn) {
@@ -446,33 +443,30 @@ function updateVCPPeopleChart(vcpData) {
     const colors = ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3'];
     
     if (vcpPeopleChart) {
-        vcpPeopleChart.data.labels = labels;
-        vcpPeopleChart.data.datasets[0].data = counts;
-        vcpPeopleChart.data.datasets[0].backgroundColor = colors.slice(0, labels.length);
-        vcpPeopleChart.update();
-    } else {
-        const ctx = document.getElementById('vcpPeopleChart').getContext('2d');
-        vcpPeopleChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: counts,
-                    backgroundColor: colors.slice(0, labels.length),
-                    borderRadius: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    y: { beginAtZero: true, ticks: { stepSize: 1 } },
-                    x: { ticks: { font: { size: 10 } } }
-                }
-            }
-        });
+        vcpPeopleChart.destroy();
     }
+    
+    const ctx = document.getElementById('vcpPeopleChart').getContext('2d');
+    vcpPeopleChart = new Chart(ctx, {
+        type: 'bar',
+         {
+            labels: labels,
+            datasets: [{
+                 counts,
+                backgroundColor: colors.slice(0, labels.length),
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { stepSize: 1 } },
+                x: { ticks: { font: { size: 10 } } }
+            }
+        }
+    });
 }
 
 function updateCategoryCards(data) {
@@ -506,11 +500,11 @@ function updateCharts(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         trendChart = new Chart(ctx, {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5] }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5] }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false }
@@ -529,7 +523,7 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
                 datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
