@@ -61,7 +61,12 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <!-- KPIs CON INDICADORES DE CUMPLIMIENTO MENSUAL -->
+        <!-- OBJETIVOS MENSUALES - TÍTULO DE LAS 3 TARJETAS -->
+        <div style="text-align: center; margin-bottom: 8px;">
+            <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase; margin: 0;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
+            <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+        </div>
+        
         <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start;">
@@ -553,12 +558,12 @@ function updateCharts(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         trendChart = new Chart(ctx, {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
-                    { label: 'VCP',  vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -578,9 +583,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
