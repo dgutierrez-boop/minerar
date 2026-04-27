@@ -30,7 +30,19 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3B82F6, #1E40AF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 900;">M</div>
+            <!-- ESCUDO MINERAR -->
+            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
+                <defs>
+                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
+                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
+                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
+                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
+            </svg>
             <div>
                 <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
                 <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
@@ -341,7 +353,7 @@ function applyFilters() {
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchStatus && !e.isVCP; // Excluye VCP
+        return matchMes && matchSector && matchStatus && !e.isVCP;
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
@@ -453,10 +465,10 @@ function updateVCPPeopleChart(vcpData) {
         const ctx = document.getElementById('vcpPeopleChart').getContext('2d');
         vcpPeopleChart = new Chart(ctx, {
             type: 'bar',
-             {
+            data: {
                 labels: labels,
                 datasets: [{
-                     counts,
+                    data: counts,
                     backgroundColor: colors.slice(0, labels.length),
                     borderRadius: 4
                 }]
@@ -505,11 +517,11 @@ function updateCharts(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         trendChart = new Chart(ctx, {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5] }
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5] }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false }
@@ -528,9 +540,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
