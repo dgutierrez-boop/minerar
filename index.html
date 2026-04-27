@@ -21,6 +21,12 @@
         @keyframes championPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
         @keyframes crownBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px) rotate(5deg); } }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
+        .champion-row { animation: championPulse 2s infinite; cursor: pointer; }
+        .champion-row:hover { background-color: rgba(251, 191, 36, 0.2) !important; }
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 24px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); transform: scale(0.8) translateY(20px); opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); overflow: hidden; }
+        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); opacity: 1; }
         canvas { cursor: pointer; }
     </style>
 </head>
@@ -82,7 +88,83 @@
                         <div id="rankingList" style="display: flex; flex-direction: column; gap: 12px;"></div>
                     </div>
                 </div>
+                
+                <div class="glass-card" style="padding: 24px;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px;">DETALLE DE REPORTES</h3>
+                    <div style="overflow-x: auto;">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr class="border-b-2 border-slate-200">
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Fecha</th>
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Tipo</th>
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Sector</th>
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Observador</th>
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Descripción</th>
+                                    <th class="p-3 text-[10px] font-black text-slate-400 uppercase tracking-wider">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detailTableBody" class="text-sm">
+                            </tbody>
+                        </table>
+                        <p id="noDataMsg" class="hidden text-center text-slate-400 py-8 text-sm font-bold">No hay registros que coincidan con los filtros seleccionados.</p>
+                    </div>
+                </div>
             </main>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL -->
+<div id="reportModal" class="modal-overlay" onclick="closeModalOnOverlay(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-6 flex justify-between items-center">
+            <div>
+                <h2 class="text-white text-xl font-black uppercase tracking-wide">Detalle del Reporte</h2>
+                <p class="text-blue-200 text-sm font-medium mt-1" id="modalDate">Fecha del evento</p>
+            </div>
+            <button onclick="closeModal()" class="bg-white/20 hover:bg-white/30 text-white rounded-full p-2 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+        </div>
+        
+        <div class="p-8 space-y-6">
+            <div class="flex items-center gap-4">
+                <div class="bg-amber-100 p-3 rounded-full text-amber-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                </div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase">Observador</p>
+                    <p class="text-lg font-bold text-slate-800" id="modalObserver">Nombre</p>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                <p class="text-xs font-bold text-slate-400 uppercase mb-2">Descripción del Hallazgo</p>
+                <p class="text-slate-700 leading-relaxed" id="modalDescription">Texto...</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p class="text-xs font-bold text-slate-400 uppercase mb-2">Sector</p>
+                    <p class="text-slate-700 font-semibold" id="modalSector">Sector</p>
+                </div>
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    <p class="text-xs font-bold text-slate-400 uppercase mb-2">Tipo</p>
+                    <p class="text-slate-700 font-semibold" id="modalType">Tipo</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 p-4 rounded-xl border" id="modalStatusBox">
+                <div id="modalStatusIcon"></div>
+                <div>
+                    <p class="text-xs font-bold text-slate-400 uppercase">Estado del Reporte</p>
+                    <p class="text-lg font-black" id="modalStatusText">Estado</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-slate-50 p-4 text-center border-t border-slate-100">
+            <button onclick="closeModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded-full transition shadow-lg shadow-blue-500/30">CERRAR VENTANA</button>
         </div>
     </div>
 </div>
@@ -92,6 +174,7 @@ const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP
 let DB_ENTRIES = [];
 let trendChart, categoryChart;
 let state = { mes: 'todo', sector: 'general' };
+let championName = '';
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp', 'protección', 'careta'] },
@@ -130,7 +213,7 @@ async function loadData() {
                     if(s>maxS){maxS=s; cat=c;} 
                 }
                 
-                DB_ENTRIES.push({ mes: meses[mesIdx], tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado, categoria: cat });
+                DB_ENTRIES.push({ mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado, categoria: cat });
             }
         }
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
@@ -178,13 +261,19 @@ function applyFilters() {
     const sorted = Object.entries(rank).sort((a,b)=>b[1]-a[1]);
     
     if(sorted.length) { 
-        document.getElementById('leaderName').textContent = sorted[0][0]; 
+        championName = sorted[0][0];
+        document.getElementById('leaderName').textContent = championName; 
         document.getElementById('leaderCount').textContent = sorted[0][1]; 
+    } else {
+        championName = '';
+        document.getElementById('leaderName').textContent = '--';
+        document.getElementById('leaderCount').textContent = '0';
     }
     
     updateCategoryCards(filtered);
     updateCharts(filtered);
     updateRanking(sorted);
+    renderDetailTable(filtered);
 }
 
 function setSector(s, btn) {
@@ -223,13 +312,7 @@ function updateCharts(data) {
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line', 
-            data: { 
-                labels: labels, 
-                datasets: [
-                    {label:'Actos', data: [], borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4}, 
-                    {label:'Condiciones', data: [], borderColor:'#f97316', borderDash:[5,5], tension: 0.4}
-                ] 
-            },
+            data: { labels: labels, datasets: [{label:'Actos', data: [], borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4}, {label:'Condiciones', data: [], borderColor:'#f97316', borderDash:[5,5], tension: 0.4}] },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
         });
     }
@@ -244,10 +327,7 @@ function updateCharts(data) {
     if(!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
-            data: { 
-                labels: CATEGORIES.map(c=>c.name), 
-                datasets: [{ data: [], backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 0 }] 
-            },
+            data: { labels: CATEGORIES.map(c=>c.name), datasets: [{ data: [], backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 0 }] },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
     }
@@ -274,6 +354,74 @@ function updateRanking(sorted) {
         div.innerHTML = '<div style="margin-bottom: 12px;"><div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px;"><span style="color: '+ (index===0 ? '#d97706' : '#475569') +'">'+medal+' '+nombre+'</span><span style="color: '+ (index===0 ? '#d97706' : '#64748b') +'">'+count+' reportes</span></div><div style="width: 100%; background: #e2e8f0; height: 8px; border-radius: 99px; overflow: hidden;"><div class="'+bgColor+'" style="height: 100%; width: '+percentage+'%; border-radius: 99px; transition: width 0.5s;"></div></div></div>';
         container.appendChild(div);
     });
+}
+
+function renderDetailTable(data) {
+    const tbody = document.getElementById('detailTableBody');
+    const noData = document.getElementById('noDataMsg');
+    tbody.innerHTML = '';
+    
+    if(data.length === 0) {
+        noData.classList.remove('hidden');
+        return;
+    }
+    noData.classList.add('hidden');
+    
+    data.slice(0, 50).forEach((e, idx) => {
+        const isChampion = championName && e.observador === championName;
+        const tr = document.createElement('tr');
+        tr.className = 'border-b border-slate-100 transition-all ' + (isChampion ? 'champion-row bg-amber-50' : 'hover:bg-slate-50 cursor-pointer');
+        tr.onclick = () => openModal(e, isChampion);
+        
+        tr.innerHTML = `
+            <td class="p-3 text-slate-500 font-semibold">${e.dia}/${e.mes}</td>
+            <td class="p-3"><span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${e.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-orange-100 text-orange-700'}">${e.tipo}</span></td>
+            <td class="p-3 text-slate-600 font-medium">${e.sector}</td>
+            <td class="p-3 font-bold ${isChampion ? 'text-amber-600' : 'text-slate-700'}">${e.observador}</td>
+            <td class="p-3 text-slate-600 max-w-xs truncate" title="${e.descripcion}">${e.descripcion}</td>
+            <td class="p-3"><span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider ${e.cerrado?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${e.cerrado?'CERRADO':'ABIERTO'}</span></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function openModal(report, isChampion) {
+    const modal = document.getElementById('reportModal');
+    
+    document.getElementById('modalDate').textContent = 'Fecha: ' + (report.fecha || report.dia + '/' + report.mes);
+    document.getElementById('modalObserver').textContent = report.observador;
+    document.getElementById('modalDescription').textContent = report.descripcion;
+    document.getElementById('modalSector').textContent = report.sector;
+    document.getElementById('modalType').textContent = report.tipo.toUpperCase();
+    
+    const statusText = document.getElementById('modalStatusText');
+    const statusIcon = document.getElementById('modalStatusIcon');
+    const statusBox = document.getElementById('modalStatusBox');
+    
+    if(report.cerrado) {
+        statusText.textContent = "CERRADO / CORREGIDO";
+        statusText.className = "text-lg font-black text-green-600";
+        statusBox.className = "flex items-center gap-4 p-4 rounded-xl border bg-green-50 border-green-200";
+        statusIcon.innerHTML = '<div class="bg-green-500 p-2 rounded-full text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg></div>';
+    } else {
+        statusText.textContent = "ABIERTO / PENDIENTE";
+        statusText.className = "text-lg font-black text-red-600";
+        statusBox.className = "flex items-center gap-4 p-4 rounded-xl border bg-red-50 border-red-200";
+        statusIcon.innerHTML = '<div class="bg-red-500 p-2 rounded-full text-white"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3.01 1.732 3.01z"/></svg></div>';
+    }
+
+    modal.classList.add('active');
+}
+
+function closeModal() {
+    const modal = document.getElementById('reportModal');
+    modal.classList.remove('active');
+}
+
+function closeModalOnOverlay(event) {
+    if (event.target === event.currentTarget) {
+        closeModal();
+    }
 }
 
 window.onload = loadData;
