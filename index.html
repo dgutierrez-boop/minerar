@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minerar 2026</title>
     
-    <!-- FAVICON ACTUALIZADO CON TUS IMÁGENES -->
+    <!-- FAVICON -->
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
@@ -33,26 +33,10 @@
         .category-card.active { border-width: 4px !important; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); background: #f0f9ff; }
         .champion-row { animation: championPulse 2s infinite; cursor: pointer; }
         .champion-row:hover { background-color: rgba(251, 191, 36, 0.2) !important; }
-        
-        /* MODAL CON EFECTO REBOTE */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-overlay.active { display: flex; }
-        .modal-content { 
-            background: white; 
-            width: 90%; 
-            max-width: 600px; 
-            border-radius: 24px; 
-            padding: 0; 
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
-            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
-            overflow: hidden; 
-        }
-        @keyframes bounceIn { 
-            0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 
-            50% { transform: scale(1.05) translateY(10px); }
-            70% { transform: scale(0.98) translateY(-5px); }
-            100% { transform: scale(1) translateY(0); opacity: 1; } 
-        }
+        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 24px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); overflow: hidden; }
+        @keyframes bounceIn { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         canvas { cursor: pointer; }
     </style>
 </head>
@@ -60,7 +44,6 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <!-- LOGO SVG (Escudo Bonito) -->
             <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
                 <defs>
                     <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -86,7 +69,6 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <!-- TARJETAS KPI MEJORADAS -->
         <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -185,6 +167,16 @@
                             <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white; padding: 10px; border-radius: 8px; border: none; font-weight: 800;">🏭 GENERAL</button>
                             <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 700;">⛏️ CANTERA</button>
                             <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 700;">🔧 TALLER</button>
+                        </div>
+                    </div>
+
+                    <!-- NUEVO SECCIÓN DE ESTADO -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">Estado</label>
+                        <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setStatus('todos', this)" class="btn-filter" style="background: #2563eb; color: white; padding: 10px; border-radius: 8px; border: none; font-weight: 800;">📊 TODOS</button>
+                            <button onclick="setStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 700;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#22c55e; margin-right:8px;"></span>CERRADOS</button>
+                            <button onclick="setStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-weight: 700;"><span style="display:inline-block; width:8px; height:8px; border-radius:50%; background:#ef4444; margin-right:8px;"></span>ABIERTOS</button>
                         </div>
                     </div>
                     
@@ -306,7 +298,8 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 let DB_ENTRIES = [];
 let trendChart, categoryChart;
-let state = { mes: 'todo', sector: 'general', categoria: 'todas' };
+// AGREGADO 'estado' AL OBJETO DE ESTADO
+let state = { mes: 'todo', sector: 'general', categoria: 'todas', estado: 'todos' };
 let championName = '';
 
 const CATEGORIES = [
@@ -391,12 +384,19 @@ function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
     const c = state.categoria;
+    const st = state.estado; // Obtener estado actual
     
     const filtered = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
         const matchCategory = (c === 'todas' || (e.categoria && e.categoria.id === c));
-        return matchMes && matchSector && matchCategory;
+        
+        // NUEVO FILTRO POR ESTADO
+        let matchStatus = true;
+        if (st === 'cerrados') matchStatus = e.cerrado === true;
+        else if (st === 'abiertos') matchStatus = e.cerrado === false;
+        
+        return matchMes && matchSector && matchCategory && matchStatus;
     });
     
     const actos = filtered.filter(e=>e.tipo==='acto');
@@ -449,6 +449,22 @@ function applyFilters() {
 function setSector(s, btn) {
     state.sector = s;
     document.querySelectorAll('#sectorButtons .btn-filter').forEach(b=>{
+        b.style.background='white'; 
+        b.style.color='#475569'; 
+        b.style.border='2px solid #e2e8f0';
+    });
+    if(btn) { 
+        btn.style.background='#2563eb'; 
+        btn.style.color='white'; 
+        btn.style.border='none'; 
+    }
+    applyFilters();
+}
+
+// NUEVA FUNCIÓN PARA FILTRAR POR ESTADO
+function setStatus(s, btn) {
+    state.estado = s;
+    document.querySelectorAll('#statusButtons .btn-filter').forEach(b=>{
         b.style.background='white'; 
         b.style.color='#475569'; 
         b.style.border='2px solid #e2e8f0';
@@ -536,8 +552,8 @@ function updateCharts(data) {
             data: { 
                 labels: labels, 
                 datasets: [
-                    {label:'Actos', data: actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
-                    {label:'Condiciones', data: condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
+                    {label:'Actos',  actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
+                    {label:'Condiciones',  condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
                 ] 
             },
             options: { 
@@ -561,7 +577,7 @@ function updateCharts(data) {
     if(!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
-            data: { 
+             { 
                 labels: CATEGORIES.map(c=>c.name), 
                 datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
             },
