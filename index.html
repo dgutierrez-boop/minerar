@@ -4,11 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minerar 2026</title>
-    
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -17,90 +15,60 @@
         .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease; cursor: pointer; }
         .glass-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
         .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .kpi-cyan { border-left: 5px solid #06b6d4; } .kpi-cyan .kpi-value { color: #0891b2; }
-        .kpi-amber { border-left: 5px solid #f59e0b; } .kpi-amber .kpi-value { color: #d97706; }
-        .kpi-pink { border-left: 5px solid #ec4899; } .kpi-pink .kpi-value { color: #db2777; }
-        .kpi-blue { border-left: 5px solid #3b82f6; } .kpi-blue .kpi-value { color: #2563eb; }
-        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: white; width: 90%; max-width: 600px; border-radius: 24px; padding: 0; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); overflow: hidden; }
-        @keyframes bounceIn { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .kpi-cyan { border-left: 5px solid #06b6d4; }
+        .kpi-amber { border-left: 5px solid #f59e0b; }
+        .kpi-pink { border-left: 5px solid #ec4899; }
+        .kpi-blue { border-left: 5px solid #3b82f6; }
+        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; }
+        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; }
+        .category-card:hover { transform: scale(1.05); }
         .hidden-section { display: none !important; }
-        canvas { cursor: pointer; }
     </style>
 </head>
 <body>
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
-                <defs>
-                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
-                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
-                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
-                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
-            </svg>
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #3B82F6, #1E40AF); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-size: 32px; font-weight: 900;">M</div>
             <div>
-                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; color: #1e293b;">PANEL SEGURIDAD MINERA 2026</h1>
+                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
                 <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
             </div>
         </div>
         <div style="background: #f8fafc; padding: 10px 20px; border-radius: 8px; text-align: center; border: 2px solid #e2e8f0;">
             <div style="font-size: 10px; font-weight: 800; color: #64748b;">REGISTROS</div>
             <div id="totalRecords" style="font-size: 28px; font-weight: 900; color: #0f172a;">...</div>
-            <div id="lastUpdate" style="font-size: 9px; color: #16a34a; font-weight: 700;">--:--</div>
         </div>
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <!-- KPIs -->
         <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase; margin-bottom: 8px;">ACTOS</div>
-                <div id="kpiActos" class="kpi-value" style="font-size: 2.5rem; font-weight: 900;">0</div>
-                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 10px;">
-                    <span style="color: #16a34a;">✓ <span id="actosCerrados">0</span></span>
-                    <span style="color: #dc2626;">⚠ <span id="actosAbiertos">0</span></span>
-                </div>
+                <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
+                <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2;">0</div>
             </div>
             <div class="glass-card kpi-amber" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase; margin-bottom: 8px;">CONDICIONES</div>
-                <div id="kpiCondiciones" class="kpi-value" style="font-size: 2.5rem; font-weight: 900;">0</div>
-                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 10px;">
-                    <span style="color: #16a34a;">✓ <span id="condCerrados">0</span></span>
-                    <span style="color: #dc2626;">⚠ <span id="condAbiertos">0</span></span>
-                </div>
+                <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
+                <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706;">0</div>
             </div>
             <div class="glass-card kpi-pink" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #db2777; text-transform: uppercase; margin-bottom: 8px;">VCP</div>
-                <div id="kpiVCP" class="kpi-value" style="font-size: 2.5rem; font-weight: 900;">0</div>
-                <div style="background: linear-gradient(90deg, #f472b6, #db2777); height: 4px; border-radius: 2px; margin-top: 8px;"></div>
+                <div style="font-size: 11px; font-weight: 900; color: #db2777; text-transform: uppercase;">VCP</div>
+                <div id="kpiVCP" style="font-size: 2.5rem; font-weight: 900; color: #db2777;">0</div>
             </div>
             <div class="glass-card kpi-blue" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase; margin-bottom: 8px;">CRÍTICOS</div>
-                <div id="kpiCriticos" class="kpi-value" style="font-size: 2.5rem; font-weight: 900;">0</div>
-                <div style="display: flex; gap: 8px; margin-top: 8px; font-size: 10px;">
-                    <span style="color: #16a34a;">✓ <span id="critCerrados">0</span></span>
-                    <span style="color: #dc2626;">⚠ <span id="critAbiertos">0</span></span>
-                </div>
+                <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
+                <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb;">0</div>
             </div>
         </section>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
-                <!-- FILTROS -->
                 <div class="glass-card" style="padding: 20px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; font-size: 13px; text-transform: uppercase;">🔍 FILTROS</h3>
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS</h3>
                     
                     <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">📅 Mes</label>
-                        <select id="monthFilter" onchange="applyFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px; font-weight: 700;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
+                        <select id="monthFilter" onchange="applyFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">📅 Enero</option>
                             <option value="febrero">📅 Febrero</option>
@@ -110,130 +78,92 @@
                     </div>
                     
                     <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">🏭 Sector</label>
-                        <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white; padding: 10px; border-radius: 8px; border: none;">🏭 GENERAL</button>
-                            <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
-                            <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0;">🔧 TALLER</button>
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white;">🏭 GENERAL</button>
+                            <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
+                            <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🔧 TALLER</button>
                         </div>
                     </div>
 
-                    <!-- FILTRO VCP - CERRADOS/ABIERTOS -->
-                    <div style="margin-bottom: 16px; padding: 16px; background: #fce7f3; border-radius: 8px; border: 2px solid #ec4899;">
-                        <label style="font-size: 10px; font-weight: 700; color: #9d174d; display: block; margin-bottom: 6px; text-transform: uppercase;">🎯 VCP - Estado</label>
-                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPStatus('todos', this)" class="btn-filter" style="background: #ec4899; color: white; padding: 8px; border-radius: 6px; border: none; font-size: 10px;">📊 TODOS</button>
-                            <button onclick="setVCPStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 2px solid #e2e8f0; font-size: 10px;">✓ CERRADOS</button>
-                            <button onclick="setVCPStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 2px solid #e2e8f0; font-size: 10px;">⚠ ABIERTOS</button>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">👤 OBSERVADOR</label>
+                        <select id="observerFilter" onchange="applyFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                            <option value="todos">👥 Todos</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO</label>
+                        <div style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setStatus('todos', this)" class="btn-filter" style="background: #2563eb; color: white;">📊 TODOS</button>
+                            <button onclick="setStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">✓ CERRADOS</button>
+                            <button onclick="setStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
                         </div>
                     </div>
                 </div>
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <!-- OBJETIVOS MENSUALES -->
                 <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 20px; color: #1e293b; font-size: 13px; text-transform: uppercase;">📊 OBJETIVOS MENSUALES - ACTOS Y CONDICIONES (110)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 24px;">
+                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 OBJETIVOS MENSUALES (110)</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                         <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; border: 2px solid #3b82f6;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                <span style="font-size: 14px; font-weight: 900; color: #1e40af;">ACTOS INSEGUROS</span>
-                                <span style="font-size: 24px; font-weight: 900; color: #3b82f6;" id="actosCurrent">0</span>
+                            <div style="font-size: 14px; font-weight: 900; color: #1e40af; margin-bottom: 8px;">ACTOS</div>
+                            <div style="font-size: 24px; font-weight: 900; color: #3b82f6;" id="actosCurrent">0</div>
+                            <div style="font-size: 11px; color: #64748b; margin: 8px 0;">Objetivo: 66</div>
+                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
+                                <div id="actosBar" style="background: #3b82f6; height: 100%; width: 0%;"></div>
                             </div>
-                            <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Objetivo: 66 mensuales</div>
-                            <div style="background: #e2e8f0; height: 20px; border-radius: 10px; overflow: hidden;">
-                                <div id="actosBar" style="background: linear-gradient(90deg, #3b82f6, #1d4ed8); height: 100%; width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="text-align: right; font-size: 12px; font-weight: 800; color: #1e40af; margin-top: 6px;" id="actosPorcentaje">0%</div>
                         </div>
-                        
                         <div style="background: #fffbeb; padding: 20px; border-radius: 12px; border: 2px solid #f59e0b;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                <span style="font-size: 14px; font-weight: 900; color: #92400e;">CONDICIONES INSEGURAS</span>
-                                <span style="font-size: 24px; font-weight: 900; color: #f59e0b;" id="condCurrent">0</span>
-                            </div>
-                            <div style="font-size: 12px; color: #64748b; margin-bottom: 8px;">Objetivo: 44 mensuales</div>
-                            <div style="background: #e2e8f0; height: 20px; border-radius: 10px; overflow: hidden;">
-                                <div id="condBar" style="background: linear-gradient(90deg, #f59e0b, #d97706); height: 100%; width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="text-align: right; font-size: 12px; font-weight: 800; color: #92400e; margin-top: 6px;" id="condPorcentaje">0%</div>
-                        </div>
-                    </div>
-                    
-                    <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 20px; border-radius: 12px; border: 2px solid #3b82f6;">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <div style="font-size: 14px; font-weight: 900; color: #1e40af; margin-bottom: 4px;">TOTAL OBJETIVO MENSUAL</div>
-                                <div style="font-size: 12px; color: #64748b;">Meta: 110 reportes (66 actos + 44 condiciones)</div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 36px; font-weight: 900; color: #1e40af;" id="totalPorcentaje">0%</div>
-                                <div style="font-size: 12px; color: #64748b;">de cumplimiento</div>
+                            <div style="font-size: 14px; font-weight: 900; color: #92400e; margin-bottom: 8px;">CONDICIONES</div>
+                            <div style="font-size: 24px; font-weight: 900; color: #f59e0b;" id="condCurrent">0</div>
+                            <div style="font-size: 11px; color: #64748b; margin: 8px 0;">Objetivo: 44</div>
+                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
+                                <div id="condBar" style="background: #f59e0b; height: 100%; width: 0%;"></div>
                             </div>
                         </div>
                     </div>
+                </div>
+                
+                <div class="glass-card" style="padding: 24px;">
+                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;"></div>
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                    <!-- EVOLUCIÓN MENSUAL -->
                     <div class="glass-card" style="padding: 24px;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; font-size: 13px; text-transform: uppercase;">📈 EVOLUCIÓN MENSUAL</h3>
-                        <div style="height: 280px;"><canvas id="trendChart"></canvas></div>
+                        <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📈 EVOLUCIÓN</h3>
+                        <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
                     </div>
-                    
-                    <!-- VCP - PERSONAS INVOLUCRADAS -->
                     <div class="glass-card" style="padding: 24px;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; font-size: 13px; text-transform: uppercase;">🎯 VCP - PERSONAS INVOLUCRADAS</h3>
-                        <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                                <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO MENSUAL</span>
-                                <span style="font-size: 28px; font-weight: 900; color: #ec4899;" id="vcpCurrent">0</span>
-                            </div>
-                            <div style="font-size: 11px; color: #64748b; margin-bottom: 8px;">Meta: 30 reportes VCP mensuales</div>
-                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
-                                <div id="vcpBar" style="background: linear-gradient(90deg, #ec4899, #db2777); height: 100%; width: 0%; transition: width 0.5s;"></div>
-                            </div>
-                            <div style="text-align: right; font-size: 12px; font-weight: 800; color: #9d174d; margin-top: 6px;" id="vcpPorcentaje">0%</div>
-                        </div>
-                        <div id="vcpPeopleList" style="max-height: 200px; overflow-y: auto;">
-                            <p style="text-align: center; color: #94a3b8; padding: 20px; font-size: 12px;">Cargando personas...</p>
-                        </div>
+                        <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🎯 VCP - PERSONAS</h3>
+                        <div id="vcpPeopleList" style="max-height: 250px; overflow-y: auto;"></div>
                     </div>
                 </div>
                 
-                <!-- RANKING OCULTO CON CONTRASEÑA -->
                 <div class="glass-card" style="padding: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-weight: 900; color: #1e293b; font-size: 13px; text-transform: uppercase;">🏆 RANKING INFORMANTES</h3>
-                        <button onclick="showRanking()" style="background: #3b82f6; color: white; border: none; padding: 8px 16px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-transform: uppercase;">🔓 Ver Ranking</button>
+                        <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE</h3>
+                        <button onclick="showRanking()" style="background: none; border: none; font-size: 28px; cursor: pointer;">🔒</button>
                     </div>
-                    <div id="rankingSection" class="hidden-section">
-                        <div id="rankingList" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;"></div>
+                    <div id="rankingSection" class="hidden-section" style="margin-bottom: 20px; padding: 20px; background: #f8fafc; border-radius: 12px;">
+                        <div id="rankingList"></div>
                     </div>
-                    <div id="rankingLocked" style="text-align: center; padding: 40px; color: #94a3b8;">
-                        <div style="font-size: 48px; margin-bottom: 12px;">🔒</div>
-                        <p style="font-size: 14px; font-weight: 700;">El ranking está protegido. Hacé click en "Ver Ranking" para acceder.</p>
-                    </div>
-                </div>
-                
-                <!-- DETALLE DE REPORTES -->
-                <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; font-size: 13px; text-transform: uppercase;">📋 DETALLE DE REPORTES</h3>
                     <div style="overflow-x: auto;">
                         <table class="w-full text-left">
                             <thead>
-                                <tr style="border-bottom: 3px solid #e2e8f0;">
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Fecha</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Tipo</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Sector</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Observador</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Descripción</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; color: #64748b; text-transform: uppercase;">Estado</th>
+                                <tr style="border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Fecha</th>
+                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Tipo</th>
+                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Observador</th>
+                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Descripción</th>
+                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Estado</th>
                                 </tr>
                             </thead>
-                            <tbody id="detailTableBody" style="font-size: 12px;"></tbody>
+                            <tbody id="detailTableBody"></tbody>
                         </table>
-                        <p id="noDataMsg" style="display: none; text-align: center; color: #94a3b8; padding: 40px; font-size: 13px; font-weight: 700;">No hay registros.</p>
                     </div>
                 </div>
             </main>
@@ -241,29 +171,34 @@
     </div>
 </div>
 
-<!-- MODAL CONTRASEÑA -->
-<div id="passwordModal" class="modal-overlay" onclick="if(event.target === this) closePasswordModal()">
-    <div class="modal-content" style="max-width: 400px; padding: 32px;">
-        <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 16px; color: #1e293b;">🔐 Acceso al Ranking</h2>
-        <input type="password" id="passwordInput" placeholder="Contraseña" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; margin-bottom: 16px;">
+<div id="passwordModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div style="background: white; padding: 32px; border-radius: 24px; max-width: 400px; width: 90%;">
+        <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">🔐 Contraseña</h2>
+        <input type="password" id="passwordInput" placeholder="Ingresar contraseña" style="width: 100%; padding: 12px; border: 2px solid #e2e8f0; border-radius: 8px; margin-bottom: 16px; font-size: 14px;">
         <div style="display: flex; gap: 12px;">
             <button onclick="checkPassword()" style="flex: 1; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Acceder</button>
-            <button onclick="closePasswordModal()" style="flex: 1; background: #e2e8f0; color: #475569; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cancelar</button>
+            <button onclick="closePasswordModal()" style="flex: 1; background: #e2e8f0; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cancelar</button>
         </div>
     </div>
 </div>
 
 <script>
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?output=csv';
-
-// OBJETIVOS
 const OBJETIVO_ACTOS = 66;
 const OBJETIVO_CONDICIONES = 44;
-const OBJETIVO_VCP = 30;
 
 let DB_ENTRIES = [];
 let trendChart;
-let state = { mes: 'todo', sector: 'general', vcpStatus: 'todos' };
+let state = { mes: 'todo', sector: 'general', observer: 'todos', estado: 'todos' };
+
+const CATEGORIES = [
+    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
+    { id: 'orden', name: 'Orden', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'permiso'] },
+    { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'camioneta'] },
+    { id: 'area', name: 'Condiciones', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
+];
 
 async function loadData() {
     try {
@@ -272,8 +207,8 @@ async function loadData() {
         const lines = csv.split('\n').filter(l => l.trim());
         DB_ENTRIES = [];
         
-        for(let i=1; i<lines.length; i++) {
-            const cols = parseCSVLine(lines[i]);
+        for(let i = 1; i < lines.length; i++) {
+            const cols = lines[i].split(',');
             if(cols.length > 5 && cols[5]) {
                 const fecha = cols[3] || '';
                 const partes = fecha.split('/');
@@ -285,20 +220,34 @@ async function loadData() {
                 const desc = cols[6] || '';
                 const cerrado = (cols[8]||'').toLowerCase().includes('sí') || (cols[8]||'').toLowerCase().includes('si');
                 
-                // Detectar tipo
-                const isVCP = desc.toLowerCase().includes('vcp') || tipoRaw.toLowerCase().includes('vcp');
+                const isVCP = desc.toLowerCase().includes('vcp');
                 const tipo = isVCP ? 'vcp' : (tipoRaw.toLowerCase().includes('acto') ? 'acto' : 'condicion');
                 
+                let cat = CATEGORIES[0];
+                let maxS = 0;
+                for(const c of CATEGORIES) { 
+                    let s = 0; 
+                    for(const k of c.keywords) if(desc.toLowerCase().includes(k)) s++; 
+                    if(s > maxS){ maxS = s; cat = c; } 
+                }
+                
                 DB_ENTRIES.push({ 
-                    mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, 
-                    sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), 
-                    descripcion: desc, cerrado, isVCP
+                    mes: meses[mesIdx], 
+                    dia: partes[0], 
+                    fecha: fecha, 
+                    tipo: tipo, 
+                    sector: (cols[2]||'').toLowerCase(), 
+                    observador: cols[5].trim(), 
+                    descripcion: desc, 
+                    cerrado: cerrado, 
+                    isVCP: isVCP, 
+                    categoria: cat
                 });
             }
         }
         
+        populateObserverFilter();
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
         applyFilters();
     } catch(e) { 
         console.error("Error:", e);
@@ -306,207 +255,158 @@ async function loadData() {
     }
 }
 
-function parseCSVLine(line) {
-    const result = []; let current = ''; let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i]; const next = line[i + 1];
-        if (char === '"') { if (inQuotes && next === '"') { current += '"'; i++; } else { inQuotes = !inQuotes; } }
-        else if (char === ',' && !inQuotes) { result.push(current.trim()); current = ''; }
-        else { current += char; }
-    }
-    result.push(current.trim());
-    return result;
+function populateObserverFilter() {
+    const observers = [...new Set(DB_ENTRIES.map(e => e.observador))].sort();
+    const select = document.getElementById('observerFilter');
+    observers.forEach(obs => {
+        const option = document.createElement('option');
+        option.value = obs;
+        option.textContent = '👤 ' + obs;
+        select.appendChild(option);
+    });
 }
 
 function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
-    const vcpSt = state.vcpStatus;
+    const obs = document.getElementById('observerFilter').value;
+    const st = state.estado;
     
-    // Filtrar datos generales
     const filtered = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
-        return matchMes && matchSector;
+        const matchObserver = (obs === 'todos' || e.observador === obs);
+        let matchStatus = true;
+        if(st === 'cerrados') matchStatus = e.cerrado === true;
+        else if(st === 'abiertos') matchStatus = e.cerrado === false;
+        return matchMes && matchSector && matchObserver && matchStatus;
     });
     
-    // Filtrar VCP segÃºn estado
-    const vcpFiltered = filtered.filter(e => e.isVCP);
-    const vcpData = vcpFiltered.filter(v => {
-        if(vcpSt === 'cerrados') return v.cerrado;
-        if(vcpSt === 'abiertos') return !v.cerrado;
-        return true;
-    });
+    const actos = filtered.filter(e => e.tipo === 'acto');
+    const cond = filtered.filter(e => e.tipo === 'condicion');
+    const vcp = filtered.filter(e => e.isVCP);
     
-    const actos = filtered.filter(e=>e.tipo==='acto');
-    const cond = filtered.filter(e=>e.tipo==='condicion');
-    const criticos = filtered.filter(e=>e.descripcion.toLowerCase().includes('alto'));
-    
-    // Actualizar KPIs
     document.getElementById('kpiActos').textContent = actos.length;
-    document.getElementById('actosCerrados').textContent = actos.filter(a=>a.cerrado).length;
-    document.getElementById('actosAbiertos').textContent = actos.filter(a=>!a.cerrado).length;
-    
     document.getElementById('kpiCondiciones').textContent = cond.length;
-    document.getElementById('condCerrados').textContent = cond.filter(c=>c.cerrado).length;
-    document.getElementById('condAbiertos').textContent = cond.filter(c=>!c.cerrado).length;
+    document.getElementById('kpiVCP').textContent = vcp.length;
+    document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
-    document.getElementById('kpiVCP').textContent = vcpData.length;
-    document.getElementById('kpiCriticos').textContent = criticos.length;
-    document.getElementById('critCerrados').textContent = criticos.filter(c=>c.cerrado).length;
-    document.getElementById('critAbiertos').textContent = criticos.filter(c=>!c.cerrado).length;
-    
-    // OBJETIVOS MENSUALES
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
     const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
-    const totalActual = actos.length + cond.length;
-    const totalPct = Math.min((totalActual / (OBJETIVO_ACTOS + OBJETIVO_CONDICIONES)) * 100, 100);
     
     document.getElementById('actosCurrent').textContent = actos.length;
     document.getElementById('condCurrent').textContent = cond.length;
     document.getElementById('actosBar').style.width = actosPct + '%';
     document.getElementById('condBar').style.width = condPct + '%';
-    document.getElementById('actosPorcentaje').textContent = Math.round(actosPct) + '%';
-    document.getElementById('condPorcentaje').textContent = Math.round(condPct) + '%';
-    document.getElementById('totalPorcentaje').textContent = Math.round(totalPct) + '%';
     
     // VCP
-    const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
-    document.getElementById('vcpCurrent').textContent = vcpData.length;
-    document.getElementById('vcpBar').style.width = vcpPct + '%';
-    document.getElementById('vcpPorcentaje').textContent = Math.round(vcpPct) + '%';
-    
-    // Personas en VCP
     const vcpPeople = {};
-    vcpData.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
+    vcp.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
+    const vcpHtml = Object.entries(vcpPeople).sort((a,b) => b[1] - a[1])
+        .map(([name, count]) => '<div style="display: flex; justify-content: space-between; padding: 8px; background: #fce7f3; border-radius: 8px; margin-bottom: 8px;"><span style="font-size: 12px; font-weight: 700;">' + name + '</span><span style="font-size: 12px; font-weight: 900; color: #ec4899;">' + count + ' VCP</span></div>').join('');
+    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8;">Sin VCP</p>';
     
-    const vcpListHtml = Object.entries(vcpPeople)
-        .sort((a,b) => b[1] - a[1])
-        .map(([name, count]) => `
-            <div style="display: flex; justify-content: space-between; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 8px;">
-                <span style="font-size: 12px; font-weight: 700; color: #475569;">${name}</span>
-                <span style="font-size: 12px; font-weight: 900; color: #ec4899; background: white; padding: 2px 10px; border-radius: 12px;">${count} VCP</span>
-            </div>
-        `).join('');
+    // Categorías
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    filtered.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    const total = filtered.length || 1;
     
-    document.getElementById('vcpPeopleList').innerHTML = vcpListHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px; font-size: 12px;">Sin reportes VCP</p>';
-    
-    updateCharts(filtered);
-    renderDetailTable(filtered);
-}
-
-function setSector(s, btn) {
-    state.sector = s;
-    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b=>{
-        b.style.background='white'; b.style.color='#475569'; b.style.border='2px solid #e2e8f0';
+    const catContainer = document.getElementById('categoryCards');
+    catContainer.innerHTML = '';
+    CATEGORIES.forEach(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val/total)*100);
+        const div = document.createElement('div');
+        div.className = 'category-card';
+        div.style.borderColor = c.color;
+        div.innerHTML = '<div style="font-size: 2rem;">' + c.icon + '</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">' + c.name + '</div><div style="font-size: 1.5rem; font-weight: 900; color: ' + c.color + ';">' + val + '</div><div style="font-size: 10px; color: #94a3b8;">' + pct + '%</div>';
+        catContainer.appendChild(div);
     });
-    if(btn) { btn.style.background='#2563eb'; btn.style.color='white'; btn.style.border='none'; }
-    applyFilters();
-}
-
-function setVCPStatus(s, btn) {
-    state.vcpStatus = s;
-    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b=>{
-        b.style.background='white'; b.style.color='#475569'; b.style.border='2px solid #e2e8f0';
-    });
-    if(btn) { btn.style.background='#ec4899'; btn.style.color='white'; btn.style.border='none'; }
-    applyFilters();
-}
-
-function updateCharts(data) {
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const labels = meses.map(m => m.substring(0,3));
     
-    const actosData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='acto').length);
-    const condData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='condicion').length);
+    // Gráfico
+    const meses = ['enero','febrero','marzo','abril'];
+    const actosData = meses.map(m => filtered.filter(e => e.mes === m && e.tipo === 'acto').length);
+    const condData = meses.map(m => filtered.filter(e => e.mes === m && e.tipo === 'condicion').length);
     
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
-            type: 'line', 
-             { 
-                labels: labels, 
+            type: 'line',
+            data: {
+                labels: meses,
                 datasets: [
-                    {label:'Actos',  actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4}, 
-                    {label:'Condiciones',  condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4}
-                ] 
+                    {label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)'},
+                    {label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5,5]}
+                ]
             },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } }, scales: { y: { beginAtZero: true } } }
+            options: { responsive: true, maintainAspectRatio: false }
         });
     } else {
         trendChart.data.datasets[0].data = actosData;
         trendChart.data.datasets[1].data = condData;
         trendChart.update();
     }
-}
-
-function renderDetailTable(data) {
+    
+    // Tabla
     const tbody = document.getElementById('detailTableBody');
     tbody.innerHTML = '';
-    
-    if(data.length === 0) {
-        document.getElementById('noDataMsg').style.display = 'block';
-        return;
-    }
-    document.getElementById('noDataMsg').style.display = 'none';
-    
-    data.slice(0, 50).forEach((e) => {
+    filtered.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
-        tr.onclick = () => openModal(e);
-        
-        tr.innerHTML = `
-            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; background: ${e.tipo==='acto'?'#dbeafe':e.tipo==='vcp'?'#fce7f3':'#ffedd5'}; color: ${e.tipo==='acto'?'#2563eb':e.tipo==='vcp'?'#ec4899':'#ea580c'};">${e.tipo.toUpperCase()}</span></td>
-            <td style="padding: 12px; font-weight: 600; text-transform: uppercase;">${e.sector}</td>
-            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
-            <td style="padding: 12px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${e.descripcion}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 12px; border-radius: 6px; font-size: 10px; font-weight: 900; text-transform: uppercase; background: ${e.cerrado?'#dcfce7':'#fee2e2'}; color: ${e.cerrado?'#16a34a':'#dc2626'};">${e.cerrado?'CERRADO':'ABIERTO'}</span></td>
-        `;
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+        tr.innerHTML = '<td style="padding: 12px; font-weight: 700;">' + e.dia + '/' + e.mes + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.tipo==='acto'?'#dbeafe':'#ffedd5') + '; color: ' + (e.tipo==='acto'?'#2563eb':'#ea580c') + ';">' + e.tipo.toUpperCase() + '</span></td><td style="padding: 12px; font-weight: 800;">' + e.observador + '</td><td style="padding: 12px;">' + e.descripcion + '</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ' + (e.cerrado?'#dcfce7':'#fee2e2') + '; color: ' + (e.cerrado?'#16a34a':'#dc2626') + ';">' + (e.cerrado?'CERRADO':'ABIERTO') + '</span></td>';
         tbody.appendChild(tr);
     });
 }
 
-function openModal(report) {
-    alert(`📋 Detalle del Reporte\n\n📅 Fecha: ${report.fecha}\n👤 Observador: ${report.observador}\n📝 Descripción: ${report.descripcion}\n🏭 Sector: ${report.sector}\n📋 Tipo: ${report.tipo.toUpperCase()}\n${report.cerrado?'✅ Estado: CERRADO':'⚠️ Estado: ABIERTO'}`);
+function setSector(s, btn) {
+    state.sector = s;
+    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => {
+        b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
+    });
+    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
+    applyFilters();
 }
 
-// RANKING PROTEGIDO
+function setStatus(s, btn) {
+    state.estado = s;
+    const buttons = document.querySelectorAll('#statusButtons .btn-filter');
+    buttons.forEach(b => {
+        b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0';
+    });
+    if(btn) { btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none'; }
+    applyFilters();
+}
+
 function showRanking() {
-    document.getElementById('passwordModal').classList.add('active');
-    document.getElementById('passwordInput').value = '';
+    document.getElementById('passwordModal').style.display = 'flex';
+    document.getElementById('passwordModal').classList.remove('hidden-section');
 }
 
 function closePasswordModal() {
-    document.getElementById('passwordModal').classList.remove('active');
+    document.getElementById('passwordModal').style.display = 'none';
+    document.getElementById('passwordModal').classList.add('hidden-section');
 }
 
 function checkPassword() {
-    const password = document.getElementById('passwordInput').value;
-    if(password === 'minerar2026') {
+    const pwd = document.getElementById('passwordInput').value;
+    if(pwd === 'minerar2026') {
         closePasswordModal();
-        document.getElementById('rankingLocked').classList.add('hidden-section');
         document.getElementById('rankingSection').classList.remove('hidden-section');
-        updateRanking();
+        const rank = {};
+        DB_ENTRIES.forEach(e => rank[e.observador] = (rank[e.observador]||0)+1);
+        const sorted = Object.entries(rank).sort((a,b) => b[1]-a[1]);
+        const container = document.getElementById('rankingList');
+        container.innerHTML = '';
+        sorted.slice(0, 5).forEach(([nombre, count], i) => {
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : '📍';
+            const div = document.createElement('div');
+            div.style.cssText = 'background: white; padding: 12px; border-radius: 8px; margin-bottom: 8px;';
+            div.innerHTML = '<span style="font-weight: 700;">' + medal + ' ' + nombre + '</span> - <span style="font-weight: 900; color: #3b82f6;">' + count + ' reportes</span>';
+            container.appendChild(div);
+        });
     } else {
-        alert('❌ Contraseña incorrecta');
+        alert('Contraseña incorrecta');
     }
-}
-
-function updateRanking() {
-    const rank = {};
-    DB_ENTRIES.forEach(e => rank[e.observador] = (rank[e.observador]||0)+1);
-    const sorted = Object.entries(rank).sort((a,b)=>b[1]-a[1]);
-    
-    const container = document.getElementById('rankingList');
-    container.innerHTML = '';
-    
-    sorted.slice(0, 9).forEach(([nombre, count], index) => {
-        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '📍';
-        const div = document.createElement('div');
-        div.style.cssText = 'background: #f8fafc; padding: 12px; border-radius: 8px;';
-        div.innerHTML = `<div style="font-weight: 700; color: #334155;">${medal} ${nombre}</div><div style="font-weight: 900; color: #3b82f6; font-size: 14px;">${count} reportes</div>`;
-        container.appendChild(div);
-    });
 }
 
 window.onload = loadData;
