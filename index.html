@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minerar 2026</title>
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -371,13 +374,49 @@ async function loadData() {
                 let mesIdx = parseInt(partes[1]) - 1;
                 if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
                 
-                const tipoRaw = cols[1] || '';
-                const desc = cols[6] || '';
-                const cerrado = (cols[23] || '').toLowerCase().includes('sí') || (cols[23] || '').toLowerCase().includes('si');
+                // --- CORRECCIÓN DE ESTRUCTURA (23/4/2026) ---
+                // 1. DETERMINAR TIPO (Acto vs Condición)
+                // Antes: Columna B (índice 1). Ahora: Columna U (índice 20)
+                let tipoRaw = cols[1] || ''; // Intentar leer Columna B
+                let tipo = '';
                 
-                const esActo = tipoRaw.toLowerCase().includes('acto inseguro');
-                const esCondicion = tipoRaw.toLowerCase().includes('condicion insegura');
-                const tipo = esActo ? 'acto' : (esCondicion ? 'condicion' : 'otro');
+                if (tipoRaw.toLowerCase().includes('acto')) {
+                    tipo = 'acto';
+                } else if (tipoRaw.toLowerCase().includes('condicion')) {
+                    tipo = 'condicion';
+                } else {
+                    // Si no encontró en B, buscar en U (Columna 20)
+                    tipoRaw = cols[20] || ''; 
+                    if (tipoRaw.toLowerCase().includes('acto') || tipoRaw.toLowerCase().includes('ai')) {
+                        tipo = 'acto';
+                    } else if (tipoRaw.toLowerCase().includes('condicion') || tipoRaw.toLowerCase().includes('ci')) {
+                        tipo = 'condicion';
+                    } else {
+                        tipo = 'otro'; // Si no se puede determinar
+                    }
+                }
+
+                // 2. DETERMINAR ESTADO (Cerrado vs Abierto)
+                // Antes: Columna I (índice 8). Ahora: Columna X (índice 23)
+                let cerradoRaw = cols[23] || ''; // Intentar leer Columna X (Nueva)
+                let cerrado = false;
+
+                if (cerradoRaw.toLowerCase().includes('sí') || cerradoRaw.toLowerCase().includes('si')) {
+                    cerrado = true;
+                } else if (cerradoRaw.toLowerCase().includes('no')) {
+                    cerrado = false;
+                } else {
+                    // Si la columna X está vacía, usar la lógica antigua (Columna I - Índice 8)
+                    let accionRaw = cols[8] || '';
+                    if (accionRaw.toLowerCase().includes('sí') || accionRaw.toLowerCase().includes('si')) {
+                        cerrado = true; // "Sí, la situación fue corregida..."
+                    } else if (accionRaw.toLowerCase().includes('no')) {
+                        cerrado = false; // "No, requería intervención..."
+                    }
+                }
+                // ---------------------------------------------
+
+                const desc = cols[6] || '';
                 
                 let cat = CATEGORIES[0];
                 let maxS = 0;
@@ -625,8 +664,8 @@ function updateCharts(data) {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
                     { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
@@ -647,9 +686,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
