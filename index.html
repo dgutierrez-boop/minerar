@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minerar 2026</title>
+    
+    <!-- FAVICON CON LOGO MINERAR -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'><path d='M10 60 L30 20 L50 60 Z' fill='%234B5563'/><path d='M40 60 L60 20 L80 60 Z' fill='%23F97316'/><text x='50' y='76' font-family='Arial' font-size='16' font-weight='bold' fill='%234B5563' text-anchor='middle'>minerar</text></svg>">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'><path d='M10 60 L30 20 L50 60 Z' fill='%234B5563'/><path d='M40 60 L60 20 L80 60 Z' fill='%23F97316'/></svg>">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -21,6 +26,9 @@
         @keyframes championPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
         @keyframes crownBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px) rotate(5deg); } }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; display: flex; align-items: center; gap: 8px; }
+        .category-card { transition: all 0.3s; cursor: pointer; }
+        .category-card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15); }
+        .category-card.active { border-width: 3px; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3); }
         .champion-row { animation: championPulse 2s infinite; cursor: pointer; }
         .champion-row:hover { background-color: rgba(251, 191, 36, 0.2) !important; }
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; opacity: 0; transition: opacity 0.3s ease; }
@@ -34,7 +42,12 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <svg width="60" height="50" viewBox="0 0 100 80"><path d="M10 60 L30 20 L50 60 Z" fill="#4B5563"/><path d="M40 60 L60 20 L80 60 Z" fill="#F97316"/><text x="50" y="76" font-family="Arial" font-size="16" font-weight="bold" fill="#4B5563" text-anchor="middle">minerar</text></svg>
+            <!-- LOGO MINERAR -->
+            <svg width="70" height="60" viewBox="0 0 100 80">
+                <path d="M10 60 L30 20 L50 60 Z" fill="#4B5563"/>
+                <path d="M40 60 L60 20 L80 60 Z" fill="#F97316"/>
+                <text x="50" y="76" font-family="Arial" font-size="16" font-weight="bold" fill="#4B5563" text-anchor="middle">minerar</text>
+            </svg>
             <div><h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1><p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p></div>
         </div>
         <div style="background: #f8fafc; padding: 10px 20px; border-radius: 8px; text-align: center;"><div style="font-size: 10px; font-weight: 800; color: #64748b;">REGISTROS</div><div id="totalRecords" style="font-size: 24px; font-weight: 900;">...</div><div id="lastUpdate" style="font-size: 9px; color: #16a34a;">--:--</div></div>
@@ -61,6 +74,11 @@
                         <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">⛏️ CANTERA</button>
                         <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">🔧 TALLER</button>
                     </div></div>
+                    
+                    <div id="activeCategoryFilter" style="margin-top: 12px; padding: 8px; background: #dbeafe; border-radius: 6px; display: none;">
+                        <p style="font-size: 10px; font-weight: 700; color: #1e40af; margin: 0;">📊 Filtrando por: <span id="filterCategoryName" style="font-weight: 900;"></span></p>
+                        <button onclick="clearCategoryFilter()" style="margin-top: 4px; font-size: 9px; background: #1e40af; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer;">Limpiar filtro</button>
+                    </div>
                 </div>
                 
                 <div id="championCard" class="champion-card" style="margin-top: 16px;">
@@ -73,7 +91,7 @@
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
                 <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px;">CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                    <h3 style="font-weight: 900; margin-bottom: 16px;">CLASIFICACIÓN POR CAUSA RAÍZ <span style="font-size: 10px; color: #94a3b8; font-weight: 400;">(click para filtrar)</span></h3>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px;"></div>
                     <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
@@ -173,7 +191,7 @@
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 let DB_ENTRIES = [];
 let trendChart, categoryChart;
-let state = { mes: 'todo', sector: 'general' };
+let state = { mes: 'todo', sector: 'general', categoria: 'todas' };
 let championName = '';
 
 const CATEGORIES = [
@@ -240,11 +258,13 @@ function parseCSVLine(line) {
 function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
+    const c = state.categoria;
     
     const filtered = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
-        return matchMes && matchSector;
+        const matchCategory = (c === 'todas' || (e.categoria && e.categoria.id === c));
+        return matchMes && matchSector && matchCategory;
     });
     
     const actos = filtered.filter(e=>e.tipo==='acto');
@@ -278,8 +298,34 @@ function applyFilters() {
 
 function setSector(s, btn) {
     state.sector = s;
-    document.querySelectorAll('.btn-filter').forEach(b=>{b.style.background='white'; b.style.color='#475569'; b.style.border='1px solid #e2e8f0';});
+    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b=>{b.style.background='white'; b.style.color='#475569'; b.style.border='1px solid #e2e8f0';});
     if(btn) { btn.style.background='#2563eb'; btn.style.color='white'; btn.style.border='none'; }
+    applyFilters();
+}
+
+function setCategoryFilter(categoryId) {
+    state.categoria = categoryId;
+    const cat = CATEGORIES.find(c => c.id === categoryId);
+    document.getElementById('filterCategoryName').textContent = cat ? cat.name : '';
+    document.getElementById('activeCategoryFilter').style.display = 'block';
+    
+    // Actualizar visualmente las tarjetas
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('active');
+        if(card.dataset.category === categoryId) {
+            card.classList.add('active');
+        }
+    });
+    
+    applyFilters();
+}
+
+function clearCategoryFilter() {
+    state.categoria = 'todas';
+    document.getElementById('activeCategoryFilter').style.display = 'none';
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('active');
+    });
     applyFilters();
 }
 
@@ -295,8 +341,11 @@ function updateCategoryCards(data) {
         const val = counts[c.id] || 0;
         const pct = Math.round((val/total)*100);
         const div = document.createElement('div');
-        div.className = 'glass-card';
+        div.className = 'glass-card category-card';
+        div.dataset.category = c.id;
+        if(state.categoria === c.id) div.classList.add('active');
         div.style.cssText = 'padding: 12px; text-align: center; border: 2px solid ' + c.color;
+        div.onclick = () => setCategoryFilter(c.id);
         div.innerHTML = '<div style="font-size: 1.5rem;">'+c.icon+'</div><div style="font-size: 10px; font-weight: 700; margin: 4px 0;">'+c.name+'</div><div style="font-size: 1.25rem; font-weight: 900; color: '+c.color+';">'+val+'</div><div style="font-size: 9px; color: #94a3b8;">'+pct+'%</div>';
         container.appendChild(div);
     });
@@ -328,7 +377,28 @@ function updateCharts(data) {
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
             data: { labels: CATEGORIES.map(c=>c.name), datasets: [{ data: [], backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 0 }] },
-            options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '60%', 
+                plugins: { 
+                    legend: { position: 'right' },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return context.label + ': ' + context.parsed + ' reportes';
+                            }
+                        }
+                    }
+                },
+                onClick: (e, elements) => {
+                    if(elements.length > 0) {
+                        const index = elements[0].index;
+                        const catId = CATEGORIES[index].id;
+                        setCategoryFilter(catId);
+                    }
+                }
+            }
         });
     }
     categoryChart.data.datasets[0].data = CATEGORIES.map(c => counts[c.id] || 0);
