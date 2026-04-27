@@ -310,6 +310,7 @@
 </div>
 
 <script>
+// URLs separadas
 const ACTOS_COND_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
 
@@ -355,6 +356,7 @@ function getBarColor(pct, baseColor) {
 
 async function loadData() {
     try {
+        // Cargar Actos y Condiciones
         const resActos = await fetch(ACTOS_COND_URL);
         const csvActos = await resActos.text();
         const linesActos = csvActos.split('\n').filter(l => l.trim());
@@ -369,37 +371,24 @@ async function loadData() {
                 let mesIdx = parseInt(partes[1]) - 1;
                 if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
                 
+                // Tipo
                 let tipoRaw = cols[1] || '';
                 const desc = cols[6] || '';
+                const tipo = tipoRaw.toLowerCase().includes('acto') ? 'acto' : (tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro');
                 
-                let tipo = '';
-                if (tipoRaw.toLowerCase().includes('acto')) {
-                    tipo = 'acto';
-                } else if (tipoRaw.toLowerCase().includes('condicion')) {
-                    tipo = 'condicion';
-                } else {
-                    tipoRaw = cols[20] || '';
-                    if (tipoRaw.toLowerCase().includes('acto') || tipoRaw.toLowerCase().includes('ai')) {
-                        tipo = 'acto';
-                    } else if (tipoRaw.toLowerCase().includes('condicion') || tipoRaw.toLowerCase().includes('ci')) {
-                        tipo = 'condicion';
-                    } else {
-                        tipo = 'otro';
-                    }
-                }
-
-                let cerradoRaw = cols[23] || '';
+                // CORRECCIÓN AQUÍ: Estado basado en Columna I (índice 8)
+                // Si dice "Sí", "corregida", etc. -> CERRADO
+                // Si dice "No", "intervención" -> ABIERTO
+                const accionRaw = cols[8] || ''; 
                 let cerrado = false;
-
-                if (cerradoRaw.toLowerCase().includes('sí') || cerradoRaw.toLowerCase().includes('si')) {
+                
+                if (accionRaw.toLowerCase().includes('sí') || accionRaw.toLowerCase().includes('si') || accionRaw.toLowerCase().includes('corregida')) {
                     cerrado = true;
-                } else if (cerradoRaw.toLowerCase().includes('no')) {
-                    cerrado = false;
+                } else if (accionRaw.toLowerCase().includes('no')) {
+                    cerrado = false; // Abierto
                 } else {
-                    let accionRaw = cols[8] || '';
-                    if (accionRaw.toLowerCase().includes('sí') || accionRaw.toLowerCase().includes('si')) {
-                        cerrado = true;
-                    }
+                    // Si está vacío, asumimos abierto por precaución o según tu lógica
+                    cerrado = false; 
                 }
                 
                 let cat = CATEGORIES[0];
@@ -420,6 +409,7 @@ async function loadData() {
             }
         }
         
+        // Cargar VCP
         const resVCP = await fetch(VCP_URL);
         const csvVCP = await resVCP.text();
         const linesVCP = csvVCP.split('\n').filter(l => l.trim());
@@ -648,8 +638,8 @@ function updateCharts(data) {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
                     { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
@@ -692,12 +682,19 @@ function renderDetailTable(data) {
         tr.onmouseover = () => tr.style.background = '#f8fafc';
         tr.onmouseout = () => tr.style.background = '';
         tr.onclick = () => openDetailModal(e);
+        
+        // Lógica visual de estado
+        const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
+        const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
+        const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
+        const statusIcon = e.cerrado ? '✅' : '⚠️';
+
         tr.innerHTML = `
             <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
             <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#fce7f3' : '#ffedd5'}; color: ${e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#ec4899' : '#ea580c'};">${e.tipo.toUpperCase()}</span></td>
             <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
             <td style="padding: 12px;">${e.descripcion}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${e.cerrado ? '#dcfce7' : '#fee2e2'}; color: ${e.cerrado ? '#16a34a' : '#dc2626'};">${e.cerrado ? 'CERRADO' : 'ABIERTO'}</span></td>
+            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${statusIcon} ${statusText}</span></td>
         `;
         tbody.appendChild(tr);
     });
@@ -706,7 +703,21 @@ function renderDetailTable(data) {
 function openDetailModal(report) {
     const modal = document.getElementById('detailModal');
     const content = document.getElementById('modalContent');
-    content.innerHTML = `<p><strong>📅 Fecha:</strong> ${report.fecha}</p><p><strong>👤 Observador:</strong> ${report.observador}</p><p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p><p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p><p><strong>📝 Descripción:</strong> ${report.descripcion}</p><p><strong>Estado:</strong> <span style="color: ${report.cerrado ? '#16a34a' : '#dc2626'}; font-weight: 900;">${report.cerrado ? '✅ CERRADO' : '⚠ ABIERTO'}</span></p>`;
+    
+    // Lógica visual en el modal
+    const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
+    const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
+
+    content.innerHTML = `
+        <p><strong>📅 Fecha:</strong> ${report.fecha}</p>
+        <p><strong>👤 Observador:</strong> ${report.observador}</p>
+        <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
+        <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
+        <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
+        <hr style="margin: 10px 0; border: 0; border-top: 1px solid #e2e8f0;">
+        <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900; font-size: 18px;">${statusText}</span></p>
+    `;
+    
     modal.classList.remove('hidden-section');
     modal.style.display = 'flex';
 }
