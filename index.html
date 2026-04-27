@@ -55,7 +55,6 @@
             </div>
         </div>
         
-        <!-- CONTADORES SEPARADOS: ACTOS/CONDICIONES vs VCP -->
         <div style="display: flex; gap: 12px;">
             <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
                 <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px;">Actos y Condiciones</div>
@@ -69,7 +68,6 @@
         </div>
     </div>
     
-    <!-- Tooltip explicativo -->
     <div style="position: absolute; top: 60px; right: 20px; background: white; padding: 8px 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 11px; z-index: 1000; border-left: 4px solid #ec4899;">
         <div style="font-weight: 800; margin-bottom: 4px; color: #1e293b;">📊 Leyenda:</div>
         <div style="display: flex; align-items: center; gap: 8px; margin: 2px 0;">
@@ -234,7 +232,6 @@
                     </div>
                     
                     <div class="glass-card kpi-pink" style="padding: 24px;">
-                        <!-- Banner VCP -->
                         <div style="background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); color: white; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
                             <span>🎯 Verificación de Controles Preventivos</span>
                             <span style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px;">Solo VCP</span>
@@ -313,7 +310,6 @@
 </div>
 
 <script>
-// URLs separadas para cada tipo de dato - ACTUALIZADAS
 const ACTOS_COND_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
 
@@ -359,7 +355,6 @@ function getBarColor(pct, baseColor) {
 
 async function loadData() {
     try {
-        // Cargar datos de Actos y Condiciones
         const resActos = await fetch(ACTOS_COND_URL);
         const csvActos = await resActos.text();
         const linesActos = csvActos.split('\n').filter(l => l.trim());
@@ -374,31 +369,26 @@ async function loadData() {
                 let mesIdx = parseInt(partes[1]) - 1;
                 if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
                 
-                // --- CORRECCIÓN DE ESTRUCTURA (23/4/2026) ---
-                // 1. DETERMINAR TIPO (Acto vs Condición)
-                // Antes: Columna B (índice 1). Ahora: Columna U (índice 20)
-                let tipoRaw = cols[1] || ''; // Intentar leer Columna B
-                let tipo = '';
+                let tipoRaw = cols[1] || '';
+                const desc = cols[6] || '';
                 
+                let tipo = '';
                 if (tipoRaw.toLowerCase().includes('acto')) {
                     tipo = 'acto';
                 } else if (tipoRaw.toLowerCase().includes('condicion')) {
                     tipo = 'condicion';
                 } else {
-                    // Si no encontró en B, buscar en U (Columna 20)
-                    tipoRaw = cols[20] || ''; 
+                    tipoRaw = cols[20] || '';
                     if (tipoRaw.toLowerCase().includes('acto') || tipoRaw.toLowerCase().includes('ai')) {
                         tipo = 'acto';
                     } else if (tipoRaw.toLowerCase().includes('condicion') || tipoRaw.toLowerCase().includes('ci')) {
                         tipo = 'condicion';
                     } else {
-                        tipo = 'otro'; // Si no se puede determinar
+                        tipo = 'otro';
                     }
                 }
 
-                // 2. DETERMINAR ESTADO (Cerrado vs Abierto)
-                // Antes: Columna I (índice 8). Ahora: Columna X (índice 23)
-                let cerradoRaw = cols[23] || ''; // Intentar leer Columna X (Nueva)
+                let cerradoRaw = cols[23] || '';
                 let cerrado = false;
 
                 if (cerradoRaw.toLowerCase().includes('sí') || cerradoRaw.toLowerCase().includes('si')) {
@@ -406,17 +396,11 @@ async function loadData() {
                 } else if (cerradoRaw.toLowerCase().includes('no')) {
                     cerrado = false;
                 } else {
-                    // Si la columna X está vacía, usar la lógica antigua (Columna I - Índice 8)
                     let accionRaw = cols[8] || '';
                     if (accionRaw.toLowerCase().includes('sí') || accionRaw.toLowerCase().includes('si')) {
-                        cerrado = true; // "Sí, la situación fue corregida..."
-                    } else if (accionRaw.toLowerCase().includes('no')) {
-                        cerrado = false; // "No, requería intervención..."
+                        cerrado = true;
                     }
                 }
-                // ---------------------------------------------
-
-                const desc = cols[6] || '';
                 
                 let cat = CATEGORIES[0];
                 let maxS = 0;
@@ -436,7 +420,6 @@ async function loadData() {
             }
         }
         
-        // Cargar datos de VCP
         const resVCP = await fetch(VCP_URL);
         const csvVCP = await resVCP.text();
         const linesVCP = csvVCP.split('\n').filter(l => l.trim());
@@ -464,7 +447,6 @@ async function loadData() {
             }
         }
         
-        // Actualizar contadores separados
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
         
@@ -540,7 +522,6 @@ function applyGeneralFilters() {
 function applyVCPFilters() {
     const m = state.vcpMes;
     const s = state.vcpSector;
-    const st = state.vcpEstado;
     
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
@@ -565,16 +546,19 @@ function setSector(s, btn) {
     updateButtons('sectorButtons', btn, '#2563eb');
     applyAllFilters();
 }
+
 function setStatus(s, btn) {
     state.estado = s;
     updateButtons('statusButtons', btn, '#2563eb');
     applyAllFilters();
 }
+
 function setVCPSector(s, btn) {
     state.vcpSector = s;
     updateButtons('vcpSectorButtons', btn, '#ec4899');
     applyVCPFilters();
 }
+
 function setVCPStatus(s, btn) {
     state.vcpEstado = s;
     updateButtons('vcpStatusButtons', btn, '#ec4899');
@@ -664,8 +648,8 @@ function updateCharts(data) {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
                     { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
@@ -686,9 +670,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
