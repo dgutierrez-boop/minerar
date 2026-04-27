@@ -43,15 +43,36 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <!-- KPIs -->
         <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS</div>
                 <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2;">0</div>
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                        <span>Progreso</span>
+                        <span>Obj: 66</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="actosBar" style="background: #0891b2; height: 100%; width: 0%;"></div>
+                    </div>
+                </div>
             </div>
+
             <div class="glass-card kpi-amber" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES</div>
                 <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706;">0</div>
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                        <span>Progreso</span>
+                        <span>Obj: 44</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="condBar" style="background: #d97706; height: 100%; width: 0%;"></div>
+                    </div>
+                </div>
             </div>
+
             <div class="glass-card kpi-blue" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
                 <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb;">0</div>
@@ -61,7 +82,7 @@
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
                 <div class="glass-card" style="padding: 20px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS</h3>
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS GENERALES</h3>
                     
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
@@ -100,41 +121,45 @@
                             <button onclick="setStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
                         </div>
                     </div>
+                </div>
+                
+                <!-- FILTROS EXCLUSIVOS VCP -->
+                <div class="glass-card" style="padding: 20px; margin-top: 16px; border: 2px solid #ec4899;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">🎯 FILTROS VCP</h3>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES VCP</label>
+                        <select id="vcpMonthFilter" onchange="applyVCPFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                            <option value="todo">📅 Todo 2026</option>
+                            <option value="enero">📅 Enero</option>
+                            <option value="febrero">📅 Febrero</option>
+                            <option value="marzo">📅 Marzo</option>
+                            <option value="abril">📅 Abril</option>
+                            <option value="mayo">📅 Mayo</option>
+                            <option value="junio">📅 Junio</option>
+                            <option value="julio">📅 Julio</option>
+                            <option value="agosto">📅 Agosto</option>
+                            <option value="septiembre">📅 Septiembre</option>
+                            <option value="octubre">📅 Octubre</option>
+                            <option value="noviembre">📅 Noviembre</option>
+                            <option value="diciembre">📅 Diciembre</option>
+                        </select>
+                    </div>
                     
                     <div>
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">🎯 FILTRO VCP</label>
-                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPStatus('todos', this)" class="btn-filter" style="background: #ec4899; color: white;">📊 TODOS</button>
-                            <button onclick="setVCPStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">✓ CERRADOS</button>
-                            <button onclick="setVCPStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO VCP</label>
+                        <div id="vcpSidebarButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setVCPFilter('todos', this)" class="btn-filter" style="background: #ec4899; color: white;">📊 TODOS</button>
+                            <button onclick="setVCPFilter('cerrados', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">✓ CERRADOS</button>
+                            <button onclick="setVCPFilter('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
                         </div>
                     </div>
                 </div>
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 OBJETIVOS MENSUALES (110)</h3>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                        <div style="background: #f0f9ff; padding: 20px; border-radius: 12px; border: 2px solid #3b82f6;">
-                            <div style="font-size: 14px; font-weight: 900; color: #1e40af; margin-bottom: 8px;">ACTOS</div>
-                            <div style="font-size: 24px; font-weight: 900; color: #3b82f6;" id="actosCurrent">0</div>
-                            <div style="font-size: 11px; color: #64748b; margin: 8px 0;">Objetivo: 66</div>
-                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
-                                <div id="actosBar" style="background: #3b82f6; height: 100%; width: 0%;"></div>
-                            </div>
-                        </div>
-                        <div style="background: #fffbeb; padding: 20px; border-radius: 12px; border: 2px solid #f59e0b;">
-                            <div style="font-size: 14px; font-weight: 900; color: #92400e; margin-bottom: 8px;">CONDICIONES</div>
-                            <div style="font-size: 24px; font-weight: 900; color: #f59e0b;" id="condCurrent">0</div>
-                            <div style="font-size: 11px; color: #64748b; margin: 8px 0;">Objetivo: 44</div>
-                            <div style="background: #e2e8f0; height: 12px; border-radius: 6px; overflow: hidden;">
-                                <div id="condBar" style="background: #f59e0b; height: 100%; width: 0%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 
+                <!-- CLASIFICACIÓN POR CAUSA RAÍZ -->
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
@@ -142,13 +167,17 @@
                 </div>
                 
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <!-- EVOLUCIÓN -->
                     <div class="glass-card" style="padding: 24px;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📈 EVOLUCIÓN</h3>
+                        <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📈 EVOLUCIÓN MENSUAL</h3>
                         <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
                     </div>
                     
+                    <!-- VCP - PERSONAS -->
                     <div class="glass-card" style="padding: 24px;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🎯 VCP - PERSONAS</h3>
+                        
+                        <!-- Objetivo VCP -->
                         <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO: 30 MENSUALES</span>
@@ -159,19 +188,20 @@
                             </div>
                         </div>
                         
-                        <!-- Gráfico de porcentaje por persona -->
-                        <div style="height: 200px; margin-bottom: 16px;">
+                        <!-- Gráfico de personas VCP -->
+                        <div style="height: 150px; margin-bottom: 10px;">
                             <canvas id="vcpPeopleChart"></canvas>
                         </div>
                         
                         <!-- Lista de personas -->
-                        <div id="vcpPeopleList" style="max-height: 150px; overflow-y: auto;"></div>
+                        <div id="vcpPeopleList" style="max-height: 100px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
                 </div>
                 
+                <!-- DETALLE + RANKING OCULTO -->
                 <div class="glass-card" style="padding: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                        <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE</h3>
+                        <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE DE REPORTES</h3>
                         <button onclick="showRanking()" style="background: none; border: none; font-size: 28px; cursor: pointer;">🔒</button>
                     </div>
                     
@@ -199,6 +229,7 @@
     </div>
 </div>
 
+<!-- MODAL CONTRASEÑA -->
 <div id="passwordModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 400px; width: 90%;">
         <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">🔐 Contraseña</h2>
@@ -210,6 +241,7 @@
     </div>
 </div>
 
+<!-- MODAL DETALLE -->
 <div id="detailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
         <h2 style="font-size: 20px; font-weight: 900; margin-bottom: 16px;">📋 Detalle del Reporte</h2>
@@ -228,7 +260,8 @@ let DB_ENTRIES = [];
 let trendChart = null;
 let categoryChart = null;
 let vcpPeopleChart = null;
-let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpStatus: 'todos' };
+let state = { mes: 'todo', sector: 'general', estado: 'todos' };
+let vcpState = { mes: 'todo', estado: 'todos' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -241,7 +274,6 @@ const CATEGORIES = [
 
 async function loadData() {
     try {
-        console.log('Cargando datos...');
         const res = await fetch(SHEET_URL);
         const csv = await res.text();
         const lines = csv.split('\n').filter(l => l.trim());
@@ -288,15 +320,16 @@ async function loadData() {
             }
         }
         
-        console.log('Datos cargados:', DB_ENTRIES.length);
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
         applyFilters();
+        applyVCPFilters();
     } catch (e) {
-        console.error('Error cargando datos:', e);
+        console.error('Error:', e);
         document.getElementById('totalRecords').textContent = 'Error';
     }
 }
 
+// FILTROS GENERALES (Actos/Condiciones)
 function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
@@ -308,12 +341,11 @@ function applyFilters() {
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchStatus;
+        return matchMes && matchSector && matchStatus && !e.isVCP; // Excluye VCP
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
     const cond = filtered.filter(e => e.tipo === 'condicion');
-    const vcp = filtered.filter(e => e.isVCP);
     
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('kpiCondiciones').textContent = cond.length;
@@ -322,17 +354,9 @@ function applyFilters() {
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
     const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
     
-    document.getElementById('actosCurrent').textContent = actos.length;
-    document.getElementById('condCurrent').textContent = cond.length;
     document.getElementById('actosBar').style.width = actosPct + '%';
     document.getElementById('condBar').style.width = condPct + '%';
     
-    const vcpPct = Math.min((vcp.length / OBJETIVO_VCP) * 100, 100);
-    document.getElementById('vcpCurrent').textContent = vcp.length;
-    document.getElementById('vcpBar').style.width = vcpPct + '%';
-    
-    updateVCPList();
-    updateVCPPeopleChart(vcp);
     updateCategoryCards(filtered);
     updateCharts(filtered);
     renderDetailTable(filtered);
@@ -366,9 +390,30 @@ function setStatus(s, btn) {
     applyFilters();
 }
 
-function setVCPStatus(s, btn) {
-    state.vcpStatus = s;
-    const buttons = document.getElementById('vcpStatusButtons').querySelectorAll('.btn-filter');
+// FILTROS EXCLUSIVOS VCP
+function applyVCPFilters() {
+    const m = document.getElementById('vcpMonthFilter').value;
+    const st = vcpState.estado;
+    
+    const vcpData = DB_ENTRIES.filter(e => {
+        const matchMes = (m === 'todo' || e.mes === m);
+        let matchStatus = true;
+        if (st === 'cerrados') matchStatus = e.cerrado === true;
+        else if (st === 'abiertos') matchStatus = e.cerrado === false;
+        return e.isVCP && matchMes && matchStatus;
+    });
+    
+    const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
+    document.getElementById('vcpCurrent').textContent = vcpData.length;
+    document.getElementById('vcpBar').style.width = vcpPct + '%';
+    
+    updateVCPList(vcpData);
+    updateVCPPeopleChart(vcpData);
+}
+
+function setVCPFilter(s, btn) {
+    vcpState.estado = s;
+    const buttons = document.getElementById('vcpSidebarButtons').querySelectorAll('.btn-filter');
     buttons.forEach(b => {
         b.style.background = 'white';
         b.style.color = '#475569';
@@ -377,42 +422,27 @@ function setVCPStatus(s, btn) {
     btn.style.background = '#ec4899';
     btn.style.color = 'white';
     btn.style.border = 'none';
-    applyFilters();
+    applyVCPFilters();
 }
 
-function updateVCPList() {
-    const vcpStatus = state.vcpStatus;
-    const monthFilter = document.getElementById('monthFilter').value;
-    
-    let vcpData = DB_ENTRIES.filter(e => e.isVCP);
-    
-    if (monthFilter !== 'todo') {
-        vcpData = vcpData.filter(v => v.mes === monthFilter);
-    }
-    
-    if (vcpStatus === 'cerrados') {
-        vcpData = vcpData.filter(v => v.cerrado === true);
-    } else if (vcpStatus === 'abiertos') {
-        vcpData = vcpData.filter(v => v.cerrado === false);
-    }
-    
+function updateVCPList(vcpData) {
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
     
     const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
-        .map(([name, count]) => '<div style="display: flex; justify-content: space-between; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 8px;"><span style="font-size: 12px; font-weight: 700;">' + name + '</span><span style="font-size: 12px; font-weight: 900; color: #ec4899;">' + count + ' VCP</span></div>').join('');
+        .map(([name, count]) => '<div style="display: flex; justify-content: space-between; padding: 8px; background: #fce7f3; border-radius: 6px; margin-bottom: 6px;"><span style="font-weight: 700;">' + name + '</span><span style="font-weight: 900; color: #ec4899;">' + count + ' VCP</span></div>').join('');
     
-    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
+    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 10px;">Sin VCP</p>';
 }
 
 function updateVCPPeopleChart(vcpData) {
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.observador] = (vcpPeople[v.observador] || 0) + 1; });
     
-    const sorted = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1]).slice(0, 6);
+    const sorted = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const labels = sorted.map(x => x[0]);
     const counts = sorted.map(x => x[1]);
-    const colors = ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3', '#fdf2f8'];
+    const colors = ['#ec4899', '#f472b6', '#f9a8d4', '#fbcfe8', '#fce7f3'];
     
     if (vcpPeopleChart) {
         vcpPeopleChart.data.labels = labels;
@@ -423,28 +453,18 @@ function updateVCPPeopleChart(vcpData) {
         const ctx = document.getElementById('vcpPeopleChart').getContext('2d');
         vcpPeopleChart = new Chart(ctx, {
             type: 'bar',
-            data: {
+             {
                 labels: labels,
                 datasets: [{
-                    label: 'VCP Reportados',
-                    data: counts,
+                     counts,
                     backgroundColor: colors.slice(0, labels.length),
-                    borderRadius: 6
+                    borderRadius: 4
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.y + ' VCP (' + Math.round((context.parsed.y / vcpData.length) * 100) + '%)';
-                            }
-                        }
-                    }
-                },
+                plugins: { legend: { display: false } },
                 scales: {
                     y: { beginAtZero: true, ticks: { stepSize: 1 } },
                     x: { ticks: { font: { size: 10 } } }
@@ -485,11 +505,11 @@ function updateCharts(data) {
         const ctx = document.getElementById('trendChart').getContext('2d');
         trendChart = new Chart(ctx, {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5] }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)' },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5] }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false }
@@ -508,9 +528,9 @@ function updateCharts(data) {
         const ctx = document.getElementById('categoryChart').getContext('2d');
         categoryChart = new Chart(ctx, {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
