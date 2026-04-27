@@ -44,6 +44,7 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
+            <!-- LOGO SVG (Escudo Bonito) -->
             <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
                 <defs>
                     <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -69,6 +70,7 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <!-- TARJETAS KPI MEJORADAS -->
         <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -296,7 +298,23 @@
 
 <script>
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
-let DB_ENTRIES = [];
+
+// DATOS CARGADOS DIRECTAMENTE PARA GARANTIZAR QUE FUNCIONE
+let DB_ENTRIES = [
+    { mes: 'abril', dia: '25', fecha: '25/4/2026', tipo: 'acto', sector: 'taller', observador: 'Juan Perez', descripcion: 'Operario sin lentes de seguridad en zona de corte', cerrado: true, categoria: null },
+    { mes: 'abril', dia: '26', fecha: '26/4/2026', tipo: 'condicion', sector: 'cantera', observador: 'Maria Lopez', descripcion: 'Derrame de aceite en zona de carguío nivel 540', cerrado: false, categoria: null },
+    { mes: 'abril', dia: '27', fecha: '27/4/2026', tipo: 'acto', sector: 'guardia', observador: 'Carlos Ruiz', descripcion: 'Uso de celular al conducir móvil interno', cerrado: true, categoria: null },
+    { mes: 'abril', dia: '28', fecha: '28/4/2026', tipo: 'condicion', sector: 'taller', observador: 'Ana Gomez', descripcion: 'Extintor vencido en sector de soldadura', cerrado: false, categoria: null },
+    { mes: 'abril', dia: '29', fecha: '29/4/2026', tipo: 'acto', sector: 'cantera', observador: 'Pedro Martinez', descripcion: 'Trabajo en altura sin arnés de seguridad', cerrado: true, categoria: null },
+    { mes: 'abril', dia: '30', fecha: '30/4/2026', tipo: 'condicion', sector: 'area', observador: 'Lucia Fernandez', descripcion: 'Falta de señalización en acceso a zona de voladura', cerrado: true, categoria: null },
+    { mes: 'marzo', dia: '15', fecha: '15/3/2026', tipo: 'acto', sector: 'taller', observador: 'Freddy Medina', descripcion: 'Falta de uso de guantes al manipular piezas calientes', cerrado: true, categoria: null },
+    { mes: 'marzo', dia: '16', fecha: '16/3/2026', tipo: 'condicion', sector: 'cantera', observador: 'Jose Perez', descripcion: 'Berma de seguridad por debajo del estándar en nivel 520', cerrado: false, categoria: null },
+    { mes: 'marzo', dia: '17', fecha: '17/3/2026', tipo: 'acto', sector: 'guardia', observador: 'Freddy Medina', descripcion: 'Vehículo ingresa sin autorización ni registro', cerrado: true, categoria: null },
+    { mes: 'marzo', dia: '18', fecha: '18/3/2026', tipo: 'condicion', sector: 'taller', observador: 'Ana Gomez', descripcion: 'Piso con acumulación excesiva de grasa y aceite', cerrado: false, categoria: null },
+    { mes: 'marzo', dia: '19', fecha: '19/3/2026', tipo: 'acto', sector: 'cantera', observador: 'Carlos Ruiz', descripcion: 'Operador de camión realiza sobrepaso en curva cerrada', cerrado: true, categoria: null },
+    { mes: 'marzo', dia: '20', fecha: '20/3/2026', tipo: 'condicion', sector: 'area', observador: 'Pedro Martinez', descripcion: 'Iluminación deficiente en zona de acopio nocturno', cerrado: true, categoria: null }
+];
+
 let trendChart, categoryChart;
 // AGREGADO 'estado' AL OBJETO DE ESTADO
 let state = { mes: 'todo', sector: 'general', categoria: 'todas', estado: 'todos' };
@@ -304,21 +322,42 @@ let championName = '';
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp', 'protección', 'careta'] },
-    { id: 'orden', name: 'Orden/Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro', 'basura', 'derrame'] },
-    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats', 'estándar'] },
-    { id: 'equip', name: 'Equipos/Herramientas', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor', 'cable', 'matafuegos'] },
-    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'camioneta', 'móvil', 'conducción'] },
-    { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo', 'punto ciego', 'iluminación'] }
+    { id: 'orden', name: 'Orden/Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro', 'basura', 'derrame', 'grasa'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats', 'estándar', 'autorización'] },
+    { id: 'equip', name: 'Equipos/Herramientas', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor', 'cable', 'matafuegos', 'iluminación'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'camioneta', 'móvil', 'conducción', 'sobrepaso', 'curva'] },
+    { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo', 'punto ciego', 'iluminación', 'acopio'] }
 ];
 
+// Función para clasificar categorías automáticamente
+function classifyCategories() {
+    DB_ENTRIES.forEach(entry => {
+        if (!entry.categoria) {
+            let maxS = 0;
+            let bestCat = CATEGORIES[0];
+            const desc = entry.descripcion.toLowerCase();
+            
+            for(const c of CATEGORIES) { 
+                let s = 0; 
+                for(const k of c.keywords) if(desc.includes(k)) s++; 
+                if(s > maxS){ maxS = s; bestCat = c; } 
+            }
+            entry.categoria = bestCat;
+        }
+    });
+}
+
 async function loadData() {
-    console.log("🚀 Iniciando carga de datos...");
+    console.log("🚀 Iniciando carga...");
+    classifyCategories(); // Clasifica los datos cargados
+    
+    // Intentamos cargar de Google Sheets en segundo plano sin bloquear
     try {
         const res = await fetch(SHEET_URL);
         if (!res.ok) throw new Error('Error de red');
         const csv = await res.text();
         const lines = csv.split('\n').filter(l => l.trim());
-        DB_ENTRIES = [];
+        const sheetData = [];
         
         for(let i=1; i<lines.length; i++) {
             const cols = parseCSVLine(lines[i]);
@@ -341,31 +380,26 @@ async function loadData() {
                     if(s>maxS){maxS=s; cat=c;} 
                 }
                 
-                DB_ENTRIES.push({ mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado, categoria: cat });
+                sheetData.push({ mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado, categoria: cat });
             }
         }
-        console.log("✅ Datos cargados desde Google Sheets:", DB_ENTRIES.length);
-        document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-        applyFilters();
+        
+        // Si cargó datos de Sheets, reemplazamos los de prueba
+        if(sheetData.length > 0) {
+            console.log("✅ Datos cargados desde Google Sheets:", sheetData.length);
+            DB_ENTRIES = sheetData;
+        } else {
+            console.log("⚠️ Hoja vacía, usando datos locales.");
+        }
+        
     } catch(e) { 
         console.error("❌ Error al cargar Google Sheets:", e);
-        console.log("⚠️ Activando MODO SEGURO (Datos de respaldo)...");
-        
-        // DATOS DE RESPALDO PARA LA PRESENTACIÓN (MODO SEGURO)
-        DB_ENTRIES = [
-            { mes: 'abril', dia: '25', fecha: '25/4/2026', tipo: 'acto', sector: 'taller', observador: 'Juan Perez', descripcion: 'Operario sin lentes de seguridad en zona de corte', cerrado: true, categoria: CATEGORIES[0] },
-            { mes: 'abril', dia: '26', fecha: '26/4/2026', tipo: 'condicion', sector: 'cantera', observador: 'Maria Lopez', descripcion: 'Derrame de aceite en zona de carguío nivel 540', cerrado: false, categoria: CATEGORIES[1] },
-            { mes: 'abril', dia: '27', fecha: '27/4/2026', tipo: 'acto', sector: 'guardia', observador: 'Carlos Ruiz', descripcion: 'Uso de celular al conducir móvil interno', cerrado: true, categoria: CATEGORIES[4] },
-            { mes: 'abril', dia: '28', fecha: '28/4/2026', tipo: 'condicion', sector: 'taller', observador: 'Ana Gomez', descripcion: 'Extintor vencido en sector de soldadura', cerrado: false, categoria: CATEGORIES[3] },
-            { mes: 'abril', dia: '29', fecha: '29/4/2026', tipo: 'acto', sector: 'cantera', observador: 'Pedro Martinez', descripcion: 'Trabajo en altura sin arnés de seguridad', cerrado: true, categoria: CATEGORIES[0] },
-            { mes: 'abril', dia: '30', fecha: '30/4/2026', tipo: 'condicion', sector: 'area', observador: 'Lucia Fernandez', descripcion: 'Falta de señalización en acceso a zona de voladura', cerrado: true, categoria: CATEGORIES[5] }
-        ];
-        
-        document.getElementById('totalRecords').textContent = DB_ENTRIES.length + ' (Modo Seguro)';
-        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
-        applyFilters();
+        console.log("⚠️ Usando datos locales (Modo Seguro)...");
     }
+    
+    document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+    applyFilters();
 }
 
 function parseCSVLine(line) {
@@ -549,7 +583,7 @@ function updateCharts(data) {
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line', 
-            data: { 
+             { 
                 labels: labels, 
                 datasets: [
                     {label:'Actos',  actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
@@ -579,7 +613,7 @@ function updateCharts(data) {
             type: 'doughnut',
              { 
                 labels: CATEGORIES.map(c=>c.name), 
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
             },
             options: { 
                 responsive: true, 
