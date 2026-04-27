@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 8px; }
-        .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease, box-shadow 0.2s ease; cursor: pointer; }
+        .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: transform 0.2s ease; cursor: pointer; }
         .glass-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
         .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .kpi-cyan { border-left: 5px solid #06b6d4; } .kpi-cyan .kpi-value { color: #0891b2; }
@@ -29,9 +29,9 @@
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
             <svg width="60" height="50" viewBox="0 0 100 80"><path d="M10 60 L30 20 L50 60 Z" fill="#4B5563"/><path d="M40 60 L60 20 L80 60 Z" fill="#F97316"/><text x="50" y="76" font-family="Arial" font-size="16" font-weight="bold" fill="#4B5563" text-anchor="middle">minerar</text></svg>
-            <div><h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">DASHBOARD SEGURIDAD MINERAR 2026</h1><p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p></div>
+            <div><h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1><p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p></div>
         </div>
-        <div style="background: #f8fafc; padding: 10px 20px; border-radius: 8px; text-align: center;"><div style="font-size: 10px; font-weight: 800; color: #64748b;">REGISTROS</div><div id="totalRecords" style="font-size: 24px; font-weight: 900;">...</div></div>
+        <div style="background: #f8fafc; padding: 10px 20px; border-radius: 8px; text-align: center;"><div style="font-size: 10px; font-weight: 800; color: #64748b;">REGISTROS</div><div id="totalRecords" style="font-size: 24px; font-weight: 900;">...</div><div id="lastUpdate" style="font-size: 9px; color: #16a34a;">--:--</div></div>
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
@@ -46,19 +46,41 @@
             <aside>
                 <div class="glass-card" style="padding: 20px;">
                     <h3 style="font-weight: 900; margin-bottom: 12px;">FILTROS</h3>
-                    <select id="monthFilter" onchange="applyFilters()" style="width: 100%; padding: 8px; margin-bottom: 12px; border-radius: 6px; border: 1px solid #e2e8f0;"><option value="todo">Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option></select>
+                    <div style="margin-bottom: 12px;"><label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">MES</label>
+                    <select id="monthFilter" onchange="applyFilters()" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option><option value="mayo">📅 Mayo</option><option value="junio">📅 Junio</option><option value="julio">📅 Julio</option><option value="agosto">📅 Agosto</option><option value="septiembre">📅 Septiembre</option><option value="octubre">📅 Octubre</option><option value="noviembre">📅 Noviembre</option><option value="diciembre">📅 Diciembre</option></select></div>
+                    
+                    <div style="margin-bottom: 12px;"><label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 4px;">SECTOR</label>
                     <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                        <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white; padding: 8px; border-radius: 6px; border: none;">GENERAL</button>
-                        <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">CANTERA</button>
-                        <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">TALLER</button>
-                    </div>
+                        <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white; padding: 8px; border-radius: 6px; border: none;">🏭 GENERAL</button>
+                        <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">⛏️ CANTERA</button>
+                        <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; padding: 8px; border-radius: 6px; border: 1px solid #e2e8f0;">🔧 TALLER</button>
+                    </div></div>
                 </div>
-                <div id="championCard" class="champion-card" style="margin-top: 16px;"><div style="font-size: 10px; font-weight: 800; background: #fbbf24; color: white; padding: 2px 8px; border-radius: 10px; display: inline-block;">CAMPEÓN</div><h3 id="leaderName" style="font-size: 1.5rem; font-weight: 900; margin: 8px 0;">--</h3><div style="font-size: 2rem; font-weight: 900; color: #b45309;"><span id="leaderCount">0</span> <span style="font-size: 12px;">REPORTES</span></div></div>
+                
+                <div id="championCard" class="champion-card" style="margin-top: 16px;">
+                    <div style="font-size: 10px; font-weight: 800; background: #fbbf24; color: white; padding: 2px 8px; border-radius: 10px; display: inline-block;">🏆 CAMPEÓN</div>
+                    <h3 id="leaderName" style="font-size: 1.5rem; font-weight: 900; margin: 8px 0; color: #0f172a;">--</h3>
+                    <p style="font-size: 11px; color: #475569; margin: 0 0 8px 0;">Liderazgo en Prevención</p>
+                    <div style="font-size: 2.5rem; font-weight: 900; color: #b45309;"><span id="leaderCount">0</span> <span style="font-size: 12px;">REPORTES</span></div>
+                </div>
             </aside>
-            <main>
-                <div class="glass-card" style="padding: 24px; margin-bottom: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px;">EVOLUCIÓN MENSUAL</h3>
-                    <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
+            
+            <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                <div class="glass-card" style="padding: 24px;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px;">CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 20px;"></div>
+                    <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="glass-card" style="padding: 24px;">
+                        <h3 style="font-weight: 900; margin-bottom: 16px;">EVOLUCIÓN MENSUAL</h3>
+                        <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
+                    </div>
+                    <div class="glass-card" style="padding: 24px;">
+                        <h3 style="font-weight: 900; margin-bottom: 16px;">RANKING INFORMANTES</h3>
+                        <div id="rankingList" style="display: flex; flex-direction: column; gap: 12px;"></div>
+                    </div>
                 </div>
             </main>
         </div>
@@ -68,57 +90,55 @@
 <script>
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 let DB_ENTRIES = [];
-let trendChart;
+let trendChart, categoryChart;
 let state = { mes: 'todo', sector: 'general' };
 
-// DATOS DE RESPALDO (Por si falla la conexión)
-const FALLBACK_DATA = [
-    {mes:'enero', dia:'6', fecha:'6/1/2026', tipo:'acto', sector:'guardia', observador:'Tizzani Darío', descripcion:'Proveedor externo usando celular', cerrado:true},
-    {mes:'enero', dia:'9', fecha:'9/1/2026', tipo:'condicion', sector:'equipo', observador:'Freddy Medina', descripcion:'Matafuegos atado con precintos', cerrado:true},
-    {mes:'enero', dia:'13', fecha:'13/1/2026', tipo:'acto', sector:'taller', observador:'Marzola M.', descripcion:'Trabajo en camión sin calzas', cerrado:true},
-    {mes:'febrero', dia:'3', fecha:'3/2/2026', tipo:'acto', sector:'cantera centro', observador:'Maximiliano Gargano', descripcion:'Operador sin lentes', cerrado:true},
-    {mes:'febrero', dia:'4', fecha:'4/2/2026', tipo:'acto', sector:'taller', observador:'José Manuel González', descripcion:'Falta de uso de EPP', cerrado:true},
-    {mes:'marzo', dia:'2', fecha:'2/3/2026', tipo:'condicion', sector:'cantera centro', observador:'José Perez', descripcion:'Cubierta en mal estado M444', cerrado:true},
-    {mes:'marzo', dia:'12', fecha:'12/3/2026', tipo:'condicion', sector:'cantera centro', observador:'Freddy Medina', descripcion:'Falta de bermas de seguridad', cerrado:true},
-    {mes:'abril', dia:'1', fecha:'1/4/2026', tipo:'acto', sector:'taller', observador:'José Manuel González', descripcion:'Derrame de fluidos', cerrado:true},
-    {mes:'abril', dia:'1', fecha:'1/4/2026', tipo:'condicion', sector:'cantera centro', observador:'Maximiliano Gargano', descripcion:'Sector 560 norte en malas condiciones', cerrado:true}
+const CATEGORIES = [
+    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp', 'protección', 'careta'] },
+    { id: 'orden', name: 'Orden/Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'barro', 'basura', 'derrame'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats', 'estándar'] },
+    { id: 'equip', name: 'Equipos/Herramientas', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'extintor', 'cable', 'matafuegos'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'camioneta', 'móvil', 'conducción'] },
+    { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo', 'punto ciego', 'iluminación'] }
 ];
 
 async function loadData() {
     try {
-        document.getElementById('totalRecords').textContent = 'Cargando...';
         const res = await fetch(SHEET_URL);
-        if (!res.ok) throw new Error('Network response was not ok');
         const csv = await res.text();
         const lines = csv.split('\n').filter(l => l.trim());
         DB_ENTRIES = [];
         
         for(let i=1; i<lines.length; i++) {
             const cols = parseCSVLine(lines[i]);
-            // Mapeo: 0:Timestamp, 1:Tipo, 2:Sector, 3:Fecha, 5:Observer, 6:Desc, 8:Status
             if(cols.length > 6 && cols[5]) {
                 const fecha = cols[3] || '';
                 const partes = fecha.split('/');
                 const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-                let mesIdx = parseInt(partes[1]) - 1; // Intentando DD/MM/YYYY
-                if(isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = parseInt(partes[0]) - 1; // Intentando MM/DD/YYYY
+                let mesIdx = parseInt(partes[1]) - 1;
+                if(isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
                 
                 const tipo = (cols[1]||'').toLowerCase().includes('acto') ? 'acto' : 'condicion';
                 const desc = cols[6] || '';
                 const cerrado = (cols[8]||'').toLowerCase().includes('sí') || (cols[8]||'').toLowerCase().includes('si');
                 
-                DB_ENTRIES.push({ mes: meses[mesIdx] || 'marzo', tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado });
+                let cat = CATEGORIES[0];
+                let maxS = 0;
+                for(const c of CATEGORIES) { 
+                    let s=0; 
+                    for(const k of c.keywords) if(desc.toLowerCase().includes(k)) s++; 
+                    if(s>maxS){maxS=s; cat=c;} 
+                }
+                
+                DB_ENTRIES.push({ mes: meses[mesIdx], tipo, sector: (cols[2]||'').toLowerCase(), observador: cols[5].trim(), descripcion: desc, cerrado, categoria: cat });
             }
         }
-        
-        if(DB_ENTRIES.length === 0) throw new Error('No data parsed');
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
+        document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
         applyFilters();
     } catch(e) { 
         console.error(e); 
-        document.getElementById('totalRecords').textContent = FALLBACK_DATA.length + ' (Modo Offline)';
-        DB_ENTRIES = FALLBACK_DATA;
-        applyFilters();
+        document.getElementById('totalRecords').textContent = 'Error'; 
     }
 }
 
@@ -146,11 +166,12 @@ function applyFilters() {
     
     const actos = filtered.filter(e=>e.tipo==='acto');
     const cond = filtered.filter(e=>e.tipo==='condicion');
+    const criticos = filtered.filter(e=>e.descripcion.toLowerCase().includes('alto'));
     
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('kpiCondiciones').textContent = cond.length;
     document.getElementById('kpiVCP').textContent = Math.round(filtered.length * 0.3);
-    document.getElementById('kpiCriticos').textContent = filtered.filter(e=>e.descripcion.toLowerCase().includes('alto')).length;
+    document.getElementById('kpiCriticos').textContent = criticos.length;
     
     const rank = {};
     filtered.forEach(e => rank[e.observador] = (rank[e.observador]||0)+1);
@@ -159,12 +180,11 @@ function applyFilters() {
     if(sorted.length) { 
         document.getElementById('leaderName').textContent = sorted[0][0]; 
         document.getElementById('leaderCount').textContent = sorted[0][1]; 
-    } else {
-        document.getElementById('leaderName').textContent = '--';
-        document.getElementById('leaderCount').textContent = '0';
     }
     
-    updateChart(filtered);
+    updateCategoryCards(filtered);
+    updateCharts(filtered);
+    updateRanking(sorted);
 }
 
 function setSector(s, btn) {
@@ -174,18 +194,86 @@ function setSector(s, btn) {
     applyFilters();
 }
 
-function updateChart(data) {
-    const meses = ['enero','febrero','marzo','abril'];
+function updateCategoryCards(data) {
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    const total = data.length || 1;
+    
+    const container = document.getElementById('categoryCards');
+    container.innerHTML = '';
+    CATEGORIES.forEach(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val/total)*100);
+        const div = document.createElement('div');
+        div.className = 'glass-card';
+        div.style.cssText = 'padding: 12px; text-align: center; border: 2px solid ' + c.color;
+        div.innerHTML = '<div style="font-size: 1.5rem;">'+c.icon+'</div><div style="font-size: 10px; font-weight: 700; margin: 4px 0;">'+c.name+'</div><div style="font-size: 1.25rem; font-weight: 900; color: '+c.color+';">'+val+'</div><div style="font-size: 9px; color: #94a3b8;">'+pct+'%</div>';
+        container.appendChild(div);
+    });
+}
+
+function updateCharts(data) {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const labels = meses.map(m => m.substring(0,3));
+    
+    const actosData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='acto').length);
+    const condData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='condicion').length);
+    
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line', 
-             { labels: meses, datasets: [{label:'Actos', [], borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)'}, {label:'Condiciones', [], borderColor:'#f97316', borderDash:[5,5]}] },
-            options: { responsive: true, maintainAspectRatio: false }
+            data: { 
+                labels: labels, 
+                datasets: [
+                    {label:'Actos', data: [], borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4}, 
+                    {label:'Condiciones', data: [], borderColor:'#f97316', borderDash:[5,5], tension: 0.4}
+                ] 
+            },
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
         });
     }
-    trendChart.data.datasets[0].data = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='acto').length);
-    trendChart.data.datasets[1].data = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='condicion').length);
+    trendChart.data.datasets[0].data = actosData;
+    trendChart.data.datasets[1].data = condData;
     trendChart.update();
+
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    
+    if(!categoryChart) {
+        categoryChart = new Chart(document.getElementById('categoryChart'), {
+            type: 'doughnut',
+            data: { 
+                labels: CATEGORIES.map(c=>c.name), 
+                datasets: [{ data: [], backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 0 }] 
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
+        });
+    }
+    categoryChart.data.datasets[0].data = CATEGORIES.map(c => counts[c.id] || 0);
+    categoryChart.update();
+}
+
+function updateRanking(sorted) {
+    const container = document.getElementById('rankingList');
+    container.innerHTML = '';
+    
+    if (sorted.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin datos</p>';
+        return;
+    }
+    
+    const maxReports = sorted[0][1];
+    sorted.slice(0, 5).forEach(([nombre, count], index) => {
+        const percentage = (count / maxReports) * 100;
+        const medal = index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : '#'+(index+1);
+        const bgColor = index === 0 ? 'bg-amber-500' : 'bg-blue-500';
+        
+        const div = document.createElement('div');
+        div.innerHTML = '<div style="margin-bottom: 12px;"><div style="display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; margin-bottom: 6px;"><span style="color: '+ (index===0 ? '#d97706' : '#475569') +'">'+medal+' '+nombre+'</span><span style="color: '+ (index===0 ? '#d97706' : '#64748b') +'">'+count+' reportes</span></div><div style="width: 100%; background: #e2e8f0; height: 8px; border-radius: 99px; overflow: hidden;"><div class="'+bgColor+'" style="height: 100%; width: '+percentage+'%; border-radius: 99px; transition: width 0.5s;"></div></div></div>';
+        container.appendChild(div);
+    });
 }
 
 window.onload = loadData;
