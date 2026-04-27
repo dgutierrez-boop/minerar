@@ -61,7 +61,6 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <!-- OBJETIVOS MENSUALES - TÍTULO DE LAS 3 TARJETAS -->
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase; margin: 0;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
             <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
@@ -118,7 +117,7 @@
                     
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
-                        <select id="monthFilter" onchange="applyAllFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                        <select id="monthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">📅 Enero</option>
                             <option value="febrero">📅 Febrero</option>
@@ -160,7 +159,7 @@
                     
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES VCP</label>
-                        <select id="vcpMonthFilter" onchange="applyAllFilters()" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
+                        <select id="vcpMonthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">📅 Enero</option>
                             <option value="febrero">📅 Febrero</option>
@@ -368,11 +367,29 @@ async function loadData() {
         }
         
         document.getElementById('totalRecords').textContent = DB_ENTRIES.length;
+        
+        // Setup event listeners
+        setupEventListeners();
+        
         applyAllFilters();
     } catch (e) {
         console.error('Error:', e);
         document.getElementById('totalRecords').textContent = 'Error';
     }
+}
+
+function setupEventListeners() {
+    // General filters
+    document.getElementById('monthFilter').addEventListener('change', (e) => {
+        state.mes = e.target.value;
+        applyAllFilters();
+    });
+    
+    // VCP filters
+    document.getElementById('vcpMonthFilter').addEventListener('change', (e) => {
+        state.vcpMes = e.target.value;
+        applyVCPFilters();
+    });
 }
 
 function applyAllFilters() {
@@ -430,12 +447,15 @@ function applyVCPFilters() {
     const st = state.vcpEstado;
     
     const vcpData = DB_ENTRIES.filter(e => {
+        if (!e.isVCP) return false;
+        
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        return e.isVCP && matchMes && matchSector && matchStatus;
+        
+        return matchMes && matchSector && matchStatus;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -455,30 +475,24 @@ function setSector(s, btn) {
     updateButtons('sectorButtons', btn, '#2563eb');
     applyAllFilters();
 }
+
 function setStatus(s, btn) {
     state.estado = s;
     updateButtons('statusButtons', btn, '#2563eb');
     applyAllFilters();
 }
+
 function setVCPSector(s, btn) {
     state.vcpSector = s;
     updateButtons('vcpSectorButtons', btn, '#ec4899');
-    applyAllFilters();
+    applyVCPFilters();
 }
+
 function setVCPStatus(s, btn) {
     state.vcpEstado = s;
     updateButtons('vcpStatusButtons', btn, '#ec4899');
-    applyAllFilters();
+    applyVCPFilters();
 }
-
-document.getElementById('monthFilter').addEventListener('change', (e) => {
-    state.mes = e.target.value;
-    applyAllFilters();
-});
-document.getElementById('vcpMonthFilter').addEventListener('change', (e) => {
-    state.vcpMes = e.target.value;
-    applyAllFilters();
-});
 
 function updateButtons(containerId, activeBtn, activeColor) {
     const container = document.getElementById(containerId);
