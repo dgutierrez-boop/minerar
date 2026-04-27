@@ -9,7 +9,8 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="manifest" href="/site.webmanifest">
+    <!-- Manifest comentado para evitar errores 404 -->
+    <!-- <link rel="manifest" href="/site.webmanifest"> -->
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -44,7 +45,6 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <!-- LOGO SVG (Escudo Bonito) -->
             <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
                 <defs>
                     <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -70,7 +70,6 @@
     </div>
     
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <!-- TARJETAS KPI MEJORADAS -->
         <section style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
@@ -172,7 +171,6 @@
                         </div>
                     </div>
 
-                    <!-- NUEVO SECCIÓN DE ESTADO -->
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">Estado</label>
                         <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
@@ -316,7 +314,6 @@ let DB_ENTRIES = [
 ];
 
 let trendChart, categoryChart;
-// AGREGADO 'estado' AL OBJETO DE ESTADO
 let state = { mes: 'todo', sector: 'general', categoria: 'todas', estado: 'todos' };
 let championName = '';
 
@@ -329,7 +326,6 @@ const CATEGORIES = [
     { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo', 'punto ciego', 'iluminación', 'acopio'] }
 ];
 
-// Función para clasificar categorías automáticamente
 function classifyCategories() {
     DB_ENTRIES.forEach(entry => {
         if (!entry.categoria) {
@@ -349,9 +345,8 @@ function classifyCategories() {
 
 async function loadData() {
     console.log("🚀 Iniciando carga...");
-    classifyCategories(); // Clasifica los datos cargados
+    classifyCategories();
     
-    // Intentamos cargar de Google Sheets en segundo plano sin bloquear
     try {
         const res = await fetch(SHEET_URL);
         if (!res.ok) throw new Error('Error de red');
@@ -384,12 +379,9 @@ async function loadData() {
             }
         }
         
-        // Si cargó datos de Sheets, reemplazamos los de prueba
         if(sheetData.length > 0) {
             console.log("✅ Datos cargados desde Google Sheets:", sheetData.length);
             DB_ENTRIES = sheetData;
-        } else {
-            console.log("⚠️ Hoja vacía, usando datos locales.");
         }
         
     } catch(e) { 
@@ -418,14 +410,13 @@ function applyFilters() {
     const m = document.getElementById('monthFilter').value;
     const s = state.sector;
     const c = state.categoria;
-    const st = state.estado; // Obtener estado actual
+    const st = state.estado;
     
     const filtered = DB_ENTRIES.filter(e => {
         const matchMes = (m === 'todo' || e.mes === m);
         const matchSector = (s === 'general' || e.sector.includes(s));
         const matchCategory = (c === 'todas' || (e.categoria && e.categoria.id === c));
         
-        // NUEVO FILTRO POR ESTADO
         let matchStatus = true;
         if (st === 'cerrados') matchStatus = e.cerrado === true;
         else if (st === 'abiertos') matchStatus = e.cerrado === false;
@@ -437,7 +428,6 @@ function applyFilters() {
     const cond = filtered.filter(e=>e.tipo==='condicion');
     const criticos = filtered.filter(e=>e.descripcion.toLowerCase().includes('alto'));
     
-    // Calcular cerrados y abiertos
     const actosCerrados = actos.filter(a=>a.cerrado).length;
     const actosAbiertos = actos.filter(a=>!a.cerrado).length;
     const condCerrados = cond.filter(c=>c.cerrado).length;
@@ -445,7 +435,6 @@ function applyFilters() {
     const critCerrados = criticos.filter(c=>c.cerrado).length;
     const critAbiertos = criticos.filter(c=>!c.cerrado).length;
     
-    // Actualizar KPIs
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('actosCerrados').textContent = actosCerrados;
     document.getElementById('actosAbiertos').textContent = actosAbiertos;
@@ -495,7 +484,6 @@ function setSector(s, btn) {
     applyFilters();
 }
 
-// NUEVA FUNCIÓN PARA FILTRAR POR ESTADO
 function setStatus(s, btn) {
     state.estado = s;
     document.querySelectorAll('#statusButtons .btn-filter').forEach(b=>{
@@ -579,15 +567,15 @@ function updateCharts(data) {
     const actosData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='acto').length);
     const condData = meses.map(m=>data.filter(e=>e.mes===m && e.tipo==='condicion').length);
     
-    // CORRECCIÓN DE SINTAXIS AQUÍ
+    // CORREGIDO: Agregué "data:" antes del objeto
     if(!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart'), {
             type: 'line', 
-             { 
+            data: { 
                 labels: labels, 
                 datasets: [
-                    {label:'Actos',  actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
-                    {label:'Condiciones',  condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
+                    {label:'Actos', data: actosData, borderColor:'#2563eb', fill:true, backgroundColor:'rgba(37,99,235,0.1)', tension: 0.4, borderWidth: 3}, 
+                    {label:'Condiciones', data: condData, borderColor:'#f97316', borderDash:[5,5], tension: 0.4, borderWidth: 3}
                 ] 
             },
             options: { 
@@ -607,13 +595,13 @@ function updateCharts(data) {
     CATEGORIES.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if(e.categoria) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
     
-    // CORRECCIÓN DE SINTAXIS AQUÍ
+    // CORREGIDO: Agregué "data:" antes del objeto
     if(!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart'), {
             type: 'doughnut',
-             { 
+            data: { 
                 labels: CATEGORIES.map(c=>c.name), 
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c=>c.color), borderWidth: 3, borderColor: '#fff' }] 
             },
             options: { 
                 responsive: true, 
