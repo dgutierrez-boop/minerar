@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard Minerar 2026</title>
     
-    <!-- FAVICON -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 80'><path d='M10 60 L30 20 L50 60 Z' fill='%234B5563'/><path d='M40 60 L60 20 L80 60 Z' fill='%23F97316'/></svg>">
+    <!-- FAVICON CON ESCUDO AZUL -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z' fill='%233B82F6'/><path d='M50 15 L80 30 L80 62 L50 85 L20 62 L20 30 Z' fill='%2360A5FA'/></svg>">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -31,7 +31,7 @@
         .champion-row { animation: championPulse 2s infinite; cursor: pointer; }
         .champion-row:hover { background-color: rgba(251, 191, 36, 0.2) !important; }
         
-        /* MODAL CON EFECTO REBOTE */
+        /* MODAL CON EFECTO REBOTE REAL */
         .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 9999; }
         .modal-overlay.active { display: flex; }
         .modal-content { 
@@ -41,10 +41,10 @@
             border-radius: 24px; 
             padding: 0; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); 
-            animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
+            animation: bounceIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); 
             overflow: hidden; 
         }
-        @keyframes modalBounce { 
+        @keyframes bounceIn { 
             0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 
             50% { transform: scale(1.05) translateY(10px); }
             70% { transform: scale(0.98) translateY(-5px); }
@@ -57,8 +57,11 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
         <div style="display: flex; align-items: center; gap: 16px;">
-            <!-- LOGO MINERAR -->
-            <div style="width: 70px; height: 60px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 32px;">🏔️</div>
+            <!-- ESCUDO AZUL - SVG -->
+            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
+                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="#3B82F6"/>
+                <path d="M50 15 L80 30 L80 62 L50 85 L20 62 L20 30 Z" fill="#60A5FA"/>
+            </svg>
             <div>
                 <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0; color: #1e293b;">PANEL SEGURIDAD MINERA 2026</h1>
                 <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
@@ -430,8 +433,8 @@ function setSector(s, btn) {
     applyFilters();
 }
 
+// SIN ALERT - SOLO ACTUALIZAR VISUALMENTE
 function setCategoryFilter(categoryId) {
-    console.log('Filtrando por categoría:', categoryId);
     state.categoria = categoryId;
     const cat = CATEGORIES.find(c => c.id === categoryId);
     
@@ -446,7 +449,6 @@ function setCategoryFilter(categoryId) {
     });
     
     applyFilters();
-    alert('📊 Filtrando por: ' + (cat ? cat.name : 'Todas'));
 }
 
 function clearCategoryFilter() {
