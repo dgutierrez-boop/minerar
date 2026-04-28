@@ -33,6 +33,25 @@
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
+        /* Scrollbar personalizada para tablas */
+        .table-scroll {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .table-scroll::-webkit-scrollbar {
+            width: 8px;
+        }
+        .table-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        .table-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -164,9 +183,9 @@
                 
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
-                    <div style="overflow-x: auto;">
+                    <div class="table-scroll" style="overflow-x: auto;">
                         <table class="w-full text-left">
-                            <thead>
+                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 12px;">Fecha</th>
                                     <th style="padding: 12px;">Tipo</th>
@@ -240,21 +259,27 @@
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
 
+                    <!-- NUEVO GRÁFICO VCP -->
                     <div class="glass-card" style="padding: 24px; border: 2px solid #ec4899;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
-                        <div style="overflow-x: auto; max-height: 300px;">
-                            <table class="w-full text-left">
-                                <thead>
-                                    <tr style="border-bottom: 2px solid #e2e8f0;">
-                                        <th style="padding: 12px;">Fecha</th>
-                                        <th style="padding: 12px;">Observador</th>
-                                        <th style="padding: 12px;">Sector</th>
-                                        <th style="padding: 12px;">Estado</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="vcpTableBody"></tbody>
-                            </table>
-                        </div>
+                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP</h3>
+                        <div style="height: 250px;"><canvas id="vcpChart"></canvas></div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 24px; border: 2px solid #ec4899;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
+                    <div class="table-scroll" style="overflow-x: auto;">
+                        <table class="w-full text-left">
+                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
+                                <tr style="border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th style="padding: 12px;">Observador</th>
+                                    <th style="padding: 12px;">Sector</th>
+                                    <th style="padding: 12px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vcpTableBody"></tbody>
+                        </table>
                     </div>
                 </div>
             </main>
@@ -302,6 +327,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
+let vcpChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general' };
 
 const CATEGORIES = [
@@ -467,6 +493,9 @@ function applyVCPFilters() {
     
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
     
+    // Actualizar gráfico VCP
+    updateVCPChart(vcpData, vcpPeople);
+    
     // Tabla VCP interactiva
     renderVCPTable(vcpData);
 }
@@ -516,7 +545,6 @@ function updateCategoryCards(data) {
     });
 }
 
-// ✅ CORREGIDO: Agregué 'data:' donde faltaba
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
@@ -526,7 +554,7 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
                     { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
@@ -548,15 +576,43 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
     } else {
         categoryChart.data.datasets[0].data = CATEGORIES.map(c => counts[c.id] || 0);
         categoryChart.update();
+    }
+}
+
+function updateVCPChart(vcpData, vcpPeople) {
+    const labels = Object.keys(vcpPeople);
+    const data = Object.values(vcpPeople);
+    const colors = ['#ec4899', '#f472b6', '#fb7185', '#fda4af', '#fbcfe8', '#fce7f3'];
+    
+    if (!vcpChart) {
+        vcpChart = new Chart(document.getElementById('vcpChart').getContext('2d'), {
+            type: 'doughnut',
+             {
+                labels: labels,
+                datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                cutout: '60%', 
+                plugins: { 
+                    legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } } 
+                } 
+            }
+        });
+    } else {
+        vcpChart.data.labels = labels;
+        vcpChart.data.datasets[0].data = data;
+        vcpChart.update();
     }
 }
 
