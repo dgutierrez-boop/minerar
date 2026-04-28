@@ -29,29 +29,23 @@
         .status-low { background: #fee2e2; color: #dc2626; }
         .person-item { cursor: pointer; transition: all 0.2s; }
         .person-item:hover { transform: translateX(5px); background: #fce7f3; }
-        @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
-        .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
-        tr { cursor: pointer; transition: background 0.2s; }
-        tr:hover { background-color: #f1f5f9; }
-        /* Scrollbar personalizada para tablas */
+        
+        /* Scrollbars y tablas */
         .table-scroll {
             max-height: 300px;
             overflow-y: auto;
+            overflow-x: auto;
         }
-        .table-scroll::-webkit-scrollbar {
-            width: 8px;
-        }
-        .table-scroll::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 4px;
-        }
-        .table-scroll::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 4px;
-        }
-        .table-scroll::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
+        .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        table thead th { position: sticky; top: 0; background: white; z-index: 10; }
+        tr { cursor: pointer; transition: background 0.2s; }
+        tr:hover { background-color: #f1f5f9; }
+        
+        @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -183,9 +177,9 @@
                 
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
-                    <div class="table-scroll" style="overflow-x: auto;">
+                    <div class="table-scroll">
                         <table class="w-full text-left">
-                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
+                            <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 12px;">Fecha</th>
                                     <th style="padding: 12px;">Tipo</th>
@@ -259,18 +253,18 @@
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
 
-                    <!-- NUEVO GRÁFICO VCP -->
+                    <!-- GRÁFICO VCP -->
                     <div class="glass-card" style="padding: 24px; border: 2px solid #ec4899;">
-                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP</h3>
+                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP POR PERSONA</h3>
                         <div style="height: 250px;"><canvas id="vcpChart"></canvas></div>
                     </div>
                 </div>
 
                 <div class="glass-card" style="padding: 24px; border: 2px solid #ec4899;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
-                    <div class="table-scroll" style="overflow-x: auto;">
+                    <div class="table-scroll">
                         <table class="w-full text-left">
-                            <thead style="position: sticky; top: 0; background: white; z-index: 10;">
+                            <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
                                     <th style="padding: 12px;">Fecha</th>
                                     <th style="padding: 12px;">Observador</th>
@@ -287,7 +281,7 @@
     </div>
 </div>
 
-<!-- MODAL VCP PERSONA -->
+<!-- MODALES -->
 <div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -303,7 +297,6 @@
     </div>
 </div>
 
-<!-- MODAL ACTOS/CONDICIONES -->
 <div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -598,7 +591,7 @@ function updateVCPChart(vcpData, vcpPeople) {
             type: 'doughnut',
              {
                 labels: labels,
-                datasets: [{ data: data, backgroundColor: colors, borderWidth: 0 }]
+                datasets: [{  data, backgroundColor: colors, borderWidth: 0 }]
             },
             options: { 
                 responsive: true, 
