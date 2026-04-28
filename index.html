@@ -31,11 +31,7 @@
         .person-item:hover { transform: translateX(5px); background: #fce7f3; }
         
         /* Scrollbars y tablas */
-        .table-scroll {
-            max-height: 300px;
-            overflow-y: auto;
-            overflow-x: auto;
-        }
+        .table-scroll { max-height: 300px; overflow-y: auto; overflow-x: auto; }
         .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
         .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
         .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
@@ -547,7 +543,7 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
                     { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
@@ -569,9 +565,13 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{
+                    data: CATEGORIES.map(c => counts[c.id] || 0),
+                    backgroundColor: CATEGORIES.map(c => c.color),
+                    borderWidth: 0
+                }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
@@ -583,15 +583,19 @@ function updateCharts(data) {
 
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
-    const data = Object.values(vcpPeople);
+    const vcpValues = Object.values(vcpPeople);
     const colors = ['#ec4899', '#f472b6', '#fb7185', '#fda4af', '#fbcfe8', '#fce7f3'];
     
     if (!vcpChart) {
         vcpChart = new Chart(document.getElementById('vcpChart').getContext('2d'), {
             type: 'doughnut',
-             {
+            data: {
                 labels: labels,
-                datasets: [{  data, backgroundColor: colors, borderWidth: 0 }]
+                datasets: [{
+                    data: vcpValues,
+                    backgroundColor: colors,
+                    borderWidth: 0
+                }]
             },
             options: { 
                 responsive: true, 
@@ -604,7 +608,7 @@ function updateVCPChart(vcpData, vcpPeople) {
         });
     } else {
         vcpChart.data.labels = labels;
-        vcpChart.data.datasets[0].data = data;
+        vcpChart.data.datasets[0].data = vcpValues;
         vcpChart.update();
     }
 }
