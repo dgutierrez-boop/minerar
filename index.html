@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - FINAL COMPLETO</title>
+    <title>Dashboard Minerar 2026 - INTERACTIVO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +27,11 @@
         .status-ok { background: #dcfce7; color: #16a34a; }
         .status-warn { background: #fef3c7; color: #d97706; }
         .status-low { background: #fee2e2; color: #dc2626; }
+        .person-item { cursor: pointer; transition: all 0.2s; }
+        .person-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
+        .person-item.selected { background: #fce7f3; border-left: 4px solid #ec4899; }
+        @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -178,6 +183,10 @@
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                     <div class="glass-card" style="padding: 24px;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📈 EVOLUCIÓN MENSUAL</h3>
+                        <div id="chartPersonLabel" style="font-size: 11px; color: #ec4899; font-weight: 700; margin-bottom: 8px; display: none;">
+                            👤 Filtrando por: <span id="chartPersonName"></span>
+                            <button onclick="clearPersonFilter()" style="margin-left: 8px; padding: 2px 8px; background: #ec4899; color: white; border: none; border-radius: 12px; font-size: 10px; cursor: pointer;">✕ Limpiar</button>
+                        </div>
                         <div style="height: 250px;"><canvas id="trendChart"></canvas></div>
                     </div>
                     
@@ -232,6 +241,22 @@
     </div>
 </div>
 
+<!-- MODAL PERSONA VCP -->
+<div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 900; color: #ec4899;">👤 Detalle de VCP</h2>
+            <button onclick="closePersonVCPModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+        </div>
+        <div id="personVCPHeader" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ec4899;">
+            <h3 id="personVCPName" style="font-size: 18px; font-weight: 900; color: #9d174d; margin: 0;"></h3>
+            <p id="personVCPCount" style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;"></p>
+        </div>
+        <div id="personVCPList" style="max-height: 300px; overflow-y: auto;"></div>
+        <button onclick="closePersonVCPModal()" style="width: 100%; margin-top: 20px; background: #ec4899; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
+    </div>
+</div>
+
 <script>
 const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
@@ -244,7 +269,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
-let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpMes: 'todo', vcpSector: 'general' };
+let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpMes: 'todo', vcpSector: 'general', selectedPerson: null };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -393,9 +418,81 @@ function applyVCPFilters() {
     
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
+    
     const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
-        .map(([name, count]) => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #fce7f3; border-radius: 8px; margin-bottom: 4px; border-left: 3px solid #ec4899;"><span style="font-weight: 700;">${name}</span><span style="font-weight: 900; color: #ec4899; background: white; padding: 2px 8px; border-radius: 12px;">${count} VCP</span></div>`).join('');
+        .map(([name, count]) => `
+            <div class="person-item ${state.selectedPerson === name ? 'selected' : ''}" 
+                 onclick="selectPerson('${name}')" 
+                 style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: ${state.selectedPerson === name ? '#fce7f3' : '#f8fafc'}; border-radius: 8px; margin-bottom: 4px; border-left: ${state.selectedPerson === name ? '4px solid #ec4899' : '4px solid transparent'};">
+                <span style="font-weight: 700; color: ${state.selectedPerson === name ? '#9d174d' : '#475569'};">${name}</span>
+                <span style="font-weight: 900; color: #ec4899; background: white; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${count} VCP</span>
+            </div>
+        `).join('');
+    
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
+    
+    // Actualizar gráfico con filtro de persona
+    updateChartsWithPerson(VCP_DATA, state.selectedPerson);
+}
+
+function selectPerson(name) {
+    if (state.selectedPerson === name) {
+        state.selectedPerson = null; // Deseleccionar
+    } else {
+        state.selectedPerson = name; // Seleccionar
+    }
+    applyVCPFilters();
+    
+    // Actualizar label del gráfico
+    const label = document.getElementById('chartPersonLabel');
+    const nameSpan = document.getElementById('chartPersonName');
+    if (state.selectedPerson) {
+        label.style.display = 'block';
+        nameSpan.textContent = state.selectedPerson;
+    } else {
+        label.style.display = 'none';
+    }
+}
+
+function clearPersonFilter() {
+    state.selectedPerson = null;
+    document.getElementById('chartPersonLabel').style.display = 'none';
+    applyVCPFilters();
+}
+
+function showPersonVCPModal(personName) {
+    const modal = document.getElementById('personVCPModal');
+    const header = document.getElementById('personVCPHeader');
+    const nameEl = document.getElementById('personVCPName');
+    const countEl = document.getElementById('personVCPCount');
+    const listEl = document.getElementById('personVCPList');
+    
+    const personVCPs = VCP_DATA.filter(v => v.personaObservada === personName);
+    
+    nameEl.textContent = personName;
+    countEl.textContent = `${personVCPs.length} VCP realizados en 2026`;
+    
+    const listHtml = personVCPs.map(v => `
+        <div style="padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #ec4899;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: #1e293b;">📅 ${v.dia}/${v.mes}/2026</span>
+                <span style="padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; background: #dcfce7; color: #16a34a;">✅ CERRADO</span>
+            </div>
+            <div style="margin-top: 4px; font-size: 11px; color: #64748b;">
+                🏭 Sector: ${v.sector.toUpperCase()} | 👤 Observador: ${v.observador}
+            </div>
+        </div>
+    `).join('');
+    
+    listEl.innerHTML = listHtml || '<p style="text-align: center; color: #94a3b8;">Sin registros</p>';
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+}
+
+function closePersonVCPModal() {
+    document.getElementById('personVCPModal').classList.add('hidden-section');
+    document.getElementById('personVCPModal').style.display = 'none';
 }
 
 function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyAllFilters(); }
@@ -436,11 +533,11 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -458,15 +555,45 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
     } else {
         categoryChart.data.datasets[0].data = CATEGORIES.map(c => counts[c.id] || 0);
         categoryChart.update();
+    }
+}
+
+function updateChartsWithPerson(vcpData, selectedPerson) {
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+    const labels = meses.map(m => m.substring(0, 3));
+    
+    let personData;
+    if (selectedPerson) {
+        personData = meses.map(m => vcpData.filter(e => e.mes === m && e.personaObservada === selectedPerson).length);
+    } else {
+        personData = meses.map(m => vcpData.filter(e => e.mes === m).length);
+    }
+    
+    if (trendChart) {
+        if (selectedPerson) {
+            // Mostrar solo la persona seleccionada
+            trendChart.data.datasets = [
+                { label: selectedPerson,  personData, borderColor: '#ec4899', fill: true, backgroundColor: 'rgba(236, 72, 153, 0.1)', tension: 0.4, pointStyle: 'circle', pointRadius: 5 }
+            ];
+        } else {
+            // Mostrar todos
+            const actosData = meses.map(m => ACTOS_COND_DATA.filter(e => e.mes === m && e.tipo === 'acto').length);
+            const condData = meses.map(m => ACTOS_COND_DATA.filter(e => e.mes === m && e.tipo === 'condicion').length);
+            trendChart.data.datasets = [
+                { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
+            ];
+        }
+        trendChart.update();
     }
 }
 
