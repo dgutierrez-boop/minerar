@@ -343,7 +343,7 @@ function parseCSV(text) {
             else current += c;
         }
         cols.push(current.trim());
-        if (cols.length >= 9) result.push(cols);
+        if (cols.length >= 24) result.push(cols); // Columna X es índice 23
     }
     return result;
 }
@@ -359,14 +359,17 @@ async function loadData() {
             const sector = row[2] || '';
             const observador = row[5] || '';
             const desc = row[6] || '';
-            const accion = row[8] || '';
+            // Columna X (índice 23) tiene "Si" o "No" para cerrado/abierto
+            const cerradoRaw = row[23] || '';
             
             let tipo = 'otro';
             if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
             else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
             
+            // Leer estado de columna X: "Si" = cerrado, "No" = abierto
             let cerrado = false;
-            if (accion.toLowerCase().includes('sí') || accion.toLowerCase().includes('si,') || accion.toLowerCase().includes('corregida')) cerrado = true;
+            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
+            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -543,11 +546,11 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
                     { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -565,10 +568,10 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
                 datasets: [{
-                    data: CATEGORIES.map(c => counts[c.id] || 0),
+                     CATEGORIES.map(c => counts[c.id] || 0),
                     backgroundColor: CATEGORIES.map(c => c.color),
                     borderWidth: 0
                 }]
@@ -589,10 +592,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     if (!vcpChart) {
         vcpChart = new Chart(document.getElementById('vcpChart').getContext('2d'), {
             type: 'doughnut',
-            data: {
+             {
                 labels: labels,
                 datasets: [{
-                    data: vcpValues,
+                     vcpValues,
                     backgroundColor: colors,
                     borderWidth: 0
                 }]
