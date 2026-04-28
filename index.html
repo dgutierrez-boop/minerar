@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - SEPARADO</title>
+    <title>Dashboard Minerar 2026 - FINAL</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -29,7 +29,6 @@
         .status-low { background: #fee2e2; color: #dc2626; }
         .person-item { cursor: pointer; transition: all 0.2s; }
         .person-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
-        .person-item.selected { background: #fce7f3; border-left: 4px solid #ec4899; }
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         tr:hover { background-color: #f8fafc; }
@@ -345,7 +344,6 @@ function parseCSV(text) {
 
 async function loadData() {
     try {
-        // Cargar Actos
         const res1 = await fetch(ACTOS_URL);
         const rows1 = parseCSV(await res1.text());
         
@@ -386,7 +384,6 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
         }).filter(r => r.fecha && r.observador);
 
-        // Cargar VCP
         const res2 = await fetch(VCP_URL);
         const rows2 = parseCSV(await res2.text());
         
@@ -417,7 +414,6 @@ async function loadData() {
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); }
 
-// --- LÓGICA SEPARADA PARA ACTOS ---
 function applyGeneralFilters() {
     const filtered = ACTOS_COND_DATA.filter(e => {
         const matchMes = (state.mes === 'todo' || e.mes === state.mes);
@@ -432,7 +428,6 @@ function applyGeneralFilters() {
     const actos = filtered.filter(e => e.tipo === 'acto');
     const cond = filtered.filter(e => e.tipo === 'condicion');
     
-    // Actualizar KPIs Actos
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('kpiCondiciones').textContent = cond.length;
     document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
@@ -458,7 +453,6 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
-// --- LÓGICA SEPARADA PARA VCP ---
 function applyVCPFilters() {
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
@@ -466,14 +460,12 @@ function applyVCPFilters() {
         return matchMes && matchSector;
     });
     
-    // Actualizar KPIs VCP
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
     document.getElementById('vcpStatus').textContent = vcpPct >= 100 ? '✅ Cumplido' : vcpPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('vcpBar').style.width = vcpPct + '%';
     document.getElementById('vcpCurrent').textContent = vcpData.length;
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
     
-    // Lista de Personas VCP (Click -> Modal)
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
     
@@ -488,7 +480,6 @@ function applyVCPFilters() {
     
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
     
-    // Tabla VCP
     renderVCPTable(vcpData);
 }
 
@@ -537,6 +528,7 @@ function updateCategoryCards(data) {
     });
 }
 
+// ✅ FUNCIONES DE GRÁFICOS CORREGIDAS
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
@@ -549,8 +541,8 @@ function updateCharts(data) {
              {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -570,7 +562,7 @@ function updateCharts(data) {
             type: 'doughnut',
              {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
@@ -635,7 +627,6 @@ function closeReportModal() {
 // Modal VCP Persona
 function showPersonVCPModal(personName) {
     const modal = document.getElementById('personVCPModal');
-    const header = document.getElementById('personVCPHeader');
     const nameEl = document.getElementById('personVCPName');
     const countEl = document.getElementById('personVCPCount');
     const listEl = document.getElementById('personVCPList');
