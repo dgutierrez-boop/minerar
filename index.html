@@ -540,10 +540,10 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-            data: {
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
                     { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
@@ -562,7 +562,7 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-            data: {
+             {
                 labels: CATEGORIES.map(c => c.name),
                 datasets: [{
                     data: CATEGORIES.map(c => counts[c.id] || 0),
