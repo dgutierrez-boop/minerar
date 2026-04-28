@@ -20,6 +20,8 @@
         .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
         .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
         .category-card:hover { transform: scale(1.05); }
+        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); }
+        .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: #dcfce7; color: #16a34a; }
@@ -293,8 +295,21 @@ async function loadData() {
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
+
+            // Lógica de Categoría (Restaurada)
+            let cat = CATEGORIES[0];
+            let maxS = 0;
+            if (desc) {
+                for (const c of CATEGORIES) {
+                    let s = 0;
+                    for (const k of c.keywords) {
+                        if (desc.toLowerCase().includes(k)) s++;
+                    }
+                    if (s > maxS) { maxS = s; cat = c; }
+                }
+            }
             
-            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0] };
+            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
         }).filter(r => r.fecha && r.observador);
 
         const res2 = await fetch(VCP_URL);
@@ -310,7 +325,7 @@ async function loadData() {
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador, categoria: CATEGORIES[0] };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -353,6 +368,7 @@ function applyGeneralFilters() {
     document.getElementById('condStatus').textContent = condPct >= 100 ? '✅ Cumplido' : '⚠ Pendiente';
     document.getElementById('condBar').style.width = condPct + '%';
     
+    updateCategoryCards(filtered); // Restaurado
     updateCharts(filtered);
     renderTable(filtered);
 }
@@ -386,6 +402,27 @@ function updateButtons(containerId, activeBtn, activeColor) {
     activeBtn.style.background = activeColor; activeBtn.style.color = 'white'; activeBtn.classList.add('active');
 }
 
+// Función restaurada para las tarjetas
+function updateCategoryCards(data) {
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    const total = data.length || 1;
+    
+    const container = document.getElementById('categoryCards');
+    container.innerHTML = '';
+    
+    CATEGORIES.forEach(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val / total) * 100);
+        const div = document.createElement('div');
+        div.className = 'category-card';
+        div.style.borderColor = c.color;
+        div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
+        container.appendChild(div);
+    });
+}
+
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
@@ -395,11 +432,11 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-            data: {  // ✅ CORREGIDO: Agregué 'data:'
+             {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -417,9 +454,9 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-            data: {  // ✅ CORREGIDO: Agregué 'data:'
+             {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
