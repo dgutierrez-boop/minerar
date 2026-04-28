@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - FINAL</title>
+    <title>Dashboard Minerar 2026 - COMPLETO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -28,10 +28,11 @@
         .status-warn { background: #fef3c7; color: #d97706; }
         .status-low { background: #fee2e2; color: #dc2626; }
         .person-item { cursor: pointer; transition: all 0.2s; }
-        .person-item:hover { transform: translateX(5px); box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
+        .person-item:hover { transform: translateX(5px); background: #fce7f3; }
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
-        tr:hover { background-color: #f8fafc; }
+        tr { cursor: pointer; transition: background 0.2s; }
+        tr:hover { background-color: #f1f5f9; }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -69,14 +70,13 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 1: ACTOS Y CONDICIONES (GENERAL) -->
+    <!-- SECCIÓN 1: ACTOS Y CONDICIONES -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
             <p style="font-size: 11px; color: #64748b;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
         </div>
         
-        <!-- KPIs Generales -->
         <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
             <div class="glass-card kpi-cyan" style="padding: 20px;">
                 <div style="display: flex; justify-content: space-between; align-items: start;">
@@ -119,7 +119,6 @@
         </section>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-            <!-- Filtros Generales -->
             <aside>
                 <div class="glass-card" style="padding: 20px;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS ACTOS</h3>
@@ -154,7 +153,6 @@
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <!-- Causa Raíz y Gráfico General -->
                 <div class="glass-card" style="padding: 24px;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 style="font-weight: 900; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
@@ -164,7 +162,6 @@
                     <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
                 
-                <!-- Tabla de Actos y Condiciones -->
                 <div class="glass-card" style="padding: 24px;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
                     <div style="overflow-x: auto;">
@@ -188,14 +185,13 @@
 
     <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- SECCIÓN 2: VCP (EXCLUSIVO) -->
+    <!-- SECCIÓN 2: VCP -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #ec4899; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
         </div>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-            <!-- Filtros VCP -->
             <aside>
                 <div class="glass-card" style="padding: 20px; border: 2px solid #ec4899;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">🎯 FILTROS VCP</h3>
@@ -222,7 +218,6 @@
             </aside>
 
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <!-- KPIs VCP y Lista de Personas -->
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
                     <div class="glass-card kpi-pink" style="padding: 24px;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
@@ -245,7 +240,6 @@
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
 
-                    <!-- Tabla VCP -->
                     <div class="glass-card" style="padding: 24px; border: 2px solid #ec4899;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
                         <div style="overflow-x: auto; max-height: 300px;">
@@ -268,12 +262,12 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE VCP PERSONA -->
+<!-- MODAL VCP PERSONA -->
 <div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 20px; font-weight: 900; color: #ec4899;">👤 Detalle de VCP por Persona</h2>
-            <button onclick="closePersonVCPModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            <h2 style="font-size: 20px; font-weight: 900; color: #ec4899;">👤 Detalle de VCP</h2>
+            <button onclick="closePersonVCPModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
         </div>
         <div id="personVCPHeader" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ec4899;">
             <h3 id="personVCPName" style="font-size: 18px; font-weight: 900; color: #9d174d; margin: 0;"></h3>
@@ -284,12 +278,12 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE REPORTE GENERAL -->
+<!-- MODAL ACTOS/CONDICIONES -->
 <div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="font-size: 20px; font-weight: 900; color: #1e293b;">📋 Detalle del Reporte</h2>
-            <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
         </div>
         <div id="reportModalContent" style="font-size: 14px; line-height: 1.8;"></div>
         <button onclick="closeReportModal()" style="width: 100%; margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
@@ -308,10 +302,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
-let state = { 
-    mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
-    vcpMes: 'todo', vcpSector: 'general' 
-};
+let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -360,9 +351,7 @@ async function loadData() {
             else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
             
             let cerrado = false;
-            if (accion.toLowerCase().includes('sí') || accion.toLowerCase().includes('si,') || accion.toLowerCase().includes('corregida')) {
-                cerrado = true;
-            }
+            if (accion.toLowerCase().includes('sí') || accion.toLowerCase().includes('si,') || accion.toLowerCase().includes('corregida')) cerrado = true;
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -374,9 +363,7 @@ async function loadData() {
             if (desc) {
                 for (const c of CATEGORIES) {
                     let s = 0;
-                    for (const k of c.keywords) {
-                        if (desc.toLowerCase().includes(k)) s++;
-                    }
+                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
                     if (s > maxS) { maxS = s; cat = c; }
                 }
             }
@@ -397,7 +384,7 @@ async function loadData() {
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador, categoria: CATEGORIES[0] };
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -405,7 +392,6 @@ async function loadData() {
         
         applyAllFilters();
         console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
-        
     } catch(e) {
         console.error('❌ Error:', e);
         alert('Error: ' + e.message);
@@ -466,13 +452,14 @@ function applyVCPFilters() {
     document.getElementById('vcpCurrent').textContent = vcpData.length;
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
     
+    // Lista de personas con conteo
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
     
     const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
         .map(([name, count]) => `
             <div class="person-item" onclick="showPersonVCPModal('${name}')" 
-                 style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 4px; border-left: 4px solid transparent;">
+                 style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #f8fafc; border-radius: 8px; margin-bottom: 4px;">
                 <span style="font-weight: 700; color: #475569;">${name}</span>
                 <span style="font-weight: 900; color: #ec4899; background: white; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${count} VCP</span>
             </div>
@@ -480,6 +467,7 @@ function applyVCPFilters() {
     
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
     
+    // Tabla VCP interactiva
     renderVCPTable(vcpData);
 }
 
@@ -528,7 +516,7 @@ function updateCategoryCards(data) {
     });
 }
 
-// ✅ FUNCIONES DE GRÁFICOS CORREGIDAS
+// ✅ CORREGIDO: Agregué 'data:' donde faltaba
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
@@ -538,10 +526,10 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
                     { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
@@ -560,7 +548,7 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
                 datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
@@ -577,7 +565,7 @@ function renderGeneralTable(data) {
     tbody.innerHTML = '';
     data.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
         tr.onclick = () => openReportModal(e);
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
@@ -594,7 +582,8 @@ function renderVCPTable(data) {
     tbody.innerHTML = '';
     data.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
+        tr.onclick = () => showPersonVCPModal(e.personaObservada);
         tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #dcfce7; color: #16a34a;">✅ CERRADO</span></td>`;
         tbody.appendChild(tr);
     });
@@ -624,7 +613,6 @@ function closeReportModal() {
     document.getElementById('reportDetailModal').style.display = 'none';
 }
 
-// Modal VCP Persona
 function showPersonVCPModal(personName) {
     const modal = document.getElementById('personVCPModal');
     const nameEl = document.getElementById('personVCPName');
