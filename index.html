@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - FINAL</title>
+    <title>Dashboard Minerar 2026 - FINAL COMPLETO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -27,6 +27,12 @@
         .status-ok { background: #dcfce7; color: #16a34a; }
         .status-warn { background: #fef3c7; color: #d97706; }
         .status-low { background: #fee2e2; color: #dc2626; }
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 16px; text-align: center; }
+            section { grid-template-columns: 1fr !important; }
+            aside { grid-column: 1 / -1; }
+            main { grid-column: 1 / -1; }
+        }
     </style>
 </head>
 <body>
@@ -296,7 +302,6 @@ async function loadData() {
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
 
-            // Lógica de Categoría (Restaurada)
             let cat = CATEGORIES[0];
             let maxS = 0;
             if (desc) {
@@ -368,7 +373,7 @@ function applyGeneralFilters() {
     document.getElementById('condStatus').textContent = condPct >= 100 ? '✅ Cumplido' : '⚠ Pendiente';
     document.getElementById('condBar').style.width = condPct + '%';
     
-    updateCategoryCards(filtered); // Restaurado
+    updateCategoryCards(filtered);
     updateCharts(filtered);
     renderTable(filtered);
 }
@@ -402,7 +407,6 @@ function updateButtons(containerId, activeBtn, activeColor) {
     activeBtn.style.background = activeColor; activeBtn.style.color = 'white'; activeBtn.classList.add('active');
 }
 
-// Función restaurada para las tarjetas
 function updateCategoryCards(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -432,11 +436,11 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -454,9 +458,9 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
