@@ -3,13 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <title>Dashboard Minerar 2026 - FINAL COMPLETO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 8px; }
         .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease; cursor: pointer; }
@@ -20,10 +16,8 @@
         .kpi-blue { border-left: 5px solid #3b82f6; }
         .kpi-pink { border-left: 5px solid #ec4899; }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; }
-        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
+        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; }
         .category-card:hover { transform: scale(1.05); }
-        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); transform: scale(1.05); }
-        .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: #dcfce7; color: #16a34a; }
@@ -36,54 +30,26 @@
 <body>
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
-                <defs>
-                    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" />
-                        <stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" />
-                    </linearGradient>
-                </defs>
-                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
-                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
-                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
-                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
-            </svg>
-            <div>
-                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
-                <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
-            </div>
+        <div>
+            <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
+            <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
         </div>
-        
         <div style="display: flex; gap: 12px;">
             <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
-                <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase; letter-spacing: 0.5px;">Actos y Condiciones</div>
-                <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af; line-height: 1;">0</div>
+                <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
+                <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
             </div>
-            <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #ec4899; position: relative;">
-                <div style="font-size: 10px; font-weight: 800; color: #9d174d; text-transform: uppercase; letter-spacing: 0.5px;">VCP</div>
-                <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #9d174d; line-height: 1;">0</div>
-                <div style="position: absolute; top: -8px; right: -8px; background: #ec4899; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">✓</div>
+            <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #ec4899;">
+                <div style="font-size: 10px; font-weight: 800; color: #9d174d; text-transform: uppercase;">VCP</div>
+                <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #9d174d;">0</div>
             </div>
         </div>
     </div>
-    
-    <div style="position: absolute; top: 60px; right: 20px; background: white; padding: 8px 12px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); font-size: 11px; z-index: 1000; border-left: 4px solid #ec4899;">
-        <div style="font-weight: 800; margin-bottom: 4px; color: #1e293b;">📊 Leyenda:</div>
-        <div style="display: flex; align-items: center; gap: 8px; margin: 2px 0;">
-            <div style="width: 12px; height: 12px; background: #3b82f6; border-radius: 3px;"></div>
-            <span>Actos y Condiciones</span>
-        </div>
-        <div style="display: flex; align-items: center; gap: 8px; margin: 2px 0;">
-            <div style="width: 12px; height: 12px; background: #ec4899; border-radius: 3px;"></div>
-            <span>VCP (Verificación Controles)</span>
-        </div>
-    </div>
-    
+
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
-            <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase; margin: 0;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
-            <p style="font-size: 11px; color: #64748b; margin: 4px 0 0 0;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+            <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
+            <p style="font-size: 11px; color: #64748b;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
         </div>
         
         <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
@@ -124,17 +90,13 @@
             <div class="glass-card kpi-blue" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
                 <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb; margin: 8px 0;">0</div>
-                <div style="margin-top: 10px; font-size: 10px; color: #64748b;">
-                    <span>⚠ Requieren atención inmediata</span>
-                </div>
             </div>
         </section>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
                 <div class="glass-card" style="padding: 20px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS GENERALES</h3>
-                    
+                    <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🔍 FILTROS GENERALES</h3>
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
                         <select id="monthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
@@ -153,7 +115,6 @@
                             <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
-                    
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR</label>
                         <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
@@ -163,7 +124,6 @@
                             <button onclick="setSector('obrador', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🏢 OBRADOR</button>
                         </div>
                     </div>
-
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO</label>
                         <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
@@ -176,7 +136,6 @@
                 
                 <div class="glass-card" style="padding: 20px; margin-top: 16px; border: 2px solid #ec4899;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">🎯 FILTROS VCP</h3>
-                    
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES VCP</label>
                         <select id="vcpMonthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
@@ -195,7 +154,6 @@
                             <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
-
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR VCP</label>
                         <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
@@ -205,7 +163,6 @@
                             <button onclick="setVCPSector('obrador', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🏢 OBRADOR</button>
                         </div>
                     </div>
-                    
                     <div>
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO VCP</label>
                         <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
@@ -218,9 +175,8 @@
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                
                 <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ <span style="font-size: 10px; color: #64748b; font-weight: 400;">(Click para filtrar)</span></h3>
+                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
                     <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
@@ -232,16 +188,14 @@
                     </div>
                     
                     <div class="glass-card kpi-pink" style="padding: 24px;">
-                        <div style="background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); color: white; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
+                        <div style="background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); color: white; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 11px; text-transform: uppercase;">
                             <span>🎯 Verificación de Controles Preventivos</span>
                             <span style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px;">Solo VCP</span>
                         </div>
-                        
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
                             <h3 style="font-weight: 900; text-transform: uppercase; color: #db2777;">🎯 VCP - PERSONAS</h3>
                             <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
                         </div>
-                        
                         <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO: 30 MENSUALES</span>
@@ -255,7 +209,6 @@
                                 <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
                             </div>
                         </div>
-                        
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
                 </div>
@@ -265,20 +218,18 @@
                         <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE DE REPORTES</h3>
                         <button onclick="showRanking()" style="background: none; border: none; font-size: 28px; cursor: pointer;">🔒</button>
                     </div>
-                    
                     <div id="rankingSection" class="hidden-section" style="margin-bottom: 20px; padding: 20px; background: #f8fafc; border-radius: 12px;">
                         <div id="rankingList"></div>
                     </div>
-                    
                     <div style="overflow-x: auto;">
                         <table class="w-full text-left">
                             <thead>
                                 <tr style="border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Fecha</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Tipo</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Observador</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Descripción</th>
-                                    <th style="padding: 12px; font-size: 10px; font-weight: 900; text-transform: uppercase;">Estado</th>
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th style="padding: 12px;">Tipo</th>
+                                    <th style="padding: 12px;">Observador</th>
+                                    <th style="padding: 12px;">Descripción</th>
+                                    <th style="padding: 12px;">Estado</th>
                                 </tr>
                             </thead>
                             <tbody id="detailTableBody"></tbody>
@@ -310,9 +261,9 @@
 </div>
 
 <script>
-// URLs separadas
-const ACTOS_COND_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
-const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
+const SHEET_ID = '1ClYc_al8kzUeQ7kEXEd7aylDYKz0sTE1vR81zhU4cZ0';
+const ACTOS_SHEET_NAME = 'Actos_inseguros';
+const VCP_SHEET_NAME = 'VCP_2026_Filtrado';
 
 const OBJETIVO_ACTOS = 66;
 const OBJETIVO_CONDICIONES = 44;
@@ -322,10 +273,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
-let state = { 
-    mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas',
-    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos'
-};
+let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -336,175 +284,84 @@ const CATEGORIES = [
     { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
 ];
 
-// FUNCIÓN PARA LEER CSV CORRECTAMENTE (RESPETA COMAS DENTRO DE COMILLAS)
-function parseCSVLine(line) {
-    const result = [];
-    let current = '';
-    let inQuotes = false;
-    for (let i = 0; i < line.length; i++) {
-        const char = line[i];
-        if (char === '"') {
-            inQuotes = !inQuotes;
-        } else if (char === ',' && !inQuotes) {
-            result.push(current);
-            current = '';
-        } else {
-            current += char;
-        }
-    }
-    result.push(current);
-    return result;
-}
-
-// FUNCIÓN PARA DETECTAR Y LEER DATOS SEGÚN ESTRUCTURA (VIEJA O NUEVA)
-function getReportData(cols, isVCP = false) {
-    const data = {};
-    
-    if (isVCP) {
-        // DETECCIÓN DE ESTRUCTURA VCP
-        const isNewStructure = cols.length > 25;
-        
-        if (isNewStructure) {
-            // NUEVA ESTRUCTURA (desde 23/4/2026)
-            data.fecha = cols[2] || '';
-            data.observador = cols[1] || '';
-            data.sector = (cols[3] || '').toLowerCase();
-            data.tipoRaw = (cols[20] || '').toUpperCase();
-            data.cerradoRaw = (cols[23] || '').toLowerCase();
-            data.personaVCP = cols[29] || data.observador;
-        } else {
-            // ESTRUCTURA VIEJA (antes de 23/4/2026)
-            data.fecha = cols[2] || '';
-            data.observador = cols[1] || '';
-            data.sector = (cols[3] || '').toLowerCase();
-            data.tipoRaw = (cols[1] || '').toUpperCase();
-            data.cerradoRaw = (cols[8] || '').toLowerCase();
-            data.personaVCP = data.observador;
-        }
-        
-        if (data.tipoRaw.includes('AI') || data.tipoRaw.includes('ACTO INSEGURO')) {
-            data.tipo = 'acto';
-        } else if (data.tipoRaw.includes('CI') || data.tipoRaw.includes('CONDICION INSEGURA')) {
-            data.tipo = 'condicion';
-        } else {
-            data.tipo = 'vcp';
-        }
-        
-        data.cerrado = data.cerradoRaw.includes('sí') || data.cerradoRaw.includes('si');
-        
-    } else {
-        // DETECCIÓN DE ESTRUCTURA ACTOS/CONDICIONES
-        const isNewStructure = cols.length > 20;
-        
-        if (isNewStructure) {
-            // NUEVA ESTRUCTURA
-            data.fecha = cols[3] || '';
-            data.tipoRaw = cols[1] || '';
-            data.sector = (cols[2] || '').toLowerCase();
-            data.observador = cols[5] || '';
-            data.descripcion = cols[6] || '';
-            data.cerradoRaw = (cols[23] || '').toLowerCase();
-        } else {
-            // ESTRUCTURA VIEJA
-            data.fecha = cols[3] || '';
-            data.tipoRaw = cols[1] || '';
-            data.sector = (cols[2] || '').toLowerCase();
-            data.observador = cols[5] || '';
-            data.descripcion = cols[6] || '';
-            data.cerradoRaw = (cols[8] || '').toLowerCase();
-        }
-        
-        data.tipo = data.tipoRaw.toLowerCase().includes('acto') ? 'acto' : 
-                    data.tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro';
-        
-        data.cerrado = data.cerradoRaw.includes('sí') || data.cerradoRaw.includes('si') || 
-                       data.cerradoRaw.includes('corregida');
-    }
-    
-    return data;
-}
-
-function getStatusClass(pct) {
-    if (pct >= 100) return 'status-ok';
-    if (pct >= 70) return 'status-warn';
-    return 'status-low';
-}
-
-function getStatusText(pct) {
-    if (pct >= 100) return '✅ Cumplido';
-    if (pct >= 70) return '⚠ Casi';
-    return '⚠ Pendiente';
-}
-
-function getBarColor(pct, baseColor) {
-    if (pct >= 100) return '#16a34a';
-    if (pct >= 70) return baseColor;
-    return '#ef4444';
-}
-
 async function loadData() {
     try {
-        // Cargar Actos y Condiciones
-        const resActos = await fetch(ACTOS_COND_URL);
-        const csvActos = await resActos.text();
-        const linesActos = csvActos.split('\n').filter(l => l.trim());
-        ACTOS_COND_DATA = [];
+        const actosUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${ACTOS_SHEET_NAME}`;
+        const resActos = await fetch(actosUrl);
+        const textActos = await resActos.text();
+        const jsonActos = JSON.parse(textActos.substring(47).slice(0, -2));
+        const rowsActos = jsonActos.table.rows;
         
-        for (let i = 1; i < linesActos.length; i++) {
-            const cols = parseCSVLine(linesActos[i]);
-            if (cols.length > 5) {
-                const data = getReportData(cols, false);
-                
-                if (data.fecha && data.observador) {
-                    const partes = data.fecha.split('/');
-                    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-                    let mesIdx = parseInt(partes[1]) - 1;
-                    if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
-                    
-                    let cat = CATEGORIES[0];
-                    let maxS = 0;
-                    for (const c of CATEGORIES) {
-                        let s = 0;
-                        for (const k of c.keywords) {
-                            if (data.descripcion.toLowerCase().includes(k)) s++;
-                        }
-                        if (s > maxS) { maxS = s; cat = c; }
-                    }
-                    
-                    ACTOS_COND_DATA.push({
-                        mes: meses[mesIdx], dia: partes[0], fecha: data.fecha, tipo: data.tipo, 
-                        sector: data.sector, observador: data.observador.trim(), 
-                        descripcion: data.descripcion, cerrado: data.cerrado, isVCP: false, categoria: cat
-                    });
-                }
+        ACTOS_COND_DATA = [];
+        for (let i = 1; i < rowsActos.length; i++) {
+            const row = rowsActos[i].c;
+            if (!row || row.length < 9) continue;
+            
+            const fecha = row[3] && row[3].v ? row[3].v : '';
+            const tipoRaw = row[1] && row[1].v ? row[1].v : '';
+            const sector = row[2] && row[2].v ? row[2].v : '';
+            const observador = row[5] && row[5].v ? row[5].v : '';
+            const descripcion = row[6] && row[6].v ? row[6].v : '';
+            const accionCorrectiva = row[8] && row[8].v ? row[8].v : '';
+            
+            if (!fecha || !observador) continue;
+            
+            const tipo = tipoRaw.toLowerCase().includes('acto') ? 'acto' : tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro';
+            
+            let cerrado = false;
+            if (accionCorrectiva && typeof accionCorrectiva === 'string') {
+                const texto = accionCorrectiva.toLowerCase();
+                cerrado = texto.startsWith('sí') || texto.startsWith('si,') || texto.includes('corregida');
             }
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            
+            let cat = CATEGORIES[0];
+            let maxS = 0;
+            for (const c of CATEGORIES) {
+                let s = 0;
+                for (const k of c.keywords) {
+                    if (descripcion.toLowerCase().includes(k)) s++;
+                }
+                if (s > maxS) { maxS = s; cat = c; }
+            }
+            
+            ACTOS_COND_DATA.push({
+                mes: meses[mesIdx], dia: partes[0], fecha, tipo, sector: sector.toLowerCase(),
+                observador: observador.trim(), descripcion: descripcion || '', cerrado, isVCP: false, categoria: cat
+            });
         }
         
-        // Cargar VCP
-        const resVCP = await fetch(VCP_URL);
-        const csvVCP = await resVCP.text();
-        const linesVCP = csvVCP.split('\n').filter(l => l.trim());
-        VCP_DATA = [];
+        const vcpUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${VCP_SHEET_NAME}`;
+        const resVCP = await fetch(vcpUrl);
+        const textVCP = await resVCP.text();
+        const jsonVCP = JSON.parse(textVCP.substring(47).slice(0, -2));
+        const rowsVCP = jsonVCP.table.rows;
         
-        for (let i = 1; i < linesVCP.length; i++) {
-            const cols = parseCSVLine(linesVCP[i]);
-            if (cols.length > 5) {
-                const data = getReportData(cols, true);
-                
-                if (data.fecha && data.observador) {
-                    const partes = data.fecha.split('/');
-                    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-                    let mesIdx = parseInt(partes[1]) - 1;
-                    if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
-                    
-                    VCP_DATA.push({
-                        mes: meses[mesIdx], dia: partes[0], fecha: data.fecha, tipo: data.tipo,
-                        sector: data.sector, observador: data.observador.trim(),
-                        descripcion: `VCP a ${data.personaVCP}`, cerrado: data.cerrado, isVCP: true,
-                        categoria: CATEGORIES[0], personaObservada: data.personaVCP
-                    });
-                }
-            }
+        VCP_DATA = [];
+        for (let i = 1; i < rowsVCP.length; i++) {
+            const row = rowsVCP[i].c;
+            if (!row || row.length < 3) continue;
+            
+            const fecha = row[2] && row[2].v ? row[2].v : '';
+            const observador = row[1] && row[1].v ? row[1].v : '';
+            const sector = row[3] && row[3].v ? row[3].v : '';
+            
+            if (!fecha || !observador) continue;
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            
+            VCP_DATA.push({
+                mes: meses[mesIdx], dia: partes[0], fecha, tipo: 'vcp', sector: sector.toLowerCase(),
+                observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, isVCP: true,
+                categoria: CATEGORIES[0], personaObservada: observador
+            });
         }
         
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -512,43 +369,28 @@ async function loadData() {
         
         setupEventListeners();
         applyAllFilters();
+        console.log('✅ Datos cargados correctamente!');
     } catch (e) {
-        console.error('Error:', e);
-        document.getElementById('totalActosCond').textContent = 'Error';
-        document.getElementById('totalVCP').textContent = 'Error';
+        console.error('❌ Error:', e);
+        alert('Error al cargar datos. Revisá consola (F12)');
     }
 }
 
 function setupEventListeners() {
-    document.getElementById('monthFilter').addEventListener('change', (e) => {
-        state.mes = e.target.value;
-        applyAllFilters();
-    });
-    document.getElementById('vcpMonthFilter').addEventListener('change', (e) => {
-        state.vcpMes = e.target.value;
-        applyVCPFilters();
-    });
+    document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyAllFilters(); });
+    document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
 }
 
-function applyAllFilters() {
-    applyGeneralFilters();
-    applyVCPFilters();
-}
+function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); }
 
 function applyGeneralFilters() {
-    const m = state.mes;
-    const s = state.sector;
-    const st = state.estado;
-    const cr = state.causaRaiz;
-    
     const filtered = ACTOS_COND_DATA.filter(e => {
-        const matchMes = (m === 'todo' || e.mes === m);
-        const matchSector = (s === 'general' || e.sector.includes(s));
+        const matchMes = (state.mes === 'todo' || e.mes === state.mes);
+        const matchSector = (state.sector === 'general' || e.sector.includes(state.sector));
         let matchStatus = true;
-        if (st === 'cerrados') matchStatus = e.cerrado === true;
-        else if (st === 'abiertos') matchStatus = e.cerrado === false;
-        const matchCausa = (cr === 'todas' || e.categoria.id === cr);
-        return matchMes && matchSector && matchStatus && matchCausa;
+        if (state.estado === 'cerrados') matchStatus = e.cerrado === true;
+        else if (state.estado === 'abiertos') matchStatus = e.cerrado === false;
+        return matchMes && matchSector && matchStatus;
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
@@ -559,105 +401,66 @@ function applyGeneralFilters() {
     document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
-    document.getElementById('actosStatus').textContent = getStatusText(actosPct);
-    document.getElementById('actosStatus').className = 'status-badge ' + getStatusClass(actosPct);
+    document.getElementById('actosStatus').textContent = actosPct >= 100 ? '✅ Cumplido' : actosPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('actosPctLabel').textContent = Math.round(actosPct) + '%';
-    document.getElementById('actosPctLabel').style.color = actosPct >= 100 ? '#16a34a' : actosPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('actosBar').style.width = actosPct + '%';
-    document.getElementById('actosBar').style.background = getBarColor(actosPct, '#0891b2');
     
     const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
-    document.getElementById('condStatus').textContent = getStatusText(condPct);
-    document.getElementById('condStatus').className = 'status-badge ' + getStatusClass(condPct);
+    document.getElementById('condStatus').textContent = condPct >= 100 ? '✅ Cumplido' : condPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('condPctLabel').textContent = Math.round(condPct) + '%';
-    document.getElementById('condPctLabel').style.color = condPct >= 100 ? '#16a34a' : condPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('condBar').style.width = condPct + '%';
-    document.getElementById('condBar').style.background = getBarColor(condPct, '#d97706');
     
     updateCategoryCards(filtered);
     updateCharts(filtered);
-    renderDetailTable(filtered);
+    renderTable(filtered);
 }
 
 function applyVCPFilters() {
-    const m = state.vcpMes;
-    const s = state.vcpSector;
-    
     const vcpData = VCP_DATA.filter(e => {
-        const matchMes = (m === 'todo' || e.mes === m);
-        const matchSector = (s === 'general' || e.sector.includes(s));
+        const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
+        const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
         return matchMes && matchSector;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
-    document.getElementById('vcpStatus').textContent = getStatusText(vcpPct);
-    document.getElementById('vcpStatus').className = 'status-badge ' + getStatusClass(vcpPct);
+    document.getElementById('vcpStatus').textContent = vcpPct >= 100 ? '✅ Cumplido' : vcpPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
-    document.getElementById('vcpPctLabel').style.color = vcpPct >= 100 ? '#16a34a' : vcpPct >= 70 ? '#d97706' : '#dc2626';
     document.getElementById('vcpBar').style.width = vcpPct + '%';
-    document.getElementById('vcpBar').style.background = getBarColor(vcpPct, '#ec4899');
     document.getElementById('vcpCurrent').textContent = vcpData.length;
     
-    updateVCPList(vcpData);
+    const vcpPeople = {};
+    vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
+    const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
+        .map(([name, count]) => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 6px;"><span style="font-weight: 700;">${name}</span><span style="font-weight: 900; color: #ec4899; background: white; padding: 4px 12px; border-radius: 12px;">${count} VCP</span></div>`).join('');
+    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
 }
 
 function setSector(s, btn) {
     state.sector = s;
-    updateButtons('sectorButtons', btn, '#2563eb');
+    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
+    btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none';
     applyAllFilters();
 }
 
 function setStatus(s, btn) {
     state.estado = s;
-    updateButtons('statusButtons', btn, '#2563eb');
+    document.querySelectorAll('#statusButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
+    btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none';
     applyAllFilters();
 }
 
 function setVCPSector(s, btn) {
     state.vcpSector = s;
-    updateButtons('vcpSectorButtons', btn, '#ec4899');
+    document.querySelectorAll('#vcpSectorButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
+    btn.style.background = '#ec4899'; btn.style.color = 'white'; btn.style.border = 'none';
     applyVCPFilters();
 }
 
 function setVCPStatus(s, btn) {
     state.vcpEstado = s;
-    updateButtons('vcpStatusButtons', btn, '#ec4899');
+    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
+    btn.style.background = '#ec4899'; btn.style.color = 'white'; btn.style.border = 'none';
     applyVCPFilters();
-}
-
-function updateButtons(containerId, activeBtn, activeColor) {
-    const container = document.getElementById(containerId);
-    container.querySelectorAll('.btn-filter').forEach(b => {
-        b.style.background = 'white';
-        b.style.color = '#475569';
-        b.style.border = '2px solid #e2e8f0';
-    });
-    activeBtn.style.background = activeColor;
-    activeBtn.style.color = 'white';
-    activeBtn.style.border = 'none';
-}
-
-function toggleCausaRaiz(id) {
-    state.causaRaiz = state.causaRaiz === id ? 'todas' : id;
-    applyAllFilters();
-}
-
-function updateVCPList(vcpData) {
-    const vcpPeople = {};
-    vcpData.forEach(v => { 
-        const person = v.personaObservada || v.observador;
-        vcpPeople[person] = (vcpPeople[person] || 0) + 1; 
-    });
-    
-    const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
-        .map(([name, count]) => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 6px; border-left: 4px solid #ec4899;">
-                <span style="font-weight: 700; color: #475569;">${name}</span>
-                <span style="font-weight: 900; color: #ec4899; background: white; padding: 4px 12px; border-radius: 12px; font-size: 12px;">${count} VCP</span>
-            </div>
-        `).join('');
-    
-    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP en este filtro</p>';
 }
 
 function updateCategoryCards(data) {
@@ -668,24 +471,13 @@ function updateCategoryCards(data) {
     
     const container = document.getElementById('categoryCards');
     container.innerHTML = '';
-    
     CATEGORIES.forEach(c => {
         const val = counts[c.id] || 0;
         const pct = Math.round((val / total) * 100);
-        const isActive = state.causaRaiz === c.id;
-        
         const div = document.createElement('div');
-        div.className = 'category-card' + (isActive ? ' active' : '');
+        div.className = 'category-card';
         div.style.borderColor = c.color;
-        div.style.background = isActive ? c.color + '15' : 'white';
-        div.onclick = () => toggleCausaRaiz(c.id);
-        
-        div.innerHTML = `
-            <div style="font-size: 2rem;">${c.icon}</div>
-            <div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569; text-transform: uppercase;">${c.name}</div>
-            <div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div>
-            <div style="font-size: 10px; color: #94a3b8;">${pct}%</div>
-        `;
+        div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
         container.appendChild(div);
     });
 }
@@ -693,24 +485,17 @@ function updateCategoryCards(data) {
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
-    
     const actosData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'acto').length);
     const condData = meses.map(m => data.filter(e => e.mes === m && e.tipo === 'condicion').length);
-    const vcpData = meses.map(m => VCP_DATA.filter(e => e.mes === m && 
-        (state.vcpMes === 'todo' || e.mes === state.vcpMes) &&
-        (state.vcpSector === 'general' || e.sector.includes(state.vcpSector))
-    ).length);
     
     if (!trendChart) {
-        const ctx = document.getElementById('trendChart').getContext('2d');
-        trendChart = new Chart(ctx, {
+        trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
             data: {
                 labels: labels,
                 datasets: [
                     { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
-                    { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -718,17 +503,15 @@ function updateCharts(data) {
     } else {
         trendChart.data.datasets[0].data = actosData;
         trendChart.data.datasets[1].data = condData;
-        trendChart.data.datasets[2].data = vcpData;
         trendChart.update();
     }
-
+    
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
     
     if (!categoryChart) {
-        const ctx = document.getElementById('categoryChart').getContext('2d');
-        categoryChart = new Chart(ctx, {
+        categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
             data: {
                 labels: CATEGORIES.map(c => c.name),
@@ -742,28 +525,22 @@ function updateCharts(data) {
     }
 }
 
-function renderDetailTable(data) {
+function renderTable(data) {
     const tbody = document.getElementById('detailTableBody');
     tbody.innerHTML = '';
-    
     data.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer; transition: background 0.2s;';
-        tr.onmouseover = () => tr.style.background = '#f8fafc';
-        tr.onmouseout = () => tr.style.background = '';
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
         tr.onclick = () => openDetailModal(e);
-        
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
-        const statusIcon = e.cerrado ? '✅' : '⚠️';
-
         tr.innerHTML = `
             <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
             <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#fce7f3' : '#ffedd5'}; color: ${e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#ec4899' : '#ea580c'};">${e.tipo.toUpperCase()}</span></td>
             <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
             <td style="padding: 12px;">${e.descripcion}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${statusIcon} ${statusText}</span></td>
+            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>
         `;
         tbody.appendChild(tr);
     });
@@ -772,20 +549,9 @@ function renderDetailTable(data) {
 function openDetailModal(report) {
     const modal = document.getElementById('detailModal');
     const content = document.getElementById('modalContent');
-    
     const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
     const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
-
-    content.innerHTML = `
-        <p><strong>📅 Fecha:</strong> ${report.fecha}</p>
-        <p><strong>👤 Observador:</strong> ${report.observador}</p>
-        <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
-        <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
-        <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
-        <hr style="margin: 10px 0; border: 0; border-top: 1px solid #e2e8f0;">
-        <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900; font-size: 18px;">${statusText}</span></p>
-    `;
-    
+    content.innerHTML = `<p><strong>📅 Fecha:</strong> ${report.fecha}</p><p><strong>👤 Observador:</strong> ${report.observador}</p><p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p><p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p><p><strong>📝 Descripción:</strong> ${report.descripcion}</p><hr style="margin: 10px 0;"><p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900;">${statusText}</span></p>`;
     modal.classList.remove('hidden-section');
     modal.style.display = 'flex';
 }
