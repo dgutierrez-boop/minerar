@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - INTERACTIVO</title>
+    <title>Dashboard Minerar 2026 - FINAL INTERACTIVO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
         .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
         .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
         .category-card:hover { transform: scale(1.05); }
-        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); }
+        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); background: #f0f9ff; }
         .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
@@ -32,6 +32,7 @@
         .person-item.selected { background: #fce7f3; border-left: 4px solid #ec4899; }
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        tr:hover { background-color: #f8fafc; }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -175,8 +176,11 @@
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
                 
                 <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
-                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-weight: 900; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section" style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 12px; font-size: 10px; font-weight: 800; cursor: pointer;">✕ Quitar Filtro</button>
+                    </div>
+                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; margin-top: 12px;"></div>
                     <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
                 
@@ -241,19 +245,15 @@
     </div>
 </div>
 
-<!-- MODAL PERSONA VCP -->
-<div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
+<!-- MODAL DETALLE DE REPORTE -->
+<div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 20px; font-weight: 900; color: #ec4899;">👤 Detalle de VCP</h2>
-            <button onclick="closePersonVCPModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
+            <h2 style="font-size: 20px; font-weight: 900; color: #1e293b;">📋 Detalle del Reporte</h2>
+            <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;">✕</button>
         </div>
-        <div id="personVCPHeader" style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #ec4899;">
-            <h3 id="personVCPName" style="font-size: 18px; font-weight: 900; color: #9d174d; margin: 0;"></h3>
-            <p id="personVCPCount" style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;"></p>
-        </div>
-        <div id="personVCPList" style="max-height: 300px; overflow-y: auto;"></div>
-        <button onclick="closePersonVCPModal()" style="width: 100%; margin-top: 20px; background: #ec4899; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
+        <div id="reportModalContent" style="font-size: 14px; line-height: 1.8;"></div>
+        <button onclick="closeReportModal()" style="width: 100%; margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
     </div>
 </div>
 
@@ -269,7 +269,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
-let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpMes: 'todo', vcpSector: 'general', selectedPerson: null };
+let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', selectedPerson: null };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -379,7 +379,8 @@ function applyGeneralFilters() {
         let matchStatus = true;
         if (state.estado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.estado === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchStatus;
+        const matchCausa = (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz);
+        return matchMes && matchSector && matchStatus && matchCausa;
     });
     
     const actos = filtered.filter(e => e.tipo === 'acto');
@@ -431,19 +432,31 @@ function applyVCPFilters() {
     
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
     
-    // Actualizar gráfico con filtro de persona
     updateChartsWithPerson(VCP_DATA, state.selectedPerson);
+}
+
+function toggleCausaRaiz(id) {
+    state.causaRaiz = state.causaRaiz === id ? 'todas' : id;
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (state.causaRaiz !== 'todas') clearBtn.classList.remove('hidden-section');
+    else clearBtn.classList.add('hidden-section');
+    applyGeneralFilters();
+}
+
+function clearCausaFilter() {
+    state.causaRaiz = 'todas';
+    document.getElementById('clearCausaBtn').classList.add('hidden-section');
+    applyGeneralFilters();
 }
 
 function selectPerson(name) {
     if (state.selectedPerson === name) {
-        state.selectedPerson = null; // Deseleccionar
+        state.selectedPerson = null; 
     } else {
-        state.selectedPerson = name; // Seleccionar
+        state.selectedPerson = name; 
     }
     applyVCPFilters();
     
-    // Actualizar label del gráfico
     const label = document.getElementById('chartPersonLabel');
     const nameSpan = document.getElementById('chartPersonName');
     if (state.selectedPerson) {
@@ -458,41 +471,6 @@ function clearPersonFilter() {
     state.selectedPerson = null;
     document.getElementById('chartPersonLabel').style.display = 'none';
     applyVCPFilters();
-}
-
-function showPersonVCPModal(personName) {
-    const modal = document.getElementById('personVCPModal');
-    const header = document.getElementById('personVCPHeader');
-    const nameEl = document.getElementById('personVCPName');
-    const countEl = document.getElementById('personVCPCount');
-    const listEl = document.getElementById('personVCPList');
-    
-    const personVCPs = VCP_DATA.filter(v => v.personaObservada === personName);
-    
-    nameEl.textContent = personName;
-    countEl.textContent = `${personVCPs.length} VCP realizados en 2026`;
-    
-    const listHtml = personVCPs.map(v => `
-        <div style="padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #ec4899;">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-weight: 700; color: #1e293b;">📅 ${v.dia}/${v.mes}/2026</span>
-                <span style="padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; background: #dcfce7; color: #16a34a;">✅ CERRADO</span>
-            </div>
-            <div style="margin-top: 4px; font-size: 11px; color: #64748b;">
-                🏭 Sector: ${v.sector.toUpperCase()} | 👤 Observador: ${v.observador}
-            </div>
-        </div>
-    `).join('');
-    
-    listEl.innerHTML = listHtml || '<p style="text-align: center; color: #94a3b8;">Sin registros</p>';
-    
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-}
-
-function closePersonVCPModal() {
-    document.getElementById('personVCPModal').classList.add('hidden-section');
-    document.getElementById('personVCPModal').style.display = 'none';
 }
 
 function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyAllFilters(); }
@@ -516,14 +494,17 @@ function updateCategoryCards(data) {
     CATEGORIES.forEach(c => {
         const val = counts[c.id] || 0;
         const pct = Math.round((val / total) * 100);
+        const isActive = state.causaRaiz === c.id;
         const div = document.createElement('div');
-        div.className = 'category-card';
+        div.className = 'category-card' + (isActive ? ' active' : '');
         div.style.borderColor = c.color;
+        div.onclick = () => toggleCausaRaiz(c.id); // INTERACTIVIDAD AGREGADA
         div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
         container.appendChild(div);
     });
 }
 
+// ✅ FUNCIONES DE GRÁFICOS CORREGIDAS (SINTAXIS ARREGLADA)
 function updateCharts(data) {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     const labels = meses.map(m => m.substring(0, 3));
@@ -533,11 +514,11 @@ function updateCharts(data) {
     if (!trendChart) {
         trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
             type: 'line',
-             {
+            data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -555,9 +536,9 @@ function updateCharts(data) {
     if (!categoryChart) {
         categoryChart = new Chart(document.getElementById('categoryChart').getContext('2d'), {
             type: 'doughnut',
-             {
+            data: {
                 labels: CATEGORIES.map(c => c.name),
-                datasets: [{  CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
+                datasets: [{ data: CATEGORIES.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES.map(c => c.color), borderWidth: 0 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '60%', plugins: { legend: { position: 'right' } } }
         });
@@ -580,18 +561,22 @@ function updateChartsWithPerson(vcpData, selectedPerson) {
     
     if (trendChart) {
         if (selectedPerson) {
-            // Mostrar solo la persona seleccionada
-            trendChart.data.datasets = [
-                { label: selectedPerson,  personData, borderColor: '#ec4899', fill: true, backgroundColor: 'rgba(236, 72, 153, 0.1)', tension: 0.4, pointStyle: 'circle', pointRadius: 5 }
-            ];
+            trendChart.data = {
+                labels: labels,
+                datasets: [
+                    { label: selectedPerson, data: personData, borderColor: '#ec4899', fill: true, backgroundColor: 'rgba(236, 72, 153, 0.1)', tension: 0.4, pointStyle: 'circle', pointRadius: 5 }
+                ]
+            };
         } else {
-            // Mostrar todos
             const actosData = meses.map(m => ACTOS_COND_DATA.filter(e => e.mes === m && e.tipo === 'acto').length);
             const condData = meses.map(m => ACTOS_COND_DATA.filter(e => e.mes === m && e.tipo === 'condicion').length);
-            trendChart.data.datasets = [
-                { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
-            ];
+            trendChart.data = {
+                labels: labels,
+                datasets: [
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
+                ]
+            };
         }
         trendChart.update();
     }
@@ -602,7 +587,8 @@ function renderTable(data) {
     tbody.innerHTML = '';
     data.slice(0, 50).forEach(e => {
         const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
+        tr.onclick = () => openReportModal(e); // INTERACTIVIDAD AGREGADA
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
@@ -611,6 +597,30 @@ function renderTable(data) {
         tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>`;
         tbody.appendChild(tr);
     });
+}
+
+function openReportModal(report) {
+    const modal = document.getElementById('reportDetailModal');
+    const content = document.getElementById('reportModalContent');
+    const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
+    const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
+    
+    content.innerHTML = `
+        <p><strong>📅 Fecha:</strong> ${report.fecha}</p>
+        <p><strong>👤 Observador:</strong> ${report.observador}</p>
+        <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
+        <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
+        <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
+        <hr style="margin: 10px 0;">
+        <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900;">${statusText}</span></p>
+    `;
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+}
+
+function closeReportModal() {
+    document.getElementById('reportDetailModal').classList.add('hidden-section');
+    document.getElementById('reportDetailModal').style.display = 'none';
 }
 
 document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyAllFilters(); });
