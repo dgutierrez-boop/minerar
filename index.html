@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - FINAL COMPLETO</title>
+    <title>Dashboard Minerar 2026 - COMPLETO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -15,9 +15,12 @@
         .kpi-amber { border-left: 5px solid #f59e0b; }
         .kpi-blue { border-left: 5px solid #3b82f6; }
         .kpi-pink { border-left: 5px solid #ec4899; }
-        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; }
-        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; }
+        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; border: 2px solid #e2e8f0; background: white; }
+        .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
         .category-card:hover { transform: scale(1.05); }
+        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); }
+        .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: #dcfce7; color: #16a34a; }
@@ -30,16 +33,26 @@
 <body>
 <div class="max-w-7xl mx-auto">
     <div class="header-container">
-        <div>
-            <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
-            <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
+                <defs><linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" /><stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" /></linearGradient></defs>
+                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
+                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
+                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
+                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
+            </svg>
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
+                <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
+            </div>
         </div>
+        
         <div style="display: flex; gap: 12px;">
             <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
                 <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
                 <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
             </div>
-            <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #ec4899;">
+            <div style="background: linear-gradient(135deg, #fce7f3 0%, #fbcfe8 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #ec4899; position: relative;">
                 <div style="font-size: 10px; font-weight: 800; color: #9d174d; text-transform: uppercase;">VCP</div>
                 <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #9d174d;">0</div>
             </div>
@@ -90,13 +103,15 @@
             <div class="glass-card kpi-blue" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
                 <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb; margin: 8px 0;">0</div>
+                <div style="margin-top: 10px; font-size: 10px; color: #64748b;"><span>⚠ Requieren atención inmediata</span></div>
             </div>
         </section>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
                 <div class="glass-card" style="padding: 20px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">🔍 FILTROS GENERALES</h3>
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS GENERALES</h3>
+                    
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES</label>
                         <select id="monthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
@@ -115,27 +130,30 @@
                             <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
+                    
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR</label>
                         <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setSector('general', this)" class="btn-filter" style="background: #2563eb; color: white;">🏭 GENERAL</button>
-                            <button onclick="setSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
-                            <button onclick="setSector('taller', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🔧 TALLER</button>
-                            <button onclick="setSector('obrador', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🏢 OBRADOR</button>
+                            <button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button>
+                            <button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
+                            <button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button>
+                            <button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
                         </div>
                     </div>
+
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO</label>
                         <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setStatus('todos', this)" class="btn-filter" style="background: #2563eb; color: white;">📊 TODOS</button>
-                            <button onclick="setStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">✓ CERRADOS</button>
-                            <button onclick="setStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
+                            <button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button>
+                            <button onclick="setStatus('cerrados', this)" class="btn-filter">✓ CERRADOS</button>
+                            <button onclick="setStatus('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="glass-card" style="padding: 20px; margin-top: 16px; border: 2px solid #ec4899;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #ec4899; text-transform: uppercase;">🎯 FILTROS VCP</h3>
+                    
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">MES VCP</label>
                         <select id="vcpMonthFilter" style="width: 100%; padding: 10px; border-radius: 8px; border: 2px solid #e2e8f0; font-size: 12px;">
@@ -154,29 +172,32 @@
                             <option value="diciembre">📅 Diciembre</option>
                         </select>
                     </div>
+
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">SECTOR VCP</label>
                         <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPSector('general', this)" class="btn-filter" style="background: #ec4899; color: white;">🏭 GENERAL</button>
-                            <button onclick="setVCPSector('cantera', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⛏️ CANTERA</button>
-                            <button onclick="setVCPSector('taller', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🔧 TALLER</button>
-                            <button onclick="setVCPSector('obrador', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">🏢 OBRADOR</button>
+                            <button onclick="setVCPSector('general', this)" class="btn-filter active" style="background: #ec4899; color: white; border-color: #ec4899;">🏭 GENERAL</button>
+                            <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
+                            <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
+                            <button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
                         </div>
                     </div>
+                    
                     <div>
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px; text-transform: uppercase;">ESTADO VCP</label>
                         <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPStatus('todos', this)" class="btn-filter" style="background: #ec4899; color: white;">📊 TODOS</button>
-                            <button onclick="setVCPStatus('cerrados', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">✓ CERRADOS</button>
-                            <button onclick="setVCPStatus('abiertos', this)" class="btn-filter" style="background: white; color: #475569; border: 2px solid #e2e8f0;">⚠ ABIERTOS</button>
+                            <button onclick="setVCPStatus('todos', this)" class="btn-filter active" style="background: #ec4899; color: white; border-color: #ec4899;">📊 TODOS</button>
+                            <button onclick="setVCPStatus('cerrados', this)" class="btn-filter">✓ CERRADOS</button>
+                            <button onclick="setVCPStatus('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
                         </div>
                     </div>
                 </div>
             </aside>
             
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                
                 <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                    <h3 style="font-weight: 900; margin-bottom: 20px; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ <span style="font-size: 10px; color: #64748b; font-weight: 400;">(Click para filtrar)</span></h3>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px;"></div>
                     <div style="height: 300px;"><canvas id="categoryChart"></canvas></div>
                 </div>
@@ -188,14 +209,16 @@
                     </div>
                     
                     <div class="glass-card kpi-pink" style="padding: 24px;">
-                        <div style="background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); color: white; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 11px; text-transform: uppercase;">
+                        <div style="background: linear-gradient(90deg, #ec4899 0%, #f472b6 100%); color: white; padding: 8px 16px; border-radius: 8px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;">
                             <span>🎯 Verificación de Controles Preventivos</span>
                             <span style="background: rgba(255,255,255,0.3); padding: 2px 8px; border-radius: 12px;">Solo VCP</span>
                         </div>
+                        
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
                             <h3 style="font-weight: 900; text-transform: uppercase; color: #db2777;">🎯 VCP - PERSONAS</h3>
                             <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
                         </div>
+                        
                         <div style="background: #fce7f3; padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #ec4899;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 13px; font-weight: 800; color: #9d174d;">OBJETIVO: 30 MENSUALES</span>
@@ -209,6 +232,7 @@
                                 <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
                             </div>
                         </div>
+                        
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
                 </div>
@@ -218,9 +242,11 @@
                         <h3 style="font-weight: 900; text-transform: uppercase;">📋 DETALLE DE REPORTES</h3>
                         <button onclick="showRanking()" style="background: none; border: none; font-size: 28px; cursor: pointer;">🔒</button>
                     </div>
+                    
                     <div id="rankingSection" class="hidden-section" style="margin-bottom: 20px; padding: 20px; background: #f8fafc; border-radius: 12px;">
                         <div id="rankingList"></div>
                     </div>
+                    
                     <div style="overflow-x: auto;">
                         <table class="w-full text-left">
                             <thead>
@@ -261,9 +287,8 @@
 </div>
 
 <script>
-const SHEET_ID = '1ClYc_al8kzUeQ7kEXEd7aylDYKz0sTE1vR81zhU4cZ0';
-const ACTOS_SHEET_NAME = 'Actos_inseguros';
-const VCP_SHEET_NAME = 'VCP_2026_Filtrado';
+const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=0&single=true&output=csv';
+const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRR8W95m-mhfP6rwrZ7kHvdWl69IoIBA6S_V7ZIcBSt-Eb40gFMOn59R9QHLZ0tPZW_yQuefCP_U57_/pub?gid=809968199&single=true&output=csv';
 
 const OBJETIVO_ACTOS = 66;
 const OBJETIVO_CONDICIONES = 44;
@@ -273,7 +298,7 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
-let state = { mes: 'todo', sector: 'general', estado: 'todos', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' };
+let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' };
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -284,101 +309,99 @@ const CATEGORIES = [
     { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
 ];
 
+function parseCSV(text) {
+    const lines = text.split('\n');
+    const result = [];
+    for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (!line) continue;
+        const cols = [];
+        let current = '';
+        let inQuotes = false;
+        for (let j = 0; j < line.length; j++) {
+            const char = line[j];
+            if (char === '"') { inQuotes = !inQuotes; }
+            else if (char === ',' && !inQuotes) { cols.push(current.trim()); current = ''; }
+            else { current += char; }
+        }
+        cols.push(current.trim());
+        if (cols.length > 5) result.push(cols);
+    }
+    return result;
+}
+
 async function loadData() {
     try {
-        const actosUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${ACTOS_SHEET_NAME}`;
-        const resActos = await fetch(actosUrl);
-        const textActos = await resActos.text();
-        const jsonActos = JSON.parse(textActos.substring(47).slice(0, -2));
-        const rowsActos = jsonActos.table.rows;
+        const resActos = await fetch(ACTOS_URL);
+        const csvActos = await resActos.text();
+        const rowsActos = parseCSV(csvActos);
         
         ACTOS_COND_DATA = [];
-        for (let i = 1; i < rowsActos.length; i++) {
-            const row = rowsActos[i].c;
-            if (!row || row.length < 9) continue;
+        rowsActos.forEach(row => {
+            const fecha = row[3] || '';
+            const tipoRaw = row[1] || '';
+            const sector = row[2] || '';
+            const observador = row[5] || '';
+            const descripcion = row[6] || '';
+            const accionCorrectiva = row[8] || '';
             
-            const fecha = row[3] && row[3].v ? row[3].v : '';
-            const tipoRaw = row[1] && row[1].v ? row[1].v : '';
-            const sector = row[2] && row[2].v ? row[2].v : '';
-            const observador = row[5] && row[5].v ? row[5].v : '';
-            const descripcion = row[6] && row[6].v ? row[6].v : '';
-            const accionCorrectiva = row[8] && row[8].v ? row[8].v : '';
+            if (!fecha || !observador) return;
             
-            if (!fecha || !observador) continue;
-            
-            const tipo = tipoRaw.toLowerCase().includes('acto') ? 'acto' : tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro';
+            let tipo = 'otro';
+            const tipoLower = tipoRaw.toLowerCase();
+            if (tipoLower.includes('acto') || tipoLower.includes('comportamiento')) tipo = 'acto';
+            else if (tipoLower.includes('condicion') || tipoLower.includes('situacion')) tipo = 'condicion';
             
             let cerrado = false;
-            if (accionCorrectiva && typeof accionCorrectiva === 'string') {
+            if (accionCorrectiva) {
                 const texto = accionCorrectiva.toLowerCase();
-                cerrado = texto.startsWith('sí') || texto.startsWith('si,') || texto.includes('corregida');
+                cerrado = texto.includes('sí') || texto.includes('si,') || texto.includes('corregida');
             }
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            if (isNaN(mesIdx)) mesIdx = 0;
             
             let cat = CATEGORIES[0];
             let maxS = 0;
             for (const c of CATEGORIES) {
                 let s = 0;
-                for (const k of c.keywords) {
-                    if (descripcion.toLowerCase().includes(k)) s++;
-                }
+                for (const k of c.keywords) { if (descripcion.toLowerCase().includes(k)) s++; }
                 if (s > maxS) { maxS = s; cat = c; }
             }
             
-            ACTOS_COND_DATA.push({
-                mes: meses[mesIdx], dia: partes[0], fecha, tipo, sector: sector.toLowerCase(),
-                observador: observador.trim(), descripcion: descripcion || '', cerrado, isVCP: false, categoria: cat
-            });
-        }
+            ACTOS_COND_DATA.push({ mes: meses[mesIdx], dia: partes[0], fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion, cerrado, isVCP: false, categoria: cat });
+        });
         
-        const vcpUrl = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${VCP_SHEET_NAME}`;
-        const resVCP = await fetch(vcpUrl);
-        const textVCP = await resVCP.text();
-        const jsonVCP = JSON.parse(textVCP.substring(47).slice(0, -2));
-        const rowsVCP = jsonVCP.table.rows;
+        const resVCP = await fetch(VCP_URL);
+        const csvVCP = await resVCP.text();
+        const rowsVCP = parseCSV(csvVCP);
         
         VCP_DATA = [];
-        for (let i = 1; i < rowsVCP.length; i++) {
-            const row = rowsVCP[i].c;
-            if (!row || row.length < 3) continue;
-            
-            const fecha = row[2] && row[2].v ? row[2].v : '';
-            const observador = row[1] && row[1].v ? row[1].v : '';
-            const sector = row[3] && row[3].v ? row[3].v : '';
-            
-            if (!fecha || !observador) continue;
+        rowsVCP.forEach(row => {
+            const fecha = row[2] || '';
+            const observador = row[1] || '';
+            const sector = row[3] || '';
+            if (!fecha || !observador) return;
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            if (isNaN(mesIdx)) mesIdx = 0;
             
-            VCP_DATA.push({
-                mes: meses[mesIdx], dia: partes[0], fecha, tipo: 'vcp', sector: sector.toLowerCase(),
-                observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, isVCP: true,
-                categoria: CATEGORIES[0], personaObservada: observador
-            });
-        }
+            VCP_DATA.push({ mes: meses[mesIdx], dia: partes[0], fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, isVCP: true, categoria: CATEGORIES[0], personaObservada: observador });
+        });
         
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
         
-        setupEventListeners();
         applyAllFilters();
-        console.log('✅ Datos cargados correctamente!');
+        console.log('✅ Cargados:', ACTOS_COND_DATA.length, 'actos/condiciones,', VCP_DATA.length, 'VCP');
     } catch (e) {
-        console.error('❌ Error:', e);
-        alert('Error al cargar datos. Revisá consola (F12)');
+        console.error('Error:', e);
+        alert('Error: ' + e.message);
     }
-}
-
-function setupEventListeners() {
-    document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyAllFilters(); });
-    document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
 }
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); }
@@ -401,11 +424,12 @@ function applyGeneralFilters() {
     document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
+    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
+    
     document.getElementById('actosStatus').textContent = actosPct >= 100 ? '✅ Cumplido' : actosPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('actosPctLabel').textContent = Math.round(actosPct) + '%';
     document.getElementById('actosBar').style.width = actosPct + '%';
     
-    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
     document.getElementById('condStatus').textContent = condPct >= 100 ? '✅ Cumplido' : condPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
     document.getElementById('condPctLabel').textContent = Math.round(condPct) + '%';
     document.getElementById('condBar').style.width = condPct + '%';
@@ -430,37 +454,18 @@ function applyVCPFilters() {
     
     const vcpPeople = {};
     vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
-    const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
-        .map(([name, count]) => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 6px;"><span style="font-weight: 700;">${name}</span><span style="font-weight: 900; color: #ec4899; background: white; padding: 4px 12px; border-radius: 12px;">${count} VCP</span></div>`).join('');
+    const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1]).map(([name, count]) => `<div style="display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #fce7f3; border-radius: 8px; margin-bottom: 6px;"><span style="font-weight: 700;">${name}</span><span style="font-weight: 900; color: #ec4899; background: white; padding: 4px 12px; border-radius: 12px;">${count} VCP</span></div>`).join('');
     document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
 }
 
-function setSector(s, btn) {
-    state.sector = s;
-    document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
-    btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none';
-    applyAllFilters();
-}
+function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyAllFilters(); }
+function setStatus(s, btn) { state.estado = s; updateButtons('statusButtons', btn, '#2563eb'); applyAllFilters(); }
+function setVCPSector(s, btn) { state.vcpSector = s; updateButtons('vcpSectorButtons', btn, '#ec4899'); applyVCPFilters(); }
+function setVCPStatus(s, btn) { state.vcpEstado = s; updateButtons('vcpStatusButtons', btn, '#ec4899'); applyVCPFilters(); }
 
-function setStatus(s, btn) {
-    state.estado = s;
-    document.querySelectorAll('#statusButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
-    btn.style.background = '#2563eb'; btn.style.color = 'white'; btn.style.border = 'none';
-    applyAllFilters();
-}
-
-function setVCPSector(s, btn) {
-    state.vcpSector = s;
-    document.querySelectorAll('#vcpSectorButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
-    btn.style.background = '#ec4899'; btn.style.color = 'white'; btn.style.border = 'none';
-    applyVCPFilters();
-}
-
-function setVCPStatus(s, btn) {
-    state.vcpEstado = s;
-    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.style.border = '2px solid #e2e8f0'; });
-    btn.style.background = '#ec4899'; btn.style.color = 'white'; btn.style.border = 'none';
-    applyVCPFilters();
+function updateButtons(containerId, activeBtn, activeColor) {
+    document.querySelectorAll('#' + containerId + ' .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.classList.remove('active'); });
+    activeBtn.style.background = activeColor; activeBtn.style.color = 'white'; activeBtn.classList.add('active');
 }
 
 function updateCategoryCards(data) {
@@ -475,8 +480,9 @@ function updateCategoryCards(data) {
         const val = counts[c.id] || 0;
         const pct = Math.round((val / total) * 100);
         const div = document.createElement('div');
-        div.className = 'category-card';
+        div.className = 'category-card' + (state.causaRaiz === c.id ? ' active' : '');
         div.style.borderColor = c.color;
+        div.onclick = () => { state.causaRaiz = state.causaRaiz === c.id ? 'todas' : c.id; applyGeneralFilters(); };
         div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
         container.appendChild(div);
     });
@@ -535,13 +541,9 @@ function renderTable(data) {
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
-        tr.innerHTML = `
-            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#fce7f3' : '#ffedd5'}; color: ${e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#ec4899' : '#ea580c'};">${e.tipo.toUpperCase()}</span></td>
-            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
-            <td style="padding: 12px;">${e.descripcion}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>
-        `;
+        const tipoBg = e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#fce7f3' : '#ffedd5';
+        const tipoColor = e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#ec4899' : '#ea580c';
+        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -556,20 +558,9 @@ function openDetailModal(report) {
     modal.style.display = 'flex';
 }
 
-function closeDetailModal() {
-    document.getElementById('detailModal').classList.add('hidden-section');
-    document.getElementById('detailModal').style.display = 'none';
-}
-
-function showRanking() {
-    document.getElementById('passwordModal').style.display = 'flex';
-    document.getElementById('passwordModal').classList.remove('hidden-section');
-}
-
-function closePasswordModal() {
-    document.getElementById('passwordModal').style.display = 'none';
-    document.getElementById('passwordModal').classList.add('hidden-section');
-}
+function closeDetailModal() { document.getElementById('detailModal').classList.add('hidden-section'); document.getElementById('detailModal').style.display = 'none'; }
+function showRanking() { document.getElementById('passwordModal').style.display = 'flex'; document.getElementById('passwordModal').classList.remove('hidden-section'); }
+function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; document.getElementById('passwordModal').classList.add('hidden-section'); }
 
 function checkPassword() {
     const pwd = document.getElementById('passwordInput').value;
@@ -588,10 +579,11 @@ function checkPassword() {
             div.innerHTML = `<span style="font-weight: 700;">${medal} ${nombre}</span> - <span style="font-weight: 900; color: #3b82f6;">${count} reportes</span>`;
             container.appendChild(div);
         });
-    } else {
-        alert('Contraseña incorrecta');
-    }
+    } else { alert('Contraseña incorrecta'); }
 }
+
+document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyAllFilters(); });
+document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
 
 window.onload = loadData;
 </script>
