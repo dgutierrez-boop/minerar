@@ -39,13 +39,7 @@
         tr:hover { background-color: #f1f5f9; }
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
-        /* Contenedor especial para el gráfico */
-        .chart-container {
-            position: relative;
-            height: 300px;
-            width: 100%;
-            margin-top: 20px;
-        }
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -173,8 +167,6 @@
                         <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section" style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 12px; font-size: 10px; font-weight: 800; cursor: pointer;">✕ Quitar Filtro</button>
                     </div>
                     <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; margin-top: 12px;"></div>
-                    
-                    <!-- AQUÍ ESTÁ EL GRÁFICO -->
                     <div class="chart-container">
                         <canvas id="categoryChart"></canvas>
                     </div>
@@ -230,6 +222,15 @@
                             <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
                             <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
                             <button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
+                        </div>
+                    </div>
+                    <!-- ✅ AGREGADO: FILTROS DE ESTADO PARA VCP -->
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO VCP</label>
+                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setStatusVCP('todos', this)" class="btn-filter active" style="background: #ec4899; color: white; border-color: #ec4899;">📊 TODOS</button>
+                            <button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
+                            <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
                         </div>
                     </div>
                 </div>
@@ -328,7 +329,11 @@ let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
 let vcpChart = null;
-let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general' };
+// ✅ AGREGADO: vcpEstado al state
+let state = { 
+    mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
+    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' 
+};
 
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
@@ -467,11 +472,15 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
+// ✅ MODIFICADO: applyVCPFilters incluye filtro de estado
 function applyVCPFilters() {
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
         const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
-        return matchMes && matchSector;
+        let matchStatus = true;
+        if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
+        else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
+        return matchMes && matchSector && matchStatus;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -515,6 +524,20 @@ function clearCausaFilter() {
 function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyGeneralFilters(); }
 function setStatus(s, btn) { state.estado = s; updateButtons('statusButtons', btn, '#2563eb'); applyGeneralFilters(); }
 function setVCPSector(s, btn) { state.vcpSector = s; updateButtons('vcpSectorButtons', btn, '#ec4899'); applyVCPFilters(); }
+
+// ✅ AGREGADO: Función para estado VCP
+function setStatusVCP(estado, btn) {
+    state.vcpEstado = estado;
+    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { 
+        b.style.background = 'white'; 
+        b.style.color = '#475569'; 
+        b.classList.remove('active'); 
+    });
+    btn.style.background = '#ec4899'; 
+    btn.style.color = 'white'; 
+    btn.classList.add('active');
+    applyVCPFilters();
+}
 
 function updateButtons(containerId, activeBtn, activeColor) {
     document.querySelectorAll('#' + containerId + ' .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.classList.remove('active'); });
