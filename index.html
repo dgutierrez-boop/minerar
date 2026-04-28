@@ -336,6 +336,94 @@ const CATEGORIES = [
     { id: 'area', name: 'Condiciones Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización', 'polvo'] }
 ];
 
+// FUNCIÓN PARA LEER CSV CORRECTAMENTE (RESPETA COMAS DENTRO DE COMILLAS)
+function parseCSVLine(line) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            inQuotes = !inQuotes;
+        } else if (char === ',' && !inQuotes) {
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current);
+    return result;
+}
+
+// FUNCIÓN PARA DETECTAR Y LEER DATOS SEGÚN ESTRUCTURA (VIEJA O NUEVA)
+function getReportData(cols, isVCP = false) {
+    const data = {};
+    
+    if (isVCP) {
+        // DETECCIÓN DE ESTRUCTURA VCP
+        const isNewStructure = cols.length > 25;
+        
+        if (isNewStructure) {
+            // NUEVA ESTRUCTURA (desde 23/4/2026)
+            data.fecha = cols[2] || '';
+            data.observador = cols[1] || '';
+            data.sector = (cols[3] || '').toLowerCase();
+            data.tipoRaw = (cols[20] || '').toUpperCase();
+            data.cerradoRaw = (cols[23] || '').toLowerCase();
+            data.personaVCP = cols[29] || data.observador;
+        } else {
+            // ESTRUCTURA VIEJA (antes de 23/4/2026)
+            data.fecha = cols[2] || '';
+            data.observador = cols[1] || '';
+            data.sector = (cols[3] || '').toLowerCase();
+            data.tipoRaw = (cols[1] || '').toUpperCase();
+            data.cerradoRaw = (cols[8] || '').toLowerCase();
+            data.personaVCP = data.observador;
+        }
+        
+        if (data.tipoRaw.includes('AI') || data.tipoRaw.includes('ACTO INSEGURO')) {
+            data.tipo = 'acto';
+        } else if (data.tipoRaw.includes('CI') || data.tipoRaw.includes('CONDICION INSEGURA')) {
+            data.tipo = 'condicion';
+        } else {
+            data.tipo = 'vcp';
+        }
+        
+        data.cerrado = data.cerradoRaw.includes('sí') || data.cerradoRaw.includes('si');
+        
+    } else {
+        // DETECCIÓN DE ESTRUCTURA ACTOS/CONDICIONES
+        const isNewStructure = cols.length > 20;
+        
+        if (isNewStructure) {
+            // NUEVA ESTRUCTURA
+            data.fecha = cols[3] || '';
+            data.tipoRaw = cols[1] || '';
+            data.sector = (cols[2] || '').toLowerCase();
+            data.observador = cols[5] || '';
+            data.descripcion = cols[6] || '';
+            data.cerradoRaw = (cols[23] || '').toLowerCase();
+        } else {
+            // ESTRUCTURA VIEJA
+            data.fecha = cols[3] || '';
+            data.tipoRaw = cols[1] || '';
+            data.sector = (cols[2] || '').toLowerCase();
+            data.observador = cols[5] || '';
+            data.descripcion = cols[6] || '';
+            data.cerradoRaw = (cols[8] || '').toLowerCase();
+        }
+        
+        data.tipo = data.tipoRaw.toLowerCase().includes('acto') ? 'acto' : 
+                    data.tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro';
+        
+        data.cerrado = data.cerradoRaw.includes('sí') || data.cerradoRaw.includes('si') || 
+                       data.cerradoRaw.includes('corregida');
+    }
+    
+    return data;
+}
+
 function getStatusClass(pct) {
     if (pct >= 100) return 'status-ok';
     if (pct >= 70) return 'status-warn';
@@ -363,49 +451,32 @@ async function loadData() {
         ACTOS_COND_DATA = [];
         
         for (let i = 1; i < linesActos.length; i++) {
-            const cols = linesActos[i].split(',');
-            if (cols.length > 5 && cols[5]) {
-                const fecha = cols[3] || '';
-                const partes = fecha.split('/');
-                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-                let mesIdx = parseInt(partes[1]) - 1;
-                if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            const cols = parseCSVLine(linesActos[i]);
+            if (cols.length > 5) {
+                const data = getReportData(cols, false);
                 
-                // Tipo
-                let tipoRaw = cols[1] || '';
-                const desc = cols[6] || '';
-                const tipo = tipoRaw.toLowerCase().includes('acto') ? 'acto' : (tipoRaw.toLowerCase().includes('condicion') ? 'condicion' : 'otro');
-                
-                // CORRECCIÓN AQUÍ: Estado basado en Columna I (índice 8)
-                // Si dice "Sí", "corregida", etc. -> CERRADO
-                // Si dice "No", "intervención" -> ABIERTO
-                const accionRaw = cols[8] || ''; 
-                let cerrado = false;
-                
-                if (accionRaw.toLowerCase().includes('sí') || accionRaw.toLowerCase().includes('si') || accionRaw.toLowerCase().includes('corregida')) {
-                    cerrado = true;
-                } else if (accionRaw.toLowerCase().includes('no')) {
-                    cerrado = false; // Abierto
-                } else {
-                    // Si está vacío, asumimos abierto por precaución o según tu lógica
-                    cerrado = false; 
-                }
-                
-                let cat = CATEGORIES[0];
-                let maxS = 0;
-                for (const c of CATEGORIES) {
-                    let s = 0;
-                    for (const k of c.keywords) {
-                        if (desc.toLowerCase().includes(k)) s++;
+                if (data.fecha && data.observador) {
+                    const partes = data.fecha.split('/');
+                    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                    let mesIdx = parseInt(partes[1]) - 1;
+                    if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+                    
+                    let cat = CATEGORIES[0];
+                    let maxS = 0;
+                    for (const c of CATEGORIES) {
+                        let s = 0;
+                        for (const k of c.keywords) {
+                            if (data.descripcion.toLowerCase().includes(k)) s++;
+                        }
+                        if (s > maxS) { maxS = s; cat = c; }
                     }
-                    if (s > maxS) { maxS = s; cat = c; }
+                    
+                    ACTOS_COND_DATA.push({
+                        mes: meses[mesIdx], dia: partes[0], fecha: data.fecha, tipo: data.tipo, 
+                        sector: data.sector, observador: data.observador.trim(), 
+                        descripcion: data.descripcion, cerrado: data.cerrado, isVCP: false, categoria: cat
+                    });
                 }
-                
-                ACTOS_COND_DATA.push({
-                    mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo, 
-                    sector: (cols[2] || '').toLowerCase(), observador: cols[5].trim(), 
-                    descripcion: desc, cerrado, isVCP: false, categoria: cat
-                });
             }
         }
         
@@ -416,24 +487,23 @@ async function loadData() {
         VCP_DATA = [];
         
         for (let i = 1; i < linesVCP.length; i++) {
-            const cols = linesVCP[i].split(',');
-            if (cols.length > 5 && cols[1]) {
-                const fecha = cols[2] || '';
-                const partes = fecha.split('/');
-                const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-                let mesIdx = parseInt(partes[1]) - 1;
-                if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+            const cols = parseCSVLine(linesVCP[i]);
+            if (cols.length > 5) {
+                const data = getReportData(cols, true);
                 
-                const observador = cols[1] || '';
-                const sector = (cols[3] || '').toLowerCase();
-                const personaVCP = cols[29] || observador;
-                
-                VCP_DATA.push({
-                    mes: meses[mesIdx], dia: partes[0], fecha: fecha, tipo: 'vcp',
-                    sector: sector, observador: observador.trim(),
-                    descripcion: `VCP a ${personaVCP}`, cerrado: true, isVCP: true,
-                    categoria: CATEGORIES[0], personaObservada: personaVCP
-                });
+                if (data.fecha && data.observador) {
+                    const partes = data.fecha.split('/');
+                    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                    let mesIdx = parseInt(partes[1]) - 1;
+                    if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 2;
+                    
+                    VCP_DATA.push({
+                        mes: meses[mesIdx], dia: partes[0], fecha: data.fecha, tipo: data.tipo,
+                        sector: data.sector, observador: data.observador.trim(),
+                        descripcion: `VCP a ${data.personaVCP}`, cerrado: data.cerrado, isVCP: true,
+                        categoria: CATEGORIES[0], personaObservada: data.personaVCP
+                    });
+                }
             }
         }
         
@@ -638,8 +708,8 @@ function updateCharts(data) {
             data: {
                 labels: labels,
                 datasets: [
-                    { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones',  condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
+                    { label: 'Actos', data: actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
+                    { label: 'Condiciones', data: condData, borderColor: '#f97316', borderDash: [5, 5], tension: 0.4 },
                     { label: 'VCP', data: vcpData, borderColor: '#ec4899', borderDash: [2, 2], tension: 0.4, pointStyle: 'triangle' }
                 ]
             },
@@ -683,7 +753,6 @@ function renderDetailTable(data) {
         tr.onmouseout = () => tr.style.background = '';
         tr.onclick = () => openDetailModal(e);
         
-        // Lógica visual de estado
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
@@ -704,7 +773,6 @@ function openDetailModal(report) {
     const modal = document.getElementById('detailModal');
     const content = document.getElementById('modalContent');
     
-    // Lógica visual en el modal
     const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
     const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
 
