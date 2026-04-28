@@ -544,7 +544,7 @@ function updateCharts(data) {
                 labels: labels,
                 datasets: [
                     { label: 'Actos',  actosData, borderColor: '#2563eb', fill: true, backgroundColor: 'rgba(37,99,235,0.1)', tension: 0.4 },
-                    { label: 'Condiciones', data: condData, borderColor: '#f97316', tension: 0.4 }
+                    { label: 'Condiciones',  condData, borderColor: '#f97316', tension: 0.4 }
                 ]
             },
             options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }
@@ -565,7 +565,7 @@ function updateCharts(data) {
              {
                 labels: CATEGORIES.map(c => c.name),
                 datasets: [{
-                    data: CATEGORIES.map(c => counts[c.id] || 0),
+                     CATEGORIES.map(c => counts[c.id] || 0),
                     backgroundColor: CATEGORIES.map(c => c.color),
                     borderWidth: 0
                 }]
