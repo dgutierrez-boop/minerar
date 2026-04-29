@@ -65,7 +65,7 @@
                 <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
             </div>
         </div>
-        <div style="display: flex; gap: 12px;">
+        <div style="display: flex; gap: 12px; align-items: center;">
             <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
                 <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
                 <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
@@ -74,6 +74,11 @@
                 <div style="font-size: 10px; font-weight: 800; color: #9d174d; text-transform: uppercase;">VCP</div>
                 <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #9d174d;">0</div>
             </div>
+            <!-- ✅ BOTÓN PARA ACTUALIZAR DATOS -->
+            <button onclick="forceRefreshData()" 
+                    style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                🔄 Actualizar
+            </button>
         </div>
     </div>
 
@@ -366,7 +371,8 @@ function parseCSV(text) {
 
 async function loadData() {
     try {
-        const res1 = await fetch(ACTOS_URL);
+        const timestamp = Date.now();
+        const res1 = await fetch(ACTOS_URL + '&t=' + timestamp);
         const rows1 = parseCSV(await res1.text());
         
         ACTOS_COND_DATA = rows1.map(row => {
@@ -403,7 +409,7 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
         }).filter(r => r.fecha && r.observador);
 
-        const res2 = await fetch(VCP_URL);
+        const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
@@ -743,6 +749,88 @@ function showPersonVCPModal(personName) {
 function closePersonVCPModal() {
     document.getElementById('personVCPModal').classList.add('hidden-section');
     document.getElementById('personVCPModal').style.display = 'none';
+}
+
+// ✅ FUNCIÓN PARA FORZAR ACTUALIZACIÓN DE DATOS
+async function forceRefreshData() {
+    try {
+        const timestamp = Date.now();
+        const actosUrl = ACTOS_URL + '&t=' + timestamp;
+        const vcpUrl = VCP_URL + '&t=' + timestamp;
+        
+        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Actualizando...';
+        btn.disabled = true;
+        
+        const res1 = await fetch(actosUrl);
+        const rows1 = parseCSV(await res1.text());
+        
+        const res2 = await fetch(vcpUrl);
+        const rows2 = parseCSV(await res2.text());
+        
+        ACTOS_COND_DATA = rows1.map(row => {
+            const fecha = row[3] || '';
+            const tipoRaw = row[1] || '';
+            const sector = row[2] || '';
+            const observador = row[5] || '';
+            const desc = row[6] || '';
+            const cerradoRaw = row[23] || '';
+            
+            let tipo = 'otro';
+            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
+            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
+            
+            let cerrado = false;
+            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
+            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
+
+            let cat = CATEGORIES[0];
+            let maxS = 0;
+            if (desc) {
+                for (const c of CATEGORIES) {
+                    let s = 0;
+                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
+                    if (s > maxS) { maxS = s; cat = c; }
+                }
+            }
+            
+            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
+        }).filter(r => r.fecha && r.observador);
+
+        VCP_DATA = rows2.map(row => {
+            const fecha = row[2] || '';
+            const observador = row[1] || '';
+            const sector = row[3] || '';
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
+            
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+        }).filter(r => r.fecha && r.observador);
+
+        document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
+        document.getElementById('totalVCP').textContent = VCP_DATA.length;
+        applyAllFilters();
+        
+        console.log('✅ Datos actualizados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
+        alert('✅ Datos actualizados correctamente');
+        
+    } catch(e) {
+        console.error('❌ Error al actualizar:', e);
+        alert('Error al actualizar: ' + e.message);
+    } finally {
+        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
+        btn.innerHTML = '🔄 Actualizar';
+        btn.disabled = false;
+    }
 }
 
 document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
