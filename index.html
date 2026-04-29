@@ -285,6 +285,7 @@
                                     <th style="padding: 12px;">Fecha</th>
                                     <th style="padding: 12px;">Observador</th>
                                     <th style="padding: 12px;">Sector</th>
+                                    <th style="padding: 12px;">Descripción</th> <!-- ✅ Columna Descripción -->
                                     <th style="padding: 12px;">Estado</th>
                                 </tr>
                             </thead>
@@ -423,13 +424,16 @@ async function loadData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
+            // ✅ AGREGADO: Leer descripción (columna E, índice 4)
+            const descripcion = row[4] || ''; 
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+            // ✅ AGREGADO: descripción real en lugar de string genérico
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -578,7 +582,6 @@ function updateCategoryCards(data) {
     });
 }
 
-// ✅ CORREGIDO: Sintaxis JS válida para Chart.js
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -591,10 +594,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -629,7 +632,6 @@ function updateCharts(data) {
     });
 }
 
-// ✅ CORREGIDO: Sintaxis JS válida para Chart.js
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
@@ -644,10 +646,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: labels,
             datasets: [{
-                data: vcpValues,
+                 vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -695,7 +697,8 @@ function renderVCPTable(data) {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
         tr.onclick = () => showPersonVCPModal(e.personaObservada);
-        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
+        // ✅ AGREGADO: Columna Descripción en la tabla
+        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px; font-size: 10px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -735,6 +738,7 @@ function showPersonVCPModal(personName) {
     nameEl.textContent = personName;
     countEl.textContent = personVCPs.length + ' VCP realizados en 2026';
     
+    // ✅ AGREGADO: Mostrar descripción en el modal
     const listHtml = personVCPs.map(v => `
         <div style="padding: 12px; background: #EFEBE9; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #8D6E63;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -743,6 +747,9 @@ function showPersonVCPModal(personName) {
             </div>
             <div style="margin-top: 4px; font-size: 11px; color: #64748b;">
                 🏭 Sector: ${v.sector.toUpperCase()}
+            </div>
+            <div style="margin-top: 4px; font-size: 11px; color: #5D4037; font-weight: 600;">
+                📝 Detalle: ${v.descripcion || 'Sin descripción'}
             </div>
         </div>
     `).join('');
@@ -813,13 +820,14 @@ async function forceRefreshData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
+            const descripcion = row[4] || '';
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: `VCP a ${observador}`, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
