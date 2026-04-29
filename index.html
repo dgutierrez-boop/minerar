@@ -473,15 +473,16 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
-// ✅ MODIFICADO: applyVCPFilters incluye filtro de estado
+// ✅ MODIFICADO: applyVCPFilters incluye filtro de estado Y año 2026
 function applyVCPFilters() {
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
         const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
+        const matchYear = e.fecha.includes('2026'); // ✅ FILTRO SOLO 2026
         let matchStatus = true;
         if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchStatus;
+        return matchMes && matchSector && matchStatus && matchYear; // ✅ Agregué matchYear
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
