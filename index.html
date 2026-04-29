@@ -198,16 +198,15 @@
 
     <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- SECCIÓN 2: VCP - ✅ COLORES CAMBIADOS A MARRÓN/DEGRADADO/SALMÓN/PASTEL -->
+    <!-- SECCIÓN 2: VCP - ✅ COLORES MARRÓN/SALMÓN -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
-            <!-- ✅ VCP: Título en marrón cálido -->
             <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
         </div>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
-                <!-- ✅ VCP: Card de filtros con borde marrón y degradado -->
+                <!-- ✅ VCP: Card de filtros con borde marrón -->
                 <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">🎯 FILTROS VCP</h3>
                     <div style="margin-bottom: 16px;">
@@ -579,6 +578,7 @@ function updateCategoryCards(data) {
     });
 }
 
+// ✅ CORREGIDO: Sintaxis JS válida para Chart.js
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -591,10 +591,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -629,11 +629,10 @@ function updateCharts(data) {
     });
 }
 
-// ✅ VCP: Gráfico con paleta de marrones, grises y salmón pastel
+// ✅ CORREGIDO: Sintaxis JS válida para Chart.js
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
-    // ✅ Paleta marrón degradado, gris cálido y salmón pastel
     const colors = ['#8D6E63', '#A1887F', '#BCAAA4', '#D7CCC8', '#FFAB91', '#FFCCBC', '#EFEBE9', '#BDBDBD'];
     
     if (vcpChart) {
@@ -645,10 +644,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: labels,
             datasets: [{
-                 vcpValues,
+                data: vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
