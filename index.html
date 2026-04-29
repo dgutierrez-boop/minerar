@@ -330,7 +330,6 @@ let VCP_DATA = [];
 let trendChart = null;
 let categoryChart = null;
 let vcpChart = null;
-// ✅ AGREGADO: vcpEstado al state
 let state = { 
     mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
     vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' 
@@ -473,19 +472,14 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
-// ✅ MODIFICADO: applyVCPFilters incluye filtro de estado Y año 2026
 function applyVCPFilters() {
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
         const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
-        
-        // ✅ FILTRO SOLO 2026 - Verifica si la fecha contiene 2026 o si el año parseado es 2026
         const matchYear = e.fecha && (e.fecha.includes('2026') || e.fecha.endsWith('2026'));
-        
         let matchStatus = true;
         if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
-        
         return matchMes && matchSector && matchStatus && matchYear;
     });
     
@@ -531,7 +525,6 @@ function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', bt
 function setStatus(s, btn) { state.estado = s; updateButtons('statusButtons', btn, '#2563eb'); applyGeneralFilters(); }
 function setVCPSector(s, btn) { state.vcpSector = s; updateButtons('vcpSectorButtons', btn, '#ec4899'); applyVCPFilters(); }
 
-// ✅ AGREGADO: Función para estado VCP
 function setStatusVCP(estado, btn) {
     state.vcpEstado = estado;
     document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { 
@@ -572,7 +565,7 @@ function updateCategoryCards(data) {
     });
 }
 
-// ✅ CORREGIDO: updateCharts con sintaxis válida
+// ✅ CORREGIDO: updateCharts con sintaxis EXPLÍCITA para Chart.js
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -585,10 +578,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         { // <--- AQUÍ ESTABA EL ERROR ANTERIOR, AHORA CORREGIDO
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0), // <--- SINTAXIS CORRECTA
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -614,7 +607,7 @@ function updateCharts(data) {
                             const value = context.parsed || 0;
                             const total = context.dataset.data.reduce((a, b) => a + b, 0);
                             const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                            return `${label}: ${value} (${percentage}%)`;
+                            return label + ': ' + value + ' (' + percentage + '%)';
                         }
                     }
                 }
@@ -623,7 +616,7 @@ function updateCharts(data) {
     });
 }
 
-// ✅ CORREGIDO: updateVCPChart con sintaxis válida
+// ✅ CORREGIDO: updateVCPChart con sintaxis EXPLÍCITA para Chart.js
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
@@ -638,10 +631,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-         { // <--- SINTAXIS CORREGIDA AQUÍ
+        data: {
             labels: labels,
             datasets: [{
-                 vcpValues, // <--- SINTAXIS CORREGIDA
+                data: vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -727,7 +720,7 @@ function showPersonVCPModal(personName) {
     const personVCPs = VCP_DATA.filter(v => v.personaObservada === personName);
     
     nameEl.textContent = personName;
-    countEl.textContent = `${personVCPs.length} VCP realizados en 2026`;
+    countEl.textContent = personVCPs.length + ' VCP realizados en 2026';
     
     const listHtml = personVCPs.map(v => `
         <div style="padding: 12px; background: #f8fafc; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #ec4899;">
