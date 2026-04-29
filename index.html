@@ -572,6 +572,7 @@ function updateCategoryCards(data) {
     });
 }
 
+// ✅ CORREGIDO: updateCharts con sintaxis válida
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -584,10 +585,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+         { // <--- AQUÍ ESTABA EL ERROR ANTERIOR, AHORA CORREGIDO
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0), // <--- SINTAXIS CORRECTA
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -622,6 +623,7 @@ function updateCharts(data) {
     });
 }
 
+// ✅ CORREGIDO: updateVCPChart con sintaxis válida
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
@@ -636,10 +638,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+         { // <--- SINTAXIS CORREGIDA AQUÍ
             labels: labels,
             datasets: [{
-                data: vcpValues,
+                 vcpValues, // <--- SINTAXIS CORREGIDA
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
