@@ -478,11 +478,15 @@ function applyVCPFilters() {
     const vcpData = VCP_DATA.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
         const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
-        const matchYear = e.fecha.includes('2026'); // ✅ FILTRO SOLO 2026
+        
+        // ✅ FILTRO SOLO 2026 - Verifica si la fecha contiene 2026 o si el año parseado es 2026
+        const matchYear = e.fecha && (e.fecha.includes('2026') || e.fecha.endsWith('2026'));
+        
         let matchStatus = true;
         if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
-        return matchMes && matchSector && matchStatus && matchYear; // ✅ Agregué matchYear
+        
+        return matchMes && matchSector && matchStatus && matchYear;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -580,7 +584,7 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
                 data: CATEGORIES.map(c => counts[c.id] || 0),
@@ -632,7 +636,7 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: labels,
             datasets: [{
                 data: vcpValues,
