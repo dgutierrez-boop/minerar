@@ -479,7 +479,6 @@ function applyGeneralFilters() {
     
     document.getElementById('kpiActos').textContent = actos.length;
     document.getElementById('kpiCondiciones').textContent = cond.length;
-    document.getElementById('kpiCriticos').textContent = filtered.filter(e => e.descripcion.toLowerCase().includes('alto')).length;
     
     const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
     const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
@@ -615,10 +614,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: labels,
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -662,10 +661,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: chartLabels,
             datasets: [{
-                 vcpValues,
+                data: vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -783,7 +782,6 @@ function closePersonVCPModal() {
     document.getElementById('personVCPModal').style.display = 'none';
 }
 
-// ✅ LÓGICA NUEVA: Control por Supervisor
 function populateSupervisors() {
     const supervisors = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort();
     const select = document.getElementById('supervisorSelect');
@@ -893,7 +891,6 @@ async function forceRefreshData() {
 document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
 document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
 
-// ✅ Event Listeners para la tarjeta de supervisor
 document.getElementById('supervisorSelect').addEventListener('change', (e) => { 
     state.supervisor = e.target.value; 
     updateSupervisorCard(); 
