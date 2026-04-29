@@ -39,6 +39,23 @@
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+        /* ✅ Ajuste para leyendas que no se corten */
+        .chart-legend-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .chart-legend-container canvas {
+            flex: 0 0 55%;
+            max-width: 55%;
+        }
+        .chart-legend-container .chartjs-legend {
+            flex: 1;
+            max-width: 45%;
+            overflow-y: auto;
+            max-height: 300px;
+            font-size: 10px;
+        }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -69,7 +86,6 @@
                 <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
                 <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
             </div>
-            <!-- ✅ VCP: Header con marrón degradado y salmón -->
             <div style="background: linear-gradient(135deg, #D7CCC8 0%, #FFCCBC 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #8D6E63;">
                 <div style="font-size: 10px; font-weight: 800; color: #4E342E; text-transform: uppercase;">VCP</div>
                 <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #5D4037;">0</div>
@@ -81,7 +97,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN 1: ACTOS Y CONDICIONES (SIN CAMBIOS) -->
+    <!-- SECCIÓN 1: ACTOS Y CONDICIONES -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
@@ -198,7 +214,7 @@
 
     <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- SECCIÓN 2: VCP - ✅ COLORES MARRÓN/SALMÓN -->
+    <!-- SECCIÓN 2: VCP -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
@@ -206,7 +222,6 @@
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
-                <!-- ✅ VCP: Card de filtros con borde marrón -->
                 <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">🎯 FILTROS VCP</h3>
                     <div style="margin-bottom: 16px;">
@@ -222,7 +237,6 @@
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR VCP</label>
                         <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <!-- ✅ Botones VCP con marrón degradado -->
                             <button onclick="setVCPSector('general', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">🏭 GENERAL</button>
                             <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
                             <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
@@ -232,7 +246,6 @@
                     <div style="margin-bottom: 16px;">
                         <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO VCP</label>
                         <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <!-- ✅ Botones estado VCP con marrón -->
                             <button onclick="setStatusVCP('todos', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODOS</button>
                             <button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
                             <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
@@ -243,13 +256,11 @@
 
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
-                    <!-- ✅ VCP: Card de personas con degradado marrón-salmón pastel -->
                     <div class="glass-card" style="padding: 24px; border-left: 5px solid #A1887F;">
                         <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
                             <h3 style="font-weight: 900; text-transform: uppercase; color: #5D4037;">👥 Personas con VCP</h3>
                             <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
                         </div>
-                        <!-- ✅ Fondo degradado marrón claro a salmón pastel -->
                         <div style="background: linear-gradient(135deg, #EFEBE9 0%, #FFCCBC 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #D7CCC8;">
                             <div style="display: flex; justify-content: space-between; align-items: center;">
                                 <span style="font-size: 13px; font-weight: 800; color: #4E342E;">OBJETIVO: 30</span>
@@ -266,16 +277,15 @@
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
 
-                    <!-- ✅ VCP: Card de gráfico con borde marrón -->
+                    <!-- ✅ Contenedor especial para gráfico con leyenda completa -->
                     <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP POR PERSONA</h3>
-                        <div class="chart-container">
+                        <div class="chart-container" style="height: 350px;">
                             <canvas id="vcpChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- ✅ VCP: Tabla con borde marrón -->
                 <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
                     <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
                     <div class="table-scroll">
@@ -285,7 +295,8 @@
                                     <th style="padding: 12px;">Fecha</th>
                                     <th style="padding: 12px;">Observador</th>
                                     <th style="padding: 12px;">Sector</th>
-                                    <th style="padding: 12px;">Descripción</th> <!-- ✅ Columna Descripción -->
+                                    <th style="padding: 12px;">Descripción</th>
+                                    <th style="padding: 12px;">Comentarios</th>
                                     <th style="padding: 12px;">Estado</th>
                                 </tr>
                             </thead>
@@ -299,25 +310,21 @@
 </div>
 
 <!-- MODALES -->
-<!-- ✅ Modal VCP con esquema marrón/salmón -->
 <div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="font-size: 20px; font-weight: 900; color: #5D4037;">👤 Detalle de VCP</h2>
             <button onclick="closePersonVCPModal()" style="background: #FFCCBC; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
         </div>
-        <!-- ✅ Header del modal con degradado marrón a salmón pastel -->
         <div id="personVCPHeader" style="background: linear-gradient(135deg, #D7CCC8 0%, #FFCCBC 100%); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #8D6E63;">
             <h3 id="personVCPName" style="font-size: 18px; font-weight: 900; color: #4E342E; margin: 0;"></h3>
             <p id="personVCPCount" style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;"></p>
         </div>
         <div id="personVCPList" style="max-height: 300px; overflow-y: auto;"></div>
-        <!-- ✅ Botón de cierre marrón -->
         <button onclick="closePersonVCPModal()" style="width: 100%; margin-top: 20px; background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
     </div>
 </div>
 
-<!-- Modal de reporte (sin cambios) -->
 <div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
     <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
@@ -330,7 +337,6 @@
 </div>
 
 <script>
-// ✅ URLs ACTUALIZADAS CON TUS HOJAS ORIGINALES
 const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
 
@@ -424,16 +430,27 @@ async function loadData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
-            // ✅ AGREGADO: Leer descripción (columna E, índice 4)
-            const descripcion = row[4] || ''; 
+            // ✅ AGREGADO: Leer descripción desde columna AG (índice 32) y comentarios desde AI (índice 34)
+            const descripcion = row[32] || '';  // Columna AG
+            const comentarios = row[34] || '';  // Columna AI
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            // ✅ AGREGADO: descripción real en lugar de string genérico
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+            return { 
+                fecha, 
+                tipo: 'vcp', 
+                sector: sector.toLowerCase(), 
+                observador: observador.trim(), 
+                descripcion: descripcion,
+                comentarios: comentarios,
+                cerrado: true, 
+                mes: meses[mesIdx], 
+                dia: partes[0], 
+                personaObservada: observador 
+            };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -582,6 +599,7 @@ function updateCategoryCards(data) {
     });
 }
 
+// ✅ CORREGIDO: Gráfico con porcentajes en labels
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -591,13 +609,20 @@ function updateCharts(data) {
         categoryChart.destroy();
     }
     
+    const total = data.length || 1;
+    const labels = CATEGORIES.map(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val / total) * 100);
+        return c.name + ' (' + pct + '%)';
+    });
+    
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
-            labels: CATEGORIES.map(c => c.name),
+        data: {
+            labels: labels,
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -612,19 +637,8 @@ function updateCharts(data) {
                     position: 'right',
                     labels: {
                         boxWidth: 12,
-                        font: { size: 11 },
-                        padding: 15
-                    }
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            const label = context.label || '';
-                            const value = context.parsed || 0;
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const percentage = total > 0 ? Math.round((value / total) * 100) : 0;
-                            return label + ': ' + value + ' (' + percentage + '%)';
-                        }
+                        font: { size: 10 },
+                        padding: 10
                     }
                 }
             }
@@ -632,10 +646,11 @@ function updateCharts(data) {
     });
 }
 
+// ✅ CORREGIDO: Gráfico VCP con porcentajes y leyenda que no se corta
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
-    const colors = ['#8D6E63', '#A1887F', '#BCAAA4', '#D7CCC8', '#FFAB91', '#FFCCBC', '#EFEBE9', '#BDBDBD'];
+    const colors = ['#8D6E63', '#A1887F', '#BCAAA4', '#D7CCC8', '#FFAB91', '#FFCCBC', '#EFEBE9', '#BDBDBD', '#795548', '#6D4C41'];
     
     if (vcpChart) {
         vcpChart.destroy();
@@ -643,13 +658,20 @@ function updateVCPChart(vcpData, vcpPeople) {
     
     if (labels.length === 0) return;
     
+    // ✅ Calcular porcentajes para mostrar en labels
+    const total = vcpValues.reduce((a, b) => a + b, 0) || 1;
+    const chartLabels = labels.map((name, i) => {
+        const pct = Math.round((vcpValues[i] / total) * 100);
+        return name + ' (' + pct + '%)';
+    });
+    
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-         {
-            labels: labels,
+        data: {
+            labels: chartLabels,
             datasets: [{
-                 vcpValues,
+                data: vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -662,10 +684,13 @@ function updateVCPChart(vcpData, vcpPeople) {
             plugins: {
                 legend: {
                     position: 'right',
+                    align: 'start',
                     labels: {
-                        boxWidth: 12,
-                        font: { size: 11 },
-                        padding: 15
+                        boxWidth: 10,
+                        font: { size: 9 },
+                        padding: 8,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
                     }
                 }
             }
@@ -697,8 +722,7 @@ function renderVCPTable(data) {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
         tr.onclick = () => showPersonVCPModal(e.personaObservada);
-        // ✅ AGREGADO: Columna Descripción en la tabla
-        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px; font-size: 10px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
+        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.descripcion || '-'}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.comentarios || '-'}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
         tbody.appendChild(tr);
     });
 }
@@ -738,7 +762,6 @@ function showPersonVCPModal(personName) {
     nameEl.textContent = personName;
     countEl.textContent = personVCPs.length + ' VCP realizados en 2026';
     
-    // ✅ AGREGADO: Mostrar descripción en el modal
     const listHtml = personVCPs.map(v => `
         <div style="padding: 12px; background: #EFEBE9; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #8D6E63;">
             <div style="display: flex; justify-content: space-between; align-items: center;">
@@ -751,6 +774,7 @@ function showPersonVCPModal(personName) {
             <div style="margin-top: 4px; font-size: 11px; color: #5D4037; font-weight: 600;">
                 📝 Detalle: ${v.descripcion || 'Sin descripción'}
             </div>
+            ${v.comentarios ? `<div style="margin-top: 4px; font-size: 10px; color: #8D6E63; font-style: italic;">💬 ${v.comentarios}</div>` : ''}
         </div>
     `).join('');
     
@@ -820,14 +844,15 @@ async function forceRefreshData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
-            const descripcion = row[4] || '';
+            const descripcion = row[32] || '';
+            const comentarios = row[34] || '';
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
