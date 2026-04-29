@@ -14,7 +14,7 @@
         .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
         .kpi-cyan { border-left: 5px solid #06b6d4; }
         .kpi-amber { border-left: 5px solid #f59e0b; }
-        .kpi-blue { border-left: 5px solid #3b82f6; }
+        .kpi-supervisor { border-left: 5px solid #6366f1; }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; border: 2px solid #e2e8f0; background: white; }
         .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
         .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
@@ -39,23 +39,6 @@
         @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
-        /* ✅ Ajuste para leyendas que no se corten */
-        .chart-legend-container {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .chart-legend-container canvas {
-            flex: 0 0 55%;
-            max-width: 55%;
-        }
-        .chart-legend-container .chartjs-legend {
-            flex: 1;
-            max-width: 45%;
-            overflow-y: auto;
-            max-height: 300px;
-            font-size: 10px;
-        }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -90,8 +73,7 @@
                 <div style="font-size: 10px; font-weight: 800; color: #4E342E; text-transform: uppercase;">VCP</div>
                 <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #5D4037;">0</div>
             </div>
-            <button onclick="forceRefreshData()" 
-                    style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <button onclick="forceRefreshData()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;">
                 🔄 Actualizar
             </button>
         </div>
@@ -139,9 +121,31 @@
                 </div>
             </div>
 
-            <div class="glass-card kpi-blue" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #2563eb; text-transform: uppercase;">CRÍTICOS</div>
-                <div id="kpiCriticos" style="font-size: 2.5rem; font-weight: 900; color: #2563eb; margin: 8px 0;">0</div>
+            <!-- ✅ NUEVA TARJETA: CONTROL POR SUPERVISOR -->
+            <div class="glass-card kpi-supervisor" style="padding: 20px;">
+                <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👔 CONTROL POR SUPERVISOR</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <select id="supervisorSelect" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todos">Todos</option>
+                    </select>
+                    <select id="supervisorMonthSelect" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todo">Todo 2026</option>
+                        <option value="enero">Enero</option>
+                        <option value="febrero">Febrero</option>
+                        <option value="marzo">Marzo</option>
+                        <option value="abril">Abril</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #0891b2; font-weight: 700;">ACTOS</div>
+                        <div id="supActosCount" style="font-size: 24px; font-weight: 900; color: #0891b2;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #d97706; font-weight: 700;">CONDICIONES</div>
+                        <div id="supCondCount" style="font-size: 24px; font-weight: 900; color: #d97706;">0</div>
+                    </div>
+                </div>
             </div>
         </section>
 
@@ -277,7 +281,6 @@
                         <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
                     </div>
 
-                    <!-- ✅ Contenedor especial para gráfico con leyenda completa -->
                     <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
                         <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP POR PERSONA</h3>
                         <div class="chart-container" style="height: 350px;">
@@ -351,7 +354,8 @@ let categoryChart = null;
 let vcpChart = null;
 let state = { 
     mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
-    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos' 
+    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos',
+    supervisor: 'todos', supervisorMes: 'todo' 
 };
 
 const CATEGORIES = [
@@ -430,32 +434,21 @@ async function loadData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
-            // ✅ AGREGADO: Leer descripción desde columna AG (índice 32) y comentarios desde AI (índice 34)
-            const descripcion = row[32] || '';  // Columna AG
-            const comentarios = row[34] || '';  // Columna AI
+            const descripcion = row[32] || '';
+            const comentarios = row[34] || '';
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = parseInt(partes[1]) - 1;
             if (isNaN(mesIdx)) mesIdx = 0;
             
-            return { 
-                fecha, 
-                tipo: 'vcp', 
-                sector: sector.toLowerCase(), 
-                observador: observador.trim(), 
-                descripcion: descripcion,
-                comentarios: comentarios,
-                cerrado: true, 
-                mes: meses[mesIdx], 
-                dia: partes[0], 
-                personaObservada: observador 
-            };
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
         }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
         
+        populateSupervisors();
         applyAllFilters();
         console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
     } catch(e) {
@@ -464,7 +457,11 @@ async function loadData() {
     }
 }
 
-function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); }
+function applyAllFilters() { 
+    applyGeneralFilters(); 
+    applyVCPFilters();
+    updateSupervisorCard();
+}
 
 function applyGeneralFilters() {
     const filtered = ACTOS_COND_DATA.filter(e => {
@@ -599,7 +596,6 @@ function updateCategoryCards(data) {
     });
 }
 
-// ✅ CORREGIDO: Gráfico con porcentajes en labels
 function updateCharts(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -619,10 +615,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: labels,
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -646,7 +642,6 @@ function updateCharts(data) {
     });
 }
 
-// ✅ CORREGIDO: Gráfico VCP con porcentajes y leyenda que no se corta
 function updateVCPChart(vcpData, vcpPeople) {
     const labels = Object.keys(vcpPeople);
     const vcpValues = Object.values(vcpPeople);
@@ -658,7 +653,6 @@ function updateVCPChart(vcpData, vcpPeople) {
     
     if (labels.length === 0) return;
     
-    // ✅ Calcular porcentajes para mostrar en labels
     const total = vcpValues.reduce((a, b) => a + b, 0) || 1;
     const chartLabels = labels.map((name, i) => {
         const pct = Math.round((vcpValues[i] / total) * 100);
@@ -668,10 +662,10 @@ function updateVCPChart(vcpData, vcpPeople) {
     const ctx = document.getElementById('vcpChart').getContext('2d');
     vcpChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: chartLabels,
             datasets: [{
-                data: vcpValues,
+                 vcpValues,
                 backgroundColor: colors.slice(0, labels.length),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -789,6 +783,28 @@ function closePersonVCPModal() {
     document.getElementById('personVCPModal').style.display = 'none';
 }
 
+// ✅ LÓGICA NUEVA: Control por Supervisor
+function populateSupervisors() {
+    const supervisors = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort();
+    const select = document.getElementById('supervisorSelect');
+    select.innerHTML = '<option value="todos">Todos</option>';
+    supervisors.forEach(s => {
+        select.innerHTML += `<option value="${s}">${s}</option>`;
+    });
+}
+
+function updateSupervisorCard() {
+    const filtered = ACTOS_COND_DATA.filter(e => {
+        const matchSup = (state.supervisor === 'todos' || e.observador === state.supervisor);
+        const matchMes = (state.supervisorMes === 'todo' || e.mes === state.supervisorMes);
+        return matchSup && matchMes;
+    });
+    const actos = filtered.filter(e => e.tipo === 'acto').length;
+    const cond = filtered.filter(e => e.tipo === 'condicion').length;
+    document.getElementById('supActosCount').textContent = actos;
+    document.getElementById('supCondCount').textContent = cond;
+}
+
 async function forceRefreshData() {
     try {
         const timestamp = Date.now();
@@ -857,6 +873,8 @@ async function forceRefreshData() {
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
+        
+        populateSupervisors();
         applyAllFilters();
         
         console.log('✅ Datos actualizados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
@@ -874,6 +892,16 @@ async function forceRefreshData() {
 
 document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
 document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
+
+// ✅ Event Listeners para la tarjeta de supervisor
+document.getElementById('supervisorSelect').addEventListener('change', (e) => { 
+    state.supervisor = e.target.value; 
+    updateSupervisorCard(); 
+});
+document.getElementById('supervisorMonthSelect').addEventListener('change', (e) => { 
+    state.supervisorMes = e.target.value; 
+    updateSupervisorCard(); 
+});
 
 window.onload = loadData;
 </script>
