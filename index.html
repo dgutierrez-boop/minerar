@@ -348,7 +348,6 @@ const OBJETIVO_VCP = 30;
 
 let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
-let trendChart = null;
 let categoryChart = null;
 let vcpChart = null;
 let state = { 
@@ -381,7 +380,7 @@ function parseCSV(text) {
             else current += c;
         }
         cols.push(current.trim());
-        if (cols.length >= 24) result.push(cols);
+        if (cols.length >= 20) result.push(cols);
     }
     return result;
 }
@@ -393,57 +392,144 @@ async function loadData() {
         // === CARGA ACTOS Y CONDICIONES ===
         const res1 = await fetch(ACTOS_URL + '&t=' + timestamp);
         const rows1 = parseCSV(await res1.text());
-        
-        ACTOS_COND_DATA = rows1.map(row => {
-            const fecha = row[3] || '';
-            const tipoRaw = row[1] || '';
-            const sector = row[2] || '';
-            const observador = row[5] || '';
-            const desc = row[6] || '';
-            const cerradoRaw = row[23] || '';
-            
-            let tipo = 'otro';
-            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
-            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
-            
-            let cerrado = false;
-            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
-            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
-            
-            const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx)) mesIdx = 0;
 
+        console.log('🔍 Total de filas en CSV:', rows1.length);
+
+        ACTOS_COND_DATA = rows1.map((row, index) => {
+            // === DETECCIÓN DE ESTRUCTURA POR FILA ===
+            // Fila 226 en adelante = índice 225+ (porque fila 1 es encabezado)
+            const esEstructuraNueva = index >= 225;
+            
+            let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
+            
+            if (esEstructuraNueva) {
+                // === ESTRUCTURA NUEVA (filas 226+) ===
+                // Columna U (20): "AI- descripción" o "CI- descripción"
+                const columnaU = row[20] || '';
+                
+                // Extraer tipo de la columna U
+                if (columnaU.startsWith('AI-')) {
+                    tipoRaw = 'Acto Inseguro';
+                    desc = columnaU.replace('AI-', '').trim();
+                } else if (columnaU.startsWith('CI-')) {
+                    tipoRaw = 'Condición Insegura';
+                    desc = columnaU.replace('CI-', '').trim();
+                } else {
+                    tipoRaw = '';
+                    desc = columnaU;
+                }
+                
+                // Fecha: columna L (11)
+                fecha = row[11] || '';
+                
+                // Observador: columna N (13) "Quien reporta"
+                observador = row[13] || '';
+                
+                // Sector: columna O (14) "Sector donde ocurrió"
+                sector = row[14] || '';
+                
+                // Cerrado: columna X (23)
+                cerradoRaw = row[23] || '';
+                
+                if (index < 230 && index >= 225) {
+                    console.log(`📋 Fila ${index + 1} (NUEVA):`, {
+                        columnaU,
+                        tipoRaw,
+                        fecha,
+                        observador,
+                        sector,
+                        desc: desc.substring(0, 50)
+                    });
+                }
+            } else {
+                // === ESTRUCTURA ANTIGUA (filas 2-225) ===
+                fecha = row[3] || '';
+                tipoRaw = row[1] || '';
+                sector = row[2] || '';
+                observador = row[5] || '';
+                desc = row[6] || '';
+                cerradoRaw = row[23] || '';
+                
+                if (index < 5) {
+                    console.log(`📋 Fila ${index + 1} (ANTIGUA):`, {
+                        fecha, observador, sector, desc: desc.substring(0, 50)
+                    });
+                }
+            }
+            
+            // Clasificar tipo
+            let tipo = 'otro';
+            if (tipoRaw.toLowerCase().includes('acto inseguro') || 
+                tipoRaw.toLowerCase().includes('comportamiento')) {
+                tipo = 'acto';
+            } else if (tipoRaw.toLowerCase().includes('condición insegura') || 
+                      tipoRaw.toLowerCase().includes('situacion')) {
+                tipo = 'condicion';
+            }
+            
+            // Clasificar estado
+            let cerrado = false;
+            if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('si')) {
+                cerrado = true;
+            } else if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('no')) {
+                cerrado = false;
+            }
+            
+            // Parsear fecha
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio',
+                          'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
+            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
+
+            // Clasificar por causa raíz
             let cat = CATEGORIES[0];
             let maxS = 0;
             if (desc) {
                 for (const c of CATEGORIES) {
                     let s = 0;
-                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
+                    for (const k of c.keywords) { 
+                        if (desc.toLowerCase().includes(k)) s++; 
+                    }
                     if (s > maxS) { maxS = s; cat = c; }
                 }
             }
             
-            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
-        }).filter(r => r.fecha && r.observador);
+            return { 
+                fecha, 
+                tipo, 
+                sector: sector.toLowerCase().trim(), 
+                observador: observador.trim(), 
+                descripcion: desc.trim(), 
+                cerrado, 
+                mes: meses[mesIdx], 
+                dia: partes[0] || '', 
+                categoria: cat 
+            };
+        }).filter(r => {
+            const valido = r.fecha && r.observador && r.observador.trim() !== '';
+            return valido;
+        });
 
-        // === CARGA VCP - CÓDIGO CORREGIDO CON ÍNDICES REALES ===
+        console.log('✅ Total Actos/Cond cargados:', ACTOS_COND_DATA.length);
+        console.log('📊 Actos:', ACTOS_COND_DATA.filter(r => r.tipo === 'acto').length);
+        console.log('📊 Condiciones:', ACTOS_COND_DATA.filter(r => r.tipo === 'condicion').length);
+
+        // === CARGA VCP ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
-            // ✅ Índices verificados con tu CSV real de VCP:
-            const fecha = row[2] || '';                    // Fecha de ejecución (col 2)
-            const observador = row[1] || '';               // Quién hizo la VCP (col 1)
-            const sector = row[3] || '';                   // Sector (col 3)
-            const descripcion = row[33] || row[24] || '';  // 📝 Tarea verificada (col 33) o fallback a comentarios (col 24)
-            const comentarios = row[24] || '';             // 💬 Comentarios principales (col 24)
-            const personaObservada = row[32] || observador; // 👤 Persona a quien se le hizo la VCP (col 32)
+            const fecha = row[2] || '';
+            const observador = row[1] || '';
+            const sector = row[3] || '';
+            const descripcion = row[33] || row[24] || '';
+            const comentarios = row[24] || '';
+            const personaObservada = row[32] || observador;
             
-            // Parseo de fecha mejorado
             const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            const meses = ['enero','febrero','marzo','abril','mayo','junio',
+                          'julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
@@ -460,10 +546,6 @@ async function loadData() {
                 personaObservada: personaObservada.trim()
             };
         }).filter(r => r.fecha && (r.observador || r.personaObservada));
-
-        // Debug para verificar que los datos cargan bien
-        console.log('🔍 DEBUG - Primer registro VCP:', VCP_DATA[0]);
-        console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
@@ -721,8 +803,8 @@ function renderGeneralTable(data) {
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
-        const tipoBg = e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#EFEBE9' : '#ffedd5';
-        const tipoColor = e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#6D4C41' : '#ea580c';
+        const tipoBg = e.tipo === 'acto' ? '#dbeafe' : '#ffedd5';
+        const tipoColor = e.tipo === 'acto' ? '#2563eb' : '#ea580c';
         tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>`;
         tbody.appendChild(tr);
     });
@@ -824,95 +906,8 @@ function updateSupervisorCard() {
 }
 
 async function forceRefreshData() {
-    try {
-        const timestamp = Date.now();
-        const actosUrl = ACTOS_URL + '&t=' + timestamp;
-        const vcpUrl = VCP_URL + '&t=' + timestamp;
-        
-        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
-        const originalText = btn.innerHTML;
-        btn.innerHTML = '⏳ Actualizando...';
-        btn.disabled = true;
-        
-        // Recargar Actos y Condiciones
-        const res1 = await fetch(actosUrl);
-        const rows1 = parseCSV(await res1.text());
-        
-        ACTOS_COND_DATA = rows1.map(row => {
-            const fecha = row[3] || '';
-            const tipoRaw = row[1] || '';
-            const sector = row[2] || '';
-            const observador = row[5] || '';
-            const desc = row[6] || '';
-            const cerradoRaw = row[23] || '';
-            
-            let tipo = 'otro';
-            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
-            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
-            
-            let cerrado = false;
-            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
-            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
-            
-            const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx)) mesIdx = 0;
-
-            let cat = CATEGORIES[0];
-            let maxS = 0;
-            if (desc) {
-                for (const c of CATEGORIES) {
-                    let s = 0;
-                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
-                    if (s > maxS) { maxS = s; cat = c; }
-                }
-            }
-            
-            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
-        }).filter(r => r.fecha && r.observador);
-
-        // Recargar VCP con índices corregidos
-        const res2 = await fetch(vcpUrl);
-        const rows2 = parseCSV(await res2.text());
-        
-        VCP_DATA = rows2.map(row => {
-            const fecha = row[2] || '';
-            const observador = row[1] || '';
-            const sector = row[3] || '';
-            const descripcion = row[33] || row[24] || '';
-            const comentarios = row[24] || '';
-            const personaObservada = row[32] || observador;
-            
-            const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
-            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
-            
-            return { 
-                fecha, tipo: 'vcp', sector: sector.toLowerCase().trim(), observador: observador.trim(), 
-                descripcion: descripcion.trim(), comentarios: comentarios.trim(), cerrado: true, 
-                mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim()
-            };
-        }).filter(r => r.fecha && (r.observador || r.personaObservada));
-
-        document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
-        document.getElementById('totalVCP').textContent = VCP_DATA.length;
-        
-        populateSupervisors();
-        applyAllFilters();
-        
-        console.log('✅ Datos actualizados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
-        alert('✅ Datos actualizados correctamente');
-        
-    } catch(e) {
-        console.error('❌ Error al actualizar:', e);
-        alert('Error al actualizar: ' + e.message);
-    } finally {
-        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
-        btn.innerHTML = '🔄 Actualizar';
-        btn.disabled = false;
-    }
+    await loadData();
+    alert('✅ Datos actualizados correctamente');
 }
 
 // Event listeners
