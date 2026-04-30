@@ -36,8 +36,16 @@
         table thead th { position: sticky; top: 0; background: white; z-index: 10; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
-        @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
-        .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        
+        /* ✅ ANIMACIÓN MODAL MEJORADA - De adentro hacia afuera */
+        @keyframes modalBounce { 
+            0% { transform: scale(0.7) translateY(50px); opacity: 0; } 
+            40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 
+            70% { transform: scale(0.98) translateY(5px); } 
+            100% { transform: scale(1) translateY(0); opacity: 1; } 
+        }
+        .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
@@ -328,13 +336,19 @@
 </div>
 
 <div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
+    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 600px; width: 90%;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
             <h2 style="font-size: 20px; font-weight: 900; color: #1e293b;">📋 Detalle del Reporte</h2>
             <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
         </div>
         <div id="reportModalContent" style="font-size: 14px; line-height: 1.8;"></div>
-        <button onclick="closeReportModal()" style="width: 100%; margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
+        <!-- Botones de navegación -->
+        <div class="modal-navigation" style="display: flex; gap: 8px; margin-top: 16px; justify-content: space-between;">
+            <button onclick="goToPreviousModal()" id="btnPrev" style="flex: 1; padding: 10px; background: #64748b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">⬅ ANTERIOR</button>
+            <div id="modalCounter" style="display: flex; align-items: center; color: #64748b; font-size: 11px; font-weight: 700; padding: 0 10px;">1 / 50</div>
+            <button onclick="goToNextModal()" id="btnNext" style="flex: 1; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">SIGUIENTE ➡</button>
+        </div>
+        <button onclick="closeReportModal()" style="width: 100%; margin-top: 12px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
     </div>
 </div>
 
@@ -356,7 +370,11 @@ let state = {
     supervisor: 'todos', supervisorMes: 'todo' 
 };
 
-// ✅ CORRECCIÓN: Keywords ampliadas y optimizadas para detectar los textos de la Columna U
+// Variables para navegación en modales
+let currentModalIndex = 0;
+let currentModalData = [];
+let currentModalType = '';
+
 const CATEGORIES = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['epp', 'protección', 'arnés', 'cinturón', 'lentes', 'guantes', 'casco', 'mameluco', 'calzado', 'careta', 'antiparras', 'delantal'] },
     { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'grasa', 'basura', 'residuo', 'sucio', 'polvo', 'barro', 'derrame', 'contenedor', 'inundado', 'agua'] },
@@ -397,18 +415,11 @@ async function loadData() {
         console.log('🔍 Total de filas en CSV:', rows1.length);
 
         ACTOS_COND_DATA = rows1.map((row, index) => {
-            // === DETECCIÓN DE ESTRUCTURA POR FILA ===
-            // Fila 226 en adelante = índice 225+ (porque fila 1 es encabezado)
             const esEstructuraNueva = index >= 225;
-            
             let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
             
             if (esEstructuraNueva) {
-                // === ESTRUCTURA NUEVA (filas 226+) ===
-                // ✅ INSTRUCCIÓN DEL USUARIO: Usar SOLO Columna U (índice 20) para Tipo y Descripción
                 const columnaU = row[20] || '';
-                
-                // Extraer tipo y descripción de la Columna U
                 if (columnaU.toUpperCase().startsWith('AI-')) {
                     tipoRaw = 'Acto Inseguro';
                     desc = columnaU.replace(/^AI-\s*/i, '').trim();
@@ -416,36 +427,14 @@ async function loadData() {
                     tipoRaw = 'Condición Insegura';
                     desc = columnaU.replace(/^CI-\s*/i, '').trim();
                 } else {
-                    // Si no tiene prefijo, asumimos que es descripción y tratamos de adivinar tipo o dejarlo genérico
-                    // Pero según el Excel, siempre tiene AI- o CI-
-                    tipoRaw = ''; 
+                    tipoRaw = '';
                     desc = columnaU;
                 }
-                
-                // Fecha: columna L (11)
                 fecha = row[11] || '';
-                
-                // Observador: columna N (13) "Quien reporta"
                 observador = row[13] || '';
-                
-                // Sector: columna O (14) "Sector donde ocurrió"
                 sector = row[14] || '';
-                
-                // Cerrado: columna X (23)
                 cerradoRaw = row[23] || '';
-                
-                if (index < 230 && index >= 225) {
-                    console.log(`📋 Fila ${index + 1} (NUEVA - Columna U):`, {
-                        columnaU,
-                        tipoRaw,
-                        fecha,
-                        observador,
-                        sector,
-                        desc: desc.substring(0, 50)
-                    });
-                }
             } else {
-                // === ESTRUCTURA ANTIGUA (filas 2-225) ===
                 fecha = row[3] || '';
                 tipoRaw = row[1] || '';
                 sector = row[2] || '';
@@ -454,66 +443,34 @@ async function loadData() {
                 cerradoRaw = row[23] || '';
             }
             
-            // Clasificar tipo
             let tipo = 'otro';
-            if (tipoRaw.toLowerCase().includes('acto inseguro') || 
-                tipoRaw.toLowerCase().includes('comportamiento')) {
-                tipo = 'acto';
-            } else if (tipoRaw.toLowerCase().includes('condición insegura') || 
-                      tipoRaw.toLowerCase().includes('situacion')) {
-                tipo = 'condicion';
-            }
+            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
+            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
             
-            // Clasificar estado
             let cerrado = false;
-            if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('si')) {
-                cerrado = true;
-            } else if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('no')) {
-                cerrado = false;
-            }
+            if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('si')) cerrado = true;
+            else if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('no')) cerrado = false;
             
-            // Parsear fecha
             const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio',
-                          'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
 
-            // ✅ CORRECCIÓN: Lógica de clasificación mejorada basada en palabras clave
-            let cat = CATEGORIES[5]; // Por defecto 'Area' (el más genérico)
+            let cat = CATEGORIES[5];
             let maxS = 0;
             if (desc) {
                 const descLower = desc.toLowerCase();
                 for (const c of CATEGORIES) {
                     let s = 0;
-                    for (const k of c.keywords) { 
-                        if (descLower.includes(k)) s++; 
-                    }
+                    for (const k of c.keywords) { if (descLower.includes(k)) s++; }
                     if (s > maxS) { maxS = s; cat = c; }
                 }
             }
             
-            return { 
-                fecha, 
-                tipo, 
-                sector: sector.toLowerCase().trim(), 
-                observador: observador.trim(), 
-                descripcion: desc.trim(), 
-                cerrado, 
-                mes: meses[mesIdx], 
-                dia: partes[0] || '', 
-                categoria: cat 
-            };
-        }).filter(r => {
-            const valido = r.fecha && r.observador && r.observador.trim() !== '';
-            return valido;
-        });
+            return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
+        }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
         console.log('✅ Total Actos/Cond cargados:', ACTOS_COND_DATA.length);
-        console.log('📊 Distribución:', ACTOS_COND_DATA.reduce((acc, curr) => { 
-            acc[curr.categoria.name] = (acc[curr.categoria.name] || 0) + 1; 
-            return acc; 
-        }, {}));
 
         // === CARGA VCP ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
@@ -523,29 +480,23 @@ async function loadData() {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
-            const descripcion = row[33] || row[24] || '';
-            const comentarios = row[24] || '';
+            const descripcion = row[32] || '';
+            const comentarios = row[28] || '';
             const personaObservada = row[32] || observador;
             
             const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio',
-                          'julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
             return { 
-                fecha, 
-                tipo: 'vcp', 
-                sector: sector.toLowerCase().trim(), 
-                observador: observador.trim(), 
-                descripcion: descripcion.trim(), 
-                comentarios: comentarios.trim(), 
-                cerrado: true, 
-                mes: meses[mesIdx], 
-                dia: partes[0] || '', 
-                personaObservada: personaObservada.trim()
+                fecha, tipo: 'vcp', sector: sector.toLowerCase().trim(), observador: observador.trim(), 
+                descripcion: descripcion.trim(), comentarios: comentarios.trim(), cerrado: true, 
+                mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim()
             };
         }).filter(r => r.fecha && (r.observador || r.personaObservada));
+
+        console.log('✅ Total VCP cargados:', VCP_DATA.length);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
@@ -626,7 +577,7 @@ function applyVCPFilters() {
     
     const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
         .map(([name, count]) => `
-            <div class="person-item" onclick="showPersonVCPModal('${name}')" 
+            <div class="person-item" onclick="showPersonVCPModalWithNav('${name}', VCP_DATA, VCP_DATA.findIndex(v => v.personaObservada === '${name}'))" 
                  style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #EFEBE9; border-radius: 8px; margin-bottom: 4px; border-left: 4px solid #A1887F;">
                 <span style="font-weight: 700; color: #5D4037;">${name}</span>
                 <span style="font-weight: 900; color: #8D6E63; background: #FFCCBC; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${count} VCP</span>
@@ -796,21 +747,15 @@ function updateVCPChart(vcpData, vcpPeople) {
 function renderGeneralTable(data) {
     const tbody = document.getElementById('generalTableBody');
     tbody.innerHTML = '';
-    
-    // ✅ Mostrar máximo 50 registros filtrados
-    const displayData = data.slice(0, 50);
-    
-    displayData.forEach(e => {
+    data.slice(0, 50).forEach((e, index) => {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
-        tr.onclick = () => openReportModal(e);
+        tr.onclick = () => openReportModalWithNav(e, data, index);
         const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
         const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
         const tipoBg = e.tipo === 'acto' ? '#dbeafe' : '#ffedd5';
         const tipoColor = e.tipo === 'acto' ? '#2563eb' : '#ea580c';
-        
-        // ✅ Mostrar categoría en la tabla para depuración visual
         tr.innerHTML = `
             <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
             <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td>
@@ -828,13 +773,82 @@ function renderGeneralTable(data) {
 function renderVCPTable(data) {
     const tbody = document.getElementById('vcpTableBody');
     tbody.innerHTML = '';
-    data.slice(0, 50).forEach(e => {
+    data.slice(0, 50).forEach((e, index) => {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
-        tr.onclick = () => showPersonVCPModal(e.personaObservada);
-        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.descripcion || '-'}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.comentarios || '-'}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
+        tr.onclick = () => showPersonVCPModalWithNav(e.personaObservada, data, index);
+        tr.innerHTML = `
+            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
+            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
+            <td style="padding: 12px;">${e.sector}</td>
+            <td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.descripcion || '-'}</td>
+            <td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.comentarios || '-'}</td>
+            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>
+        `;
         tbody.appendChild(tr);
     });
+}
+
+// ✅ FUNCIONES DE NAVEGACIÓN EN MODALES
+function openReportModalWithNav(report, allData, index) {
+    currentModalType = 'report';
+    currentModalData = allData;
+    currentModalIndex = index;
+    openReportModal(report);
+    updateNavButtons();
+}
+
+function showPersonVCPModalWithNav(personName, allData, index) {
+    currentModalType = 'vcp';
+    currentModalData = allData;
+    currentModalIndex = index;
+    showPersonVCPModal(personName);
+    updateNavButtons();
+}
+
+function updateNavButtons() {
+    const btnPrev = document.getElementById('btnPrev');
+    const btnNext = document.getElementById('btnNext');
+    const counter = document.getElementById('modalCounter');
+    
+    if (!btnPrev || !btnNext || !counter) return;
+    
+    const hasNext = currentModalIndex < currentModalData.length - 1;
+    const hasPrev = currentModalIndex > 0;
+    
+    btnPrev.style.background = hasPrev ? '#64748b' : '#cbd5e1';
+    btnPrev.style.cursor = hasPrev ? 'pointer' : 'not-allowed';
+    btnPrev.disabled = !hasPrev;
+    
+    btnNext.style.background = hasNext ? '#2563eb' : '#cbd5e1';
+    btnNext.style.cursor = hasNext ? 'pointer' : 'not-allowed';
+    btnNext.disabled = !hasNext;
+    
+    counter.textContent = `${currentModalIndex + 1} / ${currentModalData.length}`;
+}
+
+function goToNextModal() {
+    if (currentModalIndex < currentModalData.length - 1) {
+        currentModalIndex++;
+        if (currentModalType === 'report') {
+            openReportModal(currentModalData[currentModalIndex]);
+        } else if (currentModalType === 'vcp') {
+            showPersonVCPModal(currentModalData[currentModalIndex].personaObservada);
+        }
+        updateNavButtons();
+    }
+}
+
+function goToPreviousModal() {
+    if (currentModalIndex > 0) {
+        currentModalIndex--;
+        if (currentModalType === 'report') {
+            openReportModal(currentModalData[currentModalIndex]);
+        } else if (currentModalType === 'vcp') {
+            showPersonVCPModal(currentModalData[currentModalIndex].personaObservada);
+        }
+        updateNavButtons();
+    }
 }
 
 function openReportModal(report) {
@@ -858,6 +872,8 @@ function openReportModal(report) {
 }
 
 function closeReportModal() {
+    currentModalData = [];
+    currentModalIndex = 0;
     document.getElementById('reportDetailModal').classList.add('hidden-section');
     document.getElementById('reportDetailModal').style.display = 'none';
 }
@@ -896,6 +912,8 @@ function showPersonVCPModal(personName) {
 }
 
 function closePersonVCPModal() {
+    currentModalData = [];
+    currentModalIndex = 0;
     document.getElementById('personVCPModal').classList.add('hidden-section');
     document.getElementById('personVCPModal').style.display = 'none';
 }
