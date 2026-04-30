@@ -121,7 +121,6 @@
                 </div>
             </div>
 
-            <!-- ✅ NUEVA TARJETA: CONTROL POR SUPERVISOR -->
             <div class="glass-card kpi-supervisor" style="padding: 20px;">
                 <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👔 CONTROL POR SUPERVISOR</div>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
@@ -390,6 +389,8 @@ function parseCSV(text) {
 async function loadData() {
     try {
         const timestamp = Date.now();
+        
+        // === CARGA ACTOS Y CONDICIONES ===
         const res1 = await fetch(ACTOS_URL + '&t=' + timestamp);
         const rows1 = parseCSV(await res1.text());
         
@@ -427,33 +428,52 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
         }).filter(r => r.fecha && r.observador);
 
+        // === CARGA VCP - CÓDIGO CORREGIDO CON ÍNDICES REALES ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
-            const fecha = row[2] || '';
-            const observador = row[1] || '';
-            const sector = row[3] || '';
-            const descripcion = row[32] || '';
-            const comentarios = row[34] || '';
+            // ✅ Índices verificados con tu CSV real de VCP:
+            const fecha = row[2] || '';                    // Fecha de ejecución (col 2)
+            const observador = row[1] || '';               // Quién hizo la VCP (col 1)
+            const sector = row[3] || '';                   // Sector (col 3)
+            const descripcion = row[33] || row[24] || '';  // 📝 Tarea verificada (col 33) o fallback a comentarios (col 24)
+            const comentarios = row[24] || '';             // 💬 Comentarios principales (col 24)
+            const personaObservada = row[32] || observador; // 👤 Persona a quien se le hizo la VCP (col 32)
             
+            // Parseo de fecha mejorado
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx)) mesIdx = 0;
+            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
+            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
-        }).filter(r => r.fecha && r.observador);
+            return { 
+                fecha, 
+                tipo: 'vcp', 
+                sector: sector.toLowerCase().trim(), 
+                observador: observador.trim(), 
+                descripcion: descripcion.trim(), 
+                comentarios: comentarios.trim(), 
+                cerrado: true, 
+                mes: meses[mesIdx], 
+                dia: partes[0] || '', 
+                personaObservada: personaObservada.trim()
+            };
+        }).filter(r => r.fecha && (r.observador || r.personaObservada));
+
+        // Debug para verificar que los datos cargan bien
+        console.log('🔍 DEBUG - Primer registro VCP:', VCP_DATA[0]);
+        console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
         
         populateSupervisors();
         applyAllFilters();
-        console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
+        
     } catch(e) {
         console.error('❌ Error:', e);
-        alert('Error: ' + e.message);
+        alert('Error al cargar datos: ' + e.message);
     }
 }
 
@@ -814,11 +834,9 @@ async function forceRefreshData() {
         btn.innerHTML = '⏳ Actualizando...';
         btn.disabled = true;
         
+        // Recargar Actos y Condiciones
         const res1 = await fetch(actosUrl);
         const rows1 = parseCSV(await res1.text());
-        
-        const res2 = await fetch(vcpUrl);
-        const rows2 = parseCSV(await res2.text());
         
         ACTOS_COND_DATA = rows1.map(row => {
             const fecha = row[3] || '';
@@ -854,20 +872,29 @@ async function forceRefreshData() {
             return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
         }).filter(r => r.fecha && r.observador);
 
+        // Recargar VCP con índices corregidos
+        const res2 = await fetch(vcpUrl);
+        const rows2 = parseCSV(await res2.text());
+        
         VCP_DATA = rows2.map(row => {
             const fecha = row[2] || '';
             const observador = row[1] || '';
             const sector = row[3] || '';
-            const descripcion = row[32] || '';
-            const comentarios = row[34] || '';
+            const descripcion = row[33] || row[24] || '';
+            const comentarios = row[24] || '';
+            const personaObservada = row[32] || observador;
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = parseInt(partes[1]) - 1;
-            if (isNaN(mesIdx)) mesIdx = 0;
+            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
+            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
-            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
-        }).filter(r => r.fecha && r.observador);
+            return { 
+                fecha, tipo: 'vcp', sector: sector.toLowerCase().trim(), observador: observador.trim(), 
+                descripcion: descripcion.trim(), comentarios: comentarios.trim(), cerrado: true, 
+                mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim()
+            };
+        }).filter(r => r.fecha && (r.observador || r.personaObservada));
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
@@ -888,18 +915,13 @@ async function forceRefreshData() {
     }
 }
 
+// Event listeners
 document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
 document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
+document.getElementById('supervisorSelect').addEventListener('change', (e) => { state.supervisor = e.target.value; updateSupervisorCard(); });
+document.getElementById('supervisorMonthSelect').addEventListener('change', (e) => { state.supervisorMes = e.target.value; updateSupervisorCard(); });
 
-document.getElementById('supervisorSelect').addEventListener('change', (e) => { 
-    state.supervisor = e.target.value; 
-    updateSupervisorCard(); 
-});
-document.getElementById('supervisorMonthSelect').addEventListener('change', (e) => { 
-    state.supervisorMes = e.target.value; 
-    updateSupervisorCard(); 
-});
-
+// Cargar datos al iniciar
 window.onload = loadData;
 </script>
 </body>
