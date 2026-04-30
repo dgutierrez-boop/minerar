@@ -356,13 +356,14 @@ let state = {
     supervisor: 'todos', supervisorMes: 'todo' 
 };
 
+// ✅ CORRECCIÓN: Keywords ampliadas y optimizadas para detectar los textos de la Columna U
 const CATEGORIES = [
-    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
-    { id: 'orden', name: 'Orden', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite'] },
-    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo'] },
-    { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo'] },
-    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad'] },
-    { id: 'area', name: 'Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización'] }
+    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['epp', 'protección', 'arnés', 'cinturón', 'lentes', 'guantes', 'casco', 'mameluco', 'calzado', 'careta', 'antiparras', 'delantal'] },
+    { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'grasa', 'basura', 'residuo', 'sucio', 'polvo', 'barro', 'derrame', 'contenedor', 'inundado', 'agua'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'candado', 'autorización', 'señalización', 'cono', 'cartel', 'permiso', 'protocolo', 'incumplimiento', 'estándar', 'frecuencia', 'radio'] },
+    { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'maquinaria', 'montacargas', 'grúa', 'escalera', 'andamio', 'gato', 'calza', 'plataforma'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'conducción', 'manejo', 'retroceso', 'marcha', 'volante', 'sobrepaso', 'luces', 'freno', 'maniobra', 'circula'] },
+    { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'talud', 'camino', 'piso', 'iluminación', 'luz', 'acopio', 'escombrera', 'planta', 'sector', 'pared', 'banco', 'punto ciego'] }
 ];
 
 function parseCSV(text) {
@@ -404,18 +405,20 @@ async function loadData() {
             
             if (esEstructuraNueva) {
                 // === ESTRUCTURA NUEVA (filas 226+) ===
-                // Columna U (20): "AI- descripción" o "CI- descripción"
+                // ✅ INSTRUCCIÓN DEL USUARIO: Usar SOLO Columna U (índice 20) para Tipo y Descripción
                 const columnaU = row[20] || '';
                 
-                // Extraer tipo de la columna U
-                if (columnaU.startsWith('AI-')) {
+                // Extraer tipo y descripción de la Columna U
+                if (columnaU.toUpperCase().startsWith('AI-')) {
                     tipoRaw = 'Acto Inseguro';
-                    desc = columnaU.replace('AI-', '').trim();
-                } else if (columnaU.startsWith('CI-')) {
+                    desc = columnaU.replace(/^AI-\s*/i, '').trim();
+                } else if (columnaU.toUpperCase().startsWith('CI-')) {
                     tipoRaw = 'Condición Insegura';
-                    desc = columnaU.replace('CI-', '').trim();
+                    desc = columnaU.replace(/^CI-\s*/i, '').trim();
                 } else {
-                    tipoRaw = '';
+                    // Si no tiene prefijo, asumimos que es descripción y tratamos de adivinar tipo o dejarlo genérico
+                    // Pero según el Excel, siempre tiene AI- o CI-
+                    tipoRaw = ''; 
                     desc = columnaU;
                 }
                 
@@ -432,7 +435,7 @@ async function loadData() {
                 cerradoRaw = row[23] || '';
                 
                 if (index < 230 && index >= 225) {
-                    console.log(`📋 Fila ${index + 1} (NUEVA):`, {
+                    console.log(`📋 Fila ${index + 1} (NUEVA - Columna U):`, {
                         columnaU,
                         tipoRaw,
                         fecha,
@@ -449,12 +452,6 @@ async function loadData() {
                 observador = row[5] || '';
                 desc = row[6] || '';
                 cerradoRaw = row[23] || '';
-                
-                if (index < 5) {
-                    console.log(`📋 Fila ${index + 1} (ANTIGUA):`, {
-                        fecha, observador, sector, desc: desc.substring(0, 50)
-                    });
-                }
             }
             
             // Clasificar tipo
@@ -482,14 +479,15 @@ async function loadData() {
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
 
-            // Clasificar por causa raíz
-            let cat = CATEGORIES[0];
+            // ✅ CORRECCIÓN: Lógica de clasificación mejorada basada en palabras clave
+            let cat = CATEGORIES[5]; // Por defecto 'Area' (el más genérico)
             let maxS = 0;
             if (desc) {
+                const descLower = desc.toLowerCase();
                 for (const c of CATEGORIES) {
                     let s = 0;
                     for (const k of c.keywords) { 
-                        if (desc.toLowerCase().includes(k)) s++; 
+                        if (descLower.includes(k)) s++; 
                     }
                     if (s > maxS) { maxS = s; cat = c; }
                 }
@@ -512,8 +510,10 @@ async function loadData() {
         });
 
         console.log('✅ Total Actos/Cond cargados:', ACTOS_COND_DATA.length);
-        console.log('📊 Actos:', ACTOS_COND_DATA.filter(r => r.tipo === 'acto').length);
-        console.log('📊 Condiciones:', ACTOS_COND_DATA.filter(r => r.tipo === 'condicion').length);
+        console.log('📊 Distribución:', ACTOS_COND_DATA.reduce((acc, curr) => { 
+            acc[curr.categoria.name] = (acc[curr.categoria.name] || 0) + 1; 
+            return acc; 
+        }, {}));
 
         // === CARGA VCP ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
@@ -796,7 +796,11 @@ function updateVCPChart(vcpData, vcpPeople) {
 function renderGeneralTable(data) {
     const tbody = document.getElementById('generalTableBody');
     tbody.innerHTML = '';
-    data.slice(0, 50).forEach(e => {
+    
+    // ✅ Mostrar máximo 50 registros filtrados
+    const displayData = data.slice(0, 50);
+    
+    displayData.forEach(e => {
         const tr = document.createElement('tr');
         tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
         tr.onclick = () => openReportModal(e);
@@ -805,7 +809,18 @@ function renderGeneralTable(data) {
         const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
         const tipoBg = e.tipo === 'acto' ? '#dbeafe' : '#ffedd5';
         const tipoColor = e.tipo === 'acto' ? '#2563eb' : '#ea580c';
-        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>`;
+        
+        // ✅ Mostrar categoría en la tabla para depuración visual
+        tr.innerHTML = `
+            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
+            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td>
+            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
+            <td style="padding: 12px;">
+                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">${e.categoria.name}</div>
+                ${e.descripcion}
+            </td>
+            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>
+        `;
         tbody.appendChild(tr);
     });
 }
@@ -833,6 +848,7 @@ function openReportModal(report) {
         <p><strong>👤 Observador:</strong> ${report.observador}</p>
         <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
         <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
+        <p><strong>🏷️ Categoría:</strong> ${report.categoria.name}</p>
         <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
         <hr style="margin: 10px 0;">
         <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900;">${statusText}</span></p>
