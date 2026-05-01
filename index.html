@@ -320,8 +320,6 @@
                             <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
                         </div>
                     </div>
-                    <!-- ELIMINADO: FILTRO DE CAUSA RAÍZ DEL PANEL IZQUIERDO -->
-                    
                     <!-- VISOR TIEMPO REAL VCP -->
                     <div style="margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 8px;">
                         <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
@@ -512,16 +510,17 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
+        // === CARGA VCP - CORREGIDO ✅ ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
             const fecha = row[2] || '';
-            const observador = row[1] || '';
-            const sector = row[3] || '';
-            const descripcion = row[32] || '';
-            const comentarios = row[28] || '';
-            const personaObservada = row[32] || observador;
+            const observador = row[1] || '';               // Columna B - Observador
+            const sector = row[3] || '';                   // Columna D - Sector
+            const descripcion = row[32] || '';             // Columna AG - Tarea verificada
+            const comentarios = row[28] || '';             // Columna AC - Comentarios
+            const personaObservada = observador;           // ✅ USAR OBSERVADOR (no la descripción)
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -536,7 +535,7 @@ async function loadData() {
                 mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim(),
                 categoria: cat
             };
-        }).filter(r => r.fecha && (r.observador || r.personaObservada));
+        }).filter(r => r.fecha && r.observador);
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
@@ -641,9 +640,7 @@ function setVCPCause(cause) {
     if (cause !== 'todas') clearBtn.classList.remove('hidden-section');
     else clearBtn.classList.add('hidden-section');
     
-    // Actualizar visualmente las tarjetas
     updateVCPCategoryCards(VCP_DATA);
-    
     applyVCPFilters();
 }
 
@@ -679,12 +676,13 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregada la clave 'data:' antes de las llaves
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -903,12 +901,13 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregada la clave 'data:' antes de las llaves
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: labels,
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
