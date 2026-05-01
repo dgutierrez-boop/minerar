@@ -468,6 +468,68 @@ function isYear2026(fecha) {
     return false;
 }
 
+// ✅ FUNCION checkNewReports DEFINIDA
+async function checkNewReports() {
+    try {
+        const timestamp = Date.now();
+        const res = await fetch(VCP_URL + '&t=' + timestamp);
+        const rows = parseCSV(await res.text());
+        
+        const today = new Date();
+        const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        
+        const newReportsVCP = rows.filter((row, index) => {
+            if (index === 0) return false;
+            const fecha = row[2] || '';
+            return fecha === todayStr;
+        }).slice(-5);
+        
+        if (newReportsVCP.length > 0) {
+            const containerVCP = document.getElementById('realTimeReportsVCP');
+            if (containerVCP) {
+                const htmlVCP = newReportsVCP.map(report => {
+                    const observador = report[1] || 'Desconocido';
+                    const descripcion = report[32] || report[24] || 'Sin descripción';
+                    return `
+                        <div style="padding: 6px; background: white; border-radius: 4px; margin-bottom: 4px; border-left: 3px solid #f59e0b;">
+                            <strong style="color: #d97706; font-size: 9px;">👤 ${observador}</strong>
+                            <div style="color: #374151; font-size: 8px;">📝 ${descripcion.substring(0, 50)}${descripcion.length > 50 ? '...' : ''}</div>
+                        </div>
+                    `;
+                }).join('');
+                containerVCP.innerHTML = htmlVCP;
+            }
+        }
+        
+        const resActos = await fetch(ACTOS_URL + '&t=' + timestamp);
+        const rowsActos = parseCSV(await resActos.text());
+        const newReportsActos = rowsActos.filter((row, index) => {
+            if (index === 0) return false;
+            const fecha = row[3] || '';
+            return fecha === todayStr;
+        }).slice(-5);
+        
+        if (newReportsActos.length > 0) {
+            const containerActos = document.getElementById('realTimeReportsActos');
+            if (containerActos) {
+                const htmlActos = newReportsActos.map(report => {
+                    const observador = report[5] || 'Desconocido';
+                    const descripcion = report[6] || 'Sin descripción';
+                    return `
+                        <div style="padding: 6px; background: white; border-radius: 4px; margin-bottom: 4px; border-left: 3px solid #10b981;">
+                            <strong style="color: #059669; font-size: 9px;">👤 ${observador}</strong>
+                            <div style="color: #374151; font-size: 8px;">📝 ${descripcion.substring(0, 50)}${descripcion.length > 50 ? '...' : ''}</div>
+                        </div>
+                    `;
+                }).join('');
+                containerActos.innerHTML = htmlActos;
+            }
+        }
+    } catch(e) {
+        console.error('Error checking new reports:', e);
+    }
+}
+
 async function loadData() {
     try {
         const timestamp = Date.now();
