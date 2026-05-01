@@ -619,6 +619,7 @@ function applyVCPFilters() {
     document.getElementById('vcpCurrent').textContent = vcpData.length;
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
     
+    // ✅ ACTUALIZAR TARJETAS CON LOS DATOS FILTRADOS
     updateVCPCategoryCards(vcpData);
     updatePersonVCPStats();
     renderVCPTable(vcpData);
@@ -634,23 +635,34 @@ function populateVCPPeopleFilter() {
     });
 }
 
-function setVCPCause(cause) {
-    state.vcpCausa = cause;
-    const clearBtn = document.getElementById('clearVCPCauseBtn');
-    if (cause !== 'todas') clearBtn.classList.remove('hidden-section');
-    else clearBtn.classList.add('hidden-section');
+// ✅ TOGGLE CAUSA RAÍZ VCP (Igual que Actos)
+function toggleVCPCausaRaiz(id) {
+    if (state.vcpCausa === id) {
+        state.vcpCausa = 'todas'; // Deseleccionar
+    } else {
+        state.vcpCausa = id; // Seleccionar
+    }
     
-    updateVCPCategoryCards(VCP_DATA);
+    // Mostrar/ocultar botón de quitar filtro
+    const clearBtn = document.getElementById('clearVCPCauseBtn');
+    if (state.vcpCausa !== 'todas') {
+        clearBtn.classList.remove('hidden-section');
+    } else {
+        clearBtn.classList.add('hidden-section');
+    }
+    
+    // Aplicar filtros
     applyVCPFilters();
 }
 
+// ✅ QUITAR FILTRO CAUSA RAÍZ VCP
 function clearVCPCauseFilter() {
     state.vcpCausa = 'todas';
     document.getElementById('clearVCPCauseBtn').classList.add('hidden-section');
     applyVCPFilters();
-    updateVCPCategoryCards(VCP_DATA);
 }
 
+// ✅ ACTUALIZAR TARJETAS VCP CON ESTADO ACTIVO
 function updateVCPCategoryCards(data) {
     const counts = {};
     CATEGORIES.forEach(c => counts[c.id] = 0);
@@ -668,7 +680,7 @@ function updateVCPCategoryCards(data) {
         div.className = 'category-card' + (isActive ? ' active' : '');
         div.style.borderColor = c.color;
         div.onclick = () => {
-            setVCPCause(c.id);
+            toggleVCPCausaRaiz(c.id);
         };
         div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
         container.appendChild(div);
@@ -676,13 +688,13 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregada la clave 'data:' antes de las llaves
+    // ✅ CORRECCIÓN LÍNEA ~684: Agregado '' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -901,13 +913,13 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregada la clave 'data:' antes de las llaves
+    // ✅ CORRECCIÓN LÍNEA ~750: Agregado '' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: labels,
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
