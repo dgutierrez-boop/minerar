@@ -268,6 +268,7 @@
                     <select id="vcpPersonFilter" onchange="updatePersonVCPStatsOnly()" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
                         <option value="todos">Todas las personas</option>
                     </select>
+                    <!-- ✅ CORRECCIÓN: Valores en minúscula para coincidir con datos -->
                     <select id="vcpPersonMonthFilter" onchange="updatePersonVCPStatsOnly()" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
                         <option value="todo">Todo 2026</option>
                         <option value="enero">Enero</option>
@@ -398,7 +399,7 @@ const OBJETIVO_VCP = 30;
 
 let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
-let VCP_DATA_2026 = []; // ✅ FILTRO SOLO 2026
+let VCP_DATA_2026 = [];
 let categoryChart = null;
 let vcpCategoryChart = null;
 let state = { 
@@ -513,12 +514,13 @@ async function loadData() {
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
+            // ✅ CORRECCIÓN: Asumiendo formato MM/DD/AA basado en fechas como 4/28/26
+            let mesIdx = partes.length >= 2 ? parseInt(partes[0]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
 
             const cat = classifyData(desc);
             
-            return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
+            return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[1] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
         // === CARGA VCP - INDEPENDIENTE ===
@@ -535,7 +537,8 @@ async function loadData() {
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
+            // ✅ CORRECCIÓN: Asumiendo formato MM/DD/AA
+            let mesIdx = partes.length >= 2 ? parseInt(partes[0]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
             const cat = classifyData(descripcion);
@@ -543,7 +546,7 @@ async function loadData() {
             return { 
                 fecha, tipo: 'vcp', sector: sector.toLowerCase().trim(), observador: observador.trim(), 
                 descripcion: descripcion.trim(), comentarios: comentarios.trim(), cerrado: true, 
-                mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim(),
+                mes: meses[mesIdx], dia: partes[1] || '', personaObservada: personaObservada.trim(),
                 categoria: cat
             };
         }).filter(r => r.fecha && r.observador);
@@ -555,7 +558,7 @@ async function loadData() {
         document.getElementById('totalVCP').textContent = VCP_DATA_2026.length;
         
         populateSupervisors();
-        populateVCPPeopleFilter(); // ✅ Usa solo 2026
+        populateVCPPeopleFilter();
         applyAllFilters();
         checkNewReports();
         
@@ -610,7 +613,7 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
-// ✅ VCP - FILTRO INDEPENDIENTE (NO AFECTA TARJETAS NI TABLA)
+// ✅ VCP - FILTRO INDEPENDIENTE
 function applyVCPFilters() {
     const vcpData = VCP_DATA_2026.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
@@ -629,14 +632,11 @@ function applyVCPFilters() {
     document.getElementById('vcpCurrent').textContent = vcpData.length;
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
     
-    // Actualizar tarjetas y gráfico VCP
     updateVCPCategoryCards(vcpData);
-    
-    // Renderizar tabla VCP
     renderVCPTable(vcpData);
 }
 
-// ✅ FUNCIÓN SOLO PARA ACTUALIZAR ESTADÍSTICAS DE PERSONA (INDEPENDIENTE) - SOLO 2026
+// ✅ FUNCIÓN SOLO PARA ACTUALIZAR ESTADÍSTICAS DE PERSONA (INDEPENDIENTE)
 function updatePersonVCPStatsOnly() {
     const selectedPerson = document.getElementById('vcpPersonFilter').value;
     const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
@@ -717,10 +717,10 @@ function updateVCPCategoryCards(data) {
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
