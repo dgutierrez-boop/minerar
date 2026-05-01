@@ -398,6 +398,7 @@ const OBJETIVO_VCP = 30;
 
 let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
+let VCP_DATA_2026 = []; // ✅ FILTRO SOLO 2026
 let categoryChart = null;
 let vcpCategoryChart = null;
 let state = { 
@@ -454,6 +455,16 @@ function classifyData(desc) {
         }
     }
     return cat;
+}
+
+function isYear2026(fecha) {
+    if (!fecha) return false;
+    const partes = fecha.split('/');
+    if (partes.length >= 3) {
+        const year = partes[2];
+        return year === '26' || year === '2026';
+    }
+    return false;
 }
 
 async function loadData() {
@@ -537,11 +548,14 @@ async function loadData() {
             };
         }).filter(r => r.fecha && r.observador);
 
+        // ✅ FILTRO SOLO 2026 PARA VCP
+        VCP_DATA_2026 = VCP_DATA.filter(v => isYear2026(v.fecha));
+
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
-        document.getElementById('totalVCP').textContent = VCP_DATA.length;
+        document.getElementById('totalVCP').textContent = VCP_DATA_2026.length;
         
         populateSupervisors();
-        populateVCPPeopleFilter();
+        populateVCPPeopleFilter(); // ✅ Usa solo 2026
         applyAllFilters();
         checkNewReports();
         
@@ -598,16 +612,15 @@ function applyGeneralFilters() {
 
 // ✅ VCP - FILTRO INDEPENDIENTE (NO AFECTA TARJETAS NI TABLA)
 function applyVCPFilters() {
-    const vcpData = VCP_DATA.filter(e => {
+    const vcpData = VCP_DATA_2026.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
         const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
-        const matchYear = e.fecha && (e.fecha.includes('2026') || e.fecha.endsWith('2026'));
         let matchStatus = true;
         if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
         const matchCausa = (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa);
         
-        return matchMes && matchSector && matchStatus && matchYear && matchCausa;
+        return matchMes && matchSector && matchStatus && matchCausa;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -623,12 +636,13 @@ function applyVCPFilters() {
     renderVCPTable(vcpData);
 }
 
-// ✅ FUNCIÓN SOLO PARA ACTUALIZAR ESTADÍSTICAS DE PERSONA (INDEPENDIENTE)
+// ✅ FUNCIÓN SOLO PARA ACTUALIZAR ESTADÍSTICAS DE PERSONA (INDEPENDIENTE) - SOLO 2026
 function updatePersonVCPStatsOnly() {
     const selectedPerson = document.getElementById('vcpPersonFilter').value;
     const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
     
-    let filtered = VCP_DATA;
+    // ✅ FILTRAR SOLO 2026
+    let filtered = VCP_DATA_2026;
     if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
     if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
     
@@ -642,12 +656,13 @@ function updatePersonVCPStatsOnly() {
     }
 }
 
+// ✅ POPULAR FILTRO SOLO CON DATOS 2026
 function populateVCPPeopleFilter() {
-    const people = [...new Set(VCP_DATA.map(v => v.personaObservada))].filter(n => n).sort();
+    const people = [...new Set(VCP_DATA_2026.map(v => v.personaObservada))].filter(n => n).sort();
     const select = document.getElementById('vcpPersonFilter');
     select.innerHTML = '<option value="todos">Todas las personas</option>';
     people.forEach(p => {
-        const count = VCP_DATA.filter(v => v.personaObservada === p).length;
+        const count = VCP_DATA_2026.filter(v => v.personaObservada === p).length;
         select.innerHTML += `<option value="${p}">${p} (${count} VCPs)</option>`;
     });
 }
@@ -700,7 +715,6 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -848,7 +862,6 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
