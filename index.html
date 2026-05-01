@@ -37,7 +37,6 @@
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
         
-        /* ✅ ANIMACIÓN MODAL MEJORADA */
         @keyframes modalBounce { 
             0% { transform: scale(0.7) translateY(50px); opacity: 0; } 
             40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 
@@ -47,6 +46,8 @@
         .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        
         @media (max-width: 768px) {
             .header-container { flex-direction: column; gap: 16px; text-align: center; }
             section { grid-template-columns: 1fr !important; }
@@ -225,14 +226,14 @@
 
     <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- SECCIÓN 2: VCP - REDISEÑADA Y CORREGIDA -->
+    <!-- SECCIÓN 2: VCP - REDISEÑADA -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
         </div>
 
-        <!-- ✅ CORRECCIÓN: Agregados KPIs de VCP que faltaban -->
-        <section style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px;">
+        <!-- KPIs VCP -->
+        <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
             <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F; border-left: 5px solid #8D6E63;">
                 <div style="display: flex; justify-content: space-between; align-items: start;">
                     <div style="font-size: 11px; font-weight: 900; color: #5D4037; text-transform: uppercase;">VCP TOTALES (Meta: 30)</div>
@@ -249,54 +250,47 @@
                     </div>
                 </div>
             </div>
-        </section>
 
-        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-            <aside>
-                <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">🎯 FILTROS VCP</h3>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">MES VCP</label>
-                        <select id="vcpMonthFilter" style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;">
-                            <option value="todo">📅 Todo 2026</option>
-                            <option value="enero">📅 Enero</option>
-                            <option value="febrero">📅 Febrero</option>
-                            <option value="marzo">📅 Marzo</option>
-                            <option value="abril">📅 Abril</option>
-                        </select>
+            <!-- FILTRO POR PERSONAS - NUEVO -->
+            <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
+                <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👥 FILTRO POR PERSONA VCP</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <select id="vcpPersonFilter" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todos">Todas las personas</option>
+                    </select>
+                    <select id="vcpPersonMonthFilter" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todo">Todo 2026</option>
+                        <option value="enero">Enero</option>
+                        <option value="febrero">Febrero</option>
+                        <option value="marzo">Marzo</option>
+                        <option value="abril">Abril</option>
+                    </select>
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #0891b2; font-weight: 700;">VCPs</div>
+                        <div id="personVCPCount" style="font-size: 24px; font-weight: 900; color: #0891b2;">0</div>
                     </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR VCP</label>
-                        <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPSector('general', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">🏭 GENERAL</button>
-                            <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
-                            <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
-                            <button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO VCP</label>
-                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setStatusVCP('todos', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODOS</button>
-                            <button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
-                            <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">CAUSA RAÍZ VCP</label>
-                        <div id="vcpCauseButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPCause('todas', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODAS</button>
-                            <button onclick="setVCPCause('epp', this)" class="btn-filter">🛡️ Falta EPP</button>
-                            <button onclick="setVCPCause('orden', this)" class="btn-filter">🧹 Orden</button>
-                            <button onclick="setVCPCause('proc', this)" class="btn-filter">⚡ Procedimientos</button>
-                            <button onclick="setVCPCause('equip', this)" class="btn-filter">🔧 Equipos</button>
-                            <button onclick="setVCPCause('cond', this)" class="btn-filter">🚗 Conducción</button>
-                            <button onclick="setVCPCause('area', this)" class="btn-filter">🏗️ Área</button>
-                        </div>
+                    <div style="background: #fffbeb; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #d97706; font-weight: 700;">Último</div>
+                        <div id="personLastVCP" style="font-size: 12px; font-weight: 700; color: #d97706;">-</div>
                     </div>
                 </div>
-            </aside>
+            </div>
 
+            <!-- VISOR TIEMPO REAL - NUEVO -->
+            <div class="glass-card" style="padding: 20px; border: 2px solid #10b981; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);">
+                <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
+                    <div style="width: 12px; height: 12px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
+                    <div style="font-size: 11px; font-weight: 900; color: #059669; text-transform: uppercase;">🔴 REPORTES HOY</div>
+                </div>
+                <div id="realTimeReports" style="max-height: 120px; overflow-y: auto; font-size: 10px;">
+                    <p style="color: #6b7280; text-align: center; padding: 20px;">Cargando reportes...</p>
+                </div>
+            </div>
+        </section>
+
+        <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
             <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
                 <!-- Clasificación VCP -->
                 <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
@@ -512,7 +506,9 @@ async function loadData() {
         document.getElementById('totalVCP').textContent = VCP_DATA.length;
         
         populateSupervisors();
+        populateVCPPeopleFilter();
         applyAllFilters();
+        checkNewReports();
         
     } catch(e) {
         console.error('❌ Error:', e);
@@ -574,7 +570,12 @@ function applyVCPFilters() {
         if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
         else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
         const matchCausa = (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa);
-        return matchMes && matchSector && matchStatus && matchYear && matchCausa;
+        const matchPerson = (document.getElementById('vcpPersonFilter').value === 'todos' || 
+                            e.personaObservada === document.getElementById('vcpPersonFilter').value);
+        const matchPersonMonth = (document.getElementById('vcpPersonMonthFilter').value === 'todo' || 
+                                 e.mes === document.getElementById('vcpPersonMonthFilter').value);
+        
+        return matchMes && matchSector && matchStatus && matchYear && matchCausa && matchPerson && matchPersonMonth;
     });
     
     const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
@@ -584,10 +585,21 @@ function applyVCPFilters() {
     document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
     
     updateVCPCategoryCards(vcpData);
+    updatePersonVCPStats();
     renderVCPTable(vcpData);
 }
 
 // Funciones para Filtros y Tarjetas VCP
+function populateVCPPeopleFilter() {
+    const people = [...new Set(VCP_DATA.map(v => v.personaObservada))].filter(n => n).sort();
+    const select = document.getElementById('vcpPersonFilter');
+    select.innerHTML = '<option value="todos">Todas las personas</option>';
+    people.forEach(p => {
+        const count = VCP_DATA.filter(v => v.personaObservada === p).length;
+        select.innerHTML += `<option value="${p}">${p} (${count} VCPs)</option>`;
+    });
+}
+
 function setVCPCause(cause, btn) {
     state.vcpCausa = cause;
     const clearBtn = document.getElementById('clearVCPCauseBtn');
@@ -644,10 +656,10 @@ function updateVCPCategoryCards(data) {
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -658,11 +670,97 @@ function updateVCPCategoryCards(data) {
             maintainAspectRatio: false,
             cutout: '60%',
             plugins: {
-                legend: { position: 'right', labels: { boxWidth: 12, font: { size: 10 } } }
+                legend: { 
+                    position: 'right', 
+                    labels: { 
+                        boxWidth: 12, 
+                        font: { size: 10 },
+                        generateLabels: function(chart) {
+                            const data = chart.data;
+                            const total = data.datasets[0].data.reduce((a, b) => a + b, 0) || 1;
+                            return data.labels.map((label, i) => {
+                                const value = data.datasets[0].data[i];
+                                const percentage = Math.round((value / total) * 100);
+                                return {
+                                    text: `${label} (${percentage}%)`,
+                                    fillStyle: data.datasets[0].backgroundColor[i],
+                                    index: i
+                                };
+                            });
+                        }
+                    } 
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0) || 1;
+                            const percentage = Math.round((context.parsed / total) * 100);
+                            return `${context.label}: ${context.parsed} (${percentage}%)`;
+                        }
+                    }
+                }
             }
         }
     });
 }
+
+function updatePersonVCPStats() {
+    const person = document.getElementById('vcpPersonFilter').value;
+    const month = document.getElementById('vcpPersonMonthFilter').value;
+    
+    let filtered = VCP_DATA;
+    if (person !== 'todos') filtered = filtered.filter(v => v.personaObservada === person);
+    if (month !== 'todo') filtered = filtered.filter(v => v.mes === month);
+    
+    document.getElementById('personVCPCount').textContent = filtered.length;
+    
+    if (filtered.length > 0) {
+        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
+        document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
+    } else {
+        document.getElementById('personLastVCP').textContent = '-';
+    }
+}
+
+async function checkNewReports() {
+    try {
+        const timestamp = Date.now();
+        const res = await fetch(VCP_URL + '&t=' + timestamp);
+        const rows = parseCSV(await res.text());
+        
+        const today = new Date();
+        const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+        
+        const newReports = rows.filter((row, index) => {
+            if (index === 0) return false;
+            const fecha = row[2] || '';
+            return fecha === todayStr;
+        }).slice(-5);
+        
+        if (newReports.length > 0) {
+            const container = document.getElementById('realTimeReports');
+            const html = newReports.map(report => {
+                const observador = report[1] || 'Desconocido';
+                const descripcion = report[32] || report[24] || 'Sin descripción';
+                const hora = row[4] || '';
+                return `
+                    <div style="padding: 8px; background: white; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #10b981;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                            <strong style="color: #059669;">👤 ${observador}</strong>
+                        </div>
+                        <div style="color: #374151; font-size: 9px;">📝 ${descripcion.substring(0, 60)}${descripcion.length > 60 ? '...' : ''}</div>
+                    </div>
+                `;
+            }).join('');
+            container.innerHTML = html;
+        }
+    } catch(e) {
+        console.error('Error checking new reports:', e);
+    }
+}
+
+// Verificar nuevos reportes cada 30 segundos
+setInterval(checkNewReports, 30000);
 
 function renderVCPTable(data) {
     const tbody = document.getElementById('vcpTableBody');
@@ -766,7 +864,7 @@ function updateCharts(data) {
         data: {
             labels: labels,
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -924,6 +1022,14 @@ document.getElementById('monthFilter').addEventListener('change', (e) => { state
 document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
 document.getElementById('supervisorSelect').addEventListener('change', (e) => { state.supervisor = e.target.value; updateSupervisorCard(); });
 document.getElementById('supervisorMonthSelect').addEventListener('change', (e) => { state.supervisorMes = e.target.value; updateSupervisorCard(); });
+document.getElementById('vcpPersonFilter').addEventListener('change', (e) => { 
+    applyVCPFilters(); 
+    updatePersonVCPStats();
+});
+document.getElementById('vcpPersonMonthFilter').addEventListener('change', (e) => { 
+    applyVCPFilters(); 
+    updatePersonVCPStats();
+});
 
 // Cargar datos al iniciar
 window.onload = loadData;
