@@ -225,11 +225,31 @@
 
     <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- SECCIÓN 2: VCP - REDISEÑADA -->
+    <!-- SECCIÓN 2: VCP - REDISEÑADA Y CORREGIDA -->
     <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
         <div style="text-align: center; margin-bottom: 8px;">
             <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
         </div>
+
+        <!-- ✅ CORRECCIÓN: Agregados KPIs de VCP que faltaban -->
+        <section style="display: grid; grid-template-columns: 1fr; gap: 16px; margin-bottom: 24px;">
+            <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F; border-left: 5px solid #8D6E63;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="font-size: 11px; font-weight: 900; color: #5D4037; text-transform: uppercase;">VCP TOTALES (Meta: 30)</div>
+                    <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                </div>
+                <div id="vcpCurrent" style="font-size: 2.5rem; font-weight: 900; color: #5D4037; margin: 8px 0;">0</div>
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                        <span>Objetivo: 30</span>
+                        <span id="vcpPctLabel" style="font-weight: 800;">0%</span>
+                    </div>
+                    <div style="background: #D7CCC8; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s; background: linear-gradient(90deg, #8D6E63 0%, #FFAB91 100%);"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
 
         <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
             <aside>
@@ -624,10 +644,10 @@ function updateVCPCategoryCards(data) {
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {  // ✅ CORRECCIÓN: Agregado "data:"
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),  // ✅ CORRECCIÓN: Agregado "data:"
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -743,10 +763,10 @@ function updateCharts(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {  // ✅ CORRECCIÓN: Agregado "data:"
+        data: {
             labels: labels,
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),  // ✅ CORRECCIÓN: Agregado "data:"
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
