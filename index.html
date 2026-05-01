@@ -407,7 +407,6 @@ let state = {
     supervisor: 'todos', supervisorMes: 'todo' 
 };
 
-// Variables para navegación en modales
 let currentModalIndex = 0;
 let currentModalData = [];
 let currentModalType = '';
@@ -467,25 +466,13 @@ function isYear2026(fecha) {
     return false;
 }
 
-// ✅ FUNCIÓN CORREGIDA PARA FILTRO DE PERSONA VCP
 function updatePersonVCPStatsOnly() {
     const selectedPerson = document.getElementById('vcpPersonFilter').value;
     const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
     
-    console.log('🔍 Filtro Persona:', selectedPerson, 'Mes:', selectedMonth);
-    
-    // ✅ FILTRAR SOLO 2026
     let filtered = VCP_DATA_2026;
-    
-    if (selectedPerson !== 'todos') {
-        filtered = filtered.filter(v => v.personaObservada === selectedPerson);
-    }
-    
-    if (selectedMonth !== 'todo') {
-        filtered = filtered.filter(v => v.mes === selectedMonth);
-    }
-    
-    console.log('📊 Registros encontrados:', filtered.length, 'Datos:', filtered);
+    if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
+    if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
     
     document.getElementById('personVCPCount').textContent = filtered.length;
     
@@ -604,7 +591,6 @@ async function loadData() {
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            // ✅ CORRECCIÓN: Formato DD/MM/AAAA -> El mes está en partes[1]
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
 
@@ -613,7 +599,6 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
-        // === CARGA VCP - INDEPENDIENTE ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
@@ -627,7 +612,6 @@ async function loadData() {
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            // ✅ CORRECCIÓN: Formato DD/MM/AAAA -> El mes está en partes[1]
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
             
@@ -641,10 +625,6 @@ async function loadData() {
             };
         }).filter(r => r.fecha && r.observador);
 
-        console.log('📊 VCP_DATA cargado:', VCP_DATA.length);
-        console.log('📊 VCP_DATA_2026 cargado:', VCP_DATA.filter(v => isYear2026(v.fecha)).length);
-
-        // ✅ FILTRO SOLO 2026 PARA VCP
         VCP_DATA_2026 = VCP_DATA.filter(v => isYear2026(v.fecha));
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -706,7 +686,6 @@ function applyGeneralFilters() {
     renderGeneralTable(filtered);
 }
 
-// ✅ VCP - FILTRO INDEPENDIENTE
 function applyVCPFilters() {
     const vcpData = VCP_DATA_2026.filter(e => {
         const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
@@ -729,7 +708,6 @@ function applyVCPFilters() {
     renderVCPTable(vcpData);
 }
 
-// ✅ POPULAR FILTRO SOLO CON DATOS 2026
 function populateVCPPeopleFilter() {
     const people = [...new Set(VCP_DATA_2026.map(v => v.personaObservada))].filter(n => n).sort();
     const select = document.getElementById('vcpPersonFilter');
@@ -788,12 +766,13 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                 data: CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -935,12 +914,13 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: labels,
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
