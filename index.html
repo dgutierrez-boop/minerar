@@ -703,10 +703,10 @@ function updateVCPCategoryCards(data) {
     // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -851,10 +851,10 @@ function updateCharts(data) {
     // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-         {
+        data: {
             labels: labels,
             datasets: [{
-                 CATEGORIES.map(c => counts[c.id] || 0),
+                data: CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
