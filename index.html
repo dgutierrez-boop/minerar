@@ -2,15 +2,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - VERSIÓN FINAL CORREGIDA</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Minerar 2026 - Panel de Seguridad</title>
+    
+    <!-- ==================== FAVICONS ==================== -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <meta name="theme-color" content="#fbbf24">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
-        .glass-card { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
         .glass-card:hover { transform: translateY(-3px); border-color: #fbbf24; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15); background: rgba(255, 255, 255, 0.98); }
         .header-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
         .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
@@ -36,68 +46,155 @@
         @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
-        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .grid-responsive { grid-template-columns: 1fr !important; } }
+        
+        /* Alertas LED */
+        @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
+        @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #22c55e; } 50% { opacity: 0.5; box-shadow: 0 0 15px #22c55e; } }
+        
+        .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
+        .siren-green { width: 14px; height: 14px; background: #22c55e; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #22c55e; display: inline-block; }
+        
+        .report-item { transition: all 0.3s ease; animation: slideIn 0.3s ease-out; }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #1e293b;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border-left: 4px solid #fbbf24;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease-out;
+            max-width: 320px;
+            font-size: 11px;
+        }
+        @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
+        /* Contenedor tipo escudo para el logo */
+        .logo-shield {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #fff8e7, #fff3d6);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3), inset 0 1px 0 rgba(255,255,255,0.8);
+            border: 2px solid #fbbf24;
+            transition: all 0.2s ease;
+        }
+        .logo-shield:hover {
+            transform: scale(1.02);
+            box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+            border-color: #f59e0b;
+        }
+        .logo-img {
+            max-width: 80%;
+            max-height: 80%;
+            object-fit: contain;
+        }
+        
+        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } }
     </style>
 </head>
 <body>
 <div class="max-w-7xl mx-auto">
-    <!-- HEADER -->
+    <!-- HEADER CON LOGO EN ESCUDO -->
     <div class="header-container flex flex-wrap justify-between items-center">
-        <div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center shadow-lg"><span class="text-3xl">⛑️🛡️</span></div><div><h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · TRABAJEMOS SEGUROS 👷</p></div></div>
-        <div class="flex gap-3 items-center flex-wrap"><div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500"><div class="text-[9px] font-bold uppercase text-cyan-700 flex items-center gap-1"><span>📋</span> ACTOS+COND</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div></div><div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500"><div class="text-[9px] font-bold uppercase text-amber-700 flex items-center gap-1"><span>🎯</span> VCP</div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div></div><button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all flex items-center gap-2">🔄 ACTUALIZAR</button></div>
+        <div class="flex items-center gap-4">
+            <!-- Contenedor tipo escudo para el logo -->
+            <div class="logo-shield">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img">
+            </div>
+            <div>
+                <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026</h1>
+                <p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p>
+            </div>
+        </div>
+        <div class="flex gap-3 items-center flex-wrap">
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative">
+                <div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND</div>
+                <div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div>
+                <div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
+            </div>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative">
+                <div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP</div>
+                <div id="totalVCP" class="text-3xl font-black text-amber-800">0</div>
+                <div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
+            </div>
+            <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">🔄 ACTUALIZAR</button>
+        </div>
     </div>
 
     <!-- ACTOS Y CONDICIONES -->
     <div class="glass-card p-6 mb-6">
-        <div class="text-center mb-4"><h2 class="text-xl font-black text-slate-800 flex items-center justify-center gap-2">📋 OBJETIVOS MENSUALES ACTOS Y CONDICIONES <span class="text-2xl">(110)</span> 👷</h2><p class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p></div>
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-slate-800">📋 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2><p class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p></div>
         <div class="grid md:grid-cols-3 gap-4 my-5">
-            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800 flex items-center gap-1">⚠️ ACTOS (AI) <span>👷</span></span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800 flex items-center gap-1">🏚️ CONDICIONES (CI) <span>🔧</span></span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800 flex items-center gap-1">👔 CONTROL POR SUPERVISOR <span>🦺</span></p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todos">👥 Todos</option></select><select id="supervisorMonthSelect" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200"><span class="text-[10px] text-cyan-700 font-bold">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700 font-bold">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700">0</div></div></div></div>
+            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800">⚠️ ACTOS (AI) 👷</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div><div class="flex justify-between"><span>🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center"><span class="text-[10px] font-bold">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center"><span class="text-[10px] font-bold">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700">0</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4"><h3 class="font-black mb-2 text-slate-800 flex items-center gap-1">🔍 FILTROS ACTOS <span>⚙️</span></h3><label class="text-xs font-bold block mb-1">📅 MES</label><select id="monthFilter" class="w-full border border-slate-300 rounded-lg p-2 text-xs mb-3 bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select><label class="text-xs font-bold block mb-1">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold block mb-1">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div><div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200"><div class="flex gap-2 items-center"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div><span class="text-[9px] font-bold uppercase text-emerald-700 flex items-center gap-1">🔴 REPORTES EN VIVO <span>📢</span></span></div><div id="realTimeReportsActos" class="text-[9px] max-h-28 overflow-y-auto mt-1"></div></div></div></aside>
-            <main><div class="glass-card p-5"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-slate-800 flex items-center gap-1">📊 CLASIFICACIÓN POR CAUSA RAÍZ <span>🛡️</span></h3><button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full text-red-700">✕ Quitar filtro</button></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-4"></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-            <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-slate-800 flex items-center gap-1">📋 DETALLE DE ACTOS Y CONDICIONES <span>📝</span></h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-50"><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div></main>
+            <aside><div class="glass-card p-4"><h3 class="font-black mb-2">🔍 FILTROS ACTOS ⚙️</h3><label class="text-xs font-bold">📅 MES</label><select id="monthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option></select><label class="text-xs font-bold">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+                <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO</span>
+                        <div id="actosLed" class="siren-red"></div>
+                    </div>
+                    <div id="realTimeReportsActos" class="text-[9px] max-h-36 overflow-y-auto mt-2 space-y-1"></div>
+                </div>
+            </div></aside>
+            <main><div class="glass-card p-5"><div class="flex justify-between"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3><button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full">✕ Quitar filtro</button></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-4"></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+            <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-50"><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div></main>
         </div>
     </div>
 
-    <hr class="my-4 border-slate-200">
+    <hr class="my-4">
 
     <!-- VCP -->
     <div class="glass-card p-6 border-2 border-amber-200">
-        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800 flex items-center justify-center gap-2">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) <span class="text-2xl">🛡️👷</span></h2></div>
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
-            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800 flex items-center gap-1">📊 VCP TOTALES <span>🎯</span></span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Meta: 30</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-indigo-800 flex items-center gap-1">👥 FILTRO POR PERSONA VCP <span>🧑‍🏭</span></p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200"><span class="text-[10px] text-cyan-700 font-bold">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700 font-bold">🕒 Último</span><div id="personLastVCP" class="text-sm font-black text-amber-700">-</div></div></div></div>
+            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta: 30)</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center"><span class="text-[10px] font-bold">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center"><span class="text-[10px] font-bold">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2 flex items-center gap-1">🎯 FILTROS VCP <span>⚙️</span></h3><label class="text-xs font-bold block mb-1">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border border-slate-300 rounded-lg p-2 text-xs mb-3 bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select><label class="text-xs font-bold block mb-1">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold block mb-1">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div><div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200"><div class="flex gap-2 items-center"><div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div><span class="text-[9px] font-bold uppercase text-amber-700 flex items-center gap-1">🔴 REPORTES VCP HOY <span>🚧</span></span></div><div id="realTimeReportsVCP" class="text-[9px] max-h-28 overflow-y-auto mt-1"></div></div></div></aside>
-            <main><div class="glass-card p-5 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 flex items-center gap-1">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ <span>🔥</span><span>💚</span><span>⭐</span></h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full text-red-700">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4"></div><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
-            <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800 flex items-center gap-1">📋 DETALLE DE VCP <span>📝</span></h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-amber-50"><tr><th class="p-2">📅 Fecha</th><th>👤 Persona Observada</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div></main>
+            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+                <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[10px] font-bold uppercase text-amber-700">📢 REPORTES EN VIVO</span>
+                        <div id="vcpLed" class="siren-red"></div>
+                    </div>
+                    <div id="realTimeReportsVCP" class="text-[9px] max-h-36 overflow-y-auto mt-2 space-y-1"></div>
+                </div>
+            </div></aside>
+            <main><div class="glass-card p-5 border border-amber-200"><div class="flex justify-between"><h3 class="font-black uppercase text-amber-800">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4"></div><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
+            <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-amber-50"><tr><th class="p-2">📅 Fecha</th><th>👤 Persona Observada</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div></main>
         </div>
     </div>
 </div>
 
 <!-- MODAL -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;"><div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200"><div class="flex justify-between"><h2 class="font-black text-xl text-slate-800 flex items-center gap-2">📋 Detalle del Reporte <span>🛡️</span></h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div><div id="reportModalContent" class="my-4 text-sm text-slate-700"></div><div class="flex justify-between gap-2"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-full text-sm transition-all">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-700">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full text-sm font-bold transition-all">Siguiente ➡</button></div><button onclick="closeReportModal()" class="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;"><div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200"><div class="flex justify-between"><h2 class="font-black text-xl text-slate-800">📋 Detalle del Reporte</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div><div id="reportModalContent" class="my-4 text-sm text-slate-700"></div><div class="flex justify-between gap-2"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-full text-sm">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-700">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div><button onclick="closeReportModal()" class="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button></div></div>
 
 <script>
 // ==================== CONSTANTES ====================
 const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
 
-const OBJETIVO_ACTOS = 66;
-const OBJETIVO_CONDICIONES = 44;
-const OBJETIVO_VCP = 30;
-
-let ACTOS_COND_DATA = [];
-let VCP_DATA = [];
-let categoryChart = null;
-let vcpCategoryChart = null;
+const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
+let ACTOS_COND_DATA = [], VCP_DATA = [];
+let categoryChart = null, vcpCategoryChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
+
+// Contadores y control de LEDs
+let actosNovedades = 0, vcpNovedades = 0;
+let actosLedTimeout = null, vcpLedTimeout = null;
 
 // ==================== CATEGORÍAS ====================
 const CATEGORIES_ACTOS = [
@@ -126,6 +223,33 @@ function classifyData(desc, useVCP = false) {
 function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
 function parseFecha(f) { if (!f) return { dia: '', mes: '', valido: false }; let fecha = f.split(' ')[0]; if (fecha.includes('/')) { let p = fecha.split('/'); if (p.length >= 2) { let m = parseInt(p[1]); if (!isNaN(m) && m >= 1 && m <= 12) { const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return { dia: p[0], mes: meses[m-1], valido: true }; } } } if (fecha.includes('-')) { let p = fecha.split('-'); if (p.length >= 3) { let m = parseInt(p[1]); if (!isNaN(m) && m >= 1 && m <= 12) { const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return { dia: p[2], mes: meses[m-1], valido: true }; } } } return { dia: '', mes: '', valido: false }; }
 
+function showToast(tipo, titulo, mensaje, sector) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    const icono = tipo === 'actos' ? '🔔📋' : '🔔🎯';
+    const color = tipo === 'actos' ? '#10b981' : '#f59e0b';
+    toast.style.borderLeftColor = color;
+    toast.innerHTML = `<div class="flex items-center gap-2 mb-1"><span class="text-sm">${icono}</span><strong class="text-xs">${titulo}</strong></div><div class="text-[10px] text-slate-300">👤 ${mensaje.observador || mensaje.personaObservada || 'Desconocido'}</div><div class="text-[9px] text-slate-400 mt-1">🏭 Sector: ${sector || 'No especificado'}</div><div class="text-[9px] text-slate-400 truncate">📝 ${(mensaje.descripcion || '').substring(0, 60)}${(mensaje.descripcion || '').length > 60 ? '...' : ''}</div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 5000);
+}
+
+function actualizarLED(tipo, hayNovedad) {
+    const ledDiv = document.getElementById(`${tipo}Led`);
+    if (!ledDiv) return;
+    if (hayNovedad) {
+        ledDiv.className = 'siren-green';
+        if (tipo === 'actos' && actosLedTimeout) clearTimeout(actosLedTimeout);
+        if (tipo === 'vcp' && vcpLedTimeout) clearTimeout(vcpLedTimeout);
+        const timeout = setTimeout(() => {
+            const otroLed = document.getElementById(`${tipo}Led`);
+            if (otroLed) otroLed.className = 'siren-red';
+        }, 5000);
+        if (tipo === 'actos') actosLedTimeout = timeout;
+        else vcpLedTimeout = timeout;
+    }
+}
+
 async function loadData() {
     try {
         const timestamp = Date.now();
@@ -135,67 +259,49 @@ async function loadData() {
         ACTOS_COND_DATA = [];
         for (let i = 0; i < rows1.length; i++) {
             const row = rows1[i];
-            const esEstructuraNueva = i >= 225;
+            const esNueva = i >= 225;
             let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
-            if (esEstructuraNueva) {
-                const columnaU = row[20] || '';
-                if (columnaU.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = columnaU.replace(/^AI-\s*/i, '').trim(); }
-                else if (columnaU.toUpperCase().startsWith('CI-')) { tipoRaw = 'Condición Insegura'; desc = columnaU.replace(/^CI-\s*/i, '').trim(); }
-                else { tipoRaw = ''; desc = columnaU; }
+            if (esNueva) {
+                const colU = row[20] || '';
+                if (colU.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = colU.replace(/^AI-\s*/i, '').trim(); }
+                else if (colU.toUpperCase().startsWith('CI-')) { tipoRaw = 'Condición Insegura'; desc = colU.replace(/^CI-\s*/i, '').trim(); }
+                else { tipoRaw = ''; desc = colU; }
                 fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || '';
             } else {
                 fecha = row[3] || ''; tipoRaw = row[1] || ''; sector = row[2] || ''; observador = row[5] || ''; desc = row[6] || ''; cerradoRaw = row[23] || '';
             }
             let tipo = 'otro';
-            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
-            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
-            let cerrado = false;
-            if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('si')) cerrado = true;
+            if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
+            else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
+            let cerrado = cerradoRaw && cerradoRaw.toLowerCase().includes('si');
             const partes = fecha.split('/'); const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
-            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
+            if (isNaN(mesIdx) || mesIdx < 0) mesIdx = 0;
             const cat = classifyData(desc, false);
             ACTOS_COND_DATA.push({ fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat });
         }
         console.log(`✅ ACTOS cargados: ${ACTOS_COND_DATA.length}`);
         
-        // VCP - CORREGIDO: ahora personaObservada es columna B (índice 1) correctamente
+        // VCP
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         VCP_DATA = [];
         for (let i = 0; i < rows2.length; i++) {
             const row = rows2[i];
-            // Columna C (índice 2) = Fecha de ejecución (NO la marca temporal)
-            const fechaRaw = row[2] || ''; 
-            const fecha = fechaRaw.split(' ')[0];
+            const fechaRaw = row[2] || ''; const fecha = fechaRaw.split(' ')[0];
             if (!fecha.includes('2026') && !fecha.endsWith('/26')) continue;
-            const fechaData = parseFecha(fecha); if (!fechaData.valido) continue;
-            // Columna B (índice 1) = Persona observada (el nombre correcto)
-            const personaObs = (row[1] || '').trim(); 
-            if (!personaObs) continue;
-            // Columna D (índice 3) = Sector
+            const fd = parseFecha(fecha); if (!fd.valido) continue;
+            const personaObs = (row[1] || '').trim(); if (!personaObs) continue;
             const sector = (row[3] || '').toLowerCase().trim() || 'general';
-            const descripcion = row[32] || ''; 
-            const comentarios = row[28] || '';
-            const cat = classifyData(descripcion, true);
-            VCP_DATA.push({ 
-                fecha, 
-                tipo: 'vcp', 
-                sector, 
-                personaObservada: personaObs,  // Esta es la persona a quien se le hizo la VCP
-                descripcion, 
-                comentarios, 
-                cerrado: true, 
-                mes: fechaData.mes, 
-                dia: fechaData.dia, 
-                categoria: cat 
-            });
+            const desc = row[32] || ''; const coment = row[28] || '';
+            const cat = classifyData(desc, true);
+            VCP_DATA.push({ fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat });
         }
-        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length}`);
+        console.log(`✅ VCP cargados: ${VCP_DATA.length}`);
         
         document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').innerText = VCP_DATA.length;
-        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); checkNewReports();
+        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); 
     } catch(e) { console.error(e); alert('Error: ' + e.message); }
 }
 
@@ -205,7 +311,7 @@ function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
     let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
     document.getElementById('kpiActos').innerText = actos.length; document.getElementById('kpiCondiciones').innerText = cond.length;
-    let pA = Math.min(actos.length/OBJETIVO_ACTOS*100,100), pC = Math.min(cond.length/OBJETIVO_CONDICIONES*100,100);
+    let pA = Math.min(actos.length/OBJ_ACTOS*100,100), pC = Math.min(cond.length/OBJ_COND*100,100);
     document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
     document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
     let up = (id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
@@ -217,7 +323,7 @@ function applyGeneralFilters() {
 
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
-    let pct = Math.min(f.length/OBJETIVO_VCP*100,100);
+    let pct = Math.min(f.length/OBJ_VCP*100,100);
     let vs = document.getElementById('vcpStatus'); if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente';
     document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length;
     document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
@@ -257,51 +363,15 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
 function updateCharts(data, categories, canvasId) {
     let counts = {}; categories.forEach(c=>counts[c.id]=0);
     data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let total = data.length || 1;
     let ctx = document.getElementById(canvasId).getContext('2d');
     if(canvasId === 'categoryChart' && categoryChart) categoryChart.destroy();
     if(canvasId === 'vcpCategoryChart' && vcpCategoryChart) vcpCategoryChart.destroy();
-    
-    let options = {
+    let chart = new Chart(ctx, {
         type: 'doughnut',
-        data: { 
-            labels: categories.map(c=>c.name), 
-            datasets: [{ 
-                data: categories.map(c=>counts[c.id]||0), 
-                backgroundColor: categories.map(c=>c.color), 
-                borderWidth: 3, 
-                borderColor: 'white',
-                hoverOffset: 15,
-                offset: 5
-            }] 
-        },
-        options: { 
-            cutout: '55%', 
-            plugins: { 
-                legend: { position: 'right', labels: { font: { size: 10, weight: 'bold', family: 'Inter' }, usePointStyle: true, pointStyle: 'circle', padding: 15 } },
-                tooltip: { 
-                    callbacks: { 
-                        label: (ctx) => { 
-                            let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); 
-                            let pct = Math.round((ctx.parsed/totalCtx)*100); 
-                            return `${ctx.label}: ${ctx.parsed} (${pct}%)`; 
-                        } 
-                    },
-                    backgroundColor: '#1e293b',
-                    titleColor: '#fbbf24',
-                    bodyColor: '#e2e8f0',
-                    borderColor: '#fbbf24',
-                    borderWidth: 1
-                }
-            },
-            layout: { padding: 10 },
-            animation: { animateRotate: true, animateScale: true }
-        }
-    };
-    
-    let chart = new Chart(ctx, options);
-    if(canvasId === 'categoryChart') categoryChart = chart;
-    else vcpCategoryChart = chart;
+        data: { labels: categories.map(c=>c.name), datasets: [{ data: categories.map(c=>counts[c.id]||0), backgroundColor: categories.map(c=>c.color), borderWidth: 3, borderColor: 'white', hoverOffset: 15 }] },
+        options: { cutout: '55%', plugins: { legend: { position: 'right', labels: { font: { size: 10, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let total = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
+    });
+    if(canvasId === 'categoryChart') categoryChart = chart; else vcpCategoryChart = chart;
 }
 
 function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
@@ -340,57 +410,82 @@ function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn
 
 function renderGeneralTable(data){
     let tb=document.getElementById('generalTableBody'); tb.innerHTML='';
-    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModalWithNav(e,data,i);
+    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModal(e,i,data);
     tr.innerHTML=`<td class="p-2 font-bold">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);});
 }
 function renderVCPTable(data){
     let tb=document.getElementById('vcpTableBody'); tb.innerHTML='';
-    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModalWithNav(e,data,i);
+    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModal(e,i,data);
     tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);});
 }
-async function checkNewReports(){ try { let hoy=new Date(), hs=`${hoy.getDate()}/${hoy.getMonth()+1}/${hoy.getFullYear()}`; let ra=await fetch(ACTOS_URL+'&t='+Date.now()), raRows=parseCSV(await ra.text()), newAct=raRows.filter((r,i)=>i>=0&&(r[3]||'')===hs).slice(-5); let ca=document.getElementById('realTimeReportsActos'); if(ca) ca.innerHTML=newAct.length?newAct.map(r=>`<div class="bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-emerald-500 shadow-sm"><div class="flex items-center gap-1"><span class="text-[10px] font-bold text-emerald-600">🔔 NUEVO REPORTE</span><span class="text-[9px] text-slate-400">${r[3]||hs}</span></div><div><span class="font-semibold">👤 ${r[5]||'?'}</span><br><span class="text-[9px]">📝 ${(r[6]||'').substring(0,45)}</span></div></div>`).join(''):'<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; let rv=await fetch(VCP_URL+'&t='+Date.now()), rvRows=parseCSV(await rv.text()), newV=rvRows.filter((r,i)=>i>=0&&(r[2]||'')===hs).slice(-5); let cv=document.getElementById('realTimeReportsVCP'); if(cv) cv.innerHTML=newV.length?newV.map(r=>`<div class="bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-amber-500 shadow-sm"><div class="flex items-center gap-1"><span class="text-[10px] font-bold text-amber-600">🔔 NUEVO VCP</span><span class="text-[9px] text-slate-400">${r[2]||hs}</span></div><div><span class="font-semibold">🧑‍🏭 ${r[1]||'?'}</span><br><span class="text-[9px]">📝 ${(r[32]||'').substring(0,45)}</span></div></div>`).join(''):'<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; } catch(e){ console.error(e); } }
+async function checkNewReports(){ 
+    try { 
+        let hoy = new Date(), hs = `${hoy.getDate()}/${hoy.getMonth()+1}/${hoy.getFullYear()}`; 
+        let ra = await fetch(ACTOS_URL+'&t='+Date.now()), raRows = parseCSV(await ra.text()), newAct = raRows.filter((r,i)=>i>=0&&(r[3]||'')===hs);
+        let ca = document.getElementById('realTimeReportsActos'); 
+        if(ca) {
+            let oldCount = ca.querySelectorAll('.report-item').length;
+            ca.innerHTML = '';
+            if(newAct.length){
+                let nuevosFiltrados = newAct.slice(-5);
+                nuevosFiltrados.forEach(r=>{let d=document.createElement('div');d.className='report-item bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-emerald-500 shadow-sm';d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-emerald-600">🔔 NUEVO</span><span class="text-[9px] text-slate-400">${r[3]||hs}</span></div><div><span class="font-semibold">👤 ${r[5]||'?'}</span><br><span class="text-[9px]">🏭 ${r[2]||'?'}<br>📝 ${(r[6]||'').substring(0,45)}</span></div>`;ca.appendChild(d);});
+                if(newAct.length > oldCount) {
+                    actosNovedades++;
+                    actualizarLED('actos', true);
+                    showToast('actos', 'Nuevo Reporte de Actos/Condiciones', { observador: newAct[0][5], descripcion: newAct[0][6] }, newAct[0][2]);
+                }
+            } else ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        }
+        let rv = await fetch(VCP_URL+'&t='+Date.now()), rvRows = parseCSV(await rv.text()), newV = rvRows.filter((r,i)=>i>=0&&(r[2]||'')===hs);
+        let cv = document.getElementById('realTimeReportsVCP'); 
+        if(cv) {
+            let oldCountV = cv.querySelectorAll('.report-item').length;
+            cv.innerHTML = '';
+            if(newV.length){
+                let nuevosFiltradosV = newV.slice(-5);
+                nuevosFiltradosV.forEach(r=>{let d=document.createElement('div');d.className='report-item bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-amber-500 shadow-sm';d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-amber-600">🔔 NUEVO VCP</span><span class="text-[9px] text-slate-400">${r[2]||hs}</span></div><div><span class="font-semibold">🧑‍🏭 ${r[1]||'?'}</span><br><span class="text-[9px]">🏭 ${r[3]||'?'}<br>📝 ${(r[32]||'').substring(0,45)}</span></div>`;cv.appendChild(d);});
+                if(newV.length > oldCountV) {
+                    vcpNovedades++;
+                    actualizarLED('vcp', true);
+                    showToast('vcp', 'Nuevo Reporte VCP', { personaObservada: newV[0][1], descripcion: newV[0][32] }, newV[0][3]);
+                }
+            } else cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        }
+        document.getElementById('actosNovedadBadge').innerText = actosNovedades;
+        document.getElementById('vcpNovedadBadge').innerText = vcpNovedades;
+        if(actosNovedades === 0) document.getElementById('actosNovedadBadge').classList.add('hidden');
+        else document.getElementById('actosNovedadBadge').classList.remove('hidden');
+        if(vcpNovedades === 0) document.getElementById('vcpNovedadBadge').classList.add('hidden');
+        else document.getElementById('vcpNovedadBadge').classList.remove('hidden');
+    } catch(e){ console.error(e); } 
+}
 setInterval(checkNewReports, 30000);
 
-function openModalWithNav(r,all,idx){currentModalData=all;currentModalIndex=idx;openModal(r);updateNavButtons();}
-function openModal(r){
-    let modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent');
+function openModal(r, idx, data) { 
+    currentModalData = data; 
+    currentModalIndex = idx; 
+    let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
     if(r.tipo === 'vcp'){
-        // Modal específico para VCP: muestra Persona Observada (no hay observador en el formulario)
-        content.innerHTML = `
-            <p><strong>📅 Fecha de ejecución:</strong> ${r.fecha}</p>
-            <p><strong>🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-amber-700">${r.personaObservada || '-'}</span></p>
-            <p><strong>🏭 Sector donde ocurrió:</strong> ${r.sector}</p>
-            <p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p>
-            <p><strong>📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p>
-            <p><strong>💬 Comentarios:</strong> ${r.comentarios || '-'}</p>
-            <p><strong>⚙️ Estado:</strong> 🔒 CERRADO</p>
-        `;
+        content.innerHTML = `<p><strong>📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong>🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-amber-700">${r.personaObservada || '-'}</span></p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong>📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p><p><strong>💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong>⚙️ Estado:</strong> 🔒 CERRADO</p>`;
     } else {
-        // Modal para Actos y Condiciones
-        content.innerHTML = `
-            <p><strong>📅 Fecha:</strong> ${r.fecha}</p>
-            <p><strong>👤 Observador:</strong> ${r.observador}</p>
-            <p><strong>📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p>
-            <p><strong>🏭 Sector:</strong> ${r.sector}</p>
-            <p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p>
-            <p><strong>📝 Descripción:</strong> ${r.descripcion}</p>
-            <p><strong>⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>
-        `;
+        content.innerHTML = `<p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong>📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong>📝 Descripción:</strong> ${r.descripcion}</p><p><strong>⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>`;
     }
-    modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons();
+    modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons(); 
 }
 function closeReportModal(){let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none';}
 function updateNavButtons(){let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`;}
-function goToNextModal(){if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex]);updateNavButtons();}}
-function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex]);updateNavButtons();}}
+function goToNextModal(){if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
+function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function forceRefreshData(){loadData();}
 
+// Event Listeners
 document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;applyGeneralFilters();});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{state.vcpMes=e.target.value;applyVCPFilters();});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
+
 window.onload = loadData;
 </script>
 </body>
