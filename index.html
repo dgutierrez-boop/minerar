@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Gráficos Optimizados</title>
+    <title>Minerar 2026 - Panel de Seguridad | Optimizado</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -200,7 +200,6 @@
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
         
         .chart-container { position: relative; height: 280px; width: 100%; margin-top: 16px; }
-        .chart-container-small { position: relative; height: 200px; width: 100%; margin-top: 16px; }
         
         @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } }
     </style>
@@ -249,18 +248,18 @@
                 <!-- GRÁFICO 1: DONA (visualización rápida de porcentajes) -->
                 <div class="glass-card p-5">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-black uppercase text-emerald-400">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3>
+                        <h3 class="font-black uppercase text-emerald-400">📊 DISTRIBUCIÓN POR CAUSA RAÍZ 🛡️</h3>
                         <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-purple-900/50 px-3 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
                     </div>
                     <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-4"></div>
                     <div class="chart-container"><canvas id="categoryChart"></canvas></div>
                 </div>
-                <!-- GRÁFICO 2: BARRAS HORIZONTALES (detalle exacto de cantidades) -->
+                <!-- GRÁFICO 2: TENDENCIA MENSUAL (NUEVO - NO REDUNDANTE) -->
                 <div class="glass-card p-5 mt-4">
-                    <h3 class="font-black uppercase text-emerald-400 mb-3">📊 DETALLE DE CANTIDADES POR CAUSA RAÍZ 📈</h3>
-                    <div class="chart-container-small"><canvas id="categoryBarChart"></canvas></div>
+                    <h3 class="font-black uppercase text-emerald-400 mb-3">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3>
+                    <div class="chart-container"><canvas id="trendChart"></canvas></div>
                 </div>
-                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-900"><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-900"><table><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
@@ -279,7 +278,6 @@
                 <div class="mt-4 p-3 bg-purple-950/20 rounded-xl border border-purple-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-purple-400 flex items-center gap-1">📢 REPORTES EN VIVO</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-36 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
-                <!-- GRÁFICO VCP: BARRAS 3D VERTICALES -->
                 <div class="glass-card p-5 border border-purple-500/30">
                     <div class="flex justify-between items-center">
                         <h3 class="font-black uppercase text-purple-400">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3>
@@ -304,13 +302,13 @@ const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1Yix
 
 const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
-let categoryChart = null, categoryBarChart = null, vcpCategoryChart = null;
+let categoryChart = null, trendChart = null, vcpCategoryChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
 let actosNovedades = 0, vcpNovedades = 0;
 let actosLedTimeout = null, vcpLedTimeout = null;
 
-// CATEGORÍAS CON EMOJIS DE SEGURIDAD
+// CATEGORÍAS
 const CATEGORIES_ACTOS = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp','casco','guantes','lentes','arnés'] },
     { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza','orden','aceite','derrame'] },
@@ -350,7 +348,7 @@ function applyGeneralFilters() {
     up('actosStatus',pA); up('condStatus',pC);
     updateCategoryCards(f, CATEGORIES_ACTOS, 'causaRaiz', 'categoryCards', 'clearCausaBtn');
     updateChartsDona(f, CATEGORIES_ACTOS, 'categoryChart');
-    updateChartsBarHorizontal(f, CATEGORIES_ACTOS, 'categoryBarChart');
+    updateTrendChart();
     renderGeneralTable(f);
 }
 
@@ -365,7 +363,7 @@ function applyVCPFilters() {
     renderVCPTable(f);
 }
 
-// GRÁFICO DONA (para Actos y Condiciones)
+// GRÁFICO DONA
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -380,40 +378,7 @@ function updateChartsDona(data, categories, canvasId) {
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
 
-// GRÁFICO DE BARRAS HORIZONTALES (para Actos y Condiciones - detalle de cantidades)
-function updateChartsBarHorizontal(data, categories, canvasId) {
-    let counts = {}; categories.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let total = data.length || 1;
-    let ctx = document.getElementById(canvasId).getContext('2d');
-    if (categoryBarChart) categoryBarChart.destroy();
-    categoryBarChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: categories.map(c => `${c.icon} ${c.name}`),
-            datasets: [{
-                label: '📊 Cantidad de Reportes',
-                data: categories.map(c => counts[c.id] || 0),
-                backgroundColor: categories.map(c => c.color),
-                borderColor: categories.map(c => c.color),
-                borderRadius: 8,
-                borderWidth: 1
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9 } } },
-                tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let pct = Math.round((val / total) * 100); return `${ctx.dataset.label}: ${val} (${pct}%)`; } } }
-            },
-            scales: { x: { grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1' } }, y: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 9 } } } }
-        }
-    });
-}
-
-// GRÁFICO DE BARRAS VERTICALES 3D (para VCP)
+// GRÁFICO DE BARRAS VERTICALES (VCP)
 function updateChartsBarVertical(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -422,28 +387,35 @@ function updateChartsBarVertical(data, categories, canvasId) {
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     vcpCategoryChart = new Chart(ctx, {
         type: 'bar',
+        data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ label: '📊 Cantidad de VCPs', data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderRadius: 8, borderWidth: 1 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9 } } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let pct = Math.round((val / total) * 100); return `${ctx.dataset.label}: ${val} (${pct}%)`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9 } } } } }
+    });
+}
+
+// NUEVO GRÁFICO: TENDENCIA MENSUAL (EVOLUCIÓN)
+function updateTrendChart() {
+    const meses = ['enero', 'febrero', 'marzo', 'abril'];
+    const actosPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length);
+    const condPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length);
+    const ctx = document.getElementById('trendChart').getContext('2d');
+    if (trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx, {
+        type: 'line',
         data: {
-            labels: categories.map(c => `${c.icon} ${c.name}`),
-            datasets: [{
-                label: '📊 Cantidad de VCPs',
-                data: categories.map(c => counts[c.id] || 0),
-                backgroundColor: categories.map(c => c.color),
-                borderColor: categories.map(c => c.color),
-                borderRadius: 8,
-                borderWidth: 2
-            }]
+            labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+            datasets: [
+                { label: '⚠️ ACTOS', data: actosPorMes, borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#00ff88', pointBorderColor: '#0f1520', pointBorderWidth: 2 },
+                { label: '🏚️ CONDICIONES', data: condPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }
+            ]
         },
         options: {
             responsive: true,
             maintainAspectRatio: true,
             plugins: {
-                legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9 } } },
-                tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let pct = Math.round((val / total) * 100); return `${ctx.dataset.label}: ${val} (${pct}%)`; } } }
+                legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } },
+                tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let totalGeneral = ACTOS_COND_DATA.filter(e => e.mes === meses[ctx.dataIndex]).length; let pct = totalGeneral > 0 ? Math.round((val / totalGeneral) * 100) : 0; return `${ctx.dataset.label}: ${val} (${pct}% del mes)`; } } }
             },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 }, title: { display: true, text: '📊 Cantidad', color: '#c084fc' } },
-                x: { grid: { display: false }, ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } } }
-            }
+            scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 }, title: { display: true, text: '📊 Cantidad de Reportes', color: '#00ff88', font: { size: 9 } } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } }
         }
     });
 }
