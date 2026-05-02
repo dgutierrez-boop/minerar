@@ -3,399 +3,88 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Minerar 2026 - COMPLETO</title>
+    <title>Dashboard Minerar 2026 - VERSIÓN FINAL CORREGIDA</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 8px; }
-        .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease; cursor: pointer; }
-        .glass-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
-        .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
-        .kpi-cyan { border-left: 5px solid #06b6d4; }
-        .kpi-amber { border-left: 5px solid #f59e0b; }
-        .kpi-supervisor { border-left: 5px solid #6366f1; }
-        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; border: 2px solid #e2e8f0; background: white; }
-        .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
-        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
-        .category-card:hover { transform: scale(1.05); }
-        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); background: #f0f9ff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
+        .glass-card { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
+        .glass-card:hover { transform: translateY(-3px); border-color: #fbbf24; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15); background: rgba(255, 255, 255, 0.98); }
+        .header-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
+        .kpi-amber { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+        .kpi-supervisor { border-left: 5px solid #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
+        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left; border: 1px solid #e2e8f0; background: white; color: #475569; }
+        .btn-filter.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #2563eb; }
+        .category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; backdrop-filter: blur(4px); position: relative; }
+        .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
         .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
         .hidden-section { display: none !important; }
-        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .status-ok { background: #dcfce7; color: #16a34a; }
-        .status-warn { background: #fef3c7; color: #d97706; }
-        .status-low { background: #fee2e2; color: #dc2626; }
-        .table-scroll { max-height: 300px; overflow-y: auto; overflow-x: auto; }
-        .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
-        .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .table-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-        table thead th { position: sticky; top: 0; background: white; z-index: 10; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+        .status-warn { background: #fef3c7; color: #d97706; border: 1px solid #fed7aa; }
+        .status-low { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
+        .table-scroll::-webkit-scrollbar { width: 5px; background: #e2e8f0; border-radius: 10px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
-        
-        @keyframes modalBounce { 
-            0% { transform: scale(0.7) translateY(50px); opacity: 0; } 
-            40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 
-            70% { transform: scale(0.98) translateY(5px); } 
-            100% { transform: scale(1) translateY(0); opacity: 1; } 
-        }
+        @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        
-        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        
-        @media (max-width: 768px) {
-            .header-container { flex-direction: column; gap: 16px; text-align: center; }
-            section { grid-template-columns: 1fr !important; }
-            aside { grid-column: 1 / -1; }
-            main { grid-column: 1 / -1; }
-        }
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
+        @keyframes pulse { 0%, 100% { opacity: 0.6; transform: scale(1); } 50% { opacity: 1; transform: scale(1.1); } }
+        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .grid-responsive { grid-template-columns: 1fr !important; } }
     </style>
 </head>
 <body>
 <div class="max-w-7xl mx-auto">
     <!-- HEADER -->
-    <div class="header-container">
-        <div style="display: flex; align-items: center; gap: 16px;">
-            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
-                <defs><linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" /><stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" /></linearGradient></defs>
-                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
-                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
-                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
-                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
-            </svg>
-            <div>
-                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
-                <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
-            </div>
+    <div class="header-container flex flex-wrap justify-between items-center">
+        <div class="flex items-center gap-4"><div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 flex items-center justify-center shadow-lg"><span class="text-3xl">⛑️🛡️</span></div><div><h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · TRABAJEMOS SEGUROS 👷</p></div></div>
+        <div class="flex gap-3 items-center flex-wrap"><div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500"><div class="text-[9px] font-bold uppercase text-cyan-700 flex items-center gap-1"><span>📋</span> ACTOS+COND</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div></div><div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500"><div class="text-[9px] font-bold uppercase text-amber-700 flex items-center gap-1"><span>🎯</span> VCP</div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div></div><button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all flex items-center gap-2">🔄 ACTUALIZAR</button></div>
+    </div>
+
+    <!-- ACTOS Y CONDICIONES -->
+    <div class="glass-card p-6 mb-6">
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-slate-800 flex items-center justify-center gap-2">📋 OBJETIVOS MENSUALES ACTOS Y CONDICIONES <span class="text-2xl">(110)</span> 👷</h2><p class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p></div>
+        <div class="grid md:grid-cols-3 gap-4 my-5">
+            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800 flex items-center gap-1">⚠️ ACTOS (AI) <span>👷</span></span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800 flex items-center gap-1">🏚️ CONDICIONES (CI) <span>🔧</span></span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800 flex items-center gap-1">👔 CONTROL POR SUPERVISOR <span>🦺</span></p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todos">👥 Todos</option></select><select id="supervisorMonthSelect" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200"><span class="text-[10px] text-cyan-700 font-bold">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700 font-bold">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700">0</div></div></div></div>
         </div>
-        <div style="display: flex; gap: 12px; align-items: center;">
-            <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
-                <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
-                <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
-            </div>
-            <div style="background: linear-gradient(135deg, #D7CCC8 0%, #FFCCBC 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #8D6E63;">
-                <div style="font-size: 10px; font-weight: 800; color: #4E342E; text-transform: uppercase;">VCP</div>
-                <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #5D4037;">0</div>
-            </div>
-            <button onclick="forceRefreshData()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-                🔄 Actualizar
-            </button>
+        <div class="grid lg:grid-cols-[280px_1fr] gap-5">
+            <aside><div class="glass-card p-4"><h3 class="font-black mb-2 text-slate-800 flex items-center gap-1">🔍 FILTROS ACTOS <span>⚙️</span></h3><label class="text-xs font-bold block mb-1">📅 MES</label><select id="monthFilter" class="w-full border border-slate-300 rounded-lg p-2 text-xs mb-3 bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select><label class="text-xs font-bold block mb-1">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold block mb-1">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div><div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200"><div class="flex gap-2 items-center"><div class="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div><span class="text-[9px] font-bold uppercase text-emerald-700 flex items-center gap-1">🔴 REPORTES EN VIVO <span>📢</span></span></div><div id="realTimeReportsActos" class="text-[9px] max-h-28 overflow-y-auto mt-1"></div></div></div></aside>
+            <main><div class="glass-card p-5"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-slate-800 flex items-center gap-1">📊 CLASIFICACIÓN POR CAUSA RAÍZ <span>🛡️</span></h3><button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full text-red-700">✕ Quitar filtro</button></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-4"></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+            <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-slate-800 flex items-center gap-1">📋 DETALLE DE ACTOS Y CONDICIONES <span>📝</span></h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-50"><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div></main>
         </div>
     </div>
 
-    <!-- SECCIÓN 1: ACTOS Y CONDICIONES -->
-    <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px;">
-        <div style="text-align: center; margin-bottom: 8px;">
-            <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
-            <p style="font-size: 11px; color: #64748b;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+    <hr class="my-4 border-slate-200">
+
+    <!-- VCP -->
+    <div class="glass-card p-6 border-2 border-amber-200">
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800 flex items-center justify-center gap-2">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) <span class="text-2xl">🛡️👷</span></h2></div>
+        <div class="grid md:grid-cols-2 gap-4 my-5">
+            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800 flex items-center gap-1">📊 VCP TOTALES <span>🎯</span></span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Meta: 30</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800 flex items-center gap-1">👥 FILTRO POR PERSONA VCP <span>🧑‍🏭</span></p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border border-slate-300 rounded-lg p-2 text-xs bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200"><span class="text-[10px] text-cyan-700 font-bold">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-cyan-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700 font-bold">🕒 Último</span><div id="personLastVCP" class="text-sm font-black text-amber-700">-</div></div></div></div>
         </div>
-        
-        <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
-            <div class="glass-card kpi-cyan" style="padding: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS (AI)</div>
-                    <span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span>
-                </div>
-                <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2; margin: 8px 0;">0</div>
-                <div style="margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
-                        <span>Objetivo: 66</span>
-                        <span id="actosPctLabel" style="font-weight: 800;">0%</span>
-                    </div>
-                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div id="actosBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card kpi-amber" style="padding: 20px;">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES (CI)</div>
-                    <span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span>
-                </div>
-                <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706; margin: 8px 0;">0</div>
-                <div style="margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
-                        <span>Objetivo: 44</span>
-                        <span id="condPctLabel" style="font-weight: 800;">0%</span>
-                    </div>
-                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div id="condBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="glass-card kpi-supervisor" style="padding: 20px;">
-                <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👔 CONTROL POR SUPERVISOR</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                    <select id="supervisorSelect" onchange="updateSupervisorCard()" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
-                        <option value="todos">Todos</option>
-                    </select>
-                    <select id="supervisorMonthSelect" onchange="updateSupervisorCard()" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
-                        <option value="todo">Todo 2026</option>
-                        <option value="enero">Enero</option>
-                        <option value="febrero">Febrero</option>
-                        <option value="marzo">Marzo</option>
-                        <option value="abril">Abril</option>
-                    </select>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 10px; color: #0891b2; font-weight: 700;">ACTOS</div>
-                        <div id="supActosCount" style="font-size: 24px; font-weight: 900; color: #0891b2;">0</div>
-                    </div>
-                    <div style="background: #fffbeb; padding: 10px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 10px; color: #d97706; font-weight: 700;">CONDICIONES</div>
-                        <div id="supCondCount" style="font-size: 24px; font-weight: 900; color: #d97706;">0</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-            <aside>
-                <div class="glass-card" style="padding: 20px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS ACTOS</h3>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">MES</label>
-                        <select id="monthFilter" style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;">
-                            <option value="todo">📅 Todo 2026</option>
-                            <option value="enero">📅 Enero</option>
-                            <option value="febrero">📅 Febrero</option>
-                            <option value="marzo">📅 Marzo</option>
-                            <option value="abril">📅 Abril</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR</label>
-                        <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button>
-                            <button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
-                            <button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button>
-                            <button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO</label>
-                        <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button>
-                            <button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
-                            <button onclick="setStatus('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
-                        </div>
-                    </div>
-                    <div style="margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%); border: 2px solid #10b981; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                            <div style="width: 10px; height: 10px; background: #10b981; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                            <div style="font-size: 10px; font-weight: 900; color: #059669; text-transform: uppercase;">🔴 REPORTES HOY</div>
-                        </div>
-                        <div id="realTimeReportsActos" style="max-height: 100px; overflow-y: auto; font-size: 9px;">
-                            <p style="color: #6b7280; text-align: center;">Cargando...</p>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-            
-            <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <div class="glass-card" style="padding: 24px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-weight: 900; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
-                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section" style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 12px; font-size: 10px; font-weight: 800; cursor: pointer;">✕ Quitar Filtro</button>
-                    </div>
-                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; margin-top: 12px;"></div>
-                    <div class="chart-container">
-                        <canvas id="categoryChart"></canvas>
-                    </div>
-                </div>
-                
-                <div class="glass-card" style="padding: 24px;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
-                    <div class="table-scroll">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px;">Fecha</th>
-                                    <th style="padding: 12px;">Tipo</th>
-                                    <th style="padding: 12px;">Observador</th>
-                                    <th style="padding: 12px;">Descripción</th>
-                                    <th style="padding: 12px;">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="generalTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
-        </div>
-    </div>
-
-    <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
-
-    <!-- SECCIÓN 2: VCP -->
-    <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-        <div style="text-align: center; margin-bottom: 8px;">
-            <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
-        </div>
-
-        <section style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px;">
-            <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F; border-left: 5px solid #8D6E63;">
-                <div style="display: flex; justify-content: space-between; align-items: start;">
-                    <div style="font-size: 11px; font-weight: 900; color: #5D4037; text-transform: uppercase;">VCP TOTALES (Meta: 30)</div>
-                    <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
-                </div>
-                <div id="vcpCurrent" style="font-size: 2.5rem; font-weight: 900; color: #5D4037; margin: 8px 0;">0</div>
-                <div style="margin-top: 10px;">
-                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
-                        <span>Objetivo: 30</span>
-                        <span id="vcpPctLabel" style="font-weight: 800;">0%</span>
-                    </div>
-                    <div style="background: #D7CCC8; height: 8px; border-radius: 4px; overflow: hidden;">
-                        <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s; background: linear-gradient(90deg, #8D6E63 0%, #FFAB91 100%);"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- FILTRO POR PERSONA VCP -->
-            <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
-                <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👥 FILTRO POR PERSONA VCP</div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
-                    <select id="vcpPersonFilter" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
-                        <option value="todos">Todas las personas</option>
-                    </select>
-                    <select id="vcpPersonMonthFilter" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
-                        <option value="todo">Todo 2026</option>
-                        <option value="enero">Enero</option>
-                        <option value="febrero">Febrero</option>
-                        <option value="marzo">Marzo</option>
-                        <option value="abril">Abril</option>
-                    </select>
-                </div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 10px; color: #0891b2; font-weight: 700;">VCPs</div>
-                        <div id="personVCPCount" style="font-size: 24px; font-weight: 900; color: #0891b2;">0</div>
-                    </div>
-                    <div style="background: #fffbeb; padding: 10px; border-radius: 8px; text-align: center;">
-                        <div style="font-size: 10px; color: #d97706; font-weight: 700;">Último</div>
-                        <div id="personLastVCP" style="font-size: 12px; font-weight: 700; color: #d97706;">-</div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
-            <aside>
-                <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">🎯 FILTROS VCP</h3>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">MES VCP</label>
-                        <select id="vcpMonthFilter" style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;">
-                            <option value="todo">📅 Todo 2026</option>
-                            <option value="enero">📅 Enero</option>
-                            <option value="febrero">📅 Febrero</option>
-                            <option value="marzo">📅 Marzo</option>
-                            <option value="abril">📅 Abril</option>
-                        </select>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR VCP</label>
-                        <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPSector('general', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">🏭 GENERAL</button>
-                            <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
-                            <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
-                            <button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
-                        </div>
-                    </div>
-                    <div style="margin-bottom: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO VCP</label>
-                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setStatusVCP('todos', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODOS</button>
-                            <button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
-                            <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
-                        </div>
-                    </div>
-                    
-                    <!-- Panel de Causa Raíz VCP (agregado) -->
-                    <div style="margin-top: 16px;">
-                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">CAUSA RAÍZ VCP</label>
-                        <div id="vcpCauseButtons" style="display: flex; flex-direction: column; gap: 8px;">
-                            <button onclick="setVCPCause('todas', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODAS</button>
-                            <button onclick="setVCPCause('epp', this)" class="btn-filter">🛡️ Falta EPP</button>
-                            <button onclick="setVCPCause('orden', this)" class="btn-filter">🧹 Orden y Limpieza</button>
-                            <button onclick="setVCPCause('proc', this)" class="btn-filter">⚡ Procedimientos</button>
-                            <button onclick="setVCPCause('equip', this)" class="btn-filter">🔧 Equipos y Herramientas</button>
-                            <button onclick="setVCPCause('cond', this)" class="btn-filter">🚗 Conducción</button>
-                            <button onclick="setVCPCause('area', this)" class="btn-filter">🏗️ Área y Entorno</button>
-                        </div>
-                    </div>
-                    
-                    <div style="margin-top: 20px; padding: 12px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); border: 2px solid #f59e0b; border-radius: 8px;">
-                        <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
-                            <div style="width: 10px; height: 10px; background: #f59e0b; border-radius: 50%; animation: pulse 2s infinite;"></div>
-                            <div style="font-size: 10px; font-weight: 900; color: #d97706; text-transform: uppercase;">🔴 REPORTES HOY</div>
-                        </div>
-                        <div id="realTimeReportsVCP" style="max-height: 100px; overflow-y: auto; font-size: 9px;">
-                            <p style="color: #6b7280; text-align: center;">Cargando...</p>
-                        </div>
-                    </div>
-                </div>
-            </aside>
-
-            <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
-                <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <h3 style="font-weight: 900; text-transform: uppercase; color: #5D4037;">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ</h3>
-                        <button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section" style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 12px; font-size: 10px; font-weight: 800; cursor: pointer;">✕ Quitar Filtro</button>
-                    </div>
-                    <div id="vcpCategoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; margin-top: 12px;"></div>
-                    <div class="chart-container">
-                        <canvas id="vcpCategoryChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
-                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
-                    <div class="table-scroll">
-                        <table class="w-full text-left">
-                            <thead>
-                                <tr style="border-bottom: 2px solid #e2e8f0;">
-                                    <th style="padding: 12px;">Fecha</th>
-                                    <th style="padding: 12px;">Observador</th>
-                                    <th style="padding: 12px;">Sector</th>
-                                    <th style="padding: 12px;">Descripción</th>
-                                    <th style="padding: 12px;">Comentarios</th>
-                                    <th style="padding: 12px;">Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody id="vcpTableBody"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </main>
+        <div class="grid lg:grid-cols-[280px_1fr] gap-5">
+            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2 flex items-center gap-1">🎯 FILTROS VCP <span>⚙️</span></h3><label class="text-xs font-bold block mb-1">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border border-slate-300 rounded-lg p-2 text-xs mb-3 bg-white"><option value="todo">📅 Todo 2026</option><option value="enero">📅 Enero</option><option value="febrero">📅 Febrero</option><option value="marzo">📅 Marzo</option><option value="abril">📅 Abril</option></select><label class="text-xs font-bold block mb-1">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold block mb-1">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div><div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200"><div class="flex gap-2 items-center"><div class="w-2 h-2 bg-amber-500 rounded-full animate-pulse"></div><span class="text-[9px] font-bold uppercase text-amber-700 flex items-center gap-1">🔴 REPORTES VCP HOY <span>🚧</span></span></div><div id="realTimeReportsVCP" class="text-[9px] max-h-28 overflow-y-auto mt-1"></div></div></div></aside>
+            <main><div class="glass-card p-5 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 flex items-center gap-1">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ <span>🔥</span><span>💚</span><span>⭐</span></h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-red-100 px-3 py-1 rounded-full text-red-700">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4"></div><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
+            <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800 flex items-center gap-1">📋 DETALLE DE VCP <span>📝</span></h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-amber-50"><tr><th class="p-2">📅 Fecha</th><th>👤 Persona Observada</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div></main>
         </div>
     </div>
 </div>
 
-<!-- MODALES -->
-<div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
-    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 600px; width: 90%;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-            <h2 style="font-size: 20px; font-weight: 900; color: #1e293b;">📋 Detalle del Reporte</h2>
-            <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
-        </div>
-        <div id="reportModalContent" style="font-size: 14px; line-height: 1.8;"></div>
-        <div class="modal-navigation" style="display: flex; gap: 8px; margin-top: 16px; justify-content: space-between;">
-            <button onclick="goToPreviousModal()" id="btnPrev" style="flex: 1; padding: 10px; background: #64748b; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">⬅ ANTERIOR</button>
-            <div id="modalCounter" style="display: flex; align-items: center; color: #64748b; font-size: 11px; font-weight: 700; padding: 0 10px;">1 / 50</div>
-            <button onclick="goToNextModal()" id="btnNext" style="flex: 1; padding: 10px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer;">SIGUIENTE ➡</button>
-        </div>
-        <button onclick="closeReportModal()" style="width: 100%; margin-top: 12px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
-    </div>
-</div>
+<!-- MODAL -->
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;"><div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200"><div class="flex justify-between"><h2 class="font-black text-xl text-slate-800 flex items-center gap-2">📋 Detalle del Reporte <span>🛡️</span></h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div><div id="reportModalContent" class="my-4 text-sm text-slate-700"></div><div class="flex justify-between gap-2"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-full text-sm transition-all">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-700">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-full text-sm font-bold transition-all">Siguiente ➡</button></div><button onclick="closeReportModal()" class="w-full mt-4 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
 
 <script>
+// ==================== CONSTANTES ====================
 const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
 
@@ -407,767 +96,301 @@ let ACTOS_COND_DATA = [];
 let VCP_DATA = [];
 let categoryChart = null;
 let vcpCategoryChart = null;
-let state = { 
-    mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
-    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas'
-};
+let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
+let currentModalIndex = 0, currentModalData = [];
 
-let currentModalIndex = 0;
-let currentModalData = [];
-let currentModalType = '';
-
-const CATEGORIES = [
-    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['epp', 'protección', 'arnés', 'cinturón', 'lentes', 'guantes', 'casco', 'mameluco', 'calzado', 'careta', 'antiparras', 'delantal'] },
-    { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite', 'grasa', 'basura', 'residuo', 'sucio', 'polvo', 'barro', 'derrame', 'contenedor', 'inundado', 'agua'] },
-    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo', 'candado', 'autorización', 'señalización', 'cono', 'cartel', 'permiso', 'protocolo', 'incumplimiento', 'estándar', 'frecuencia', 'radio'] },
-    { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo', 'maquinaria', 'montacargas', 'grúa', 'escalera', 'andamio', 'gato', 'calza', 'plataforma'] },
-    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad', 'conducción', 'manejo', 'retroceso', 'marcha', 'volante', 'sobrepaso', 'luces', 'freno', 'maniobra', 'circula'] },
-    { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'talud', 'camino', 'piso', 'iluminación', 'luz', 'acopio', 'escombrera', 'planta', 'sector', 'pared', 'banco', 'punto ciego'] }
+// ==================== CATEGORÍAS ====================
+const CATEGORIES_ACTOS = [
+    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['epp','casco','guantes','lentes','arnés'] },
+    { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10B981', keywords: ['limpieza','orden','aceite','derrame'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento','bloqueo','permiso','ats'] },
+    { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta','equipo','maquinaria'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular','velocidad','conducción'] },
+    { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EC4899', keywords: ['berma','talud','camino','señal'] }
 ];
 
-function parseCSV(text) {
-    const lines = text.split('\n').filter(l => l.trim());
-    const result = [];
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i];
-        const cols = [];
-        let current = '';
-        let inQuotes = false;
-        for (let j = 0; j < line.length; j++) {
-            const c = line[j];
-            if (c === '"') inQuotes = !inQuotes;
-            else if (c === ',' && !inQuotes) { cols.push(current.trim()); current = ''; }
-            else current += c;
-        }
-        cols.push(current.trim());
-        if (cols.length >= 10) result.push(cols);
-    }
-    return result;
+const CATEGORIES_VCP = [
+    { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#22C55E', keywords: ['limpieza','orden','aceite','derrame'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#EAB308', keywords: ['procedimiento','bloqueo','permiso','ats'] },
+    { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#F97316', keywords: ['herramienta','equipo','maquinaria'] },
+    { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EF4444', keywords: ['berma','talud','camino','señal'] }
+];
+
+function classifyData(desc, useVCP = false) {
+    if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5];
+    let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0;
+    for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } }
+    return best;
 }
 
-function classifyData(desc) {
-    let cat = CATEGORIES[5];
-    let maxS = 0;
-    if (desc) {
-        const descLower = desc.toLowerCase();
-        for (const c of CATEGORIES) {
-            let s = 0;
-            for (const k of c.keywords) { 
-                if (descLower.includes(k)) s++; 
-            }
-            if (s > maxS) { maxS = s; cat = c; }
-        }
-    }
-    return cat;
-}
-
-function isYear2026(fecha) {
-    if (!fecha) return false;
-    return fecha.includes('2026') || fecha.endsWith('/26');
-}
+function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
+function parseFecha(f) { if (!f) return { dia: '', mes: '', valido: false }; let fecha = f.split(' ')[0]; if (fecha.includes('/')) { let p = fecha.split('/'); if (p.length >= 2) { let m = parseInt(p[1]); if (!isNaN(m) && m >= 1 && m <= 12) { const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return { dia: p[0], mes: meses[m-1], valido: true }; } } } if (fecha.includes('-')) { let p = fecha.split('-'); if (p.length >= 3) { let m = parseInt(p[1]); if (!isNaN(m) && m >= 1 && m <= 12) { const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return { dia: p[2], mes: meses[m-1], valido: true }; } } } return { dia: '', mes: '', valido: false }; }
 
 async function loadData() {
     try {
         const timestamp = Date.now();
-        
+        // ACTOS
         const res1 = await fetch(ACTOS_URL + '&t=' + timestamp);
         const rows1 = parseCSV(await res1.text());
-
-        ACTOS_COND_DATA = rows1.map((row, index) => {
-            const esEstructuraNueva = index >= 225;
+        ACTOS_COND_DATA = [];
+        for (let i = 0; i < rows1.length; i++) {
+            const row = rows1[i];
+            const esEstructuraNueva = i >= 225;
             let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
-            
             if (esEstructuraNueva) {
                 const columnaU = row[20] || '';
-                if (columnaU.toUpperCase().startsWith('AI-')) {
-                    tipoRaw = 'Acto Inseguro';
-                    desc = columnaU.replace(/^AI-\s*/i, '').trim();
-                } else if (columnaU.toUpperCase().startsWith('CI-')) {
-                    tipoRaw = 'Condición Insegura';
-                    desc = columnaU.replace(/^CI-\s*/i, '').trim();
-                } else {
-                    tipoRaw = '';
-                    desc = columnaU;
-                }
-                fecha = row[11] || '';
-                observador = row[13] || '';
-                sector = row[14] || '';
-                cerradoRaw = row[23] || '';
+                if (columnaU.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = columnaU.replace(/^AI-\s*/i, '').trim(); }
+                else if (columnaU.toUpperCase().startsWith('CI-')) { tipoRaw = 'Condición Insegura'; desc = columnaU.replace(/^CI-\s*/i, '').trim(); }
+                else { tipoRaw = ''; desc = columnaU; }
+                fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || '';
             } else {
-                fecha = row[3] || '';
-                tipoRaw = row[1] || '';
-                sector = row[2] || '';
-                observador = row[5] || '';
-                desc = row[6] || '';
-                cerradoRaw = row[23] || '';
+                fecha = row[3] || ''; tipoRaw = row[1] || ''; sector = row[2] || ''; observador = row[5] || ''; desc = row[6] || ''; cerradoRaw = row[23] || '';
             }
-            
             let tipo = 'otro';
             if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
             else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
-            
             let cerrado = false;
             if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('si')) cerrado = true;
-            else if (cerradoRaw && cerradoRaw.toString().toLowerCase().includes('no')) cerrado = false;
-            
-            const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            const partes = fecha.split('/'); const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
             let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
             if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
-
-            const cat = classifyData(desc);
-            
-            return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
-        }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
-
-        // Carga VCP - la persona observada está en columna B (índice 1)
+            const cat = classifyData(desc, false);
+            ACTOS_COND_DATA.push({ fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat });
+        }
+        console.log(`✅ ACTOS cargados: ${ACTOS_COND_DATA.length}`);
+        
+        // VCP - CORREGIDO: ahora personaObservada es columna B (índice 1) correctamente
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
-        
         VCP_DATA = [];
         for (let i = 0; i < rows2.length; i++) {
             const row = rows2[i];
-            const fechaRaw = row[2] || '';
+            // Columna C (índice 2) = Fecha de ejecución (NO la marca temporal)
+            const fechaRaw = row[2] || ''; 
             const fecha = fechaRaw.split(' ')[0];
-            const personaObservada = row[1] || '';
-            const sector = row[3] || '';
-            const observador = row[0] || '';
-            const descripcion = row[32] || '';
+            if (!fecha.includes('2026') && !fecha.endsWith('/26')) continue;
+            const fechaData = parseFecha(fecha); if (!fechaData.valido) continue;
+            // Columna B (índice 1) = Persona observada (el nombre correcto)
+            const personaObs = (row[1] || '').trim(); 
+            if (!personaObs) continue;
+            // Columna D (índice 3) = Sector
+            const sector = (row[3] || '').toLowerCase().trim() || 'general';
+            const descripcion = row[32] || ''; 
             const comentarios = row[28] || '';
-            
-            const partes = fecha.split('/');
-            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            let mesIdx = partes.length >= 2 ? parseInt(partes[1]) - 1 : 0;
-            if (isNaN(mesIdx) || mesIdx < 0 || mesIdx > 11) mesIdx = 0;
-            
-            const cat = classifyData(descripcion);
-            
+            const cat = classifyData(descripcion, true);
             VCP_DATA.push({ 
-                fecha: fecha,
-                tipo: 'vcp',
-                sector: sector.toLowerCase().trim(),
-                observador: observador.trim(),
-                descripcion: descripcion.trim(),
-                comentarios: comentarios.trim(),
-                cerrado: true,
-                mes: meses[mesIdx],
-                dia: partes[0] || '',
-                personaObservada: personaObservada.trim(),
-                categoria: cat
+                fecha, 
+                tipo: 'vcp', 
+                sector, 
+                personaObservada: personaObs,  // Esta es la persona a quien se le hizo la VCP
+                descripcion, 
+                comentarios, 
+                cerrado: true, 
+                mes: fechaData.mes, 
+                dia: fechaData.dia, 
+                categoria: cat 
             });
         }
+        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length}`);
         
-        VCP_DATA = VCP_DATA.filter(r => r.fecha && isYear2026(r.fecha));
-
-        document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
-        document.getElementById('totalVCP').textContent = VCP_DATA.length;
-        
-        populateSupervisors();
-        populateVCPPeopleFilter();
-        applyAllFilters();
-        checkNewReports();
-        
-    } catch(e) {
-        console.error('❌ Error:', e);
-        alert('Error al cargar datos: ' + e.message);
-    }
+        document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
+        document.getElementById('totalVCP').innerText = VCP_DATA.length;
+        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); checkNewReports();
+    } catch(e) { console.error(e); alert('Error: ' + e.message); }
 }
 
-function applyAllFilters() { 
-    applyGeneralFilters(); 
-    applyVCPFilters();
-}
+function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
 
 function applyGeneralFilters() {
-    const filtered = ACTOS_COND_DATA.filter(e => {
-        const matchMes = (state.mes === 'todo' || e.mes === state.mes);
-        const matchSector = (state.sector === 'general' || e.sector.includes(state.sector));
-        let matchStatus = true;
-        if (state.estado === 'cerrados') matchStatus = e.cerrado === true;
-        else if (state.estado === 'abiertos') matchStatus = e.cerrado === false;
-        const matchCausa = (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz);
-        return matchMes && matchSector && matchStatus && matchCausa;
-    });
-    
-    const actos = filtered.filter(e => e.tipo === 'acto');
-    const cond = filtered.filter(e => e.tipo === 'condicion');
-    
-    document.getElementById('kpiActos').textContent = actos.length;
-    document.getElementById('kpiCondiciones').textContent = cond.length;
-    
-    const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
-    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
-    
-    document.getElementById('actosBar').style.width = actosPct + '%';
-    document.getElementById('condBar').style.width = condPct + '%';
-    document.getElementById('actosPctLabel').textContent = Math.round(actosPct) + '%';
-    document.getElementById('condPctLabel').textContent = Math.round(condPct) + '%';
-    
-    const updateStatus = (id, pct) => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (pct >= 100) { el.textContent = '✅ Cumplido'; el.className = 'status-badge status-ok'; }
-            else if (pct > 0) { el.textContent = '⚠ En Progreso'; el.className = 'status-badge status-warn'; }
-            else { el.textContent = '⚠ Pendiente'; el.className = 'status-badge status-low'; }
-        }
-    };
-    updateStatus('actosStatus', actosPct);
-    updateStatus('condStatus', condPct);
-    
-    updateCategoryCards(filtered);
-    updateCharts(filtered);
-    renderGeneralTable(filtered);
+    let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
+    let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
+    document.getElementById('kpiActos').innerText = actos.length; document.getElementById('kpiCondiciones').innerText = cond.length;
+    let pA = Math.min(actos.length/OBJETIVO_ACTOS*100,100), pC = Math.min(cond.length/OBJETIVO_CONDICIONES*100,100);
+    document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
+    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
+    let up = (id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
+    up('actosStatus',pA); up('condStatus',pC);
+    updateCategoryCards(f, CATEGORIES_ACTOS, 'causaRaiz', 'categoryCards', 'clearCausaBtn');
+    updateCharts(f, CATEGORIES_ACTOS, 'categoryChart');
+    renderGeneralTable(f);
 }
 
 function applyVCPFilters() {
-    const vcpData = VCP_DATA.filter(e => {
-        const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
-        const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
-        let matchStatus = true;
-        if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
-        else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
-        const matchCausa = (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa);
-        
-        return matchMes && matchSector && matchStatus && matchCausa;
-    });
-    
-    const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
-    const vcpStatusEl = document.getElementById('vcpStatus');
-    if (vcpStatusEl) {
-        vcpStatusEl.textContent = vcpPct >= 100 ? '✅ Cumplido' : vcpPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
-    }
-    const vcpBarEl = document.getElementById('vcpBar');
-    if (vcpBarEl) vcpBarEl.style.width = vcpPct + '%';
-    const vcpCurrentEl = document.getElementById('vcpCurrent');
-    if (vcpCurrentEl) vcpCurrentEl.textContent = vcpData.length;
-    const vcpPctLabelEl = document.getElementById('vcpPctLabel');
-    if (vcpPctLabelEl) vcpPctLabelEl.textContent = Math.round(vcpPct) + '%';
-    
-    updateVCPCategoryCards(vcpData);
-    renderVCPTable(vcpData);
+    let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
+    let pct = Math.min(f.length/OBJETIVO_VCP*100,100);
+    let vs = document.getElementById('vcpStatus'); if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente';
+    document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length;
+    document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
+    updateCategoryCards(f, CATEGORIES_VCP, 'vcpCausa', 'vcpCategoryCards', 'clearVCPCauseBtn');
+    renderVCPTable(f);
 }
 
-function populateVCPPeopleFilter() {
-    const personCounts = new Map();
-    
-    VCP_DATA.forEach(v => {
-        const personName = v.personaObservada;
-        if (personName && personName.trim() !== '') {
-            personCounts.set(personName, (personCounts.get(personName) || 0) + 1);
-        }
-    });
-    
-    const select = document.getElementById('vcpPersonFilter');
-    if (select) {
-        select.innerHTML = '<option value="todos">Todas las personas</option>';
-        const sortedNames = Array.from(personCounts.keys()).sort();
-        sortedNames.forEach(name => {
-            const count = personCounts.get(name);
-            select.innerHTML += `<option value="${name}">${name} (${count} VCPs)</option>`;
-        });
-    }
-    
-    updatePersonVCPStatsOnly();
-}
-
-function updatePersonVCPStatsOnly() {
-    const selectedPerson = document.getElementById('vcpPersonFilter')?.value || 'todos';
-    const selectedMonth = document.getElementById('vcpPersonMonthFilter')?.value || 'todo';
-    
-    let filtered = [...VCP_DATA];
-    
-    if (selectedPerson !== 'todos') {
-        filtered = filtered.filter(v => v.personaObservada === selectedPerson);
-    }
-    
-    if (selectedMonth !== 'todo') {
-        filtered = filtered.filter(v => v.mes === selectedMonth);
-    }
-    
-    const personVCPCountEl = document.getElementById('personVCPCount');
-    if (personVCPCountEl) personVCPCountEl.textContent = filtered.length;
-    
-    const personLastVCPEl = document.getElementById('personLastVCP');
-    if (personLastVCPEl) {
-        if (filtered.length > 0) {
-            const sorted = [...filtered].sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
-            const lastVCP = sorted[0];
-            personLastVCPEl.textContent = `${lastVCP.dia}/${lastVCP.mes}`;
-        } else {
-            personLastVCPEl.textContent = '-';
-        }
-    }
-}
-
-function populateSupervisors() {
-    const supervisorsSet = new Set();
-    
-    ACTOS_COND_DATA.forEach(item => {
-        if (item.observador && item.observador.trim() !== '') {
-            const cleanName = item.observador.trim().replace(/\s+/g, ' ');
-            supervisorsSet.add(cleanName);
-        }
-    });
-    
-    const supervisors = Array.from(supervisorsSet).sort();
-    const select = document.getElementById('supervisorSelect');
-    if (select) {
-        select.innerHTML = '<option value="todos">Todos</option>';
-        supervisors.forEach(s => {
-            select.innerHTML += `<option value="${s}">${s}</option>`;
-        });
-    }
-    
-    updateSupervisorCard();
-}
-
-function updateSupervisorCard() {
-    const selectedSupervisor = document.getElementById('supervisorSelect')?.value || 'todos';
-    const selectedMonth = document.getElementById('supervisorMonthSelect')?.value || 'todo';
-    
-    let filtered = ACTOS_COND_DATA;
-    
-    if (selectedSupervisor !== 'todos') {
-        filtered = filtered.filter(e => e.observador === selectedSupervisor);
-    }
-    
-    if (selectedMonth !== 'todo') {
-        filtered = filtered.filter(e => e.mes === selectedMonth);
-    }
-    
-    const actos = filtered.filter(e => e.tipo === 'acto').length;
-    const cond = filtered.filter(e => e.tipo === 'condicion').length;
-    
-    const supActosCountEl = document.getElementById('supActosCount');
-    if (supActosCountEl) supActosCountEl.textContent = actos;
-    const supCondCountEl = document.getElementById('supCondCount');
-    if (supCondCountEl) supCondCountEl.textContent = cond;
-}
-
-function setVCPCause(cause, btn) {
-    state.vcpCausa = cause;
-    const clearBtn = document.getElementById('clearVCPCauseBtn');
-    if (clearBtn) {
-        if (cause !== 'todas') clearBtn.classList.remove('hidden-section');
-        else clearBtn.classList.add('hidden-section');
-    }
-    
-    document.querySelectorAll('#vcpCauseButtons .btn-filter').forEach(b => { 
-        b.style.background = 'white'; 
-        b.style.color = '#475569'; 
-        b.classList.remove('active'); 
-    });
-    if(btn) { btn.style.background = 'linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%)'; btn.style.color = 'white'; btn.classList.add('active'); }
-    
-    applyVCPFilters();
-}
-
-function clearVCPCauseFilter() {
-    state.vcpCausa = 'todas';
-    const clearBtn = document.getElementById('clearVCPCauseBtn');
-    if (clearBtn) clearBtn.classList.add('hidden-section');
-    const allBtn = document.querySelector('#vcpCauseButtons .btn-filter');
-    if(allBtn) setVCPCause('todas', allBtn);
-    else applyVCPFilters();
-}
-
-function updateVCPCategoryCards(data) {
-    const counts = {};
-    CATEGORIES.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
-    const total = data.length || 1;
-    
-    const container = document.getElementById('vcpCategoryCards');
-    if (!container) return;
+function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
+    let counts = {}; categories.forEach(c=>counts[c.id]=0);
+    data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
+    let total = data.length || 1, container = document.getElementById(containerId); if(!container) return;
     container.innerHTML = '';
-    
-    CATEGORIES.forEach(c => {
-        const val = counts[c.id] || 0;
-        const pct = Math.round((val / total) * 100);
-        const isActive = state.vcpCausa === c.id;
-        const div = document.createElement('div');
-        div.className = 'category-card' + (isActive ? ' active' : '');
+    categories.forEach(c => {
+        let val = counts[c.id] || 0, pct = Math.round(val/total*100);
+        let div = document.createElement('div');
+        let isActive = (stateKey === 'vcpCausa' && state.vcpCausa === c.id) || (stateKey === 'causaRaiz' && state.causaRaiz === c.id);
+        div.className = `category-card p-3 text-center relative ${isActive ? 'active' : ''}`;
         div.style.borderColor = c.color;
         div.onclick = () => {
-            const buttons = document.querySelectorAll('#vcpCauseButtons .btn-filter');
-            let targetBtn = buttons[0];
-            buttons.forEach(b => { if (b.textContent.toLowerCase().includes(c.name.substring(0, 4))) targetBtn = b; });
-            setVCPCause(c.id, targetBtn);
+            if(stateKey === 'vcpCausa') {
+                if(state.vcpCausa === c.id) { state.vcpCausa = 'todas'; document.getElementById(clearBtnId).classList.add('hidden-section'); }
+                else { state.vcpCausa = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
+                applyVCPFilters();
+            } else {
+                if(state.causaRaiz === c.id) { state.causaRaiz = 'todas'; document.getElementById(clearBtnId).classList.add('hidden-section'); }
+                else { state.causaRaiz = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
+                applyGeneralFilters();
+            }
         };
-        div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
+        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`;
         container.appendChild(div);
     });
+    if(stateKey === 'vcpCausa') updateCharts(data, CATEGORIES_VCP, 'vcpCategoryChart');
+    else updateCharts(data, categories, 'categoryChart');
+}
 
-    if (vcpCategoryChart) vcpCategoryChart.destroy();
-    const ctx = document.getElementById('vcpCategoryChart');
-    if (ctx) {
-        vcpCategoryChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: CATEGORIES.map(c => c.name),
-                datasets: [{
-                    data: CATEGORIES.map(c => counts[c.id] || 0),
-                    backgroundColor: CATEGORIES.map(c => c.color),
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '60%',
-                plugins: {
-                    legend: { 
-                        position: 'right', 
-                        labels: { 
-                            boxWidth: 12, 
-                            font: { size: 10 },
-                            generateLabels: function(chart) {
-                                const data = chart.data;
-                                const total = data.datasets[0].data.reduce((a, b) => a + b, 0) || 1;
-                                return data.labels.map((label, i) => {
-                                    const value = data.datasets[0].data[i];
-                                    const percentage = Math.round((value / total) * 100);
-                                    return {
-                                        text: `${label} (${percentage}%)`,
-                                        fillStyle: data.datasets[0].backgroundColor[i],
-                                        index: i
-                                    };
-                                });
-                            }
+function updateCharts(data, categories, canvasId) {
+    let counts = {}; categories.forEach(c=>counts[c.id]=0);
+    data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
+    let total = data.length || 1;
+    let ctx = document.getElementById(canvasId).getContext('2d');
+    if(canvasId === 'categoryChart' && categoryChart) categoryChart.destroy();
+    if(canvasId === 'vcpCategoryChart' && vcpCategoryChart) vcpCategoryChart.destroy();
+    
+    let options = {
+        type: 'doughnut',
+        data: { 
+            labels: categories.map(c=>c.name), 
+            datasets: [{ 
+                data: categories.map(c=>counts[c.id]||0), 
+                backgroundColor: categories.map(c=>c.color), 
+                borderWidth: 3, 
+                borderColor: 'white',
+                hoverOffset: 15,
+                offset: 5
+            }] 
+        },
+        options: { 
+            cutout: '55%', 
+            plugins: { 
+                legend: { position: 'right', labels: { font: { size: 10, weight: 'bold', family: 'Inter' }, usePointStyle: true, pointStyle: 'circle', padding: 15 } },
+                tooltip: { 
+                    callbacks: { 
+                        label: (ctx) => { 
+                            let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); 
+                            let pct = Math.round((ctx.parsed/totalCtx)*100); 
+                            return `${ctx.label}: ${ctx.parsed} (${pct}%)`; 
                         } 
                     },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0) || 1;
-                                const percentage = Math.round((context.parsed / total) * 100);
-                                return `${context.label}: ${context.parsed} (${percentage}%)`;
-                            }
-                        }
-                    }
+                    backgroundColor: '#1e293b',
+                    titleColor: '#fbbf24',
+                    bodyColor: '#e2e8f0',
+                    borderColor: '#fbbf24',
+                    borderWidth: 1
                 }
-            }
-        });
-    }
-}
-
-function renderVCPTable(data) {
-    const tbody = document.getElementById('vcpTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    data.slice(0, 50).forEach((e, index) => {
-        const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
-        tr.onclick = () => openReportModalWithNav(e, data, index);
-        tr.innerHTML = `
-            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
-            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
-            <td style="padding: 12px;">${e.sector}</td>
-            <td style="padding: 12px; font-size: 10px; max-width: 200px;">
-                <div style="font-size: 9px; color: #64748b; margin-bottom: 2px;">${e.categoria.name}</div>
-                ${e.descripcion || '-'}
-            </td>
-            <td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.comentarios || '-'}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function toggleCausaRaiz(id) {
-    state.causaRaiz = state.causaRaiz === id ? 'todas' : id;
-    const clearBtn = document.getElementById('clearCausaBtn');
-    if (clearBtn) {
-        if (state.causaRaiz !== 'todas') clearBtn.classList.remove('hidden-section');
-        else clearBtn.classList.add('hidden-section');
-    }
-    applyGeneralFilters();
-}
-
-function clearCausaFilter() {
-    state.causaRaiz = 'todas';
-    const clearBtn = document.getElementById('clearCausaBtn');
-    if (clearBtn) clearBtn.classList.add('hidden-section');
-    applyGeneralFilters();
-}
-
-function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyGeneralFilters(); }
-function setStatus(s, btn) { state.estado = s; updateButtons('statusButtons', btn, '#2563eb'); applyGeneralFilters(); }
-function setVCPSector(s, btn) { state.vcpSector = s; updateButtons('vcpSectorButtons', btn, '#8D6E63'); applyVCPFilters(); }
-
-function setStatusVCP(estado, btn) {
-    state.vcpEstado = estado;
-    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { 
-        b.style.background = 'white'; 
-        b.style.color = '#475569'; 
-        b.classList.remove('active'); 
-    });
-    btn.style.background = 'linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%)'; 
-    btn.style.color = 'white'; 
-    btn.classList.add('active');
-    applyVCPFilters();
-}
-
-function updateButtons(containerId, activeBtn, activeColor) {
-    document.querySelectorAll('#' + containerId + ' .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.classList.remove('active'); });
-    activeBtn.style.background = activeColor; activeBtn.style.color = 'white'; activeBtn.classList.add('active');
-}
-
-function updateCategoryCards(data) {
-    const counts = {};
-    CATEGORIES.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
-    const total = data.length || 1;
-    
-    const container = document.getElementById('categoryCards');
-    if (!container) return;
-    container.innerHTML = '';
-    
-    CATEGORIES.forEach(c => {
-        const val = counts[c.id] || 0;
-        const pct = Math.round((val / total) * 100);
-        const isActive = state.causaRaiz === c.id;
-        const div = document.createElement('div');
-        div.className = 'category-card' + (isActive ? ' active' : '');
-        div.style.borderColor = c.color;
-        div.onclick = () => toggleCausaRaiz(c.id);
-        div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
-        container.appendChild(div);
-    });
-}
-
-function updateCharts(data) {
-    const counts = {};
-    CATEGORIES.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
-    
-    if (categoryChart) categoryChart.destroy();
-    
-    const total = data.length || 1;
-    const labels = CATEGORIES.map(c => {
-        const val = counts[c.id] || 0;
-        const pct = Math.round((val / total) * 100);
-        return c.name + ' (' + pct + '%)';
-    });
-    
-    const ctx = document.getElementById('categoryChart');
-    if (ctx) {
-        categoryChart = new Chart(ctx, {
-            type: 'doughnut',
-            data: {
-                labels: labels,
-                datasets: [{
-                    data: CATEGORIES.map(c => counts[c.id] || 0),
-                    backgroundColor: CATEGORIES.map(c => c.color),
-                    borderWidth: 2,
-                    borderColor: '#ffffff'
-                }]
             },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                cutout: '60%',
-                plugins: {
-                    legend: {
-                        position: 'right',
-                        labels: {
-                            boxWidth: 12,
-                            font: { size: 10 },
-                            padding: 10
-                        }
-                    }
-                }
-            }
-        });
-    }
-}
-
-function renderGeneralTable(data) {
-    const tbody = document.getElementById('generalTableBody');
-    if (!tbody) return;
-    tbody.innerHTML = '';
-    data.slice(0, 50).forEach((e, index) => {
-        const tr = document.createElement('tr');
-        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
-        tr.onclick = () => openReportModalWithNav(e, data, index);
-        const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
-        const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
-        const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
-        const tipoBg = e.tipo === 'acto' ? '#dbeafe' : '#ffedd5';
-        const tipoColor = e.tipo === 'acto' ? '#2563eb' : '#ea580c';
-        tr.innerHTML = `
-            <td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td>
-            <td style="padding: 12px; font-weight: 800;">${e.observador}</td>
-            <td style="padding: 12px;">
-                <div style="font-size: 10px; color: #64748b; margin-bottom: 2px;">${e.categoria.name}</div>
-                ${e.descripcion}
-            </td>
-            <td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>
-        `;
-        tbody.appendChild(tr);
-    });
-}
-
-function openReportModalWithNav(report, allData, index) {
-    currentModalType = 'report';
-    currentModalData = allData;
-    currentModalIndex = index;
-    openReportModal(report);
-    updateNavButtons();
-}
-
-function updateNavButtons() {
-    const btnPrev = document.getElementById('btnPrev');
-    const btnNext = document.getElementById('btnNext');
-    const counter = document.getElementById('modalCounter');
-    
-    if (!btnPrev || !btnNext || !counter) return;
-    
-    const hasNext = currentModalIndex < currentModalData.length - 1;
-    const hasPrev = currentModalIndex > 0;
-    
-    btnPrev.style.background = hasPrev ? '#64748b' : '#cbd5e1';
-    btnPrev.style.cursor = hasPrev ? 'pointer' : 'not-allowed';
-    btnPrev.disabled = !hasPrev;
-    
-    btnNext.style.background = hasNext ? '#2563eb' : '#cbd5e1';
-    btnNext.style.cursor = hasNext ? 'pointer' : 'not-allowed';
-    btnNext.disabled = !hasNext;
-    
-    counter.textContent = `${currentModalIndex + 1} / ${currentModalData.length}`;
-}
-
-function goToNextModal() {
-    if (currentModalIndex < currentModalData.length - 1) {
-        currentModalIndex++;
-        if (currentModalType === 'report') {
-            openReportModal(currentModalData[currentModalIndex]);
+            layout: { padding: 10 },
+            animation: { animateRotate: true, animateScale: true }
         }
-        updateNavButtons();
-    }
-}
-
-function goToPreviousModal() {
-    if (currentModalIndex > 0) {
-        currentModalIndex--;
-        if (currentModalType === 'report') {
-            openReportModal(currentModalData[currentModalIndex]);
-        }
-        updateNavButtons();
-    }
-}
-
-function openReportModal(report) {
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    if (!modal || !content) return;
-    const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
-    const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
+    };
     
-    content.innerHTML = `
-        <p><strong>📅 Fecha:</strong> ${report.fecha}</p>
-        <p><strong>👤 Observador:</strong> ${report.observador}</p>
-        <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
-        <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
-        <p><strong>🏷️ Categoría:</strong> ${report.categoria.name}</p>
-        <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
-        <hr style="margin: 10px 0;">
-        <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900;">${statusText}</span></p>
-    `;
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
+    let chart = new Chart(ctx, options);
+    if(canvasId === 'categoryChart') categoryChart = chart;
+    else vcpCategoryChart = chart;
 }
 
-function closeReportModal() {
-    const modal = document.getElementById('reportDetailModal');
-    if (modal) {
-        currentModalData = [];
-        currentModalIndex = 0;
-        modal.classList.add('hidden-section');
-        modal.style.display = 'none';
-    }
-}
+function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
+function clearCausaFilter() { state.causaRaiz = 'todas'; document.getElementById('clearCausaBtn').classList.add('hidden-section'); applyGeneralFilters(); }
 
-async function checkNewReports() {
-    try {
-        const timestamp = Date.now();
-        const res = await fetch(VCP_URL + '&t=' + timestamp);
-        const rows = parseCSV(await res.text());
-        
-        const today = new Date();
-        const todayStr = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-        
-        const newReportsVCP = rows.filter((row, index) => {
-            if (index === 0) return false;
-            const fecha = row[2] || '';
-            return fecha === todayStr;
-        }).slice(-5);
-        
-        const containerVCP = document.getElementById('realTimeReportsVCP');
-        if (containerVCP) {
-            if (newReportsVCP.length > 0) {
-                const htmlVCP = newReportsVCP.map(report => {
-                    const observador = report[1] || 'Desconocido';
-                    const descripcion = report[32] || report[24] || 'Sin descripción';
-                    return `
-                        <div style="padding: 6px; background: white; border-radius: 4px; margin-bottom: 4px; border-left: 3px solid #f59e0b;">
-                            <strong style="color: #d97706; font-size: 9px;">👤 ${observador}</strong>
-                            <div style="color: #374151; font-size: 8px;">📝 ${descripcion.substring(0, 50)}${descripcion.length > 50 ? '...' : ''}</div>
-                        </div>
-                    `;
-                }).join('');
-                containerVCP.innerHTML = htmlVCP;
-            } else {
-                containerVCP.innerHTML = '<p style="color: #6b7280; text-align: center;">Sin reportes hoy</p>';
-            }
-        }
-        
-        const resActos = await fetch(ACTOS_URL + '&t=' + timestamp);
-        const rowsActos = parseCSV(await resActos.text());
-        const newReportsActos = rowsActos.filter((row, index) => {
-            if (index === 0) return false;
-            const fecha = row[3] || '';
-            return fecha === todayStr;
-        }).slice(-5);
-        
-        const containerActos = document.getElementById('realTimeReportsActos');
-        if (containerActos) {
-            if (newReportsActos.length > 0) {
-                const htmlActos = newReportsActos.map(report => {
-                    const observador = report[5] || 'Desconocido';
-                    const descripcion = report[6] || 'Sin descripción';
-                    return `
-                        <div style="padding: 6px; background: white; border-radius: 4px; margin-bottom: 4px; border-left: 3px solid #10b981;">
-                            <strong style="color: #059669; font-size: 9px;">👤 ${observador}</strong>
-                            <div style="color: #374151; font-size: 8px;">📝 ${descripcion.substring(0, 50)}${descripcion.length > 50 ? '...' : ''}</div>
-                        </div>
-                    `;
-                }).join('');
-                containerActos.innerHTML = htmlActos;
-            } else {
-                containerActos.innerHTML = '<p style="color: #6b7280; text-align: center;">Sin reportes hoy</p>';
-            }
-        }
-    } catch(e) {
-        console.error('Error checking new reports:', e);
-    }
+function populateSupervisors() {
+    let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort();
+    let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">👥 Todos</option>';
+    sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`);
+    updateSupervisorCard();
 }
+function updateSupervisorCard() {
+    let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value;
+    let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes));
+    document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length;
+    document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length;
+}
+function populateVCPPeopleFilter() {
+    let counts = new Map(); VCP_DATA.forEach(v=>{ if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1); });
+    let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>';
+    [...counts.keys()].sort().forEach(name=>sel.innerHTML+=`<option value="${name}">🧑‍🏭 ${name} (${counts.get(name)} VCPs)</option>`);
+    updatePersonVCPStatsOnly();
+}
+function updatePersonVCPStatsOnly() {
+    let person = document.getElementById('vcpPersonFilter').value, month = document.getElementById('vcpPersonMonthFilter').value;
+    let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month));
+    document.getElementById('personVCPCount').innerText = f.length;
+    if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes;
+    else document.getElementById('personLastVCP').innerText = '-';
+}
+function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#2563eb');applyGeneralFilters();}
+function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#2563eb');applyGeneralFilters();}
+function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#8D6E63');applyVCPFilters();}
+function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#8D6E63');applyVCPFilters();}
+function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';});active.classList.add('active');active.style.background=color;active.style.color='white';}
 
+function renderGeneralTable(data){
+    let tb=document.getElementById('generalTableBody'); tb.innerHTML='';
+    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModalWithNav(e,data,i);
+    tr.innerHTML=`<td class="p-2 font-bold">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);});
+}
+function renderVCPTable(data){
+    let tb=document.getElementById('vcpTableBody'); tb.innerHTML='';
+    data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModalWithNav(e,data,i);
+    tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);});
+}
+async function checkNewReports(){ try { let hoy=new Date(), hs=`${hoy.getDate()}/${hoy.getMonth()+1}/${hoy.getFullYear()}`; let ra=await fetch(ACTOS_URL+'&t='+Date.now()), raRows=parseCSV(await ra.text()), newAct=raRows.filter((r,i)=>i>=0&&(r[3]||'')===hs).slice(-5); let ca=document.getElementById('realTimeReportsActos'); if(ca) ca.innerHTML=newAct.length?newAct.map(r=>`<div class="bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-emerald-500 shadow-sm"><div class="flex items-center gap-1"><span class="text-[10px] font-bold text-emerald-600">🔔 NUEVO REPORTE</span><span class="text-[9px] text-slate-400">${r[3]||hs}</span></div><div><span class="font-semibold">👤 ${r[5]||'?'}</span><br><span class="text-[9px]">📝 ${(r[6]||'').substring(0,45)}</span></div></div>`).join(''):'<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; let rv=await fetch(VCP_URL+'&t='+Date.now()), rvRows=parseCSV(await rv.text()), newV=rvRows.filter((r,i)=>i>=0&&(r[2]||'')===hs).slice(-5); let cv=document.getElementById('realTimeReportsVCP'); if(cv) cv.innerHTML=newV.length?newV.map(r=>`<div class="bg-white/80 p-2 rounded-lg mb-1 border-l-4 border-amber-500 shadow-sm"><div class="flex items-center gap-1"><span class="text-[10px] font-bold text-amber-600">🔔 NUEVO VCP</span><span class="text-[9px] text-slate-400">${r[2]||hs}</span></div><div><span class="font-semibold">🧑‍🏭 ${r[1]||'?'}</span><br><span class="text-[9px]">📝 ${(r[32]||'').substring(0,45)}</span></div></div>`).join(''):'<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; } catch(e){ console.error(e); } }
 setInterval(checkNewReports, 30000);
 
-async function forceRefreshData() {
-    await loadData();
-    alert('✅ Datos actualizados correctamente');
+function openModalWithNav(r,all,idx){currentModalData=all;currentModalIndex=idx;openModal(r);updateNavButtons();}
+function openModal(r){
+    let modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent');
+    if(r.tipo === 'vcp'){
+        // Modal específico para VCP: muestra Persona Observada (no hay observador en el formulario)
+        content.innerHTML = `
+            <p><strong>📅 Fecha de ejecución:</strong> ${r.fecha}</p>
+            <p><strong>🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-amber-700">${r.personaObservada || '-'}</span></p>
+            <p><strong>🏭 Sector donde ocurrió:</strong> ${r.sector}</p>
+            <p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p>
+            <p><strong>📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p>
+            <p><strong>💬 Comentarios:</strong> ${r.comentarios || '-'}</p>
+            <p><strong>⚙️ Estado:</strong> 🔒 CERRADO</p>
+        `;
+    } else {
+        // Modal para Actos y Condiciones
+        content.innerHTML = `
+            <p><strong>📅 Fecha:</strong> ${r.fecha}</p>
+            <p><strong>👤 Observador:</strong> ${r.observador}</p>
+            <p><strong>📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p>
+            <p><strong>🏭 Sector:</strong> ${r.sector}</p>
+            <p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p>
+            <p><strong>📝 Descripción:</strong> ${r.descripcion}</p>
+            <p><strong>⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>
+        `;
+    }
+    modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons();
 }
+function closeReportModal(){let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none';}
+function updateNavButtons(){let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`;}
+function goToNextModal(){if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex]);updateNavButtons();}}
+function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex]);updateNavButtons();}}
+function forceRefreshData(){loadData();}
 
-// Event Listeners
-document.getElementById('monthFilter')?.addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
-document.getElementById('vcpMonthFilter')?.addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
-document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-
+document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;applyGeneralFilters();});
+document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{state.vcpMes=e.target.value;applyVCPFilters();});
+document.getElementById('supervisorSelect')?.addEventListener('change',()=>updateSupervisorCard());
+document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>updateSupervisorCard());
+document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
+document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 window.onload = loadData;
 </script>
 </body>
