@@ -407,6 +407,7 @@ let state = {
     supervisor: 'todos', supervisorMes: 'todo' 
 };
 
+// Variables para navegación en modales
 let currentModalIndex = 0;
 let currentModalData = [];
 let currentModalType = '';
@@ -464,36 +465,6 @@ function isYear2026(fecha) {
         return year === '26' || year === '2026';
     }
     return false;
-}
-
-// ✅ FUNCIÓN CORREGIDA PARA FILTRO DE PERSONA VCP
-function updatePersonVCPStatsOnly() {
-    const selectedPerson = document.getElementById('vcpPersonFilter').value;
-    const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
-    
-    console.log('🔍 Filtro Persona:', selectedPerson, 'Mes:', selectedMonth);
-    
-    // ✅ FILTRAR SOLO 2026
-    let filtered = VCP_DATA_2026;
-    
-    if (selectedPerson !== 'todos') {
-        filtered = filtered.filter(v => v.personaObservada === selectedPerson);
-    }
-    
-    if (selectedMonth !== 'todo') {
-        filtered = filtered.filter(v => v.mes === selectedMonth);
-    }
-    
-    console.log('📊 Registros encontrados:', filtered.length, 'Datos:', filtered);
-    
-    document.getElementById('personVCPCount').textContent = filtered.length;
-    
-    if (filtered.length > 0) {
-        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
-        document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
-    } else {
-        document.getElementById('personLastVCP').textContent = '-';
-    }
 }
 
 async function checkNewReports() {
@@ -611,12 +582,14 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
+        // === CARGA VCP - CORRECCIÓN: Usar row[2] (Fecha de ejecución) como prioridad ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
-            const fechaRaw = row[0] || row[2] || ''; 
-            const fecha = fechaRaw.split(' ')[0]; 
+            // Priorizamos Columna C (row[2]) sobre Columna A (row[0])
+            const fechaRaw = row[2] || row[0] || ''; 
+            const fecha = fechaRaw.split(' ')[0]; // Eliminar hora si existe
             
             const observador = row[1] || '';
             const sector = row[3] || '';
@@ -725,6 +698,24 @@ function applyVCPFilters() {
     renderVCPTable(vcpData);
 }
 
+function updatePersonVCPStatsOnly() {
+    const selectedPerson = document.getElementById('vcpPersonFilter').value;
+    const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
+    
+    let filtered = VCP_DATA_2026;
+    if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
+    if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
+    
+    document.getElementById('personVCPCount').textContent = filtered.length;
+    
+    if (filtered.length > 0) {
+        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
+        document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
+    } else {
+        document.getElementById('personLastVCP').textContent = '-';
+    }
+}
+
 function populateVCPPeopleFilter() {
     const people = [...new Set(VCP_DATA_2026.map(v => v.personaObservada))].filter(n => n).sort();
     const select = document.getElementById('vcpPersonFilter');
@@ -783,6 +774,7 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
@@ -930,6 +922,7 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
+    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
         data: {
