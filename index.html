@@ -582,16 +582,16 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
-        // === CARGA VCP - CORRECCIÓN: Usar row[2] (Fecha de ejecución) como prioridad ===
+        // === CARGA VCP - CORRECCIÓN: Usar row[2] (Fecha de ejecución) ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
         VCP_DATA = rows2.map(row => {
-            // Priorizamos Columna C (row[2]) sobre Columna A (row[0])
-            const fechaRaw = row[2] || row[0] || ''; 
+            // Columna C (row[2]) = Fecha de ejecución
+            const fechaRaw = row[2] || ''; 
             const fecha = fechaRaw.split(' ')[0]; // Eliminar hora si existe
             
-            const observador = row[1] || '';
+            const observador = row[1] || ''; // Columna B = Nombre y Apellido
             const sector = row[3] || '';
             const descripcion = row[32] || '';
             const comentarios = row[28] || '';
@@ -698,13 +698,21 @@ function applyVCPFilters() {
     renderVCPTable(vcpData);
 }
 
+// ✅ FUNCIÓN CORREGIDA - Busca si el nombre está CONTENIDO en la celda
 function updatePersonVCPStatsOnly() {
     const selectedPerson = document.getElementById('vcpPersonFilter').value;
     const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
     
     let filtered = VCP_DATA_2026;
-    if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
-    if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
+    
+    // ✅ BUSQUEDA POR CONTENIDO - No coincidencia exacta
+    if (selectedPerson !== 'todos') {
+        filtered = filtered.filter(v => v.observador.includes(selectedPerson));
+    }
+    
+    if (selectedMonth !== 'todo') {
+        filtered = filtered.filter(v => v.mes === selectedMonth);
+    }
     
     document.getElementById('personVCPCount').textContent = filtered.length;
     
@@ -716,13 +724,31 @@ function updatePersonVCPStatsOnly() {
     }
 }
 
+// ✅ FUNCIÓN CORREGIDA - Cuenta nombres aunque estén combinados en una celda
 function populateVCPPeopleFilter() {
-    const people = [...new Set(VCP_DATA_2026.map(v => v.personaObservada))].filter(n => n).sort();
+    const nameCounts = {};
+    
+    // Contar todas las apariciones de cada nombre
+    VCP_DATA_2026.forEach(v => {
+        const observador = v.observador;
+        // Separar por coma o guión si hay múltiples nombres
+        const names = observador.split(/[,|-]/).map(n => n.trim()).filter(n => n);
+        
+        names.forEach(name => {
+            if (!nameCounts[name]) {
+                nameCounts[name] = 0;
+            }
+            nameCounts[name]++;
+        });
+    });
+    
     const select = document.getElementById('vcpPersonFilter');
     select.innerHTML = '<option value="todos">Todas las personas</option>';
-    people.forEach(p => {
-        const count = VCP_DATA_2026.filter(v => v.personaObservada === p).length;
-        select.innerHTML += `<option value="${p}">${p} (${count} VCPs)</option>`;
+    
+    // Ordenar alfabéticamente y agregar al select
+    Object.keys(nameCounts).sort().forEach(name => {
+        const count = nameCounts[name];
+        select.innerHTML += `<option value="${name}">${name} (${count} VCPs)</option>`;
     });
 }
 
