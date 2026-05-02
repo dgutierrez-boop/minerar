@@ -457,13 +457,11 @@ function classifyData(desc) {
     return cat;
 }
 
+// ✅ FUNCIÓN MEJORADA PARA DETECTAR 2026
 function isYear2026(fecha) {
     if (!fecha) return false;
-    const partes = fecha.split('/');
-    if (partes.length >= 3) {
-        const year = partes[2];
-        return year === '26' || year === '2026';
-    }
+    // Buscar "2026" o "/26" al final de la cadena
+    if (fecha.includes('2026') || fecha.endsWith('/26')) return true;
     return false;
 }
 
@@ -582,20 +580,21 @@ async function loadData() {
             return { fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: meses[mesIdx], dia: partes[0] || '', categoria: cat };
         }).filter(r => r.fecha && r.observador && r.observador.trim() !== '');
 
-        // === CARGA VCP - CORRECCIÓN: Usar row[2] (Fecha de ejecución) ===
+        // === CARGA VCP ===
         const res2 = await fetch(VCP_URL + '&t=' + timestamp);
         const rows2 = parseCSV(await res2.text());
         
+        console.log('Total filas en CSV VCP:', rows2.length);
+        
         VCP_DATA = rows2.map(row => {
-            // Columna C (row[2]) = Fecha de ejecución
-            const fechaRaw = row[2] || ''; 
-            const fecha = fechaRaw.split(' ')[0]; // Eliminar hora si existe
+            // Priorizamos Columna C (Fecha de ejecución) para el mes
+            const fechaRaw = row[2] || row[0] || ''; 
+            const fecha = fechaRaw.split(' ')[0]; // Limpiar hora
             
-            const observador = row[1] || ''; // Columna B = Nombre y Apellido
+            const observador = row[1] || ''; 
             const sector = row[3] || '';
             const descripcion = row[32] || '';
             const comentarios = row[28] || '';
-            const personaObservada = observador;
             
             const partes = fecha.split('/');
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -605,9 +604,16 @@ async function loadData() {
             const cat = classifyData(descripcion);
 
             return { 
-                fecha, tipo: 'vcp', sector: sector.toLowerCase().trim(), observador: observador.trim(), 
-                descripcion: descripcion.trim(), comentarios: comentarios.trim(), cerrado: true, 
-                mes: meses[mesIdx], dia: partes[0] || '', personaObservada: personaObservada.trim(),
+                fecha, 
+                tipo: 'vcp', 
+                sector: sector.toLowerCase().trim(), 
+                observador: observador.trim(), 
+                descripcion: descripcion.trim(), 
+                comentarios: comentarios.trim(), 
+                cerrado: true, 
+                mes: meses[mesIdx], 
+                dia: partes[0] || '', 
+                personaObservada: observador.trim(),
                 categoria: cat
             };
         }).filter(r => r.fecha && r.observador);
@@ -618,6 +624,7 @@ async function loadData() {
         VCP_DATA_2026 = VCP_DATA.filter(v => isYear2026(v.fecha));
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
+        // ✅ ACTUALIZAR CONTADOR TOTAL VCP
         document.getElementById('totalVCP').textContent = VCP_DATA_2026.length;
         
         populateSupervisors();
@@ -698,57 +705,77 @@ function applyVCPFilters() {
     renderVCPTable(vcpData);
 }
 
-// ✅ FUNCIÓN CORREGIDA - Busca si el nombre está CONTENIDO en la celda
+// ✅ FUNCIÓN CORREGIDA PARA FILTRO DE PERSONA VCP
 function updatePersonVCPStatsOnly() {
     const selectedPerson = document.getElementById('vcpPersonFilter').value;
     const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
     
+    console.log('Filtro Persona:', selectedPerson, 'Mes:', selectedMonth);
+    
     let filtered = VCP_DATA_2026;
     
-    // ✅ BUSQUEDA POR CONTENIDO - No coincidencia exacta
+    // Filtrar por persona (incluso si el nombre está compuesto)
     if (selectedPerson !== 'todos') {
         filtered = filtered.filter(v => v.observador.includes(selectedPerson));
     }
     
+    // Filtrar por mes
     if (selectedMonth !== 'todo') {
         filtered = filtered.filter(v => v.mes === selectedMonth);
     }
     
+    console.log('Registros encontrados:', filtered.length);
+    
     document.getElementById('personVCPCount').textContent = filtered.length;
     
     if (filtered.length > 0) {
-        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
+        // Ordenar por fecha descendente para obtener el último
+        const sorted = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
+        const lastVCP = sorted[0];
         document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
     } else {
         document.getElementById('personLastVCP').textContent = '-';
     }
 }
 
-// ✅ FUNCIÓN CORREGIDA - Cuenta nombres aunque estén combinados en una celda
+// ✅ FUNCIÓN CORREGIDA PARA POBLAR FILTRO DE PERSONAS
 function populateVCPPeopleFilter() {
     const nameCounts = {};
     
-    // Contar todas las apariciones de cada nombre
+    // Contar apariciones en 2026
     VCP_DATA_2026.forEach(v => {
         const observador = v.observador;
-        // Separar por coma o guión si hay múltiples nombres
-        const names = observador.split(/[,|-]/).map(n => n.trim()).filter(n => n);
+        // Si hay múltiples nombres separados por guión o coma, contarlos individualmente también
+        // Pero para el filtro principal, usamos el nombre completo de la celda
+        if (!nameCounts[observador]) {
+            nameCounts[observador] = 0;
+        }
+        nameCounts[observador]++;
         
-        names.forEach(name => {
-            if (!nameCounts[name]) {
-                nameCounts[name] = 0;
-            }
-            nameCounts[name]++;
-        });
+        // Lógica adicional para nombres compuestos tipo "Nombre1 - Nombre2"
+        if (observador.includes('-')) {
+            const parts = observador.split('-');
+            parts.forEach(p => {
+                const cleanName = p.trim();
+                if (cleanName) {
+                    if (!nameCounts[cleanName]) nameCounts[cleanName] = 0;
+                    // No incrementamos aquí para no duplicar el conteo total, 
+                    // solo aseguramos que aparezcan en la lista si se busca por nombre parcial
+                }
+            });
+        }
     });
     
     const select = document.getElementById('vcpPersonFilter');
     select.innerHTML = '<option value="todos">Todas las personas</option>';
     
-    // Ordenar alfabéticamente y agregar al select
+    // Ordenar y agregar al select
     Object.keys(nameCounts).sort().forEach(name => {
         const count = nameCounts[name];
-        select.innerHTML += `<option value="${name}">${name} (${count} VCPs)</option>`;
+        // Evitar duplicados en el select si el nombre ya existe
+        if (!select.querySelector(`option[value="${name}"]`)) {
+            select.innerHTML += `<option value="${name}">${name} (${count} VCPs)</option>`;
+        }
     });
 }
 
@@ -800,13 +827,12 @@ function updateVCPCategoryCards(data) {
 
     if (vcpCategoryChart) vcpCategoryChart.destroy();
     const ctx = document.getElementById('vcpCategoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     vcpCategoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: CATEGORIES.map(c => c.name),
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
@@ -948,13 +974,12 @@ function updateCharts(data) {
     });
     
     const ctx = document.getElementById('categoryChart').getContext('2d');
-    // ✅ CORRECCIÓN: Agregado 'data:' antes de {
     categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: {
+         {
             labels: labels,
             datasets: [{
-                data: CATEGORIES.map(c => counts[c.id] || 0),
+                 CATEGORIES.map(c => counts[c.id] || 0),
                 backgroundColor: CATEGORIES.map(c => c.color),
                 borderWidth: 2,
                 borderColor: '#ffffff'
