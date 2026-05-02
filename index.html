@@ -458,30 +458,13 @@ function classifyData(desc) {
 
 function isYear2026(fecha) {
     if (!fecha) return false;
+    // Manejar diferentes formatos de fecha
     const partes = fecha.split('/');
     if (partes.length >= 3) {
         const year = partes[2];
         return year === '26' || year === '2026';
     }
     return false;
-}
-
-function updatePersonVCPStatsOnly() {
-    const selectedPerson = document.getElementById('vcpPersonFilter').value;
-    const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
-    
-    let filtered = VCP_DATA_2026;
-    if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
-    if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
-    
-    document.getElementById('personVCPCount').textContent = filtered.length;
-    
-    if (filtered.length > 0) {
-        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
-        document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
-    } else {
-        document.getElementById('personLastVCP').textContent = '-';
-    }
 }
 
 async function checkNewReports() {
@@ -625,6 +608,9 @@ async function loadData() {
             };
         }).filter(r => r.fecha && r.observador);
 
+        console.log('Total VCP cargados:', VCP_DATA.length);
+        console.log('VCP 2026:', VCP_DATA.filter(v => isYear2026(v.fecha)).length);
+
         VCP_DATA_2026 = VCP_DATA.filter(v => isYear2026(v.fecha));
 
         document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
@@ -706,6 +692,24 @@ function applyVCPFilters() {
     
     updateVCPCategoryCards(vcpData);
     renderVCPTable(vcpData);
+}
+
+function updatePersonVCPStatsOnly() {
+    const selectedPerson = document.getElementById('vcpPersonFilter').value;
+    const selectedMonth = document.getElementById('vcpPersonMonthFilter').value;
+    
+    let filtered = VCP_DATA_2026;
+    if (selectedPerson !== 'todos') filtered = filtered.filter(v => v.personaObservada === selectedPerson);
+    if (selectedMonth !== 'todo') filtered = filtered.filter(v => v.mes === selectedMonth);
+    
+    document.getElementById('personVCPCount').textContent = filtered.length;
+    
+    if (filtered.length > 0) {
+        const lastVCP = filtered.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0];
+        document.getElementById('personLastVCP').textContent = `${lastVCP.dia}/${lastVCP.mes}`;
+    } else {
+        document.getElementById('personLastVCP').textContent = '-';
+    }
 }
 
 function populateVCPPeopleFilter() {
