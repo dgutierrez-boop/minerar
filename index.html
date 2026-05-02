@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Optimizado</title>
+    <title>Minerar 2026 - Panel de Seguridad | Versión Final</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -19,7 +19,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: 'Inter', sans-serif;
             background: radial-gradient(ellipse at 20% 30%, #0f0f1a, #05050a);
@@ -30,7 +29,6 @@
             min-height: 100vh;
             position: relative;
         }
-        
         body::before {
             content: "";
             position: fixed;
@@ -38,43 +36,37 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(192, 132, 252, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
             background-size: 35px 35px;
             pointer-events: none;
             z-index: 0;
         }
-        
         .glass-card {
             background: rgba(15, 20, 30, 0.75);
             backdrop-filter: blur(12px);
             border-radius: 20px;
             border: 1px solid rgba(0, 255, 136, 0.2);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
             transition: all 0.2s ease;
             cursor: pointer;
         }
         .glass-card:hover {
             transform: translateY(-3px);
             border-color: #00ff88;
-            box-shadow: 0 8px 25px rgba(0, 255, 136, 0.15);
-            background: rgba(20, 28, 40, 0.85);
+            box-shadow: 0 8px 25px rgba(0,255,136,0.15);
+            background: rgba(20,28,40,0.85);
         }
-        
         .header-container {
-            background: rgba(8, 12, 20, 0.9);
+            background: rgba(8,12,20,0.9);
             backdrop-filter: blur(12px);
             border-radius: 20px;
-            border: 1px solid rgba(192, 132, 252, 0.4);
+            border: 1px solid rgba(192,132,252,0.4);
             padding: 16px 24px;
             margin-bottom: 24px;
         }
-        
         .kpi-cyan { border-left: 4px solid #00ff88; background: linear-gradient(115deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)); }
         .kpi-amber { border-left: 4px solid #c084fc; background: linear-gradient(115deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
         .kpi-supervisor { border-left: 4px solid #38bdf8; background: linear-gradient(115deg, rgba(56,189,248,0.08), rgba(56,189,248,0.02)); }
-        
         .btn-filter {
             transition: all 0.2s;
             cursor: pointer;
@@ -84,8 +76,8 @@
             border-radius: 10px;
             width: 100%;
             text-align: left;
-            border: 1px solid rgba(100, 100, 150, 0.4);
-            background: rgba(20, 25, 35, 0.7);
+            border: 1px solid rgba(100,100,150,0.4);
+            background: rgba(20,25,35,0.7);
             color: #b0c4de;
         }
         .btn-filter.active {
@@ -94,7 +86,6 @@
             color: #05050a;
             box-shadow: 0 0 10px rgba(0,255,136,0.3);
         }
-        
         .category-card {
             transition: all 0.2s;
             cursor: pointer;
@@ -102,13 +93,13 @@
             border-radius: 14px;
             padding: 14px;
             text-align: center;
-            background: rgba(15, 20, 30, 0.7);
+            background: rgba(15,20,30,0.7);
             backdrop-filter: blur(4px);
         }
-        .category-card:hover { transform: scale(1.05); background: rgba(0, 255, 136, 0.1); border-color: #00ff88 !important; }
+        .category-card:hover { transform: scale(1.05); background: rgba(0,255,136,0.1); border-color: #00ff88 !important; }
         .category-card.active {
-            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.4), 0 0 15px rgba(0,255,136,0.2);
-            background: rgba(0, 255, 136, 0.15);
+            box-shadow: 0 0 0 3px rgba(0,255,136,0.4), 0 0 15px rgba(0,255,136,0.2);
+            background: rgba(0,255,136,0.15);
             border-color: #00ff88 !important;
         }
         .category-card.active::after {
@@ -126,108 +117,46 @@
             align-items: center;
             justify-content: center;
         }
-        
-        .status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 9px;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-        .status-ok { background: rgba(0, 255, 136, 0.2); color: #00ff88; border: 1px solid #00ff88; }
-        .status-warn { background: rgba(192, 132, 252, 0.2); color: #c084fc; border: 1px solid #c084fc; }
-        .status-low { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444; }
-        
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+        .status-ok { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
+        .status-warn { background: rgba(192,132,252,0.2); color: #c084fc; border: 1px solid #c084fc; }
+        .status-low { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
         .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
         .table-scroll::-webkit-scrollbar { width: 5px; background: #1a1f2e; border-radius: 10px; }
         .table-scroll::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 10px; }
-        
         table thead th { position: sticky; top: 0; background: #0f1520; z-index: 10; color: #00ff88; font-weight: 700; border-bottom: 1px solid rgba(0,255,136,0.3); }
-        tr { cursor: pointer; transition: background 0.2s; }
-        tr:hover { background-color: rgba(0, 255, 136, 0.08); }
-        
-        select, .select-neon {
-            background: #0f1520;
-            border: 1px solid #00ff88;
-            border-radius: 10px;
-            padding: 6px 12px;
-            color: #e2e8f0;
-            font-weight: 500;
-        }
-        
-        @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.4; box-shadow: 0 0 15px #ef4444; } }
-        @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #00ff88; } 50% { opacity: 0.4; box-shadow: 0 0 15px #00ff88; } }
-        
+        tr:hover { background-color: rgba(0,255,136,0.08); }
+        select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; }
+        @keyframes blink-red { 0%,100%{opacity:1;box-shadow:0 0 5px #ef4444}50%{opacity:0.4;box-shadow:0 0 15px #ef4444}}
+        @keyframes blink-green { 0%,100%{opacity:1;box-shadow:0 0 5px #00ff88}50%{opacity:0.4;box-shadow:0 0 15px #00ff88}}
         .siren-red { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .siren-green { width: 12px; height: 12px; background: #00ff88; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #00ff88; display: inline-block; }
-        
         .toast-notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: #0f1520;
-            border: 1px solid #00ff88;
-            backdrop-filter: blur(10px);
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border-left: 4px solid #00ff88;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2);
-            z-index: 1000;
-            animation: slideInRight 0.3s ease-out;
-            max-width: 320px;
-            font-size: 11px;
+            position: fixed; bottom: 20px; right: 20px; background: #0f1520; border: 1px solid #00ff88; backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px; border-left: 4px solid #00ff88;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2); z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 320px; font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        
         .logo-shield {
-            width: 56px;
-            height: 56px;
-            background: linear-gradient(135deg, #0f1520, #0a0f18);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 10px rgba(0,255,136,0.2);
-            border: 1px solid #00ff88;
-            transition: all 0.2s ease;
+            width: 56px; height: 56px; background: linear-gradient(135deg, #0f1520, #0a0f18); border-radius: 18px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 10px rgba(0,255,136,0.2); border: 1px solid #00ff88; transition: all 0.2s ease;
         }
-        .logo-shield:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 20px rgba(0,255,136,0.4);
-            border-color: #c084fc;
-        }
+        .logo-shield:hover { transform: scale(1.02); box-shadow: 0 0 20px rgba(0,255,136,0.4); border-color: #c084fc; }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        
-        .chart-container { position: relative; height: 280px; width: 100%; margin-top: 16px; }
-        
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } }
+        .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
+        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
     </style>
 </head>
 <body>
 <div class="max-w-7xl mx-auto relative z-10">
-    <!-- HEADER NEÓN -->
+    <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="logo-shield">
-                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" style="display: block;">
-            </div>
-            <div>
-                <h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1>
-                <p class="text-xs text-emerald-400 font-mono">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p>
-            </div>
+            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" style="display: block;"></div>
+            <div><h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-400 font-mono">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-emerald-500 relative">
-                <div class="text-[9px] font-bold uppercase text-emerald-400">📋 ACTOS+COND 🛡️</div>
-                <div id="totalActosCond" class="text-3xl font-black text-emerald-300">0</div>
-                <div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
-            </div>
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-purple-500 relative">
-                <div class="text-[9px] font-bold uppercase text-purple-400">🎯 VCP 🚧</div>
-                <div id="totalVCP" class="text-3xl font-black text-purple-300">0</div>
-                <div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
-            </div>
+            <div class="glass-card px-4 py-2 text-center border-l-4 border-emerald-500 relative"><div class="text-[9px] font-bold uppercase text-emerald-400">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-emerald-300">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
+            <div class="glass-card px-4 py-2 text-center border-l-4 border-purple-500 relative"><div class="text-[9px] font-bold uppercase text-purple-400">🎯 VCP 🚧</div><div id="totalVCP" class="text-3xl font-black text-purple-300">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-purple-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
             <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2 border border-emerald-400/50">⟳ ACTUALIZAR 🔄</button>
         </div>
     </div>
@@ -245,21 +174,26 @@
                 <div class="mt-4 p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-emerald-400 flex items-center gap-1">📢 REPORTES EN VIVO</span><div id="actosLed" class="siren-red"></div></div><div id="realTimeReportsActos" class="text-[9px] max-h-36 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
-                <!-- GRÁFICO 1: DONA (visualización rápida de porcentajes) -->
-                <div class="glass-card p-5">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-black uppercase text-emerald-400">📊 DISTRIBUCIÓN POR CAUSA RAÍZ 🛡️</h3>
-                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-purple-900/50 px-3 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
+                <!-- TARJETAS DE CAUSAS RAÍZ (ARRIBA DEL TODO) -->
+                <div class="glass-card p-4 mb-4">
+                    <div class="flex justify-between items-center flex-wrap">
+                        <h3 class="font-black uppercase text-emerald-400 text-sm">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3>
+                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
                     </div>
-                    <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-4"></div>
-                    <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                    <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div>
                 </div>
-                <!-- GRÁFICO 2: TENDENCIA MENSUAL (NUEVO - NO REDUNDANTE) -->
-                <div class="glass-card p-5 mt-4">
-                    <h3 class="font-black uppercase text-emerald-400 mb-3">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3>
-                    <div class="chart-container"><canvas id="trendChart"></canvas></div>
+                <!-- GRÁFICOS EN PARALELO -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-card p-4">
+                        <h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3>
+                        <div class="chart-container"><canvas id="categoryChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-4">
+                        <h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3>
+                        <div class="chart-container"><canvas id="trendChart"></canvas></div>
+                    </div>
                 </div>
-                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-900"><table><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-900"><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
@@ -278,13 +212,24 @@
                 <div class="mt-4 p-3 bg-purple-950/20 rounded-xl border border-purple-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-purple-400 flex items-center gap-1">📢 REPORTES EN VIVO</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-36 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
-                <div class="glass-card p-5 border border-purple-500/30">
+                <!-- TARJETAS DE CAUSAS RAÍZ VCP -->
+                <div class="glass-card p-4 mb-4 border border-purple-500/30">
                     <div class="flex justify-between items-center">
-                        <h3 class="font-black uppercase text-purple-400">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3>
-                        <button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-900/50 px-3 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
+                        <h3 class="font-black uppercase text-purple-400 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3>
+                        <button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
                     </div>
-                    <div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-4"></div>
-                    <div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div>
+                    <div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div>
+                </div>
+                <!-- GRÁFICOS VCP EN PARALELO: DONA + EVOLUCIÓN MENSUAL -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="glass-card p-4 border border-purple-500/30">
+                        <h3 class="font-black uppercase text-purple-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3>
+                        <div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div>
+                    </div>
+                    <div class="glass-card p-4 border border-purple-500/30">
+                        <h3 class="font-black uppercase text-purple-400 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3>
+                        <div class="chart-container"><canvas id="vcpTrendChart"></canvas></div>
+                    </div>
                 </div>
                 <div class="glass-card p-5 mt-4 border border-purple-500/30"><h3 class="font-black uppercase mb-2 text-purple-400">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-900"><tr><th class="p-2">📅 Fecha</th><th>👤 Persona Observada</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
             </main>
@@ -292,7 +237,7 @@
     </div>
 </div>
 
-<!-- MODAL NEÓN -->
+<!-- MODAL -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;"><div class="bg-slate-900/95 rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-emerald-500/50"><div class="flex justify-between"><h2 class="font-black text-xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div><div id="reportModalContent" class="my-4 text-sm text-slate-300"></div><div class="flex justify-between gap-2"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-full text-sm transition-all">⬅ Anterior</button><span id="modalCounter" class="font-bold text-emerald-400">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold transition-all">Siguiente ➡</button></div><button onclick="closeReportModal()" class="w-full mt-4 bg-emerald-700 hover:bg-emerald-600 py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
 
 <script>
@@ -302,7 +247,7 @@ const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1Yix
 
 const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
-let categoryChart = null, trendChart = null, vcpCategoryChart = null;
+let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
 let actosNovedades = 0, vcpNovedades = 0;
@@ -337,6 +282,7 @@ async function loadData() { try { const timestamp = Date.now(); const res1 = awa
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
 
+// ==================== ACTOS ====================
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
     let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
@@ -352,18 +298,6 @@ function applyGeneralFilters() {
     renderGeneralTable(f);
 }
 
-function applyVCPFilters() {
-    let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
-    let pct = Math.min(f.length/OBJ_VCP*100,100);
-    let vs = document.getElementById('vcpStatus'); if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente';
-    document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length;
-    document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
-    updateCategoryCards(f, CATEGORIES_VCP, 'vcpCausa', 'vcpCategoryCards', 'clearVCPCauseBtn');
-    updateChartsBarVertical(f, CATEGORIES_VCP, 'vcpCategoryChart');
-    renderVCPTable(f);
-}
-
-// GRÁFICO DONA
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -373,30 +307,28 @@ function updateChartsDona(data, categories, canvasId) {
     let chart = new Chart(ctx, {
         type: 'doughnut',
         data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] },
-        options: { cutout: '55%', plugins: { legend: { position: 'right', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
+        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
     });
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
 
-// GRÁFICO DE BARRAS VERTICALES (VCP)
-function updateChartsBarVertical(data, categories, canvasId) {
-    let counts = {}; categories.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let total = data.length || 1;
-    let ctx = document.getElementById(canvasId).getContext('2d');
-    if (vcpCategoryChart) vcpCategoryChart.destroy();
-    vcpCategoryChart = new Chart(ctx, {
-        type: 'bar',
-        data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ label: '📊 Cantidad de VCPs', data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderRadius: 8, borderWidth: 1 }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9 } } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let pct = Math.round((val / total) * 100); return `${ctx.dataset.label}: ${val} (${pct}%)`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 1 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9 } } } } }
-    });
-}
-
-// NUEVO GRÁFICO: TENDENCIA MENSUAL (EVOLUCIÓN)
 function updateTrendChart() {
     const meses = ['enero', 'febrero', 'marzo', 'abril'];
-    const actosPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length);
-    const condPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length);
+    let actosPorMes = [], condPorMes = [];
+    if (state.mes === 'todo') {
+        actosPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length);
+        condPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length);
+    } else {
+        let acumActos = 0, acumCond = 0;
+        for (let mes of meses) {
+            acumActos += ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length;
+            acumCond += ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length;
+            actosPorMes.push(acumActos);
+            condPorMes.push(acumCond);
+            if (mes === state.mes) break;
+        }
+        while (actosPorMes.length < 4) { actosPorMes.push(null); condPorMes.push(null); }
+    }
     const ctx = document.getElementById('trendChart').getContext('2d');
     if (trendChart) trendChart.destroy();
     trendChart = new Chart(ctx, {
@@ -404,19 +336,61 @@ function updateTrendChart() {
         data: {
             labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
             datasets: [
-                { label: '⚠️ ACTOS', data: actosPorMes, borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#00ff88', pointBorderColor: '#0f1520', pointBorderWidth: 2 },
-                { label: '🏚️ CONDICIONES', data: condPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 5, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }
+                { label: '⚠️ ACTOS', data: actosPorMes, borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#00ff88', pointBorderColor: '#0f1520', pointBorderWidth: 2 },
+                { label: '🏚️ CONDICIONES', data: condPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } },
-                tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; let totalGeneral = ACTOS_COND_DATA.filter(e => e.mes === meses[ctx.dataIndex]).length; let pct = totalGeneral > 0 ? Math.round((val / totalGeneral) * 100) : 0; return `${ctx.dataset.label}: ${val} (${pct}% del mes)`; } } }
-            },
-            scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 }, title: { display: true, text: '📊 Cantidad de Reportes', color: '#00ff88', font: { size: 9 } } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } }
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; let totalGeneral = ACTOS_COND_DATA.filter(e => e.mes === meses[ctx.dataIndex]).length; let pct = totalGeneral > 0 ? Math.round((val / totalGeneral) * 100) : 0; return `${ctx.dataset.label}: ${val} (${pct}% del mes)`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } }
+    });
+}
+
+// ==================== VCP ====================
+function applyVCPFilters() {
+    let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
+    let pct = Math.min(f.length/OBJ_VCP*100,100);
+    let vs = document.getElementById('vcpStatus'); if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente';
+    document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length;
+    document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
+    updateCategoryCards(f, CATEGORIES_VCP, 'vcpCausa', 'vcpCategoryCards', 'clearVCPCauseBtn');
+    updateVCPCharts(f);
+    renderVCPTable(f);
+}
+
+function updateVCPCharts(data) {
+    let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
+    let total = data.length || 1;
+    // Gráfico de dona
+    let ctxDona = document.getElementById('vcpCategoryChart').getContext('2d');
+    if (vcpCategoryChart) vcpCategoryChart.destroy();
+    vcpCategoryChart = new Chart(ctxDona, {
+        type: 'doughnut',
+        data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] },
+        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
+    });
+    // Gráfico de evolución mensual VCP
+    const meses = ['enero', 'febrero', 'marzo', 'abril'];
+    let vcpPorMes = [];
+    if (state.vcpMes === 'todo') {
+        vcpPorMes = meses.map(mes => data.filter(e => e.mes === mes).length);
+    } else {
+        let acum = 0;
+        for (let mes of meses) {
+            acum += data.filter(e => e.mes === mes).length;
+            vcpPorMes.push(acum);
+            if (mes === state.vcpMes) break;
         }
+        while (vcpPorMes.length < 4) vcpPorMes.push(null);
+    }
+    let ctxTrend = document.getElementById('vcpTrendChart').getContext('2d');
+    if (vcpTrendChart) vcpTrendChart.destroy();
+    vcpTrendChart = new Chart(ctxTrend, {
+        type: 'line',
+        data: {
+            labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+            datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }]
+        },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; let totalMes = data.filter(e => e.mes === meses[ctx.dataIndex]).length; let pct = totalMes > 0 ? Math.round((val / totalMes) * 100) : 0; return `${ctx.dataset.label}: ${val} (${pct}% del mes)`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } }
     });
 }
 
@@ -429,7 +403,7 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
         let val = counts[c.id] || 0, pct = Math.round(val/total*100);
         let div = document.createElement('div');
         let isActive = (stateKey === 'vcpCausa' && state.vcpCausa === c.id) || (stateKey === 'causaRaiz' && state.causaRaiz === c.id);
-        div.className = `category-card p-3 text-center relative ${isActive ? 'active' : ''}`;
+        div.className = `category-card p-2 text-center relative ${isActive ? 'active' : ''}`;
         div.style.borderColor = c.color;
         div.onclick = () => {
             if(stateKey === 'vcpCausa') {
@@ -442,7 +416,7 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
                 applyGeneralFilters();
             }
         };
-        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${c.color}">${val}</div><div class="text-[10px] text-slate-400">${pct}%</div>`;
+        div.innerHTML = `<div class="text-xl">${c.icon}</div><div class="text-[10px] font-bold mt-1">${c.name}</div><div class="text-xl font-black" style="color:${c.color}">${val}</div><div class="text-[9px] text-slate-400">${pct}%</div>`;
         container.appendChild(div);
     });
 }
