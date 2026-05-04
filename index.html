@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Versión Final CON SONIDO</title>
+    <title>Minerar 2026 - Panel de Seguridad | Versión Final CON SONIDO Y RESET DIARIO</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -175,6 +175,18 @@
                 font-size: 12px;
             }
         }
+        .report-item {
+            background: rgba(15, 25, 35, 0.8);
+            border-radius: 10px;
+            padding: 8px;
+            margin-bottom: 8px;
+            border-left: 3px solid;
+            transition: all 0.2s;
+        }
+        .report-item:hover {
+            background: rgba(0, 255, 136, 0.1);
+            transform: translateX(3px);
+        }
     </style>
 </head>
 <body>
@@ -295,9 +307,42 @@ let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
-let actosNovedades = 0, vcpNovedades = 0;
-let actosLedTimeout = null, vcpLedTimeout = null;
+
+// ========== NOVEDADES DEL DÍA CON RESET AUTOMÁTICO ==========
+let actosNovedades = 0;
+let vcpNovedades = 0;
 let soundEnabled = true;
+
+// Obtener clave de fecha actual YYYY-MM-DD para el storage
+function getTodayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+let lastResetDate = getTodayKey();
+
+// Función para reiniciar contadores diarios
+function checkAndResetDailyCounters() {
+    const today = getTodayKey();
+    if (today !== lastResetDate) {
+        console.log(`🔄 Reiniciando contadores diarios: ${lastResetDate} → ${today}`);
+        actosNovedades = 0;
+        vcpNovedades = 0;
+        lastResetDate = today;
+        
+        // Actualizar badges
+        const actosBadge = document.getElementById('actosNovedadBadge');
+        const vcpBadge = document.getElementById('vcpNovedadBadge');
+        if (actosBadge) actosBadge.classList.add('hidden');
+        if (vcpBadge) vcpBadge.classList.add('hidden');
+        
+        // Limpiar paneles de REPORTES EN VIVO
+        const ca = document.getElementById('realTimeReportsActos');
+        const cv = document.getElementById('realTimeReportsVCP');
+        if (ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        if (cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+    }
+}
 
 // ==================== SONIDO FUERTE ====================
 function playNotificationSound() {
@@ -392,7 +437,7 @@ function showToast(tipo, titulo, mensaje, sector) {
     setTimeout(() => { toast.remove(); }, 6000); 
 }
 
-function actualizarLED(tipo, hayNovedad) { const ledDiv = document.getElementById(`${tipo}Led`); if (!ledDiv) return; if (hayNovedad) { ledDiv.className = 'siren-green'; if (tipo === 'actos' && actosLedTimeout) clearTimeout(actosLedTimeout); if (tipo === 'vcp' && vcpLedTimeout) clearTimeout(vcpLedTimeout); const timeout = setTimeout(() => { const otroLed = document.getElementById(`${tipo}Led`); if (otroLed) otroLed.className = 'siren-red'; }, 5000); if (tipo === 'actos') actosLedTimeout = timeout; else vcpLedTimeout = timeout; } }
+function actualizarLED(tipo, hayNovedad) { const ledDiv = document.getElementById(`${tipo}Led`); if (!ledDiv) return; if (hayNovedad) { ledDiv.className = 'siren-green'; setTimeout(() => { const otroLed = document.getElementById(`${tipo}Led`); if (otroLed) otroLed.className = 'siren-red'; }, 5000); } }
 
 async function loadData() { 
     try { 
@@ -621,67 +666,127 @@ function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00f
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20, 25, 35, 0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}<tr><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
 function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
-// ==================== REPORTES EN VIVO CON SONIDO ====================
+// ==================== REPORTES EN VIVO CON SONIDO Y RESET DIARIO (CORREGIDO) ====================
 async function checkNewReports(){ 
     try { 
-        let hoy = new Date(), hs = `${hoy.getDate()}/${hoy.getMonth()+1}/${hoy.getFullYear()}`; 
-        let ra = await fetch(ACTOS_URL+'&t='+Date.now()), raRows = parseCSV(await ra.text()), newAct = raRows.filter((r,i)=>i>=0&&(r[3]||'')===hs); 
-        let ca = document.getElementById('realTimeReportsActos'); 
-        if(ca) { 
-            let oldCount = ca.querySelectorAll('.report-item').length; 
-            ca.innerHTML = ''; 
-            if(newAct.length){ 
-                let nuevos = newAct.slice(-5); 
-                nuevos.forEach(r=>{
-                    let d=document.createElement('div');
-                    d.className='report-item bg-slate-800/50 p-2 rounded-lg mb-1 border-l-4 border-emerald-500';
-                    let tipo = (r[1] || '').toLowerCase().includes('acto') ? '⚠️ ACTO' : '🏚️ CONDICIÓN';
-                    d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-emerald-400">🔔 NUEVO</span><span class="text-[9px] text-slate-400">${r[3]||hs}</span></div>
-                                <div><span class="font-semibold">👤 ${r[5]||'?'}</span> <span class="text-[8px] text-emerald-400">${tipo}</span><br>
-                                <span class="text-[9px]">🏭 ${r[2]||'?'}<br>📝 ${(r[6]||'').substring(0,45)}</span></div>`; 
-                    ca.appendChild(d);
-                }); 
-                if(newAct.length > oldCount) { 
-                    actosNovedades++; 
-                    actualizarLED('actos', true); 
-                    showToast('actos', '🚨 NUEVO REPORTE DE ACTOS/CONDICIONES', 
-                        { observador: newAct[0][5], descripcion: newAct[0][6] }, newAct[0][2]); 
-                } 
-            } else ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; 
-        } 
-        let rv = await fetch(VCP_URL+'&t='+Date.now()), rvRows = parseCSV(await rv.text()), newV = rvRows.filter((r,i)=>i>=0&&(r[2]||'')===hs); 
-        let cv = document.getElementById('realTimeReportsVCP'); 
-        if(cv) { 
-            let oldCountV = cv.querySelectorAll('.report-item').length; 
-            cv.innerHTML = ''; 
-            if(newV.length){ 
-                let nuevosV = newV.slice(-5); 
-                nuevosV.forEach(r=>{
-                    let d=document.createElement('div');
-                    d.className='report-item bg-slate-800/50 p-2 rounded-lg mb-1 border-l-4 border-purple-500'; 
-                    d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-purple-400">🔔 NUEVO VCP</span><span class="text-[9px] text-slate-400">${r[2]||hs}</span></div>
-                                <div><span class="font-semibold">🧑‍🏭 ${r[1]||'?'}</span><br>
-                                <span class="text-[9px]">🏭 ${r[3]||'?'}<br>📝 ${(r[32]||'').substring(0,45)}</span></div>`; 
-                    cv.appendChild(d);
-                }); 
-                if(newV.length > oldCountV) { 
-                    vcpNovedades++; 
-                    actualizarLED('vcp', true); 
-                    showToast('vcp', '🚨 NUEVO REPORTE VCP', 
-                        { personaObservada: newV[0][1], descripcion: newV[0][32] }, newV[0][3]); 
-                } 
-            } else cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; 
-        } 
+        // Verificar reinicio diario
+        checkAndResetDailyCounters();
+        
+        let hoy = new Date(), 
+            dia = String(hoy.getDate()).padStart(2,'0'),
+            mes = String(hoy.getMonth()+1).padStart(2,'0'),
+            anio = hoy.getFullYear();
+        
+        let fechaFormato1 = `${dia}/${mes}/${anio}`;
+        let fechaFormatoISO = `${anio}-${mes}-${dia}`;
+        
+        console.log("🔍 Buscando novedades de HOY:", fechaFormato1);
+        
+        // ========== VERIFICAR ACTOS/COND NUEVOS usando MARCA TEMPORAL (columna 0) ==========
+        try {
+            let ra = await fetch(ACTOS_URL+'&t='+Date.now()); 
+            let raRows = parseCSV(await ra.text());
+            
+            // Filtrar por marca temporal (columna 0) que tiene formato "YYYY-MM-DD HH:MM:SS"
+            let newAct = raRows.filter((r) => {
+                let marcaTemp = r[0] || '';
+                let fechaMarca = marcaTemp.split(' ')[0];
+                return fechaMarca === fechaFormatoISO;
+            });
+            
+            console.log(`📋 ACTOS/COND cargados hoy: ${newAct.length}`);
+            
+            let ca = document.getElementById('realTimeReportsActos'); 
+            if(ca) { 
+                let oldCount = ca.querySelectorAll('.report-item').length; 
+                ca.innerHTML = ''; 
+                if(newAct.length > 0){ 
+                    let nuevos = newAct.slice(-5); 
+                    nuevos.forEach(r=>{
+                        let d=document.createElement('div');
+                        d.className='report-item bg-slate-800/50 p-2 rounded-lg mb-1 border-l-4 border-emerald-500';
+                        let tipo = (r[1] || '').toLowerCase().includes('acto') ? '⚠️ ACTO' : '🏚️ CONDICIÓN';
+                        let horaCarga = r[0] ? r[0].split(' ')[1] : '';
+                        d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-emerald-400">🔔 NUEVO</span><span class="text-[9px] text-slate-400">${horaCarga}</span></div>
+                                    <div><span class="font-semibold text-emerald-300">👤 ${r[5] || '?'}</span> <span class="text-[8px] text-emerald-400">${tipo}</span><br>
+                                    <span class="text-[9px]">🏭 ${r[2] || '?'}<br>📝 ${(r[6] || '').substring(0,45)}</span></div>`; 
+                        ca.appendChild(d);
+                    }); 
+                    if(newAct.length > oldCount) { 
+                        actosNovedades = newAct.length; 
+                        actualizarLED('actos', true); 
+                        showToast('actos', `🚨 NUEVO REPORTE (${actosNovedades}° hoy)`, 
+                            { observador: newAct[0][5], descripcion: newAct[0][6] }, newAct[0][2]); 
+                        
+                        const badge = document.getElementById('actosNovedadBadge');
+                        badge.innerText = actosNovedades;
+                        badge.classList.remove('hidden');
+                    } 
+                } else { 
+                    ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; 
+                }
+            }
+        } catch(e) { console.error("Error en ACTOS:", e); }
+        
+        // ========== VERIFICAR VCP NUEVOS usando MARCA TEMPORAL (columna 0) ==========
+        try {
+            let rv = await fetch(VCP_URL+'&t='+Date.now()); 
+            let rvRows = parseCSV(await rv.text());
+            
+            let newV = [];
+            for (let i = 0; i < rvRows.length; i++) {
+                let row = rvRows[i];
+                let marcaTemp = row[0] || '';
+                let fechaMarca = marcaTemp.split(' ')[0];
+                if (fechaMarca === fechaFormatoISO) {
+                    newV.push(row);
+                }
+            }
+            
+            console.log(`📊 VCP cargados hoy: ${newV.length}`);
+            
+            let cv = document.getElementById('realTimeReportsVCP'); 
+            if(cv) { 
+                let oldCountV = cv.querySelectorAll('.report-item').length; 
+                cv.innerHTML = ''; 
+                if(newV.length > 0){ 
+                    let nuevosV = newV.slice(-5); 
+                    nuevosV.forEach(r=>{
+                        let d=document.createElement('div');
+                        d.className='report-item bg-slate-800/50 p-2 rounded-lg mb-1 border-l-4 border-purple-500';
+                        let horaCarga = r[0] ? r[0].split(' ')[1] : '';
+                        d.innerHTML=`<div class="flex items-center gap-1"><span class="text-[10px] font-bold text-purple-400">🔔 NUEVO VCP</span><span class="text-[9px] text-slate-400">${horaCarga}</span></div>
+                                    <div><span class="font-semibold text-purple-300">🧑‍🏭 ${r[1] || '?'}</span><br>
+                                    <span class="text-[9px]">🏭 ${r[3] || '?'}<br>📝 ${(r[32] || '').substring(0,45)}</span></div>`; 
+                        cv.appendChild(d);
+                    }); 
+                    if(newV.length > oldCountV) { 
+                        vcpNovedades = newV.length; 
+                        actualizarLED('vcp', true); 
+                        showToast('vcp', `🚨 NUEVO REPORTE VCP (${vcpNovedades}° hoy)`, 
+                            { personaObservada: newV[0][1], descripcion: newV[0][32] }, newV[0][3]); 
+                        
+                        const badge = document.getElementById('vcpNovedadBadge');
+                        badge.innerText = vcpNovedades;
+                        badge.classList.remove('hidden');
+                    } 
+                } else { 
+                    cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; 
+                }
+            }
+        } catch(e) { console.error("Error en VCP:", e); }
+        
         document.getElementById('actosNovedadBadge').innerText = actosNovedades; 
         document.getElementById('vcpNovedadBadge').innerText = vcpNovedades; 
         if(actosNovedades === 0) document.getElementById('actosNovedadBadge').classList.add('hidden'); 
         else document.getElementById('actosNovedadBadge').classList.remove('hidden'); 
         if(vcpNovedades === 0) document.getElementById('vcpNovedadBadge').classList.add('hidden'); 
         else document.getElementById('vcpNovedadBadge').classList.remove('hidden'); 
-    } catch(e){ console.error(e); } 
+        
+    } catch(e){ console.error("Error en checkNewReports:", e); } 
 }
 
 // ==================== MODAL ====================
@@ -717,6 +822,7 @@ window.onload = () => {
     loadData();
     checkNewReports();
     setInterval(checkNewReports, 30000);
+    setInterval(checkAndResetDailyCounters, 60000);
 };
 </script>
 </body>
