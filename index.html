@@ -130,6 +130,11 @@
         select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; }
         @keyframes blink-red { 0%,100%{opacity:1;box-shadow:0 0 5px #ef4444}50%{opacity:0.4;box-shadow:0 0 15px #ef4444}}
         @keyframes blink-green { 0%,100%{opacity:1;box-shadow:0 0 5px #00ff88}50%{opacity:0.4;box-shadow:0 0 15px #00ff88}}
+        @keyframes bounceOut {
+            0% { transform: scale(0.7); opacity: 0; }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
         .siren-red { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .siren-green { width: 12px; height: 12px; background: #00ff88; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #00ff88; display: inline-block; }
         .toast-notification {
@@ -146,8 +151,30 @@
         .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
         @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
         .hidden-section { display: none; }
-        .sound-btn { transition: all 0.2s; cursor: pointer; }
-        .sound-btn:hover { transform: scale(1.05); }
+        
+        /* MODAL MÁS GRANDE CON EFECTO BOUNCE */
+        .modal-container {
+            animation: bounceOut 0.3s ease-out;
+        }
+        .modal-content {
+            max-width: 700px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+        .modal-content .detalle-texto {
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        @media (max-width: 768px) {
+            .modal-content {
+                max-width: 95%;
+                width: 95%;
+            }
+            .modal-content .detalle-texto {
+                font-size: 12px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -156,7 +183,7 @@
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" style="display: block;"></div>
-            <div><h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-400 font-mono">🔊 ALERTAS CON SONIDO · MONITOREO EN VIVO 🔊</p></div>
+            <div><h1 class="text-2xl font-black tracking-tight bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-400 font-mono">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
             <div class="glass-card px-4 py-2 text-center border-l-4 border-emerald-500 relative"><div class="text-[9px] font-bold uppercase text-emerald-400">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-emerald-300">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
@@ -241,8 +268,22 @@
     </div>
 </div>
 
-<!-- MODAL -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;"><div class="bg-slate-900/95 rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-emerald-500/50"><div class="flex justify-between"><h2 class="font-black text-xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div><div id="reportModalContent" class="my-4 text-sm text-slate-300"></div><div class="flex justify-between gap-2"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-4 py-2 rounded-full text-sm transition-all">⬅ Anterior</button><span id="modalCounter" class="font-bold text-emerald-400">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-full text-sm font-bold transition-all">Siguiente ➡</button></div><button onclick="closeReportModal()" class="w-full mt-4 bg-emerald-700 hover:bg-emerald-600 py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
+<!-- MODAL MÁS GRANDE CON EFECTO BOUNCE -->
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="modal-container bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content">
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2>
+            <button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white transition-all">&times;</button>
+        </div>
+        <div id="reportModalContent" class="detalle-texto text-slate-300 space-y-3"></div>
+        <div class="flex justify-between gap-3 mt-6">
+            <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold transition-all">⬅ Anterior</button>
+            <span id="modalCounter" class="font-bold text-emerald-400 text-sm self-center">1/1</span>
+            <button id="btnNext" onclick="goToNextModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-bold transition-all">Siguiente ➡</button>
+        </div>
+        <button onclick="closeReportModal()" class="w-full mt-5 bg-emerald-700 hover:bg-emerald-600 py-2 rounded-xl font-bold transition-all">Cerrar</button>
+    </div>
+</div>
 
 <script>
 // ==================== CONSTANTES Y LÓGICA ====================
@@ -294,7 +335,7 @@ function toggleSound() {
     }
 }
 
-// ==================== FUNCIÓN ORIGINAL - SIN MODIFICAR ====================
+// ==================== FUNCIÓN ORIGINAL ====================
 function parseFecha(f) { 
     if (!f) return { dia: '', mes: '', valido: false }; 
     let fecha = f.split(' ')[0]; 
@@ -581,7 +622,7 @@ function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20, 25, 35, 0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
 function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
-function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}<td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
 // ==================== REPORTES EN VIVO CON SONIDO ====================
 async function checkNewReports(){ 
@@ -644,7 +685,20 @@ async function checkNewReports(){
 }
 
 // ==================== MODAL ====================
-function openModal(r, idx, data) { currentModalData = data; currentModalIndex = idx; let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); if(r.tipo === 'vcp'){ content.innerHTML = `<p><strong>📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong>🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-purple-400">${r.personaObservada || '-'}</span></p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong>📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p><p><strong>💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong>⚙️ Estado:</strong> 🔒 CERRADO</p>`; } else { content.innerHTML = `<p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong>📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong>📝 Descripción:</strong> ${r.descripcion}</p><p><strong>⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>`; } modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons(); }
+function openModal(r, idx, data) { 
+    currentModalData = data; 
+    currentModalIndex = idx; 
+    let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
+    if(r.tipo === 'vcp'){ 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-purple-300">${r.personaObservada || '-'}</span></p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
+    } else { 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`; 
+    } 
+    modal.classList.remove('hidden-section'); 
+    modal.style.display='flex'; 
+    updateNavButtons(); 
+}
+
 function closeReportModal(){let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none';}
 function updateNavButtons(){let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`;}
 function goToNextModal(){if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
