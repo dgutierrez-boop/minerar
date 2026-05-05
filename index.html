@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Versión FINAL</title>
+    <title>Minerar 2026 - Panel de Seguridad | Sucursales</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -18,7 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ========== ESTILOS ORIGINALES COMPLETOS ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -142,6 +141,11 @@
             70% { transform: scale(0.95); }
             100% { opacity: 1; transform: scale(1); }
         }
+        @keyframes pulse-border {
+            0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
+            70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
+            100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
+        }
         .modal-bounce {
             animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
         }
@@ -192,6 +196,49 @@
             background: rgba(0,255,136,0.15);
             transform: translateY(-2px);
         }
+        
+        .sucursal-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(20, 25, 35, 0.7);
+            border: 2px solid rgba(100,100,150,0.4);
+            color: #b0c4de;
+            position: relative;
+            overflow: hidden;
+        }
+        .sucursal-btn.active {
+            background: rgba(0,0,0,0.3);
+            animation: pulse-border 1.5s ease-out infinite;
+        }
+        .sucursal-btn:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+        .btn-malagueno.active {
+            border-color: #00ff88 !important;
+            box-shadow: 0 0 15px rgba(0,255,136,0.6);
+            color: #00ff88;
+        }
+        .btn-barker.active {
+            border-color: #ff8800 !important;
+            box-shadow: 0 0 15px rgba(255,136,0,0.6);
+            color: #ff8800;
+        }
+        .btn-pampita.active {
+            border-color: #c084fc !important;
+            box-shadow: 0 0 15px rgba(192,132,252,0.6);
+            color: #c084fc;
+        }
+        /* Resaltado para tarjeta de causa seleccionada */
+        .category-card.causa-seleccionada {
+            box-shadow: 0 0 0 3px rgba(0,255,136,0.6), 0 0 20px rgba(0,255,136,0.4);
+            background: rgba(0,255,136,0.2);
+            transform: scale(1.02);
+        }
     </style>
 </head>
 <body>
@@ -215,7 +262,15 @@
 
     <!-- ACTOS Y CONDICIONES -->
     <div class="glass-card p-5 mb-6">
-        <div class="text-center mb-3"><h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2><p class="text-xs text-slate-400">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p></div>
+        <div class="text-center mb-3">
+            <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
+                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active">🏔️ MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn btn-barker">🐺 BARKER</button>
+                <button id="btnPampita" class="sucursal-btn btn-pampita">🌸 PAMPITA</button>
+            </div>
+            <h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
+            <p class="text-xs text-slate-400">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+        </div>
         <div class="grid md:grid-cols-3 gap-4 my-4">
             <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-emerald-400">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-emerald-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"></div></div></div>
             <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-purple-400">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-purple-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"></div></div></div>
@@ -240,13 +295,25 @@
                 <div class="glass-card p-4 mb-4">
                     <div class="flex justify-between items-center flex-wrap">
                         <h3 class="font-black uppercase text-emerald-400 text-sm">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3>
-                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button>
+                        <div class="flex gap-2">
+                            <button id="clearCausaBtn" onclick="clearFiltroCausa()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro causa</button>
+                            <button id="clearAllFiltersBtn" onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-700/50 hover:bg-slate-600 px-2 py-1 rounded-full transition-all">🧹 Limpiar todos los filtros</button>
+                        </div>
                     </div>
                     <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="glass-card p-4"><h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-                    <div class="glass-card p-4"><h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+                    <div class="glass-card p-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <h3 class="font-black uppercase text-emerald-400 text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3>
+                            <div class="flex gap-2">
+                                <button id="limpiarFiltroCausaGrafico" onclick="limpiarFiltroCausa()" class="text-xs bg-slate-700/50 hover:bg-slate-600 px-2 py-1 rounded-full transition-all hidden">✕ Quitar causa</button>
+                                <button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full transition-all">🧹 Limpiar mes</button>
+                            </div>
+                        </div>
+                        <div class="chart-container"><canvas id="trendChart"></canvas></div>
+                    </div>
                 </div>
                 <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
@@ -274,7 +341,9 @@
             </div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold text-slate-300">📅 MES VCP</label><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold text-slate-300">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold text-slate-300">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+            <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select>
+                <div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div>
+                <div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
                 <div class="mt-4 p-3 bg-purple-950/20 rounded-xl border border-purple-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-purple-400">📢 REPORTES EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
@@ -292,7 +361,7 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE ACTOS/COND (original con efecto rebote) -->
+<!-- MODALES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
@@ -302,7 +371,6 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE SUPERVISOR (nuevo con efecto rebote) -->
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4">
@@ -316,7 +384,6 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE PERSONA VCP (nuevo con efecto rebote) -->
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-purple-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4">
@@ -332,8 +399,24 @@
 
 <script>
 // ==================== CONSTANTES ====================
-const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
-const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
+let currentSucursal = 'MALAGUENO';
+let selectedChartMonth = null;
+let selectedCausa = null; // Para filtrar por causa raíz
+
+// MALAGUEÑO
+const MALAGUENO_ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
+const MALAGUENO_VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
+
+// BARKER (pendiente)
+const BARKER_ACTOS_URL = null;
+const BARKER_VCP_URL = null;
+
+// PAMPITA (pendiente)
+const PAMPITA_ACTOS_URL = null;
+const PAMPITA_VCP_URL = null;
+
+let ACTOS_URL = MALAGUENO_ACTOS_URL;
+let VCP_URL = MALAGUENO_VCP_URL;
 
 const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
@@ -341,116 +424,68 @@ let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendCh
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
 
-// ========== NOVEDADES DEL DÍA CON RESET AUTOMÁTICO ==========
-let actosNovedades = 0;
-let vcpNovedades = 0;
-let soundEnabled = true;
-
-let reportesNotificadosActos = new Set();
-let reportesNotificadosVCP = new Set();
-
-function getTodayKey() {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-}
-
-let lastResetDate = getTodayKey();
+let actosNovedades = 0, vcpNovedades = 0, soundEnabled = true;
+let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
+let lastResetDate = new Date().toDateString();
 
 function checkAndResetDailyCounters() {
-    const today = getTodayKey();
+    const today = new Date().toDateString();
     if (today !== lastResetDate) {
-        console.log(`🔄 Reiniciando contadores diarios: ${lastResetDate} → ${today}`);
-        actosNovedades = 0;
-        vcpNovedades = 0;
+        actosNovedades = 0; vcpNovedades = 0;
         lastResetDate = today;
-        
-        reportesNotificadosActos.clear();
-        reportesNotificadosVCP.clear();
-        
-        const actosBadge = document.getElementById('actosNovedadBadge');
-        const vcpBadge = document.getElementById('vcpNovedadBadge');
-        if (actosBadge) actosBadge.classList.add('hidden');
-        if (vcpBadge) vcpBadge.classList.add('hidden');
-        
-        const ca = document.getElementById('realTimeReportsActos');
-        const cv = document.getElementById('realTimeReportsVCP');
-        if (ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
-        if (cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        reportesNotificadosActos.clear(); reportesNotificadosVCP.clear();
+        const ab = document.getElementById('actosNovedadBadge'), vb = document.getElementById('vcpNovedadBadge');
+        if(ab) ab.classList.add('hidden'); if(vb) vb.classList.add('hidden');
+        const ca = document.getElementById('realTimeReportsActos'), cv = document.getElementById('realTimeReportsVCP');
+        if(ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        if(cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
     }
 }
 
-// ==================== SONIDO ====================
 function playNotificationSound() {
     if (!soundEnabled) return;
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const oscillator = audioCtx.createOscillator();
-        const gainNode = audioCtx.createGain();
-        
-        oscillator.connect(gainNode);
-        gainNode.connect(audioCtx.destination);
-        
-        oscillator.frequency.value = 880;
-        gainNode.gain.value = 0.6;
-        
-        oscillator.start();
-        gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
-        oscillator.stop(audioCtx.currentTime + 0.6);
-        
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain); gain.connect(audioCtx.destination);
+        osc.frequency.value = 880; gain.gain.value = 0.6;
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
+        osc.stop(audioCtx.currentTime + 0.6);
         if (navigator.vibrate) navigator.vibrate(200);
-    } catch(e) { console.log("Audio no soportado:", e); }
+    } catch(e) { console.log("Audio:", e); }
 }
 
 function toggleSound() {
     soundEnabled = !soundEnabled;
-    const icon = document.getElementById('soundIcon');
-    const text = document.getElementById('soundText');
-    if (soundEnabled) {
-        icon.innerHTML = '🔊';
-        text.innerHTML = 'SONIDO ON';
-        playNotificationSound();
-    } else {
-        icon.innerHTML = '🔇';
-        text.innerHTML = 'SONIDO OFF';
-    }
+    const icon = document.getElementById('soundIcon'), text = document.getElementById('soundText');
+    if(soundEnabled){ icon.innerHTML='🔊'; text.innerHTML='SONIDO ON'; playNotificationSound(); }
+    else { icon.innerHTML='🔇'; text.innerHTML='SONIDO OFF'; }
 }
 
-// ==================== FUNCIÓN CORREGIDA - SOLO AÑO 2026 ====================
 function parseFecha(f) { 
     if (!f) return { dia: '', mes: '', valido: false }; 
     let fechaStr = f.toString().split(' ')[0].trim();
-    let dia = '', mes = '', anio = '';
-    
     let partes = fechaStr.split('/');
     if (partes.length >= 3) {
-        dia = partes[0].padStart(2, '0');
-        mes = parseInt(partes[1]);
-        let anioStr = partes[2];
-        anio = parseInt(anioStr);
-        if (anioStr.length === 2) anio = 2000 + anio;
-        
+        let dia = partes[0].padStart(2,'0'), mes = parseInt(partes[1]), anio = parseInt(partes[2]);
+        if(partes[2].length === 2) anio = 2000 + anio;
         if (mes >= 1 && mes <= 12 && anio === 2026) {
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            return { dia: dia, mes: meses[mes-1], valido: true };
+            return { dia, mes: meses[mes-1], valido: true };
         }
     }
-    
     partes = fechaStr.split('-');
     if (partes.length >= 3) {
-        anio = parseInt(partes[0]);
-        mes = parseInt(partes[1]);
-        dia = partes[2].padStart(2, '0');
-        
+        let anio = parseInt(partes[0]), mes = parseInt(partes[1]), dia = partes[2].padStart(2,'0');
         if (mes >= 1 && mes <= 12 && anio === 2026) {
             const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            return { dia: dia, mes: meses[mes-1], valido: true };
+            return { dia, mes: meses[mes-1], valido: true };
         }
     }
-    
     return { dia: '', mes: '', valido: false };
 }
 
-// CATEGORÍAS
 const CATEGORIES_ACTOS = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp','casco','guantes','lentes','arnés'] },
     { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza','orden','aceite','derrame'] },
@@ -468,6 +503,7 @@ const CATEGORIES_VCP = [
 ];
 
 function classifyData(desc, useVCP = false) { if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0; for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } } return best; }
+
 function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
 
 function showToast(tipo, titulo, mensaje, sector, persona, desc) { 
@@ -480,24 +516,157 @@ function showToast(tipo, titulo, mensaje, sector, persona, desc) {
                        <div class="text-[9px] text-slate-400">🏭 ${sector || 'No especificado'}</div>
                        <div class="text-[9px] text-slate-400 truncate">📝 ${(desc || '').substring(0, 60)}</div>`; 
     document.body.appendChild(toast); 
-    setTimeout(() => { toast.remove(); }, 6000); 
+    setTimeout(() => toast.remove(), 6000); 
+}
+
+function showToastSimple(mensaje, tipo = 'info') {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    const color = tipo === 'causa' ? '#ffaa00' : (tipo === 'mes' ? '#00ff88' : '#c084fc');
+    toast.style.borderLeftColor = color;
+    toast.innerHTML = `<div class="flex items-center gap-2"><span class="text-sm">📊</span><strong class="text-xs text-emerald-400">Interacción</strong></div><div class="text-[11px] text-slate-200">${mensaje}</div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => { toast.remove(); }, 3000);
 }
 
 function actualizarLED(tipo, hayNovedad) { 
-    const ledDiv = document.getElementById(`${tipo}Led`); 
-    if (!ledDiv) return; 
-    if (hayNovedad) { 
-        ledDiv.className = 'siren-green'; 
-        setTimeout(() => { 
-            const otroLed = document.getElementById(`${tipo}Led`); 
-            if (otroLed) otroLed.className = 'siren-red'; 
-        }, 5000); 
-    } 
+    const led = document.getElementById(`${tipo}Led`); 
+    if(!led) return; 
+    if(hayNovedad){ led.className = 'siren-green'; setTimeout(()=>{ const otro = document.getElementById(`${tipo}Led`); if(otro) otro.className = 'siren-red'; },5000); } 
+}
+
+function limpiarFiltroGrafico() {
+    selectedChartMonth = null;
+    const monthSelect = document.getElementById('monthFilter');
+    if (monthSelect) {
+        monthSelect.value = 'todo';
+        state.mes = 'todo';
+    }
+    updateTrendChart();
+    applyGeneralFilters();
+    showToastSimple('🧹 Filtro de mes eliminado - Mostrando todos los meses', 'mes');
+}
+
+function limpiarFiltroCausa() {
+    selectedCausa = null;
+    state.causaRaiz = 'todas';
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (clearBtn) clearBtn.classList.add('hidden-section');
+    
+    // Remover clase de todas las tarjetas de causa
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('causa-seleccionada');
+    });
+    
+    updateTrendChart();
+    applyGeneralFilters();
+    showToastSimple('🧹 Filtro de causa eliminado - Mostrando todas las causas', 'causa');
+}
+
+function limpiarTodosLosFiltros() {
+    // Limpiar filtro de causa
+    selectedCausa = null;
+    state.causaRaiz = 'todas';
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (clearBtn) clearBtn.classList.add('hidden-section');
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('causa-seleccionada');
+    });
+    
+    // Limpiar filtro de mes
+    selectedChartMonth = null;
+    const monthSelect = document.getElementById('monthFilter');
+    if (monthSelect) {
+        monthSelect.value = 'todo';
+        state.mes = 'todo';
+    }
+    
+    updateTrendChart();
+    applyGeneralFilters();
+    showToastSimple('🧹 Todos los filtros han sido limpiados', 'info');
+}
+
+function filtrarPorCausa(causaId, causaNombre) {
+    if (selectedCausa === causaId) {
+        // Si ya está seleccionada, la deseleccionamos
+        limpiarFiltroCausa();
+    } else {
+        selectedCausa = causaId;
+        state.causaRaiz = causaId;
+        const clearBtn = document.getElementById('clearCausaBtn');
+        if (clearBtn) clearBtn.classList.remove('hidden-section');
+        
+        // Remover clase de todas las tarjetas y agregar a la seleccionada
+        document.querySelectorAll('.category-card').forEach(card => {
+            card.classList.remove('causa-seleccionada');
+            if (card.getAttribute('data-causa-id') === causaId) {
+                card.classList.add('causa-seleccionada');
+            }
+        });
+        
+        updateTrendChart();
+        applyGeneralFilters();
+        showToastSimple(`🔍 Filtrado por causa: ${causaNombre}`, 'causa');
+    }
+}
+
+function cambiarSucursal(sucursal) {
+    currentSucursal = sucursal;
+    document.getElementById('btnMalagueno').classList.remove('active');
+    document.getElementById('btnBarker').classList.remove('active');
+    document.getElementById('btnPampita').classList.remove('active');
+    
+    // Limpiar filtros al cambiar de sucursal
+    selectedCausa = null;
+    selectedChartMonth = null;
+    state.causaRaiz = 'todas';
+    state.mes = 'todo';
+    const monthSelect = document.getElementById('monthFilter');
+    if (monthSelect) monthSelect.value = 'todo';
+    document.querySelectorAll('.category-card').forEach(card => {
+        card.classList.remove('causa-seleccionada');
+    });
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (clearBtn) clearBtn.classList.add('hidden-section');
+    
+    if (sucursal === 'MALAGUENO') {
+        document.getElementById('btnMalagueno').classList.add('active');
+        ACTOS_URL = MALAGUENO_ACTOS_URL;
+        VCP_URL = MALAGUENO_VCP_URL;
+        loadData();
+    } else if (sucursal === 'BARKER') {
+        document.getElementById('btnBarker').classList.add('active');
+        if (BARKER_ACTOS_URL === null) {
+            alert('🚧 SUCURSAL BARKER - EN DESARROLLO 🚧\n\nPróximamente se cargarán sus datos.');
+        } else {
+            ACTOS_URL = BARKER_ACTOS_URL;
+            VCP_URL = BARKER_VCP_URL;
+            loadData();
+        }
+    } else if (sucursal === 'PAMPITA') {
+        document.getElementById('btnPampita').classList.add('active');
+        if (PAMPITA_ACTOS_URL === null) {
+            alert('🚧 SUCURSAL PAMPITA - EN DESARROLLO 🚧\n\nPróximamente se cargarán sus datos.');
+        } else {
+            ACTOS_URL = PAMPITA_ACTOS_URL;
+            VCP_URL = PAMPITA_VCP_URL;
+            loadData();
+        }
+    }
 }
 
 async function loadData() { 
     try { 
         const timestamp = Date.now(); 
+        console.log(`🔄 Cargando ${currentSucursal}...`);
+        
+        if (!ACTOS_URL || !VCP_URL) {
+            ACTOS_COND_DATA = []; VCP_DATA = [];
+            document.getElementById('totalActosCond').innerText = '0';
+            document.getElementById('totalVCP').innerText = '0';
+            applyAllFilters();
+            return;
+        }
         
         const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
         const rows1 = parseCSV(await res1.text()); 
@@ -530,21 +699,16 @@ async function loadData() {
                 desc = row[6] || ''; 
                 cerradoRaw = row[23] || ''; 
             } 
-            
             const fechaParseada = parseFecha(fecha);
             if (!fechaParseada.valido) continue;
-            
             let tipo = 'otro'; 
             if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
             else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
             let cerrado = cerradoRaw && cerradoRaw.toLowerCase().includes('si'); 
             const cat = classifyData(desc, false); 
-            ACTOS_COND_DATA.push({ 
-                fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), 
-                descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
-            }); 
+            ACTOS_COND_DATA.push({ fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat }); 
         } 
-        console.log(`✅ ACTOS 2026 cargados: ${ACTOS_COND_DATA.length}`); 
+        console.log(`✅ ACTOS ${currentSucursal}: ${ACTOS_COND_DATA.length}`); 
         
         const res2 = await fetch(VCP_URL + '&t=' + timestamp); 
         const rows2 = parseCSV(await res2.text()); 
@@ -553,22 +717,17 @@ async function loadData() {
             const row = rows2[i]; 
             const fechaRaw = row[2] || ''; 
             const fecha = fechaRaw.split(' ')[0]; 
-            
             const fd = parseFecha(fecha);
             if (!fd.valido) continue;
-            
             const personaObs = (row[1] || '').trim(); 
             if (!personaObs) continue; 
             const sector = (row[3] || '').toLowerCase().trim() || 'general'; 
             const desc = row[32] || ''; 
             const coment = row[28] || ''; 
             const cat = classifyData(desc, true); 
-            VCP_DATA.push({ 
-                fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, 
-                comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat 
-            }); 
+            VCP_DATA.push({ fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat }); 
         } 
-        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length}`); 
+        console.log(`✅ VCP ${currentSucursal}: ${VCP_DATA.length}`); 
         
         document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
         document.getElementById('totalVCP').innerText = VCP_DATA.length; 
@@ -580,7 +739,6 @@ async function loadData() {
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
 
-// ==================== ACTOS ====================
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
     let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
@@ -596,49 +754,163 @@ function applyGeneralFilters() {
     renderGeneralTable(f);
 }
 
+function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
+    let counts = {}; categories.forEach(c=>counts[c.id]=0);
+    data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
+    let total = data.length || 1, container = document.getElementById(containerId); if(!container) return;
+    container.innerHTML = '';
+    categories.forEach(c => {
+        let val = counts[c.id] || 0, pct = Math.round(val/total*100);
+        let div = document.createElement('div');
+        let isActive = (stateKey === 'vcpCausa' && state.vcpCausa === c.id) || (stateKey === 'causaRaiz' && state.causaRaiz === c.id);
+        div.className = `category-card p-2 text-center relative ${isActive ? 'active' : ''}`;
+        if (selectedCausa === c.id) div.classList.add('causa-seleccionada');
+        div.setAttribute('data-causa-id', c.id);
+        div.style.borderColor = c.color;
+        div.onclick = () => {
+            if(stateKey === 'vcpCausa') {
+                if(state.vcpCausa === c.id) { state.vcpCausa = 'todas'; document.getElementById(clearBtnId).classList.add('hidden-section'); }
+                else { state.vcpCausa = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
+                applyVCPFilters();
+            } else {
+                // Para ACTOS: filtrar por causa en el gráfico
+                filtrarPorCausa(c.id, c.name);
+            }
+        };
+        div.innerHTML = `<div class="text-xl">${c.icon}</div><div class="text-[10px] font-bold mt-1">${c.name}</div><div class="text-xl font-black" style="color:${c.color}">${val}</div><div class="text-[9px] text-slate-400">${pct}%</div>`;
+        container.appendChild(div);
+    });
+}
+
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
     let ctx = document.getElementById(canvasId).getContext('2d');
     if (canvasId === 'categoryChart' && categoryChart) categoryChart.destroy();
-    let chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] },
-        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
-    });
+    let chart = new Chart(ctx, { type: 'doughnut', data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
 
 function updateTrendChart() {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    let actosPorMes = [], condPorMes = [];
-    if (state.mes === 'todo') {
-        actosPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length);
-        condPorMes = meses.map(mes => ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length);
-    } else {
-        let acumActos = 0, acumCond = 0;
-        for (let mes of meses) {
-            acumActos += ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'acto').length;
-            acumCond += ACTOS_COND_DATA.filter(e => e.mes === mes && e.tipo === 'condicion').length;
-            actosPorMes.push(acumActos);
-            condPorMes.push(acumCond);
-            if (mes === state.mes) break;
-        }
-        while (actosPorMes.length < 12) { actosPorMes.push(null); condPorMes.push(null); }
+    
+    // Si hay una causa seleccionada, filtrar los datos por esa causa
+    let datosFiltrados = ACTOS_COND_DATA;
+    if (selectedCausa && selectedCausa !== 'todas') {
+        datosFiltrados = ACTOS_COND_DATA.filter(e => e.categoria.id === selectedCausa);
     }
+    
+    let actosPorMes = meses.map(mes => datosFiltrados.filter(e => e.mes === mes && e.tipo === 'acto').length);
+    let condPorMes = meses.map(mes => datosFiltrados.filter(e => e.mes === mes && e.tipo === 'condicion').length);
+    
     const ctx = document.getElementById('trendChart').getContext('2d');
     if (trendChart) trendChart.destroy();
+    
     trendChart = new Chart(ctx, {
         type: 'line',
-        data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [
-            { label: '⚠️ ACTOS', data: actosPorMes, borderColor: '#00ff88', backgroundColor: 'rgba(0, 255, 136, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#00ff88', pointBorderColor: '#0f1520', pointBorderWidth: 2 },
-            { label: '🏚️ CONDICIONES', data: condPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }
-        ] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; return `${ctx.dataset.label}: ${val}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } }
+        data: {
+            labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+            datasets: [
+                {
+                    label: selectedCausa ? `⚠️ ACTOS (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '⚠️ ACTOS',
+                    data: actosPorMes,
+                    borderColor: '#00ff88',
+                    backgroundColor: 'rgba(0, 255, 136, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    pointBackgroundColor: (ctx) => {
+                        const index = ctx.dataIndex;
+                        const mesSeleccionado = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1;
+                        return index === mesSeleccionado ? '#ffaa00' : '#00ff88';
+                    },
+                    pointBorderColor: '#0f1520',
+                    pointBorderWidth: 2,
+                    pointStyle: 'circle'
+                },
+                {
+                    label: selectedCausa ? `🏚️ CONDICIONES (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '🏚️ CONDICIONES',
+                    data: condPorMes,
+                    borderColor: '#c084fc',
+                    backgroundColor: 'rgba(192, 132, 252, 0.1)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointRadius: 6,
+                    pointHoverRadius: 10,
+                    pointBackgroundColor: (ctx) => {
+                        const index = ctx.dataIndex;
+                        const mesSeleccionado = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1;
+                        return index === mesSeleccionado ? '#ffaa00' : '#c084fc';
+                    },
+                    pointBorderColor: '#0f1520',
+                    pointBorderWidth: 2,
+                    pointStyle: 'circle'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            onClick: (event, activeElements) => {
+                if (activeElements.length > 0) {
+                    const element = activeElements[0];
+                    const dataIndex = element.index;
+                    const mesSeleccionado = meses[dataIndex];
+                    
+                    selectedChartMonth = mesSeleccionado;
+                    const monthSelect = document.getElementById('monthFilter');
+                    if (monthSelect) {
+                        monthSelect.value = mesSeleccionado;
+                        state.mes = mesSeleccionado;
+                    }
+                    updateTrendChart();
+                    applyGeneralFilters();
+                    showToastSimple(`📅 Filtrado por mes: ${mesSeleccionado.toUpperCase()}`, 'mes');
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        color: '#cbd5e1',
+                        font: { size: 9, weight: 'bold' },
+                        usePointStyle: true,
+                        pointStyle: 'circle'
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => { return `${ctx.dataset.label}: ${ctx.parsed.y}`; }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(100,100,150,0.2)' },
+                    ticks: { color: '#cbd5e1', stepSize: 10 }
+                },
+                x: {
+                    ticks: {
+                        color: '#cbd5e1',
+                        font: { size: 9, weight: 'bold' },
+                        callback: function(val, index) {
+                            const mes = meses[index].charAt(0).toUpperCase() + meses[index].slice(1);
+                            const mesSeleccionado = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1;
+                            if (index === mesSeleccionado) return '👉 ' + mes + ' 👈';
+                            return mes;
+                        }
+                    },
+                    grid: { display: false }
+                }
+            }
+        }
     });
 }
 
-// ==================== VCP ====================
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -655,277 +927,104 @@ function updateVCPCharts(data) {
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
     let ctxDona = document.getElementById('vcpCategoryChart').getContext('2d');
     if (vcpCategoryChart) vcpCategoryChart.destroy();
-    vcpCategoryChart = new Chart(ctxDona, {
-        type: 'doughnut',
-        data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] },
-        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
-    });
-    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    let vcpPorMes = [];
-    if (state.vcpMes === 'todo') {
-        vcpPorMes = meses.map(mes => data.filter(e => e.mes === mes).length);
-    } else {
-        let acum = 0;
-        for (let mes of meses) {
-            acum += data.filter(e => e.mes === mes).length;
-            vcpPorMes.push(acum);
-            if (mes === state.vcpMes) break;
-        }
-        while (vcpPorMes.length < 12) vcpPorMes.push(null);
-    }
+    vcpCategoryChart = new Chart(ctxDona, { type: 'doughnut', data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    let vcpPorMes = meses.map(mes => data.filter(e => e.mes === mes).length);
     let ctxTrend = document.getElementById('vcpTrendChart').getContext('2d');
     if (vcpTrendChart) vcpTrendChart.destroy();
-    vcpTrendChart = new Chart(ctxTrend, {
-        type: 'line',
-        data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192, 132, 252, 0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; return `${ctx.dataset.label}: ${val}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } }
-    });
-}
-
-function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
-    let counts = {}; categories.forEach(c=>counts[c.id]=0);
-    data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let total = data.length || 1, container = document.getElementById(containerId); if(!container) return;
-    container.innerHTML = '';
-    categories.forEach(c => {
-        let val = counts[c.id] || 0, pct = Math.round(val/total*100);
-        let div = document.createElement('div');
-        let isActive = (stateKey === 'vcpCausa' && state.vcpCausa === c.id) || (stateKey === 'causaRaiz' && state.causaRaiz === c.id);
-        div.className = `category-card p-2 text-center relative ${isActive ? 'active' : ''}`;
-        div.style.borderColor = c.color;
-        div.onclick = () => {
-            if(stateKey === 'vcpCausa') {
-                if(state.vcpCausa === c.id) { state.vcpCausa = 'todas'; document.getElementById(clearBtnId).classList.add('hidden-section'); }
-                else { state.vcpCausa = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
-                applyVCPFilters();
-            } else {
-                if(state.causaRaiz === c.id) { state.causaRaiz = 'todas'; document.getElementById(clearBtnId).classList.add('hidden-section'); }
-                else { state.causaRaiz = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
-                applyGeneralFilters();
-            }
-        };
-        div.innerHTML = `<div class="text-xl">${c.icon}</div><div class="text-[10px] font-bold mt-1">${c.name}</div><div class="text-xl font-black" style="color:${c.color}">${val}</div><div class="text-[9px] text-slate-400">${pct}%</div>`;
-        container.appendChild(div);
-    });
+    vcpTrendChart = new Chart(ctxTrend, { type: 'line', data: { labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9 } } } } } });
 }
 
 function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
-function clearCausaFilter() { state.causaRaiz = 'todas'; document.getElementById('clearCausaBtn').classList.add('hidden-section'); applyGeneralFilters(); }
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
 function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{ if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1); }); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(name=>sel.innerHTML+=`<option value="${name}">🧑‍🏭 ${name} (${counts.get(name)} VCPs)</option>`); updatePersonVCPStatsOnly(); }
-function updatePersonVCPStatsOnly() { 
-    let person = document.getElementById('vcpPersonFilter').value; 
-    let month = document.getElementById('vcpPersonMonthFilter').value; 
-    let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); 
-    document.getElementById('personVCPCount').innerText = f.length; 
-    if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; 
-    else document.getElementById('personLastVCP').innerText = '-'; 
-}
+function updatePersonVCPStatsOnly() { let person = document.getElementById('vcpPersonFilter').value, month = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); document.getElementById('personVCPCount').innerText = f.length; if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; else document.getElementById('personLastVCP').innerText = '-'; }
 function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#00ff88');applyGeneralFilters();}
 function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00ff88');applyGeneralFilters();}
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
-function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20, 25, 35, 0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
-function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20,25,35,0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
-// ==================== REPORTES EN VIVO ====================
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
-        
-        let hoy = new Date(), 
-            dia = String(hoy.getDate()).padStart(2,'0'),
-            mes = String(hoy.getMonth()+1).padStart(2,'0'),
-            anio = hoy.getFullYear();
-        
-        let fechaFormatoISO = `${anio}-${mes}-${dia}`;
-        
-        console.log("🔍 Buscando novedades de HOY:", fechaFormatoISO);
-        
+        let hoy = new Date(), fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+        if (!ACTOS_URL) return;
         try {
             let ra = await fetch(ACTOS_URL+'&t='+Date.now()); 
             let raRows = parseCSV(await ra.text());
-            
             let newAct = [];
-            for (let i = 0; i < raRows.length; i++) {
-                let row = raRows[i];
-                let marcaTemp = row[0] || '';
-                let fechaMarca = marcaTemp.split(' ')[0];
-                let partes = fechaMarca.split('/');
+            for (let row of raRows) {
+                let marcaTemp = row[0] || '', partes = marcaTemp.split('/');
                 if (partes.length === 3) {
                     let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                    if (fechaISO === fechaFormatoISO) {
-                        newAct.push(row);
-                    }
+                    if (fechaISO === fechaFormatoISO) newAct.push(row);
                 }
             }
-            
-            console.log(`📋 ACTOS/COND del día de HOY: ${newAct.length}`);
-            
             let ca = document.getElementById('realTimeReportsActos'); 
             if(ca) { 
-                let nuevosNoNotificados = [];
-                for (let act of newAct) {
-                    let idUnico = `${act[13] || act[5]}|${act[6]}|${act[0]}`;
-                    if (!reportesNotificadosActos.has(idUnico)) {
-                        nuevosNoNotificados.push(act);
-                        reportesNotificadosActos.add(idUnico);
-                    }
-                }
-                
                 if(newAct.length > 0){ 
                     ca.innerHTML = ''; 
-                    let nuevos = newAct.slice(-5); 
-                    nuevos.forEach(r=>{
-                        let d=document.createElement('div');
-                        d.className='report-item';
-                        d.style.borderLeftColor = '#00ff88';
-                        let horaCarga = r[0] ? r[0].split(' ')[1]?.slice(0,5) : '';
+                    newAct.slice(-5).forEach(r=>{
+                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#00ff88';
                         let observador = (r[13] && r[13].trim() !== '') ? r[13] : (r[5] || 'Desconocido');
                         let sector = (r[2] && r[2].trim() !== '') ? r[2] : (r[14] || 'No especificado');
                         let descripcion = r[6] || '';
-                        
-                        d.innerHTML = `<div class="flex items-center justify-between mb-1">
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-[10px] font-bold text-emerald-400">📋</span>
-                                                <span class="text-[9px] text-slate-500">${horaCarga}</span>
-                                            </div>
-                                        </div>
-                                        <div class="font-bold text-emerald-300 text-[11px]">👤 ${observador}</div>
-                                        <div class="text-[9px] text-slate-400">🏭 ${sector}</div>
-                                        <div class="text-[9px] text-slate-500 mt-1 truncate">📝 ${descripcion.substring(0, 50)}</div>`;
+                        d.innerHTML = `<div class="font-bold text-emerald-300">👤 ${observador}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${descripcion.substring(0,50)}</div>`;
                         ca.appendChild(d);
                     }); 
-                    
-                    if(nuevosNoNotificados.length > 0) { 
-                        actosNovedades = newAct.length; 
-                        actualizarLED('actos', true); 
-                        let primerNuevo = nuevosNoNotificados[0];
-                        let observadorNombre = (primerNuevo[13] && primerNuevo[13].trim() !== '') ? primerNuevo[13] : (primerNuevo[5] || 'Desconocido');
-                        let sectorLugar = (primerNuevo[2] && primerNuevo[2].trim() !== '') ? primerNuevo[2] : (primerNuevo[14] || 'No especificado');
-                        showToast('actos', `🚨 NUEVO REPORTE`, 
-                            { observador: observadorNombre, descripcion: primerNuevo[6] }, 
-                            sectorLugar, observadorNombre, primerNuevo[6]); 
-                        
-                        const badge = document.getElementById('actosNovedadBadge');
-                        badge.innerText = actosNovedades;
-                        badge.classList.remove('hidden');
+                    if(newAct.length > actosNovedades) { 
+                        actosNovedades = newAct.length; actualizarLED('actos', true); 
+                        document.getElementById('actosNovedadBadge').innerText=actosNovedades; 
+                        document.getElementById('actosNovedadBadge').classList.remove('hidden');
                     } 
-                } else { 
-                    if(ca.innerHTML === '' || ca.innerHTML.includes('Sin novedades') === false) {
-                        ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
-                    }
-                }
+                } else { if(ca.innerHTML === '' || ca.innerHTML.includes('Sin novedades') === false) ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; }
             }
-        } catch(e) { 
-            console.error("Error en ACTOS:", e); 
-        }
-        
+        } catch(e) { console.error("Error ACTOS:", e); }
+        if (!VCP_URL) return;
         try {
             let rv = await fetch(VCP_URL+'&t='+Date.now()); 
             let rvRows = parseCSV(await rv.text());
-            
             let newV = [];
-            for (let i = 0; i < rvRows.length; i++) {
-                let row = rvRows[i];
-                let marcaTemp = row[0] || '';
-                let fechaMarca = marcaTemp.split(' ')[0];
-                if (fechaMarca === fechaFormatoISO) {
-                    newV.push(row);
-                }
+            for (let row of rvRows) {
+                let marcaTemp = row[0] || '', fechaMarca = marcaTemp.split(' ')[0];
+                if (fechaMarca === fechaFormatoISO) newV.push(row);
             }
-            
-            console.log(`📊 VCP del día de HOY: ${newV.length}`);
-            
             let cv = document.getElementById('realTimeReportsVCP'); 
             if(cv) { 
-                let nuevosNoNotificadosV = [];
-                for (let v of newV) {
-                    let idUnico = `${v[1]}|${v[32]}|${v[0]}`;
-                    if (!reportesNotificadosVCP.has(idUnico)) {
-                        nuevosNoNotificadosV.push(v);
-                        reportesNotificadosVCP.add(idUnico);
-                    }
-                }
-                
                 if(newV.length > 0){ 
                     cv.innerHTML = ''; 
-                    let nuevosV = newV.slice(-5); 
-                    nuevosV.forEach(r=>{
-                        let d=document.createElement('div');
-                        d.className='report-item';
-                        d.style.borderLeftColor = '#c084fc';
-                        let horaCarga = r[0] ? r[0].split(' ')[1]?.slice(0,5) : '';
-                        let persona = r[1] || 'Desconocido';
-                        let sector = r[3] || 'No especificado';
-                        let descripcion = r[32] || '';
-                        
-                        d.innerHTML = `<div class="flex items-center justify-between mb-1">
-                                            <div class="flex items-center gap-2">
-                                                <span class="text-[10px] font-bold text-purple-400">🎯</span>
-                                                <span class="text-[9px] text-slate-500">${horaCarga}</span>
-                                            </div>
-                                        </div>
-                                        <div class="font-bold text-purple-300 text-[11px]">🧑‍🏭 ${persona}</div>
-                                        <div class="text-[9px] text-slate-400">🏭 ${sector}</div>
-                                        <div class="text-[9px] text-slate-500 mt-1 truncate">📝 ${descripcion.substring(0, 50)}</div>`;
+                    newV.slice(-5).forEach(r=>{
+                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#c084fc';
+                        let persona = r[1] || 'Desconocido', sector = r[3] || 'No especificado', desc = r[32] || '';
+                        d.innerHTML = `<div class="font-bold text-purple-300">🧑‍🏭 ${persona}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${desc.substring(0,50)}</div>`;
                         cv.appendChild(d);
                     }); 
-                    
-                    if(nuevosNoNotificadosV.length > 0) { 
-                        vcpNovedades = newV.length; 
-                        actualizarLED('vcp', true); 
-                        let primerNuevo = nuevosNoNotificadosV[0];
-                        showToast('vcp', `🚨 NUEVO REPORTE VCP`, 
-                            { personaObservada: primerNuevo[1], descripcion: primerNuevo[32] }, 
-                            primerNuevo[3] || 'No especificado', primerNuevo[1], primerNuevo[32]); 
-                        
-                        const badge = document.getElementById('vcpNovedadBadge');
-                        badge.innerText = vcpNovedades;
-                        badge.classList.remove('hidden');
+                    if(newV.length > vcpNovedades) { 
+                        vcpNovedades = newV.length; actualizarLED('vcp', true); 
+                        document.getElementById('vcpNovedadBadge').innerText=vcpNovedades; 
+                        document.getElementById('vcpNovedadBadge').classList.remove('hidden');
                     } 
-                } else { 
-                    if(cv.innerHTML === '' || cv.innerHTML.includes('Sin novedades') === false) {
-                        cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
-                    }
-                }
+                } else { if(cv.innerHTML === '' || cv.innerHTML.includes('Sin novedades') === false) cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; }
             }
-        } catch(e) { 
-            console.error("Error en VCP:", e); 
-        }
-        
-        document.getElementById('actosNovedadBadge').innerText = actosNovedades; 
-        document.getElementById('vcpNovedadBadge').innerText = vcpNovedades; 
-        if(actosNovedades === 0) document.getElementById('actosNovedadBadge').classList.add('hidden'); 
-        else document.getElementById('actosNovedadBadge').classList.remove('hidden'); 
-        if(vcpNovedades === 0) document.getElementById('vcpNovedadBadge').classList.add('hidden'); 
-        else document.getElementById('vcpNovedadBadge').classList.remove('hidden'); 
-        
-    } catch(e){ console.error("Error general en checkNewReports:", e); } 
+        } catch(e) { console.error("Error VCP:", e); }
+    } catch(e){ console.error(e); } 
 }
 
-// ==================== MODALES ====================
 function openModal(r, idx, data) { 
-    currentModalData = data; 
-    currentModalIndex = idx; 
+    currentModalData = data; currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
-    
-    // Aplicar efecto rebote
     const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce');
-    void modalContent.offsetHeight;
-    modalContent.classList.add('modal-bounce');
-    
+    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
     if(r.tipo === 'vcp'){ 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-purple-300">${r.personaObservada || '-'}</span></p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
     } else { 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`; 
     } 
-    modal.classList.remove('hidden-section'); 
-    modal.style.display='flex'; 
-    updateNavButtons(); 
+    modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons(); 
 }
 
 function closeReportModal(){let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none';}
@@ -934,259 +1033,97 @@ function goToNextModal(){if(currentModalIndex<currentModalData.length-1){current
 function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function forceRefreshData(){loadData();}
 
-// ==================== MODAL SUPERVISOR ====================
 function abrirModalSupervisor(tipo) {
-    const supervisor = document.getElementById('supervisorSelect').value;
-    const mes = document.getElementById('supervisorMonthSelect').value;
-    
-    if (supervisor === 'todos') {
-        alert("⚠️ Por favor, seleccione un supervisor específico para ver el detalle.");
-        return;
-    }
-    
+    const supervisor = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value;
+    if (supervisor === 'todos') { alert("⚠️ Seleccione un supervisor específico"); return; }
     let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
-    
     let filtrados = ACTOS_COND_DATA.filter(e => e.observador === supervisor && (mes === 'todo' || e.mes === mes));
     let datosTipo = filtrados.filter(e => e.tipo === tipo);
-    
-    if (datosTipo.length === 0) {
-        alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} registrados para ${supervisor} en ${nombreMes}.`);
-        return;
-    }
-    
-    let titulo = tipo === 'acto' ? `⚠️ ACTOS registrados por ${supervisor}` : `🏚️ CONDICIONES registradas por ${supervisor}`;
+    if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor} en ${nombreMes}.`); return; }
+    let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
     let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700">
-                    <p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p>
-                    <p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p>
-                    <p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="sticky top-0 bg-slate-800">
-                            <tr>
-                                <th class="p-2">📅 Fecha</th>
-                                <th class="p-2">🏭 Sector</th>
-                                <th class="p-2">🏷️ Categoría</th>
-                                <th class="p-2">📝 Descripción</th>
-                                <th class="p-2">🔒 Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-    
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     datosTipo.forEach(e => {
-        let badgeEstado = e.cerrado 
-            ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span>' 
-            : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full text-[9px]">⚠️ ABIERTO</span>';
-        
-        let descripcionCorta = e.descripcion.length > 60 ? e.descripcion.substring(0, 60) + '...' : e.descripcion;
-        
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" 
-                        onclick="verDetalleReporteSupervisor(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})">
-                    <td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td>
-                    <td class="p-2">🏭 ${e.sector}</td>
-                    <td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td>
-                    <td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descripcionCorta}</td>
-                    <td class="p-2">${badgeEstado}</td>
-                </tr>`;
+        let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
+        let descCorta = e.descripcion.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion;
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReporteSupervisor(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2">${badgeEstado}</td></tr>`;
     });
-    
-    html += `</tbody>
-              </table>
-                </div>`;
-    
+    html += `</tbody></table></div>`;
     document.getElementById('modalSupervisorTitle').innerHTML = titulo;
     document.getElementById('modalSupervisorTitle').style.color = colorTitulo;
     document.getElementById('supervisorModalContent').innerHTML = html;
-    
     const modal = document.getElementById('supervisorDetailModal');
     const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce');
-    void modalContent.offsetHeight;
-    modalContent.classList.add('modal-bounce');
-    
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
+    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
 }
 
 function verDetalleReporteSupervisor(reporte) {
     closeSupervisorModal();
-    
-    const index = ACTOS_COND_DATA.findIndex(r => 
-        r.fecha === reporte.fecha && 
-        r.descripcion === reporte.descripcion && 
-        r.observador === reporte.observador
-    );
-    
-    if (index !== -1) {
-        openModal(ACTOS_COND_DATA[index], index, ACTOS_COND_DATA);
-    } else {
-        currentModalData = [reporte];
-        currentModalIndex = 0;
-        let modal = document.getElementById('reportDetailModal');
-        let content = document.getElementById('reportModalContent');
-        
+    const index = ACTOS_COND_DATA.findIndex(r => r.fecha === reporte.fecha && r.descripcion === reporte.descripcion && r.observador === reporte.observador);
+    if (index !== -1) { openModal(ACTOS_COND_DATA[index], index, ACTOS_COND_DATA); }
+    else { currentModalData = [reporte]; currentModalIndex = 0;
+        let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
         const modalContent = modal.querySelector('.modal-content');
-        modalContent.classList.remove('modal-bounce');
-        void modalContent.offsetHeight;
-        modalContent.classList.add('modal-bounce');
-        
-        content.innerHTML = `<div class="space-y-2">
-            <p><strong class="text-emerald-400">📅 Fecha:</strong> ${reporte.fecha}</p>
-            <p><strong class="text-emerald-400">👤 Observador:</strong> ${reporte.observador}</p>
-            <p><strong class="text-emerald-400">📋 Tipo:</strong> ${reporte.tipo.toUpperCase()}</p>
-            <p><strong class="text-emerald-400">🏭 Sector:</strong> ${reporte.sector}</p>
-            <p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p>
-            <p><strong class="text-emerald-400">📝 Descripción:</strong> ${reporte.descripcion}</p>
-            <p><strong class="text-emerald-400">⚙️ Estado:</strong> ${reporte.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>
-        </div>`;
-        modal.classList.remove('hidden-section');
-        modal.style.display = 'flex';
-        updateNavButtons();
+        modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${reporte.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${reporte.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${reporte.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${reporte.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${reporte.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${reporte.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`;
+        modal.classList.remove('hidden-section'); modal.style.display = 'flex'; updateNavButtons();
     }
 }
 
-function closeSupervisorModal() {
-    const m = document.getElementById('supervisorDetailModal');
-    m.classList.add('hidden-section');
-    m.style.display = 'none';
-}
+function closeSupervisorModal() { const m = document.getElementById('supervisorDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
-// ==================== MODAL PERSONA VCP (NUEVO) ====================
 function abrirModalPersonaVCP() {
-    const persona = document.getElementById('vcpPersonFilter').value;
-    const mes = document.getElementById('vcpPersonMonthFilter').value;
-    
-    if (persona === 'todos') {
-        alert("⚠️ Por favor, seleccione una persona específica para ver el detalle.");
-        return;
-    }
-    
+    const persona = document.getElementById('vcpPersonFilter').value, mes = document.getElementById('vcpPersonMonthFilter').value;
+    if (persona === 'todos') { alert("⚠️ Seleccione una persona específica"); return; }
     let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
-    
     let filtrados = VCP_DATA.filter(e => e.personaObservada === persona && (mes === 'todo' || e.mes === mes));
-    
-    if (filtrados.length === 0) {
-        alert(`No hay VCPs registrados para ${persona} en ${nombreMes}.`);
-        return;
-    }
-    
-    let titulo = `📋 VCPs registrados por ${persona}`;
-    
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700">
-                    <p class="text-sm text-slate-400">📅 Período: <span class="text-purple-400 font-bold">${nombreMes}</span></p>
-                    <p class="text-sm text-slate-400">👤 Persona: <span class="text-purple-400 font-bold">${persona}</span></p>
-                    <p class="text-sm text-slate-400">📊 Total: <span class="text-purple-400 font-bold">${filtrados.length}</span> VCPs</p>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead class="sticky top-0 bg-slate-800">
-                            <tr>
-                                <th class="p-2">📅 Fecha</th>
-                                <th class="p-2">🏭 Sector</th>
-                                <th class="p-2">🏷️ Categoría</th>
-                                <th class="p-2">📝 Descripción</th>
-                                <th class="p-2">💬 Comentarios</th>
-                                <th class="p-2">🔒 Estado</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-    
+    if (filtrados.length === 0) { alert(`No hay VCPs para ${persona} en ${nombreMes}.`); return; }
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-purple-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Persona: <span class="text-purple-400 font-bold">${persona}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-purple-400 font-bold">${filtrados.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     filtrados.forEach(e => {
-        let descripcionCorta = e.descripcion.length > 50 ? e.descripcion.substring(0, 50) + '...' : e.descripcion;
-        let comentarioCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0, 30) + '...' : (e.comentarios || '-');
-        
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" 
-                        onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})">
-                    <td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td>
-                    <td class="p-2">🏭 ${e.sector}</td>
-                    <td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td>
-                    <td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descripcionCorta}</td>
-                    <td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentarioCorto}</td>
-                    <td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>
-                </tr>`;
+        let descCorta = e.descripcion.length > 50 ? e.descripcion.substring(0,50)+'...' : e.descripcion;
+        let comentCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0,30)+'...' : (e.comentarios || '-');
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
     });
-    
-    html += `</tbody>
-              </table>
-                </div>`;
-    
-    document.getElementById('modalPersonaVCPTitle').innerHTML = titulo;
+    html += `</tbody></table></div>`;
+    document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${persona}`;
     document.getElementById('personaVCPModalContent').innerHTML = html;
-    
     const modal = document.getElementById('personaVCPModal');
     const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce');
-    void modalContent.offsetHeight;
-    modalContent.classList.add('modal-bounce');
-    
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
+    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
 }
 
 function verDetalleReportePersonaVCP(reporte) {
     closePersonaVCPModal();
-    
-    const index = VCP_DATA.findIndex(r => 
-        r.fecha === reporte.fecha && 
-        r.descripcion === reporte.descripcion && 
-        r.personaObservada === reporte.personaObservada
-    );
-    
-    if (index !== -1) {
-        openModal(VCP_DATA[index], index, VCP_DATA);
-    } else {
-        currentModalData = [reporte];
-        currentModalIndex = 0;
-        let modal = document.getElementById('reportDetailModal');
-        let content = document.getElementById('reportModalContent');
-        
+    const index = VCP_DATA.findIndex(r => r.fecha === reporte.fecha && r.descripcion === reporte.descripcion && r.personaObservada === reporte.personaObservada);
+    if (index !== -1) { openModal(VCP_DATA[index], index, VCP_DATA); }
+    else { currentModalData = [reporte]; currentModalIndex = 0;
+        let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
         const modalContent = modal.querySelector('.modal-content');
-        modalContent.classList.remove('modal-bounce');
-        void modalContent.offsetHeight;
-        modalContent.classList.add('modal-bounce');
-        
-        content.innerHTML = `<div class="space-y-2">
-            <p><strong class="text-purple-400">📅 Fecha:</strong> ${reporte.fecha}</p>
-            <p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${reporte.personaObservada}</p>
-            <p><strong class="text-purple-400">🏭 Sector:</strong> ${reporte.sector}</p>
-            <p><strong class="text-purple-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p>
-            <p><strong class="text-purple-400">📝 Descripción:</strong> ${reporte.descripcion}</p>
-            <p><strong class="text-purple-400">💬 Comentarios:</strong> ${reporte.comentarios || '-'}</p>
-            <p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p>
-        </div>`;
-        modal.classList.remove('hidden-section');
-        modal.style.display = 'flex';
-        updateNavButtons();
+        modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha:</strong> ${reporte.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${reporte.personaObservada}</p><p><strong class="text-purple-400">🏭 Sector:</strong> ${reporte.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p><p><strong class="text-purple-400">📝 Descripción:</strong> ${reporte.descripcion}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${reporte.comentarios || '-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;
+        modal.classList.remove('hidden-section'); modal.style.display = 'flex'; updateNavButtons();
     }
 }
 
-function closePersonaVCPModal() {
-    const m = document.getElementById('personaVCPModal');
-    m.classList.add('hidden-section');
-    m.style.display = 'none';
-}
+function closePersonaVCPModal() { const m = document.getElementById('personaVCPModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
-// ==================== EVENT LISTENERS ====================
-document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;applyGeneralFilters();});
+// EVENTOS
+document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;selectedChartMonth=null;applyGeneralFilters();updateTrendChart();});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{state.vcpMes=e.target.value;applyVCPFilters();});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
-
-// Eventos para los números clickeables
 document.getElementById('actosCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('acto'));
 document.getElementById('condCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('condicion'));
 document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
+document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
+document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
+document.getElementById('btnPampita')?.addEventListener('click', () => cambiarSucursal('PAMPITA'));
 
-window.onload = () => {
-    loadData();
-    setTimeout(() => checkNewReports(), 3000);
-    setInterval(() => checkNewReports(), 60000);
-    setInterval(() => checkAndResetDailyCounters(), 60000);
-};
+window.onload = () => { loadData(); setTimeout(() => checkNewReports(), 3000); setInterval(() => checkNewReports(), 60000); setInterval(() => checkAndResetDailyCounters(), 60000); };
 </script>
 </body>
 </html>
