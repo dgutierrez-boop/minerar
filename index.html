@@ -118,6 +118,11 @@
             align-items: center;
             justify-content: center;
         }
+        .category-card.causa-seleccionada {
+            box-shadow: 0 0 0 3px rgba(0,255,136,0.6), 0 0 20px rgba(0,255,136,0.4);
+            background: rgba(0,255,136,0.2);
+            transform: scale(1.02);
+        }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
         .status-warn { background: rgba(192,132,252,0.2); color: #c084fc; border: 1px solid #c084fc; }
@@ -209,6 +214,9 @@
             color: #b0c4de;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .sucursal-btn.active {
             background: rgba(0,0,0,0.3);
@@ -217,6 +225,11 @@
         .sucursal-btn:hover {
             transform: translateY(-2px);
             filter: brightness(1.1);
+        }
+        .sucursal-icon {
+            width: 20px;
+            height: 20px;
+            object-fit: contain;
         }
         .btn-malagueno.active {
             border-color: #00ff88 !important;
@@ -258,9 +271,15 @@
     <div class="glass-card p-5 mb-6">
         <div class="text-center mb-3">
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active">🏔️ MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn btn-barker">🐺 BARKER</button>
-                <button id="btnLaPampita" class="sucursal-btn btn-lapampita">🌸 LA PAMPITA</button>
+                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active">
+                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> MALAGUEÑO
+                </button>
+                <button id="btnBarker" class="sucursal-btn btn-barker">
+                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER
+                </button>
+                <button id="btnLaPampita" class="sucursal-btn btn-lapampita">
+                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA
+                </button>
             </div>
             <h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
             <p class="text-xs text-slate-400">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
@@ -329,7 +348,7 @@
             </div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold text-slate-300">📅 MES VCP</label><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select>
+            <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select>
                 <div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div>
                 <div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
                 <div class="mt-4 p-3 bg-purple-950/20 rounded-xl border border-purple-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-purple-400">📢 REPORTES EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
@@ -349,7 +368,7 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE ACTOS/COND (original) -->
+<!-- MODALES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
@@ -395,11 +414,11 @@ let selectedCausa = null;
 const MALAGUENO_ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
 const MALAGUENO_VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
 
-// BARKER
+// BARKER (ACTOS y VCP)
 const BARKER_ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2r4qjkNaf963qsk0BRCZDI5OocDmF9gmTIGbXKpsf7cpEoN8Ws64d0b2Tnkpb9qTLFq8Vjk-2Kd9X/pub?output=csv';
 const BARKER_VCP_URL = null;
 
-// LA PAMPITA
+// LA PAMPITA (ACTOS y VCP)
 const LAPAMPITA_ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv';
 const LAPAMPITA_VCP_URL = null;
 
@@ -843,7 +862,7 @@ function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00f
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20,25,35,0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</table><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
 function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
 async function checkNewReports(){ 
@@ -940,13 +959,13 @@ function abrirModalSupervisor(tipo) {
     if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor} en ${nombreMes}.`); return; }
     let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
     let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th><tr></thead><tbody>`;
     datosTipo.forEach(e => {
         let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
         let descCorta = e.descripcion.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion;
         html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReporteSupervisor(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2">${badgeEstado}</td></tr>`;
     });
-    html += `</tbody></table></div>`;
+    html += `</tbody><tr></div>`;
     document.getElementById('modalSupervisorTitle').innerHTML = titulo;
     document.getElementById('modalSupervisorTitle').style.color = colorTitulo;
     document.getElementById('supervisorModalContent').innerHTML = html;
@@ -981,7 +1000,7 @@ function abrirModalPersonaVCP() {
     filtrados.forEach(e => {
         let descCorta = e.descripcion.length > 50 ? e.descripcion.substring(0,50)+'...' : e.descripcion;
         let comentCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0,30)+'...' : (e.comentarios || '-');
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span><｜｜box｜｜></tr>`;
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
     });
     html += `</tbody></table></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${persona}`;
