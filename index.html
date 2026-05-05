@@ -18,9 +18,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ============================================== */
-        /* TODOS TUS ESTILOS ORIGINALES (NO SE MODIFICARON) */
-        /* ============================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -121,11 +118,6 @@
             align-items: center;
             justify-content: center;
         }
-        .category-card.causa-seleccionada {
-            box-shadow: 0 0 0 3px rgba(0,255,136,0.6), 0 0 20px rgba(0,255,136,0.4);
-            background: rgba(0,255,136,0.2);
-            transform: scale(1.02);
-        }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
         .status-warn { background: rgba(192,132,252,0.2); color: #c084fc; border: 1px solid #c084fc; }
@@ -138,25 +130,10 @@
         select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; }
         @keyframes blink-red { 0%,100%{opacity:1;box-shadow:0 0 5px #ef4444}50%{opacity:0.4;box-shadow:0 0 15px #ef4444}}
         @keyframes blink-green { 0%,100%{opacity:1;box-shadow:0 0 5px #00ff88}50%{opacity:0.4;box-shadow:0 0 15px #00ff88}}
-        @keyframes bounceOut {
-            0% { transform: scale(0.7); opacity: 0; }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        @keyframes bounceIn {
-            0% { opacity: 0; transform: scale(0.3); }
-            50% { opacity: 1; transform: scale(1.05); }
-            70% { transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes pulse-border {
-            0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
-            70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
-            100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); }
-        }
-        .modal-bounce {
-            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
-        }
+        @keyframes bounceOut { 0% { transform: scale(0.7); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); } 70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); } 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); } }
+        .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
         .siren-red { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .siren-green { width: 12px; height: 12px; background: #00ff88; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #00ff88; display: inline-block; }
         .toast-notification {
@@ -164,47 +141,19 @@
             box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2); z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 350px; font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .logo-shield {
-            width: 56px; height: 56px; background: linear-gradient(135deg, #0f1520, #0a0f18); border-radius: 18px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 10px rgba(0,255,136,0.2); border: 1px solid #00ff88;
-        }
+        .logo-shield { width: 56px; height: 56px; background: linear-gradient(135deg, #0f1520, #0a0f18); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,255,136,0.2); border: 1px solid #00ff88; }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
         .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
         @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
         .hidden-section { display: none; }
         .modal-content { max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; }
         .modal-content .detalle-texto { font-size: 14px; line-height: 1.6; }
-        
-        .report-item {
-            background: rgba(15, 25, 35, 0.8);
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 8px;
-            border-left: 3px solid;
-            transition: all 0.2s;
-        }
-        .report-item:hover {
-            background: rgba(0, 255, 136, 0.1);
-            transform: translateX(3px);
-        }
-        
-        .clickable-sup {
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-        .clickable-sup:hover {
-            transform: scale(1.08);
-            text-shadow: 0 0 12px currentColor;
-        }
-        .sup-card-hover {
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-        .sup-card-hover:hover {
-            background: rgba(0,255,136,0.15);
-            transform: translateY(-2px);
-        }
-        
+        .report-item { background: rgba(15, 25, 35, 0.8); border-radius: 10px; padding: 10px; margin-bottom: 8px; border-left: 3px solid; transition: all 0.2s; }
+        .report-item:hover { background: rgba(0, 255, 136, 0.1); transform: translateX(3px); }
+        .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
+        .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 12px currentColor; }
+        .sup-card-hover { transition: all 0.2s; cursor: pointer; }
+        .sup-card-hover:hover { background: rgba(0,255,136,0.15); transform: translateY(-2px); }
         .sucursal-btn {
             padding: 8px 20px;
             border-radius: 30px;
@@ -221,34 +170,12 @@
             align-items: center;
             gap: 8px;
         }
-        .sucursal-btn.active {
-            background: rgba(0,0,0,0.3);
-            animation: pulse-border 1.5s ease-out infinite;
-        }
-        .sucursal-btn:hover {
-            transform: translateY(-2px);
-            filter: brightness(1.1);
-        }
-        .sucursal-icon {
-            width: 20px;
-            height: 20px;
-            object-fit: contain;
-        }
-        .btn-malagueno.active {
-            border-color: #00ff88 !important;
-            box-shadow: 0 0 15px rgba(0,255,136,0.6);
-            color: #00ff88;
-        }
-        .btn-barker.active {
-            border-color: #ff8800 !important;
-            box-shadow: 0 0 15px rgba(255,136,0,0.6);
-            color: #ff8800;
-        }
-        .btn-pampita.active {
-            border-color: #c084fc !important;
-            box-shadow: 0 0 15px rgba(192,132,252,0.6);
-            color: #c084fc;
-        }
+        .sucursal-btn.active { background: rgba(0,0,0,0.3); animation: pulse-border 1.5s ease-out infinite; }
+        .sucursal-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .sucursal-icon { width: 20px; height: 20px; object-fit: contain; }
+        .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); color: #00ff88; }
+        .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); color: #ff8800; }
+        .btn-lapampita.active { border-color: #c084fc !important; box-shadow: 0 0 15px rgba(192,132,252,0.6); color: #c084fc; }
     </style>
 </head>
 <body>
@@ -280,8 +207,8 @@
                 <button id="btnBarker" class="sucursal-btn btn-barker">
                     <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER
                 </button>
-                <button id="btnPampita" class="sucursal-btn btn-pampita">
-                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> PAMPITA
+                <button id="btnLaPampita" class="sucursal-btn btn-lapampita">
+                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA
                 </button>
             </div>
             <h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent" id="objetivosTitulo">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
@@ -368,7 +295,7 @@
                     <div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black uppercase text-purple-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
                     <div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black uppercase text-purple-400 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
                 </div>
-                <div class="glass-card p-5 mt-4 border border-purple-500/30"><h3 class="font-black uppercase mb-2 text-purple-400">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody><tr></div></div>
+                <div class="glass-card p-5 mt-4 border border-purple-500/30"><h3 class="font-black uppercase mb-2 text-purple-400">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
@@ -430,11 +357,12 @@ const SUCURSALES_CONFIG = {
         mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
         objetivos: { actos: 6, cond: 4 }
     },
-    PAMPITA: {
+    LAPAMPITA: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv',
         vcpUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv',
         mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
-        vcpMapping: { fecha: 2, persona: 1, sector: 5, descripcion: 6, comentarios: 15 },
+        // CORREGIDO: persona en columna 4 (índice 4) que es la columna E
+        vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
         objetivos: { actos: 66, cond: 44 }
     }
 };
@@ -639,7 +567,7 @@ function cambiarSucursal(sucursal) {
     currentSucursal = sucursal;
     document.getElementById('btnMalagueno').classList.remove('active');
     document.getElementById('btnBarker').classList.remove('active');
-    document.getElementById('btnPampita').classList.remove('active');
+    document.getElementById('btnLaPampita').classList.remove('active');
     
     selectedCausa = null;
     selectedChartMonth = null;
@@ -664,8 +592,8 @@ function cambiarSucursal(sucursal) {
         document.getElementById('btnMalagueno').classList.add('active');
     } else if (sucursal === 'BARKER') {
         document.getElementById('btnBarker').classList.add('active');
-    } else if (sucursal === 'PAMPITA') {
-        document.getElementById('btnPampita').classList.add('active');
+    } else if (sucursal === 'LAPAMPITA') {
+        document.getElementById('btnLaPampita').classList.add('active');
     }
     loadData();
 }
@@ -742,7 +670,7 @@ async function loadData() {
                 
                 if (vcpMapping) {
                     fechaRaw = row[vcpMapping.fecha] || ''; 
-                    personaObs = row[vcpMapping.persona] || ''; 
+                    personaObs = (row[vcpMapping.persona] || '').trim(); 
                     sector = row[vcpMapping.sector] || ''; 
                     desc = row[vcpMapping.descripcion] || ''; 
                     coment = row[vcpMapping.comentarios] || ''; 
@@ -779,9 +707,23 @@ async function loadData() {
     } catch(e) { console.error(e); alert('Error al cargar datos: ' + e.message); } 
 }
 
-// (Todas las demás funciones: applyGeneralFilters, updateChartsDona, applyVCPFilters, etc. se mantienen IGUALES que en tu versión original...)
-// Incluyo de nuevo las funciones auxiliares que son críticas para que el panel funcione.
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
+function applyGeneralFilters() {
+    let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
+    let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
+    document.getElementById('kpiActos').innerText = actos.length; document.getElementById('kpiCondiciones').innerText = cond.length;
+    let pA = Math.min(actos.length/currentObjetivos.actos*100,100);
+    let pC = Math.min(cond.length/currentObjetivos.cond*100,100);
+    document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
+    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
+    let up = (id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
+    up('actosStatus',pA); up('condStatus',pC);
+    updateCategoryCards(f, CATEGORIES_ACTOS, 'causaRaiz', 'categoryCards', 'clearCausaBtn');
+    updateChartsDona(f, CATEGORIES_ACTOS, 'categoryChart');
+    updateTrendChart();
+    renderGeneralTable(f);
+}
+
 function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
     let counts = {}; categories.forEach(c=>counts[c.id]=0);
     data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -808,22 +750,7 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
         container.appendChild(div);
     });
 }
-function applyGeneralFilters() {
-    let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
-    let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
-    document.getElementById('kpiActos').innerText = actos.length; document.getElementById('kpiCondiciones').innerText = cond.length;
-    // Usar los objetivos dinámicos almacenados en currentObjetivos
-    let pA = Math.min(actos.length/currentObjetivos.actos*100,100);
-    let pC = Math.min(cond.length/currentObjetivos.cond*100,100);
-    document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
-    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
-    let up = (id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
-    up('actosStatus',pA); up('condStatus',pC);
-    updateCategoryCards(f, CATEGORIES_ACTOS, 'causaRaiz', 'categoryCards', 'clearCausaBtn');
-    updateChartsDona(f, CATEGORIES_ACTOS, 'categoryChart');
-    updateTrendChart();
-    renderGeneralTable(f);
-}
+
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -832,6 +759,7 @@ function updateChartsDona(data, categories, canvasId) {
     let chart = new Chart(ctx, { type: 'doughnut', data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
+
 function updateTrendChart() {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     let datosFiltrados = ACTOS_COND_DATA;
@@ -852,6 +780,7 @@ function updateTrendChart() {
         options: { responsive: true, maintainAspectRatio: true, onClick: (event, activeElements) => { if (activeElements.length > 0) { const dataIndex = activeElements[0].index; const mesSeleccionado = meses[dataIndex]; selectedChartMonth = mesSeleccionado; const monthSelect = document.getElementById('monthFilter'); if (monthSelect) { monthSelect.value = mesSeleccionado; state.mes = mesSeleccionado; } updateTrendChart(); applyGeneralFilters(); showToastSimple(`📅 Filtrado por mes: ${mesSeleccionado.toUpperCase()}`, 'mes'); } }, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { return `${ctx.dataset.label}: ${ctx.parsed.y}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, callback: function(val, index) { const mes = meses[index].charAt(0).toUpperCase() + meses[index].slice(1); const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '👉 ' + mes + ' 👈' : mes; } }, grid: { display: false } } } }
     });
 }
+
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -862,6 +791,7 @@ function applyVCPFilters() {
     updateVCPCharts(f);
     renderVCPTable(f);
 }
+
 function updateVCPCharts(data) {
     let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -874,6 +804,7 @@ function updateVCPCharts(data) {
     if (vcpTrendChart) vcpTrendChart.destroy();
     vcpTrendChart = new Chart(ctxTrend, { type: 'line', data: { labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; return `${ctx.dataset.label}: ${val}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } } });
 }
+
 function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
@@ -884,8 +815,9 @@ function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00f
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20,25,35,0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}<td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
 function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
@@ -951,6 +883,7 @@ async function checkNewReports(){
         } catch(e) { console.error("Error VCP:", e); }
     } catch(e){ console.error(e); } 
 }
+
 function openModal(r, idx, data) { 
     currentModalData = data; currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
@@ -977,7 +910,7 @@ function abrirModalSupervisor(tipo) {
     if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor} en ${nombreMes}.`); return; }
     let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
     let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th><tr></thead><tbody>`;
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     datosTipo.forEach(e => {
         let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
         let descCorta = e.descripcion.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion;
@@ -1051,7 +984,7 @@ document.getElementById('condCardSupervisor')?.addEventListener('click', () => a
 document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
 document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
 document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
-document.getElementById('btnPampita')?.addEventListener('click', () => cambiarSucursal('PAMPITA'));
+document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
 
 window.onload = () => { loadData(); setTimeout(() => checkNewReports(), 3000); setInterval(() => checkNewReports(), 60000); setInterval(() => checkAndResetDailyCounters(), 60000); };
 </script>
