@@ -18,6 +18,9 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
+        /* ============================================== */
+        /* TODOS TUS ESTILOS ORIGINALES (NO SE MODIFICARON) */
+        /* ============================================== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -413,7 +416,7 @@ let currentSucursal = 'MALAGUENO';
 let selectedChartMonth = null;
 let selectedCausa = null;
 
-// URLs de cada sucursal
+// URLs de cada sucursal (ACTOS/CONDICIONES Y VCP)
 const SUCURSALES_CONFIG = {
     MALAGUENO: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv',
@@ -427,14 +430,17 @@ const SUCURSALES_CONFIG = {
     },
     PAMPITA: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv',
-        vcpUrl: null,
-        mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 }
+        vcpUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv',
+        mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
+        // Mapeo específico para la estructura de VCP de La Pampita
+        vcpMapping: { fecha: 2, persona: 1, sector: 5, descripcion: 6, comentarios: 15 } // Basado en los encabezados proporcionados
     }
 };
 
 let ACTOS_URL = SUCURSALES_CONFIG.MALAGUENO.actosUrl;
 let VCP_URL = SUCURSALES_CONFIG.MALAGUENO.vcpUrl;
 let currentMapping = SUCURSALES_CONFIG.MALAGUENO.mapping;
+let currentVcpMapping = null; // Para almacenar el mapeo específico de VCP de la sucursal actual
 
 const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
@@ -522,7 +528,7 @@ const CATEGORIES_VCP = [
 
 function classifyData(desc, useVCP = false) { if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0; for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } } return best; }
 
-// FUNCIÓN PARSE CSV ORIGINAL (la que funciona correctamente)
+// FUNCIÓN PARSE CSV CORRECTA
 function parseCSV(text) { 
     const lines = text.split('\n').filter(l => l.trim()); 
     const r = []; 
@@ -636,25 +642,23 @@ function cambiarSucursal(sucursal) {
     document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
     document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
     
+    // Obtener la configuración de la sucursal
+    const config = SUCURSALES_CONFIG[sucursal];
+    if (config) {
+        ACTOS_URL = config.actosUrl;
+        VCP_URL = config.vcpUrl;
+        currentMapping = config.mapping;
+        currentVcpMapping = config.vcpMapping || null; // Usar el mapeo específico de VCP si existe
+    }
+    
     if (sucursal === 'MALAGUENO') {
         document.getElementById('btnMalagueno').classList.add('active');
-        ACTOS_URL = SUCURSALES_CONFIG.MALAGUENO.actosUrl;
-        VCP_URL = SUCURSALES_CONFIG.MALAGUENO.vcpUrl;
-        currentMapping = SUCURSALES_CONFIG.MALAGUENO.mapping;
-        loadData();
     } else if (sucursal === 'BARKER') {
         document.getElementById('btnBarker').classList.add('active');
-        ACTOS_URL = SUCURSALES_CONFIG.BARKER.actosUrl;
-        VCP_URL = SUCURSALES_CONFIG.BARKER.vcpUrl;
-        currentMapping = SUCURSALES_CONFIG.BARKER.mapping;
-        loadData();
     } else if (sucursal === 'PAMPITA') {
         document.getElementById('btnPampita').classList.add('active');
-        ACTOS_URL = SUCURSALES_CONFIG.PAMPITA.actosUrl;
-        VCP_URL = SUCURSALES_CONFIG.PAMPITA.vcpUrl;
-        currentMapping = SUCURSALES_CONFIG.PAMPITA.mapping;
-        loadData();
     }
+    loadData();
 }
 
 async function loadData() { 
@@ -662,60 +666,97 @@ async function loadData() {
         const timestamp = Date.now(); 
         console.log(`🔄 Cargando ${currentSucursal}...`);
         
+        // --- Cargar ACTOS Y CONDICIONES usando el mapeo estándar ---
         if (!ACTOS_URL) {
             ACTOS_COND_DATA = [];
             document.getElementById('totalActosCond').innerText = '0';
-            applyAllFilters();
-            return;
+        } else {
+            const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
+            const rows1 = parseCSV(await res1.text()); 
+            ACTOS_COND_DATA = []; 
+            
+            for (let i = 0; i < rows1.length; i++) { 
+                const row = rows1[i]; 
+                // LÓGICA ESPECIAL PARA MINERAR (esNueva) PARA LEER 295 REGISTROS
+                const esNueva = currentSucursal === 'MALAGUENO' && i >= 225; 
+                let fecha, tipoRaw, sector, observador, desc, cerradoRaw; 
+                if (esNueva) { 
+                    const colU = row[20] || ''; 
+                    if (colU.toUpperCase().startsWith('AI-')) { 
+                        tipoRaw = 'Acto Inseguro'; 
+                        desc = colU.replace(/^AI-\s*/i, '').trim(); 
+                    } else if (colU.toUpperCase().startsWith('CI-')) { 
+                        tipoRaw = 'Condición Insegura'; 
+                        desc = colU.replace(/^CI-\s*/i, '').trim(); 
+                    } else { 
+                        tipoRaw = ''; 
+                        desc = colU; 
+                    } 
+                    fecha = row[11] || ''; 
+                    observador = row[13] || ''; 
+                    sector = row[14] || ''; 
+                    cerradoRaw = row[23] || ''; 
+                } else { 
+                    if (row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
+                    fecha = row[currentMapping.fecha] || ''; 
+                    tipoRaw = row[currentMapping.tipo] || ''; 
+                    sector = row[currentMapping.sector] || ''; 
+                    observador = row[currentMapping.observador] || ''; 
+                    desc = row[currentMapping.descripcion] || ''; 
+                    cerradoRaw = row[currentMapping.cerrado] || ''; 
+                } 
+                
+                const fechaParseada = parseFecha(fecha);
+                if (!fechaParseada.valido) continue;
+                
+                let tipo = 'otro'; 
+                if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
+                else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
+                let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); 
+                const cat = classifyData(desc, false); 
+                ACTOS_COND_DATA.push({ 
+                    fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), 
+                    descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
+                }); 
+            } 
+            console.log(`✅ ACTOS ${currentSucursal}: ${ACTOS_COND_DATA.length}`); 
+            document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
         }
         
-        // Cargar ACTOS Y CONDICIONES con el mapeo correspondiente
-        const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
-        const rows1 = parseCSV(await res1.text()); 
-        ACTOS_COND_DATA = []; 
-        
-        for (let i = 0; i < rows1.length; i++) { 
-            const row = rows1[i]; 
-            if (row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
-            
-            const fecha = row[currentMapping.fecha] || ''; 
-            const tipoRaw = row[currentMapping.tipo] || ''; 
-            const sector = row[currentMapping.sector] || ''; 
-            const observador = row[currentMapping.observador] || ''; 
-            const desc = row[currentMapping.descripcion] || ''; 
-            const cerradoRaw = row[currentMapping.cerrado] || ''; 
-            
-            const fechaParseada = parseFecha(fecha);
-            if (!fechaParseada.valido) continue;
-            
-            let tipo = 'otro'; 
-            if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
-            else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
-            let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); 
-            const cat = classifyData(desc, false); 
-            ACTOS_COND_DATA.push({ 
-                fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), 
-                descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
-            }); 
-        } 
-        console.log(`✅ ACTOS ${currentSucursal}: ${ACTOS_COND_DATA.length}`); 
-        
-        // Cargar VCP (si hay URL)
+        // --- Cargar VCP usando el mapeo estándar o el específico de la sucursal ---
         if (VCP_URL) {
             const res2 = await fetch(VCP_URL + '&t=' + timestamp); 
             const rows2 = parseCSV(await res2.text()); 
             VCP_DATA = []; 
+            
+            // Usar el mapeo específico de VCP si existe (para La Pampita), sino usar el general
+            const vcpMapping = currentVcpMapping;
+            
             for (let i = 0; i < rows2.length; i++) { 
                 const row = rows2[i]; 
-                const fechaRaw = row[2] || ''; 
+                let fechaRaw, personaObs, sector, desc, coment;
+                
+                if (vcpMapping) {
+                    // Mapeo específico para VCP de La Pampita
+                    fechaRaw = row[vcpMapping.fecha] || ''; 
+                    personaObs = row[vcpMapping.persona] || ''; 
+                    sector = row[vcpMapping.sector] || ''; 
+                    desc = row[vcpMapping.descripcion] || ''; 
+                    coment = row[vcpMapping.comentarios] || ''; 
+                } else {
+                    // Mapeo general para las otras sucursales
+                    fechaRaw = row[2] || ''; 
+                    personaObs = (row[1] || '').trim(); 
+                    sector = (row[3] || '').toLowerCase().trim() || 'general'; 
+                    desc = row[32] || ''; 
+                    coment = row[28] || ''; 
+                }
+                
                 const fecha = fechaRaw.split(' ')[0]; 
                 const fd = parseFecha(fecha);
                 if (!fd.valido) continue;
-                const personaObs = (row[1] || '').trim(); 
                 if (!personaObs) continue; 
-                const sector = (row[3] || '').toLowerCase().trim() || 'general'; 
-                const desc = row[32] || ''; 
-                const coment = row[28] || ''; 
+                
                 const cat = classifyData(desc, true); 
                 VCP_DATA.push({ 
                     fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, 
@@ -723,13 +764,13 @@ async function loadData() {
                 }); 
             } 
             console.log(`✅ VCP ${currentSucursal}: ${VCP_DATA.length}`);
+            document.getElementById('totalVCP').innerText = VCP_DATA.length; 
         } else {
             VCP_DATA = [];
+            document.getElementById('totalVCP').innerText = '0'; 
             console.log(`⚠️ VCP no disponible para ${currentSucursal}`);
         }
         
-        document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
-        document.getElementById('totalVCP').innerText = VCP_DATA.length; 
         populateSupervisors(); 
         populateVCPPeopleFilter(); 
         applyAllFilters(); 
@@ -957,7 +998,7 @@ function abrirModalSupervisor(tipo) {
     if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor} en ${nombreMes}.`); return; }
     let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
     let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th><tr></thead><tbody>`;
     datosTipo.forEach(e => {
         let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
         let descCorta = e.descripcion.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion;
@@ -998,7 +1039,7 @@ function abrirModalPersonaVCP() {
     filtrados.forEach(e => {
         let descCorta = e.descripcion.length > 50 ? e.descripcion.substring(0,50)+'...' : e.descripcion;
         let comentCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0,30)+'...' : (e.comentarios || '-');
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</table><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
     });
     html += `</tbody></table></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${persona}`;
