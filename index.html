@@ -3,12 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad</title>
+    <title>Minerar 2026 - Panel de Seguridad | Versión FINAL</title>
+    
+    <!-- Favicons -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+    <meta name="theme-color" content="#0a0a0f">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* TUS ESTILOS ORIGINALES COMPLETOS */
+        /* ========== ESTILOS ORIGINALES COMPLETOS ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -126,6 +136,15 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); opacity: 1; }
         }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-bounce {
+            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important;
+        }
         .siren-red { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .siren-green { width: 12px; height: 12px; background: #00ff88; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #00ff88; display: inline-block; }
         .toast-notification {
@@ -143,6 +162,7 @@
         .hidden-section { display: none; }
         .modal-content { max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; }
         .modal-content .detalle-texto { font-size: 14px; line-height: 1.6; }
+        
         .report-item {
             background: rgba(15, 25, 35, 0.8);
             border-radius: 10px;
@@ -155,6 +175,7 @@
             background: rgba(0, 255, 136, 0.1);
             transform: translateX(3px);
         }
+        
         .clickable-sup {
             cursor: pointer;
             transition: all 0.2s ease;
@@ -178,7 +199,7 @@
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Crect width=%27100%27 height=%27100%27 fill=%27%2300ff88%27/%3E%3Ctext x=%2750%27 y=%2767%27 font-size=%2750%27 text-anchor=%27middle%27 fill=%27%23000%27%3E⛑️%3C/text%3E%3C/svg%3E'"></div>
+            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
             <div><h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-400 font-mono">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
@@ -239,7 +260,18 @@
         <div class="text-center mb-3"><h2 class="text-lg font-black bg-gradient-to-r from-purple-400 to-emerald-400 bg-clip-text text-transparent">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧🛡️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-4">
             <div class="glass-card p-4 border-l-4 border-purple-500"><div class="flex justify-between"><span class="font-bold text-purple-400">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-purple-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-sky-400">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="select-neon text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="select-neon text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-950/30 rounded-xl p-2 text-center border border-emerald-500/30"><span class="text-[10px] text-emerald-400">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-300">0</div></div><div class="bg-purple-950/30 rounded-xl p-2 text-center border border-purple-500/30"><span class="text-[10px] text-purple-400">🕒 Último</span><div id="personLastVCP" class="text-sm font-black text-purple-300">-</div></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-sky-400">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="select-neon text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="select-neon text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-emerald-950/30 rounded-xl p-2 text-center border border-emerald-500/30 sup-card-hover" id="vcpCardPersona">
+                        <span class="text-[10px] text-emerald-400">📋 VCPs</span>
+                        <div id="personVCPCount" class="text-2xl font-black text-emerald-300 clickable-sup">0</div>
+                    </div>
+                    <div class="bg-purple-950/30 rounded-xl p-2 text-center border border-purple-500/30">
+                        <span class="text-[10px] text-purple-400">🕒 Último</span>
+                        <div id="personLastVCP" class="text-sm font-black text-purple-300">-</div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold text-slate-300">📅 MES VCP</label><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold text-slate-300">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold text-slate-300">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
@@ -260,9 +292,9 @@
     </div>
 </div>
 
-<!-- MODALES -->
+<!-- MODAL DETALLE ACTOS/COND (original con efecto rebote) -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content" style="animation: bounceOut 0.3s ease-out;">
+    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
         <div id="reportModalContent" class="detalle-texto text-slate-300 space-y-3"></div>
         <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold">⬅ Anterior</button><span id="modalCounter" class="font-bold text-emerald-400 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div>
@@ -270,16 +302,36 @@
     </div>
 </div>
 
+<!-- MODAL DETALLE SUPERVISOR (nuevo con efecto rebote) -->
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-emerald-400">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
-        <div id="supervisorModalContent" class="detalle-texto text-slate-300 space-y-3"></div>
-        <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-emerald-700 hover:bg-emerald-600 py-2 rounded-xl font-bold">Cerrar</button>
+    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
+        <div class="flex justify-between items-center mb-4">
+            <h2 id="modalSupervisorTitle" class="font-black text-2xl text-emerald-400">📋 Detalle del Supervisor</h2>
+            <button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button>
+        </div>
+        <div id="supervisorModalContent" class="detalle-texto text-slate-300 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        <div class="flex justify-end gap-3 mt-4">
+            <button onclick="closeSupervisorModal()" class="bg-emerald-700 hover:bg-emerald-600 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DETALLE PERSONA VCP (nuevo con efecto rebote) -->
+<div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
+    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-purple-500/50 modal-content modal-bounce">
+        <div class="flex justify-between items-center mb-4">
+            <h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-400">📋 Detalle de VCP por Persona</h2>
+            <button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button>
+        </div>
+        <div id="personaVCPModalContent" class="detalle-texto text-slate-300 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        <div class="flex justify-end gap-3 mt-4">
+            <button onclick="closePersonaVCPModal()" class="bg-purple-700 hover:bg-purple-600 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
+        </div>
     </div>
 </div>
 
 <script>
-// ==================== URLs CORRECTAS ====================
+// ==================== CONSTANTES ====================
 const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
 const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
 
@@ -288,37 +340,63 @@ let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
-let actosNovedades = 0, vcpNovedades = 0, soundEnabled = true;
-let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
-let lastResetDate = new Date().toDateString();
+
+// ========== NOVEDADES DEL DÍA CON RESET AUTOMÁTICO ==========
+let actosNovedades = 0;
+let vcpNovedades = 0;
+let soundEnabled = true;
+
+let reportesNotificadosActos = new Set();
+let reportesNotificadosVCP = new Set();
+
+function getTodayKey() {
+    const now = new Date();
+    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+let lastResetDate = getTodayKey();
 
 function checkAndResetDailyCounters() {
-    const today = new Date().toDateString();
+    const today = getTodayKey();
     if (today !== lastResetDate) {
-        actosNovedades = 0; vcpNovedades = 0;
+        console.log(`🔄 Reiniciando contadores diarios: ${lastResetDate} → ${today}`);
+        actosNovedades = 0;
+        vcpNovedades = 0;
         lastResetDate = today;
-        reportesNotificadosActos.clear(); reportesNotificadosVCP.clear();
-        const ab = document.getElementById('actosNovedadBadge'), vb = document.getElementById('vcpNovedadBadge');
-        if(ab) ab.classList.add('hidden'); if(vb) vb.classList.add('hidden');
-        const ca = document.getElementById('realTimeReportsActos'), cv = document.getElementById('realTimeReportsVCP');
-        if(ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
-        if(cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        
+        reportesNotificadosActos.clear();
+        reportesNotificadosVCP.clear();
+        
+        const actosBadge = document.getElementById('actosNovedadBadge');
+        const vcpBadge = document.getElementById('vcpNovedadBadge');
+        if (actosBadge) actosBadge.classList.add('hidden');
+        if (vcpBadge) vcpBadge.classList.add('hidden');
+        
+        const ca = document.getElementById('realTimeReportsActos');
+        const cv = document.getElementById('realTimeReportsVCP');
+        if (ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+        if (cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
     }
 }
 
+// ==================== SONIDO ====================
 function playNotificationSound() {
     if (!soundEnabled) return;
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const oscillator = audioCtx.createOscillator();
         const gainNode = audioCtx.createGain();
+        
         oscillator.connect(gainNode);
         gainNode.connect(audioCtx.destination);
+        
         oscillator.frequency.value = 880;
         gainNode.gain.value = 0.6;
+        
         oscillator.start();
         gainNode.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
         oscillator.stop(audioCtx.currentTime + 0.6);
+        
         if (navigator.vibrate) navigator.vibrate(200);
     } catch(e) { console.log("Audio no soportado:", e); }
 }
@@ -337,6 +415,7 @@ function toggleSound() {
     }
 }
 
+// ==================== FUNCIÓN CORREGIDA - SOLO AÑO 2026 ====================
 function parseFecha(f) { 
     if (!f) return { dia: '', mes: '', valido: false }; 
     let fechaStr = f.toString().split(' ')[0].trim();
@@ -371,6 +450,7 @@ function parseFecha(f) {
     return { dia: '', mes: '', valido: false };
 }
 
+// CATEGORÍAS
 const CATEGORIES_ACTOS = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp','casco','guantes','lentes','arnés'] },
     { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza','orden','aceite','derrame'] },
@@ -388,41 +468,7 @@ const CATEGORIES_VCP = [
 ];
 
 function classifyData(desc, useVCP = false) { if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0; for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } } return best; }
-
-// ==================== PARSE CSV CORREGIDO - LEE TODAS LAS FILAS ====================
-function parseCSV(text) { 
-    const lines = text.split(/\r?\n/);
-    const result = [];
-    
-    for (let i = 1; i < lines.length; i++) {
-        const line = lines[i].trim();
-        if (!line) continue;
-        
-        const row = [];
-        let inQuote = false;
-        let current = '';
-        
-        for (let j = 0; j < line.length; j++) {
-            const char = line[j];
-            if (char === '"') {
-                inQuote = !inQuote;
-            } else if (char === ',' && !inQuote) {
-                row.push(current.trim());
-                current = '';
-            } else {
-                current += char;
-            }
-        }
-        row.push(current.trim());
-        
-        if (row.length >= 10) {
-            result.push(row);
-        }
-    }
-    
-    console.log(`📊 parseCSV: ${result.length} filas procesadas`);
-    return result;
-}
+function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
 
 function showToast(tipo, titulo, mensaje, sector, persona, desc) { 
     playNotificationSound();
@@ -449,27 +495,41 @@ function actualizarLED(tipo, hayNovedad) {
     } 
 }
 
-// ==================== CARGA DE DATOS ====================
 async function loadData() { 
     try { 
         const timestamp = Date.now(); 
         
-        console.log("🔄 Cargando ACTOS y CONDICIONES...");
-        const res1 = await fetch(ACTOS_URL + '?t=' + timestamp); 
-        const text1 = await res1.text();
-        console.log(`📄 CSV recibido, longitud: ${text1.length} caracteres`);
-        
-        const rows1 = parseCSV(text1); 
+        const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
+        const rows1 = parseCSV(await res1.text()); 
         ACTOS_COND_DATA = []; 
-        
         for (let i = 0; i < rows1.length; i++) { 
             const row = rows1[i]; 
-            const fecha = row[3] || ''; 
-            const tipoRaw = row[1] || ''; 
-            const sector = row[2] || ''; 
-            const observador = row[5] || ''; 
-            const desc = row[6] || ''; 
-            const cerradoRaw = row[23] || ''; 
+            const esNueva = i >= 225; 
+            let fecha, tipoRaw, sector, observador, desc, cerradoRaw; 
+            if (esNueva) { 
+                const colU = row[20] || ''; 
+                if (colU.toUpperCase().startsWith('AI-')) { 
+                    tipoRaw = 'Acto Inseguro'; 
+                    desc = colU.replace(/^AI-\s*/i, '').trim(); 
+                } else if (colU.toUpperCase().startsWith('CI-')) { 
+                    tipoRaw = 'Condición Insegura'; 
+                    desc = colU.replace(/^CI-\s*/i, '').trim(); 
+                } else { 
+                    tipoRaw = ''; 
+                    desc = colU; 
+                } 
+                fecha = row[11] || ''; 
+                observador = row[13] || ''; 
+                sector = row[14] || ''; 
+                cerradoRaw = row[23] || ''; 
+            } else { 
+                fecha = row[3] || ''; 
+                tipoRaw = row[1] || ''; 
+                sector = row[2] || ''; 
+                observador = row[5] || ''; 
+                desc = row[6] || ''; 
+                cerradoRaw = row[23] || ''; 
+            } 
             
             const fechaParseada = parseFecha(fecha);
             if (!fechaParseada.valido) continue;
@@ -477,27 +537,26 @@ async function loadData() {
             let tipo = 'otro'; 
             if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
             else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
-            let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); 
+            let cerrado = cerradoRaw && cerradoRaw.toLowerCase().includes('si'); 
             const cat = classifyData(desc, false); 
             ACTOS_COND_DATA.push({ 
                 fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), 
                 descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
             }); 
         } 
-        console.log(`✅ ACTOS 2026 cargados: ${ACTOS_COND_DATA.length} registros`); 
+        console.log(`✅ ACTOS 2026 cargados: ${ACTOS_COND_DATA.length}`); 
         
-        console.log("🔄 Cargando VCP...");
-        const res2 = await fetch(VCP_URL + '?t=' + timestamp); 
-        const text2 = await res2.text();
-        const rows2 = parseCSV(text2); 
+        const res2 = await fetch(VCP_URL + '&t=' + timestamp); 
+        const rows2 = parseCSV(await res2.text()); 
         VCP_DATA = []; 
-        
         for (let i = 0; i < rows2.length; i++) { 
             const row = rows2[i]; 
             const fechaRaw = row[2] || ''; 
             const fecha = fechaRaw.split(' ')[0]; 
+            
             const fd = parseFecha(fecha);
             if (!fd.valido) continue;
+            
             const personaObs = (row[1] || '').trim(); 
             if (!personaObs) continue; 
             const sector = (row[3] || '').toLowerCase().trim() || 'general'; 
@@ -509,14 +568,14 @@ async function loadData() {
                 comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat 
             }); 
         } 
-        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length} registros`); 
+        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length}`); 
         
         document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
         document.getElementById('totalVCP').innerText = VCP_DATA.length; 
         populateSupervisors(); 
         populateVCPPeopleFilter(); 
         applyAllFilters(); 
-    } catch(e) { console.error("Error en loadData:", e); alert('Error al cargar datos: ' + e.message); } 
+    } catch(e) { console.error(e); alert('Error al cargar datos: ' + e.message); } 
 }
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
@@ -579,6 +638,7 @@ function updateTrendChart() {
     });
 }
 
+// ==================== VCP ====================
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -654,97 +714,214 @@ function clearCausaFilter() { state.causaRaiz = 'todas'; document.getElementById
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
 function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{ if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1); }); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(name=>sel.innerHTML+=`<option value="${name}">🧑‍🏭 ${name} (${counts.get(name)} VCPs)</option>`); updatePersonVCPStatsOnly(); }
-function updatePersonVCPStatsOnly() { let person = document.getElementById('vcpPersonFilter').value, month = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); document.getElementById('personVCPCount').innerText = f.length; if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; else document.getElementById('personLastVCP').innerText = '-'; }
+function updatePersonVCPStatsOnly() { 
+    let person = document.getElementById('vcpPersonFilter').value; 
+    let month = document.getElementById('vcpPersonMonthFilter').value; 
+    let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); 
+    document.getElementById('personVCPCount').innerText = f.length; 
+    if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; 
+    else document.getElementById('personLastVCP').innerText = '-'; 
+}
 function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#00ff88');applyGeneralFilters();}
 function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00ff88');applyGeneralFilters();}
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20, 25, 35, 0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,100).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
-function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,100).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
+// ==================== REPORTES EN VIVO ====================
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
-        let hoy = new Date(), fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+        
+        let hoy = new Date(), 
+            dia = String(hoy.getDate()).padStart(2,'0'),
+            mes = String(hoy.getMonth()+1).padStart(2,'0'),
+            anio = hoy.getFullYear();
+        
+        let fechaFormatoISO = `${anio}-${mes}-${dia}`;
+        
+        console.log("🔍 Buscando novedades de HOY:", fechaFormatoISO);
+        
         try {
-            let ra = await fetch(ACTOS_URL+'?t='+Date.now()); 
+            let ra = await fetch(ACTOS_URL+'&t='+Date.now()); 
             let raRows = parseCSV(await ra.text());
+            
             let newAct = [];
-            for (let row of raRows) {
+            for (let i = 0; i < raRows.length; i++) {
+                let row = raRows[i];
                 let marcaTemp = row[0] || '';
-                let partes = marcaTemp.split('/');
+                let fechaMarca = marcaTemp.split(' ')[0];
+                let partes = fechaMarca.split('/');
                 if (partes.length === 3) {
                     let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                    if (fechaISO === fechaFormatoISO) newAct.push(row);
+                    if (fechaISO === fechaFormatoISO) {
+                        newAct.push(row);
+                    }
                 }
             }
+            
+            console.log(`📋 ACTOS/COND del día de HOY: ${newAct.length}`);
+            
             let ca = document.getElementById('realTimeReportsActos'); 
             if(ca) { 
+                let nuevosNoNotificados = [];
+                for (let act of newAct) {
+                    let idUnico = `${act[13] || act[5]}|${act[6]}|${act[0]}`;
+                    if (!reportesNotificadosActos.has(idUnico)) {
+                        nuevosNoNotificados.push(act);
+                        reportesNotificadosActos.add(idUnico);
+                    }
+                }
+                
                 if(newAct.length > 0){ 
                     ca.innerHTML = ''; 
-                    newAct.slice(-5).forEach(r=>{
-                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#00ff88';
+                    let nuevos = newAct.slice(-5); 
+                    nuevos.forEach(r=>{
+                        let d=document.createElement('div');
+                        d.className='report-item';
+                        d.style.borderLeftColor = '#00ff88';
+                        let horaCarga = r[0] ? r[0].split(' ')[1]?.slice(0,5) : '';
                         let observador = (r[13] && r[13].trim() !== '') ? r[13] : (r[5] || 'Desconocido');
                         let sector = (r[2] && r[2].trim() !== '') ? r[2] : (r[14] || 'No especificado');
                         let descripcion = r[6] || '';
-                        d.innerHTML = `<div class="font-bold text-emerald-300">👤 ${observador}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${descripcion.substring(0,50)}</div>`;
+                        
+                        d.innerHTML = `<div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] font-bold text-emerald-400">📋</span>
+                                                <span class="text-[9px] text-slate-500">${horaCarga}</span>
+                                            </div>
+                                        </div>
+                                        <div class="font-bold text-emerald-300 text-[11px]">👤 ${observador}</div>
+                                        <div class="text-[9px] text-slate-400">🏭 ${sector}</div>
+                                        <div class="text-[9px] text-slate-500 mt-1 truncate">📝 ${descripcion.substring(0, 50)}</div>`;
                         ca.appendChild(d);
                     }); 
-                    if(newAct.length > actosNovedades) { 
+                    
+                    if(nuevosNoNotificados.length > 0) { 
                         actosNovedades = newAct.length; 
                         actualizarLED('actos', true); 
-                        document.getElementById('actosNovedadBadge').innerText=actosNovedades; 
-                        document.getElementById('actosNovedadBadge').classList.remove('hidden');
+                        let primerNuevo = nuevosNoNotificados[0];
+                        let observadorNombre = (primerNuevo[13] && primerNuevo[13].trim() !== '') ? primerNuevo[13] : (primerNuevo[5] || 'Desconocido');
+                        let sectorLugar = (primerNuevo[2] && primerNuevo[2].trim() !== '') ? primerNuevo[2] : (primerNuevo[14] || 'No especificado');
+                        showToast('actos', `🚨 NUEVO REPORTE`, 
+                            { observador: observadorNombre, descripcion: primerNuevo[6] }, 
+                            sectorLugar, observadorNombre, primerNuevo[6]); 
+                        
+                        const badge = document.getElementById('actosNovedadBadge');
+                        badge.innerText = actosNovedades;
+                        badge.classList.remove('hidden');
                     } 
                 } else { 
-                    if(ca.innerHTML === '' || ca.innerHTML.includes('Sin novedades') === false) ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+                    if(ca.innerHTML === '' || ca.innerHTML.includes('Sin novedades') === false) {
+                        ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+                    }
                 }
             }
-        } catch(e) { console.error("Error ACTOS:", e); }
+        } catch(e) { 
+            console.error("Error en ACTOS:", e); 
+        }
+        
         try {
-            let rv = await fetch(VCP_URL+'?t='+Date.now()); 
+            let rv = await fetch(VCP_URL+'&t='+Date.now()); 
             let rvRows = parseCSV(await rv.text());
+            
             let newV = [];
-            for (let row of rvRows) {
+            for (let i = 0; i < rvRows.length; i++) {
+                let row = rvRows[i];
                 let marcaTemp = row[0] || '';
                 let fechaMarca = marcaTemp.split(' ')[0];
-                if (fechaMarca === fechaFormatoISO) newV.push(row);
+                if (fechaMarca === fechaFormatoISO) {
+                    newV.push(row);
+                }
             }
+            
+            console.log(`📊 VCP del día de HOY: ${newV.length}`);
+            
             let cv = document.getElementById('realTimeReportsVCP'); 
             if(cv) { 
+                let nuevosNoNotificadosV = [];
+                for (let v of newV) {
+                    let idUnico = `${v[1]}|${v[32]}|${v[0]}`;
+                    if (!reportesNotificadosVCP.has(idUnico)) {
+                        nuevosNoNotificadosV.push(v);
+                        reportesNotificadosVCP.add(idUnico);
+                    }
+                }
+                
                 if(newV.length > 0){ 
                     cv.innerHTML = ''; 
-                    newV.slice(-5).forEach(r=>{
-                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#c084fc';
+                    let nuevosV = newV.slice(-5); 
+                    nuevosV.forEach(r=>{
+                        let d=document.createElement('div');
+                        d.className='report-item';
+                        d.style.borderLeftColor = '#c084fc';
+                        let horaCarga = r[0] ? r[0].split(' ')[1]?.slice(0,5) : '';
                         let persona = r[1] || 'Desconocido';
                         let sector = r[3] || 'No especificado';
                         let descripcion = r[32] || '';
-                        d.innerHTML = `<div class="font-bold text-purple-300">🧑‍🏭 ${persona}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${descripcion.substring(0,50)}</div>`;
+                        
+                        d.innerHTML = `<div class="flex items-center justify-between mb-1">
+                                            <div class="flex items-center gap-2">
+                                                <span class="text-[10px] font-bold text-purple-400">🎯</span>
+                                                <span class="text-[9px] text-slate-500">${horaCarga}</span>
+                                            </div>
+                                        </div>
+                                        <div class="font-bold text-purple-300 text-[11px]">🧑‍🏭 ${persona}</div>
+                                        <div class="text-[9px] text-slate-400">🏭 ${sector}</div>
+                                        <div class="text-[9px] text-slate-500 mt-1 truncate">📝 ${descripcion.substring(0, 50)}</div>`;
                         cv.appendChild(d);
                     }); 
-                    if(newV.length > vcpNovedades) { 
+                    
+                    if(nuevosNoNotificadosV.length > 0) { 
                         vcpNovedades = newV.length; 
                         actualizarLED('vcp', true); 
-                        document.getElementById('vcpNovedadBadge').innerText=vcpNovedades; 
-                        document.getElementById('vcpNovedadBadge').classList.remove('hidden');
+                        let primerNuevo = nuevosNoNotificadosV[0];
+                        showToast('vcp', `🚨 NUEVO REPORTE VCP`, 
+                            { personaObservada: primerNuevo[1], descripcion: primerNuevo[32] }, 
+                            primerNuevo[3] || 'No especificado', primerNuevo[1], primerNuevo[32]); 
+                        
+                        const badge = document.getElementById('vcpNovedadBadge');
+                        badge.innerText = vcpNovedades;
+                        badge.classList.remove('hidden');
                     } 
                 } else { 
-                    if(cv.innerHTML === '' || cv.innerHTML.includes('Sin novedades') === false) cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+                    if(cv.innerHTML === '' || cv.innerHTML.includes('Sin novedades') === false) {
+                        cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>';
+                    }
                 }
             }
-        } catch(e) { console.error("Error VCP:", e); }
-    } catch(e){ console.error(e); } 
+        } catch(e) { 
+            console.error("Error en VCP:", e); 
+        }
+        
+        document.getElementById('actosNovedadBadge').innerText = actosNovedades; 
+        document.getElementById('vcpNovedadBadge').innerText = vcpNovedades; 
+        if(actosNovedades === 0) document.getElementById('actosNovedadBadge').classList.add('hidden'); 
+        else document.getElementById('actosNovedadBadge').classList.remove('hidden'); 
+        if(vcpNovedades === 0) document.getElementById('vcpNovedadBadge').classList.add('hidden'); 
+        else document.getElementById('vcpNovedadBadge').classList.remove('hidden'); 
+        
+    } catch(e){ console.error("Error general en checkNewReports:", e); } 
 }
 
+// ==================== MODALES ====================
 function openModal(r, idx, data) { 
     currentModalData = data; 
     currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
+    
+    // Aplicar efecto rebote
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.classList.remove('modal-bounce');
+    void modalContent.offsetHeight;
+    modalContent.classList.add('modal-bounce');
+    
     if(r.tipo === 'vcp'){ 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona Observada:</strong> <span class="font-bold text-purple-300">${r.personaObservada || '-'}</span></p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Tarea/Descripción:</strong> ${r.descripcion || '-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
     } else { 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha de ejecución:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`; 
     } 
     modal.classList.remove('hidden-section'); 
     modal.style.display='flex'; 
@@ -757,37 +934,252 @@ function goToNextModal(){if(currentModalIndex<currentModalData.length-1){current
 function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function forceRefreshData(){loadData();}
 
+// ==================== MODAL SUPERVISOR ====================
 function abrirModalSupervisor(tipo) {
     const supervisor = document.getElementById('supervisorSelect').value;
     const mes = document.getElementById('supervisorMonthSelect').value;
-    if (supervisor === 'todos') { alert("⚠️ Seleccione un supervisor específico"); return; }
+    
+    if (supervisor === 'todos') {
+        alert("⚠️ Por favor, seleccione un supervisor específico para ver el detalle.");
+        return;
+    }
+    
+    let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
+    
     let filtrados = ACTOS_COND_DATA.filter(e => e.observador === supervisor && (mes === 'todo' || e.mes === mes));
     let datosTipo = filtrados.filter(e => e.tipo === tipo);
-    if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor}`); return; }
-    let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
+    
+    if (datosTipo.length === 0) {
+        alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} registrados para ${supervisor} en ${nombreMes}.`);
+        return;
+    }
+    
+    let titulo = tipo === 'acto' ? `⚠️ ACTOS registrados por ${supervisor}` : `🏚️ CONDICIONES registradas por ${supervisor}`;
     let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    let html = `<div class="overflow-x-auto max-h-[60vh]"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700">
+                    <p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p>
+                    <p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p>
+                    <p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="sticky top-0 bg-slate-800">
+                            <tr>
+                                <th class="p-2">📅 Fecha</th>
+                                <th class="p-2">🏭 Sector</th>
+                                <th class="p-2">🏷️ Categoría</th>
+                                <th class="p-2">📝 Descripción</th>
+                                <th class="p-2">🔒 Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+    
     datosTipo.forEach(e => {
-        let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50"><td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0,80)}${e.descripcion.length>80?'...':''}</td><td class="p-2">${badgeEstado}</td></tr>`;
+        let badgeEstado = e.cerrado 
+            ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span>' 
+            : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full text-[9px]">⚠️ ABIERTO</span>';
+        
+        let descripcionCorta = e.descripcion.length > 60 ? e.descripcion.substring(0, 60) + '...' : e.descripcion;
+        
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" 
+                        onclick="verDetalleReporteSupervisor(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})">
+                    <td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td>
+                    <td class="p-2">🏭 ${e.sector}</td>
+                    <td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td>
+                    <td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descripcionCorta}</td>
+                    <td class="p-2">${badgeEstado}</td>
+                </tr>`;
     });
-    html += `</tbody></table></div><div class="mt-4 text-slate-400 text-[10px] text-right">📊 Total: ${datosTipo.length} registros</div>`;
+    
+    html += `</tbody>
+              </table>
+                </div>`;
+    
     document.getElementById('modalSupervisorTitle').innerHTML = titulo;
     document.getElementById('modalSupervisorTitle').style.color = colorTitulo;
     document.getElementById('supervisorModalContent').innerHTML = html;
-    document.getElementById('supervisorDetailModal').classList.remove('hidden-section');
-    document.getElementById('supervisorDetailModal').style.display = 'flex';
+    
+    const modal = document.getElementById('supervisorDetailModal');
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.classList.remove('modal-bounce');
+    void modalContent.offsetHeight;
+    modalContent.classList.add('modal-bounce');
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
 }
-function closeSupervisorModal() { const m = document.getElementById('supervisorDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
+function verDetalleReporteSupervisor(reporte) {
+    closeSupervisorModal();
+    
+    const index = ACTOS_COND_DATA.findIndex(r => 
+        r.fecha === reporte.fecha && 
+        r.descripcion === reporte.descripcion && 
+        r.observador === reporte.observador
+    );
+    
+    if (index !== -1) {
+        openModal(ACTOS_COND_DATA[index], index, ACTOS_COND_DATA);
+    } else {
+        currentModalData = [reporte];
+        currentModalIndex = 0;
+        let modal = document.getElementById('reportDetailModal');
+        let content = document.getElementById('reportModalContent');
+        
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.classList.remove('modal-bounce');
+        void modalContent.offsetHeight;
+        modalContent.classList.add('modal-bounce');
+        
+        content.innerHTML = `<div class="space-y-2">
+            <p><strong class="text-emerald-400">📅 Fecha:</strong> ${reporte.fecha}</p>
+            <p><strong class="text-emerald-400">👤 Observador:</strong> ${reporte.observador}</p>
+            <p><strong class="text-emerald-400">📋 Tipo:</strong> ${reporte.tipo.toUpperCase()}</p>
+            <p><strong class="text-emerald-400">🏭 Sector:</strong> ${reporte.sector}</p>
+            <p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p>
+            <p><strong class="text-emerald-400">📝 Descripción:</strong> ${reporte.descripcion}</p>
+            <p><strong class="text-emerald-400">⚙️ Estado:</strong> ${reporte.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p>
+        </div>`;
+        modal.classList.remove('hidden-section');
+        modal.style.display = 'flex';
+        updateNavButtons();
+    }
+}
+
+function closeSupervisorModal() {
+    const m = document.getElementById('supervisorDetailModal');
+    m.classList.add('hidden-section');
+    m.style.display = 'none';
+}
+
+// ==================== MODAL PERSONA VCP (NUEVO) ====================
+function abrirModalPersonaVCP() {
+    const persona = document.getElementById('vcpPersonFilter').value;
+    const mes = document.getElementById('vcpPersonMonthFilter').value;
+    
+    if (persona === 'todos') {
+        alert("⚠️ Por favor, seleccione una persona específica para ver el detalle.");
+        return;
+    }
+    
+    let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
+    
+    let filtrados = VCP_DATA.filter(e => e.personaObservada === persona && (mes === 'todo' || e.mes === mes));
+    
+    if (filtrados.length === 0) {
+        alert(`No hay VCPs registrados para ${persona} en ${nombreMes}.`);
+        return;
+    }
+    
+    let titulo = `📋 VCPs registrados por ${persona}`;
+    
+    let html = `<div class="mb-3 pb-2 border-b border-slate-700">
+                    <p class="text-sm text-slate-400">📅 Período: <span class="text-purple-400 font-bold">${nombreMes}</span></p>
+                    <p class="text-sm text-slate-400">👤 Persona: <span class="text-purple-400 font-bold">${persona}</span></p>
+                    <p class="text-sm text-slate-400">📊 Total: <span class="text-purple-400 font-bold">${filtrados.length}</span> VCPs</p>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead class="sticky top-0 bg-slate-800">
+                            <tr>
+                                <th class="p-2">📅 Fecha</th>
+                                <th class="p-2">🏭 Sector</th>
+                                <th class="p-2">🏷️ Categoría</th>
+                                <th class="p-2">📝 Descripción</th>
+                                <th class="p-2">💬 Comentarios</th>
+                                <th class="p-2">🔒 Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>`;
+    
+    filtrados.forEach(e => {
+        let descripcionCorta = e.descripcion.length > 50 ? e.descripcion.substring(0, 50) + '...' : e.descripcion;
+        let comentarioCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0, 30) + '...' : (e.comentarios || '-');
+        
+        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" 
+                        onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})">
+                    <td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td>
+                    <td class="p-2">🏭 ${e.sector}</td>
+                    <td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td>
+                    <td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descripcionCorta}</td>
+                    <td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentarioCorto}</td>
+                    <td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>
+                </tr>`;
+    });
+    
+    html += `</tbody>
+              </table>
+                </div>`;
+    
+    document.getElementById('modalPersonaVCPTitle').innerHTML = titulo;
+    document.getElementById('personaVCPModalContent').innerHTML = html;
+    
+    const modal = document.getElementById('personaVCPModal');
+    const modalContent = modal.querySelector('.modal-content');
+    modalContent.classList.remove('modal-bounce');
+    void modalContent.offsetHeight;
+    modalContent.classList.add('modal-bounce');
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+}
+
+function verDetalleReportePersonaVCP(reporte) {
+    closePersonaVCPModal();
+    
+    const index = VCP_DATA.findIndex(r => 
+        r.fecha === reporte.fecha && 
+        r.descripcion === reporte.descripcion && 
+        r.personaObservada === reporte.personaObservada
+    );
+    
+    if (index !== -1) {
+        openModal(VCP_DATA[index], index, VCP_DATA);
+    } else {
+        currentModalData = [reporte];
+        currentModalIndex = 0;
+        let modal = document.getElementById('reportDetailModal');
+        let content = document.getElementById('reportModalContent');
+        
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.classList.remove('modal-bounce');
+        void modalContent.offsetHeight;
+        modalContent.classList.add('modal-bounce');
+        
+        content.innerHTML = `<div class="space-y-2">
+            <p><strong class="text-purple-400">📅 Fecha:</strong> ${reporte.fecha}</p>
+            <p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${reporte.personaObservada}</p>
+            <p><strong class="text-purple-400">🏭 Sector:</strong> ${reporte.sector}</p>
+            <p><strong class="text-purple-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p>
+            <p><strong class="text-purple-400">📝 Descripción:</strong> ${reporte.descripcion}</p>
+            <p><strong class="text-purple-400">💬 Comentarios:</strong> ${reporte.comentarios || '-'}</p>
+            <p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p>
+        </div>`;
+        modal.classList.remove('hidden-section');
+        modal.style.display = 'flex';
+        updateNavButtons();
+    }
+}
+
+function closePersonaVCPModal() {
+    const m = document.getElementById('personaVCPModal');
+    m.classList.add('hidden-section');
+    m.style.display = 'none';
+}
+
+// ==================== EVENT LISTENERS ====================
 document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;applyGeneralFilters();});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{state.vcpMes=e.target.value;applyVCPFilters();});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>updateSupervisorCard());
 document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
+
+// Eventos para los números clickeables
 document.getElementById('actosCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('acto'));
 document.getElementById('condCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('condicion'));
+document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
 
 window.onload = () => {
     loadData();
