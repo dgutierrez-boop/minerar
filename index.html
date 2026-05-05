@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Sucursales</title>
+    <title>Minerar 2026 - Panel de Seguridad | Modo Claro</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -12,7 +12,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
     <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
     <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-    <meta name="theme-color" content="#0a0a0f">
+    <meta name="theme-color" content="#fbbf24">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -21,52 +21,39 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
-            background: radial-gradient(ellipse at 20% 30%, #0f0f1a, #05050a);
-            color: #e2e8f0;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%);
+            color: #1e293b;
             font-size: 12px;
             margin: 0;
             padding: 16px;
             min-height: 100vh;
-            position: relative;
-        }
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: linear-gradient(rgba(0,255,136,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(192,132,252,0.03) 1px, transparent 1px);
-            background-size: 35px 35px;
-            pointer-events: none;
-            z-index: 0;
         }
         .glass-card {
-            background: rgba(15, 20, 30, 0.75);
-            backdrop-filter: blur(12px);
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(8px);
             border-radius: 20px;
-            border: 1px solid rgba(0, 255, 136, 0.2);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.03);
+            border: 1px solid rgba(203, 213, 225, 0.5);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
             transition: all 0.2s ease;
             cursor: pointer;
         }
         .glass-card:hover {
             transform: translateY(-3px);
-            border-color: #00ff88;
-            box-shadow: 0 8px 25px rgba(0,255,136,0.15);
-            background: rgba(20,28,40,0.85);
+            border-color: #fbbf24;
+            box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15);
+            background: rgba(255, 255, 255, 0.98);
         }
         .header-container {
-            background: rgba(8,12,20,0.9);
-            backdrop-filter: blur(12px);
+            background: white;
             border-radius: 20px;
-            border: 1px solid rgba(192,132,252,0.4);
+            border: 1px solid #e2e8f0;
             padding: 16px 24px;
             margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
         }
-        .kpi-cyan { border-left: 4px solid #00ff88; background: linear-gradient(115deg, rgba(0,255,136,0.08), rgba(0,255,136,0.02)); }
-        .kpi-amber { border-left: 4px solid #c084fc; background: linear-gradient(115deg, rgba(192,132,252,0.08), rgba(192,132,252,0.02)); }
-        .kpi-supervisor { border-left: 4px solid #38bdf8; background: linear-gradient(115deg, rgba(56,189,248,0.08), rgba(56,189,248,0.02)); }
+        .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
+        .kpi-amber { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
+        .kpi-supervisor { border-left: 5px solid #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
         .btn-filter {
             transition: all 0.2s;
             cursor: pointer;
@@ -76,15 +63,14 @@
             border-radius: 10px;
             width: 100%;
             text-align: left;
-            border: 1px solid rgba(100,100,150,0.4);
-            background: rgba(20,25,35,0.7);
-            color: #b0c4de;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #475569;
         }
         .btn-filter.active {
-            background: linear-gradient(95deg, #00ff88, #00cc66);
-            border-color: #00ff88;
-            color: #05050a;
-            box-shadow: 0 0 10px rgba(0,255,136,0.3);
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border-color: #2563eb;
         }
         .category-card {
             transition: all 0.2s;
@@ -93,67 +79,56 @@
             border-radius: 14px;
             padding: 14px;
             text-align: center;
-            background: rgba(15,20,30,0.7);
-            backdrop-filter: blur(4px);
+            background: white;
             position: relative;
         }
-        .category-card:hover { transform: scale(1.05); background: rgba(0,255,136,0.1); border-color: #00ff88 !important; }
-        .category-card.active {
-            box-shadow: 0 0 0 3px rgba(0,255,136,0.4), 0 0 15px rgba(0,255,136,0.2);
-            background: rgba(0,255,136,0.15);
-            border-color: #00ff88 !important;
-        }
-        .category-card.active::after {
-            content: '✓';
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: #00ff88;
-            color: #05050a;
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 9px; font-weight: 800; text-transform: uppercase; }
-        .status-ok { background: rgba(0,255,136,0.2); color: #00ff88; border: 1px solid #00ff88; }
-        .status-warn { background: rgba(192,132,252,0.2); color: #c084fc; border: 1px solid #c084fc; }
-        .status-low { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
+        .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
+        .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
+        .category-card.causa-seleccionada { box-shadow: 0 0 0 3px #f59e0b; background: #fef3c7; border-color: #f59e0b; transform: scale(1.02); }
+        .hidden-section { display: none !important; }
+        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
+        .status-warn { background: #fef3c7; color: #d97706; border: 1px solid #fed7aa; }
+        .status-low { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
         .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
-        .table-scroll::-webkit-scrollbar { width: 5px; background: #1a1f2e; border-radius: 10px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 10px; }
-        table thead th { position: sticky; top: 0; background: #0f1520; z-index: 10; color: #00ff88; font-weight: 700; border-bottom: 1px solid rgba(0,255,136,0.3); }
-        tr:hover { background-color: rgba(0,255,136,0.08); }
-        select, .select-neon { background: #0f1520; border: 1px solid #00ff88; border-radius: 10px; padding: 6px 12px; color: #e2e8f0; font-weight: 500; }
-        @keyframes blink-red { 0%,100%{opacity:1;box-shadow:0 0 5px #ef4444}50%{opacity:0.4;box-shadow:0 0 15px #ef4444}}
-        @keyframes blink-green { 0%,100%{opacity:1;box-shadow:0 0 5px #00ff88}50%{opacity:0.4;box-shadow:0 0 15px #00ff88}}
-        @keyframes bounceOut { 0% { transform: scale(0.7); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes bounceIn { 0% { opacity: 0; transform: scale(0.3); } 50% { opacity: 1; transform: scale(1.05); } 70% { transform: scale(0.95); } 100% { opacity: 1; transform: scale(1); } }
-        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); } 70% { box-shadow: 0 0 0 8px rgba(0,255,136,0); } 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0); } }
-        .modal-bounce { animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards !important; }
-        .siren-red { width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
-        .siren-green { width: 12px; height: 12px; background: #00ff88; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #00ff88; display: inline-block; }
+        .table-scroll::-webkit-scrollbar { width: 5px; background: #e2e8f0; border-radius: 10px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
+        tr { cursor: pointer; transition: background 0.2s; }
+        tr:hover { background-color: #f1f5f9; }
+        
+        /* Animación de rebote para modales */
+        @keyframes modalBounce {
+            0% { transform: scale(0.7) translateY(50px); opacity: 0; }
+            40% { transform: scale(1.02) translateY(-10px); opacity: 1; }
+            70% { transform: scale(0.98) translateY(5px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
+        
+        /* Alertas LED */
+        @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
+        @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #22c55e; } 50% { opacity: 0.5; box-shadow: 0 0 15px #22c55e; } }
+        .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
+        .siren-green { width: 14px; height: 14px; background: #22c55e; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #22c55e; display: inline-block; }
+        
+        .report-item { transition: all 0.3s ease; animation: slideIn 0.3s ease-out; background: #f8fafc; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid; }
+        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        
         .toast-notification {
-            position: fixed; bottom: 20px; right: 20px; background: #0f1520; border: 1px solid #00ff88; backdrop-filter: blur(10px); color: white; padding: 12px 16px; border-radius: 12px; border-left: 4px solid #00ff88;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5), 0 0 10px rgba(0,255,136,0.2); z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 350px; font-size: 11px;
+            position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 12px 16px; border-radius: 12px; border-left: 4px solid #fbbf24; z-index: 1000; animation: slideInRight 0.3s ease-out; max-width: 320px; font-size: 11px;
         }
         @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .logo-shield { width: 56px; height: 56px; background: linear-gradient(135deg, #0f1520, #0a0f18); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 10px rgba(0,255,136,0.2); border: 1px solid #00ff88; }
+        
+        .logo-shield {
+            width: 60px; height: 60px; background: linear-gradient(135deg, #fff8e7, #fff3d6); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); border: 2px solid #fbbf24;
+        }
         .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .chart-container { position: relative; height: 260px; width: 100%; margin-top: 16px; }
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
-        .hidden-section { display: none; }
-        .modal-content { max-width: 700px; width: 90%; max-height: 85vh; overflow-y: auto; }
-        .modal-content .detalle-texto { font-size: 14px; line-height: 1.6; }
-        .report-item { background: rgba(15, 25, 35, 0.8); border-radius: 10px; padding: 10px; margin-bottom: 8px; border-left: 3px solid; transition: all 0.2s; }
-        .report-item:hover { background: rgba(0, 255, 136, 0.1); transform: translateX(3px); }
-        .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
-        .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 12px currentColor; }
-        .sup-card-hover { transition: all 0.2s; cursor: pointer; }
-        .sup-card-hover:hover { background: rgba(0,255,136,0.15); transform: translateY(-2px); }
+        
+        /* Botones de sucursales */
         .sucursal-btn {
             padding: 8px 20px;
             border-radius: 30px;
@@ -161,207 +136,163 @@
             font-size: 13px;
             transition: all 0.3s ease;
             cursor: pointer;
-            background: rgba(20, 25, 35, 0.7);
-            border: 2px solid rgba(100,100,150,0.4);
-            color: #b0c4de;
-            position: relative;
-            overflow: hidden;
+            background: white;
+            border: 2px solid #e2e8f0;
+            color: #475569;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
-        .sucursal-btn.active { background: rgba(0,0,0,0.3); animation: pulse-border 1.5s ease-out infinite; }
-        .sucursal-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+        .sucursal-btn.active {
+            background: #fef3c7;
+            border-color: #f59e0b;
+            color: #b45309;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        .sucursal-btn:hover { transform: translateY(-2px); border-color: #fbbf24; }
         .sucursal-icon { width: 20px; height: 20px; object-fit: contain; }
-        .btn-malagueno.active { border-color: #00ff88 !important; box-shadow: 0 0 15px rgba(0,255,136,0.6); color: #00ff88; }
-        .btn-barker.active { border-color: #ff8800 !important; box-shadow: 0 0 15px rgba(255,136,0,0.6); color: #ff8800; }
-        .btn-lapampita.active { border-color: #c084fc !important; box-shadow: 0 0 15px rgba(192,132,252,0.6); color: #c084fc; }
+        
+        .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
+        .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 8px currentColor; }
+        
+        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 16px; text-align: center; } .chart-container { height: 220px; } }
     </style>
 </head>
 <body>
-<div class="max-w-7xl mx-auto relative z-10">
+<div class="max-w-7xl mx-auto">
     <!-- HEADER -->
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-400 font-mono">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-emerald-500 relative"><div class="text-[9px] font-bold uppercase text-emerald-400">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-emerald-300">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <div class="glass-card px-4 py-2 text-center border-l-4 border-purple-500 relative"><div class="text-[9px] font-bold uppercase text-purple-400">🎯 VCP 🚧</div><div id="totalVCP" class="text-3xl font-black text-purple-300">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <button onclick="forceRefreshData()" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg transition-all flex items-center gap-2">⟳ ACTUALIZAR 🔄</button>
-            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
-                <span id="soundIcon">🔊</span>
-                <span id="soundText">SONIDO ON</span>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative"><div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP 🚧</div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
+            <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
+            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
+                <span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span>
             </button>
         </div>
     </div>
 
     <!-- ACTOS Y CONDICIONES -->
-    <div class="glass-card p-5 mb-6">
-        <div class="text-center mb-3">
+    <div class="glass-card p-6 mb-6">
+        <div class="text-center mb-4">
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active">
-                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> MALAGUEÑO
-                </button>
-                <button id="btnBarker" class="sucursal-btn btn-barker">
-                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER
-                </button>
-                <button id="btnLaPampita" class="sucursal-btn btn-lapampita">
-                    <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA
-                </button>
+                <button id="btnMalagueno" class="sucursal-btn active"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER</button>
+                <button id="btnLaPampita" class="sucursal-btn"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA</button>
             </div>
-            <h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent" id="objetivosTitulo">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
-            <p class="text-xs text-slate-400" id="objetivosMeta">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+            <h2 id="objetivosTitulo" class="text-xl font-black text-slate-800">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
+            <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-4 my-4">
-            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-emerald-400">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-emerald-300 my-1">0</div><div class="flex justify-between text-[11px]"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-purple-400">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-purple-300 my-1">0</div><div class="flex justify-between text-[11px]"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-sky-400 text-sm">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="select-neon text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="select-neon text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
+        <div class="grid md:grid-cols-3 gap-4 my-5">
+            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div><div class="flex justify-between"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-emerald-950/30 rounded-xl p-2 text-center border border-emerald-500/30 sup-card-hover" id="actosCardSupervisor">
-                        <span class="text-[10px] text-emerald-400">⚠️ ACTOS</span>
-                        <div id="supActosCount" class="text-2xl font-black text-emerald-300 clickable-sup">0</div>
-                    </div>
-                    <div class="bg-purple-950/30 rounded-xl p-2 text-center border border-purple-500/30 sup-card-hover" id="condCardSupervisor">
-                        <span class="text-[10px] text-purple-400">🏚️ CONDICIONES</span>
-                        <div id="supCondCount" class="text-2xl font-black text-purple-300 clickable-sup">0</div>
-                    </div>
+                    <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 sup-card-hover" id="actosCardSupervisor"><span class="text-[10px] text-cyan-700">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700 clickable-sup">0</div></div>
+                    <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 sup-card-hover" id="condCardSupervisor"><span class="text-[10px] text-amber-700">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700 clickable-sup">0</div></div>
                 </div>
             </div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4"><h3 class="font-black mb-2 text-emerald-400">🔍 FILTROS ACTOS ⚙️</h3><label class="text-xs font-bold text-slate-300">📅 MES</label><select id="monthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold text-slate-300">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold text-slate-300">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
-                <div class="mt-4 p-3 bg-emerald-950/20 rounded-xl border border-emerald-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-emerald-400">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div><div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
+            <aside><div class="glass-card p-4"><h3 class="font-black mb-2">🔍 FILTROS ACTOS ⚙️</h3><label class="text-xs font-bold">📅 MES</label><select id="monthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+                <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div><div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
-                <div class="glass-card p-4 mb-4">
-                    <div class="flex justify-between items-center flex-wrap">
-                        <h3 class="font-black uppercase text-emerald-400 text-sm">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3>
-                        <div class="flex gap-2">
-                            <button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro causa</button>
-                            <button id="clearAllFiltersBtn" onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-700/50 hover:bg-slate-600 px-2 py-1 rounded-full transition-all">🧹 Limpiar todos los filtros</button>
-                        </div>
-                    </div>
-                    <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div>
-                </div>
+                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all">🧹 Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-4"><h3 class="font-black uppercase text-emerald-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-                    <div class="glass-card p-4">
-                        <div class="flex justify-between items-center mb-2">
-                            <h3 class="font-black uppercase text-emerald-400 text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3>
-                            <button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded-full transition-all">🧹 Limpiar mes</button>
-                        </div>
-                        <div class="chart-container"><canvas id="trendChart"></canvas></div>
-                    </div>
+                    <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
                 </div>
-                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2 text-emerald-400">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
 
     <hr class="my-4">
 
-    <!-- VCP -->
-    <div class="glass-card p-5 border-2 border-purple-500/30">
-        <div class="text-center mb-3"><h2 class="text-lg font-black bg-gradient-to-r from-purple-400 to-emerald-400 bg-clip-text text-transparent">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧🛡️</h2></div>
-        <div class="grid md:grid-cols-2 gap-4 my-4">
-            <div class="glass-card p-4 border-l-4 border-purple-500"><div class="flex justify-between"><span class="font-bold text-purple-400">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-purple-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-sky-400">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="select-neon text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="select-neon text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-emerald-950/30 rounded-xl p-2 text-center border border-emerald-500/30 sup-card-hover" id="vcpCardPersona">
-                        <span class="text-[10px] text-emerald-400">📋 VCPs</span>
-                        <div id="personVCPCount" class="text-2xl font-black text-emerald-300 clickable-sup">0</div>
-                    </div>
-                    <div class="bg-purple-950/30 rounded-xl p-2 text-center border border-purple-500/30">
-                        <span class="text-[10px] text-purple-400">🕒 Último</span>
-                        <div id="personLastVCP" class="text-sm font-black text-purple-300">-</div>
-                    </div>
-                </div>
-            </div>
+    <!-- VCP SECCIÓN (oculta en Barker) -->
+    <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧🛡️</h2></div>
+        <div class="grid md:grid-cols-2 gap-4 my-5">
+            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover" id="vcpCardPersona"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700 clickable-sup">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black text-purple-400 mb-2">🎯 FILTROS VCP ⚙️</h3><select id="vcpMonthFilter" class="select-neon w-full mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select>
-                <div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div>
-                <div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
-                <div class="mt-4 p-3 bg-purple-950/20 rounded-xl border border-purple-500/30"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-purple-400">📢 REPORTES EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
+            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+                <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200"><div class="flex items-center justify-between"><span class="text-[9px] font-bold uppercase text-amber-700">📢 REPORTES EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div><div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div></div>
             </div></aside>
             <main>
-                <div class="glass-card p-4 mb-4 border border-purple-500/30">
-                    <div class="flex justify-between items-center"><h3 class="font-black uppercase text-purple-400 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-900/50 px-2 py-1 rounded-full text-purple-300 border border-purple-500">✕ Quitar filtro</button></div>
-                    <div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div>
-                </div>
+                <div class="glass-card p-4 mb-4 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black uppercase text-purple-400 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
-                    <div class="glass-card p-4 border border-purple-500/30"><h3 class="font-black uppercase text-purple-400 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
+                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
+                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
                 </div>
-                <div class="glass-card p-5 mt-4 border border-purple-500/30"><h3 class="font-black uppercase mb-2 text-purple-400">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
 </div>
 
 <!-- MODALES -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
-        <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
-        <div id="reportModalContent" class="detalle-texto text-slate-300 space-y-3"></div>
-        <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-700 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold">⬅ Anterior</button><span id="modalCounter" class="font-bold text-emerald-400 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div>
-        <button onclick="closeReportModal()" class="w-full mt-5 bg-emerald-700 hover:bg-emerald-600 py-2 rounded-xl font-bold">Cerrar</button>
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
+    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
+        <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-3 text-sm"></div>
+        <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-600 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div>
+        <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
 
-<div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalSupervisorTitle" class="font-black text-2xl text-emerald-400">📋 Detalle del Supervisor</h2>
-            <button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button>
-        </div>
-        <div id="supervisorModalContent" class="detalle-texto text-slate-300 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <div class="flex justify-end gap-3 mt-4">
-            <button onclick="closeSupervisorModal()" class="bg-emerald-700 hover:bg-emerald-600 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
-        </div>
+<div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
+    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
+        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div id="supervisorModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
 
-<div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
-    <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-purple-500/50 modal-content modal-bounce">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-400">📋 Detalle de VCP por Persona</h2>
-            <button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button>
-        </div>
-        <div id="personaVCPModalContent" class="detalle-texto text-slate-300 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <div class="flex justify-end gap-3 mt-4">
-            <button onclick="closePersonaVCPModal()" class="bg-purple-700 hover:bg-purple-600 px-5 py-2 rounded-xl text-sm font-bold">Cerrar</button>
-        </div>
+<div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
+    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
+        <div class="flex justify-between items-center mb-4"><h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-700">📋 Detalle de VCP por Persona</h2><button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div id="personaVCPModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
 
 <script>
-// ==================== CONSTANTES ====================
+// ==================== CONFIGURACIÓN ====================
 let currentSucursal = 'MALAGUENO';
 let selectedChartMonth = null;
 let selectedCausa = null;
+let soundEnabled = true;
 
+// URLs de cada sucursal
 const SUCURSALES_CONFIG = {
     MALAGUENO: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv',
         vcpUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv',
         mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
-        objetivos: { actos: 66, cond: 44 }
+        objetivos: { actos: 66, cond: 44 },
+        showVCP: true
     },
     BARKER: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2r4qjkNaf963qsk0BRCZDI5OocDmF9gmTIGbXKpsf7cpEoN8Ws64d0b2Tnkpb9qTLFq8Vjk-2Kd9X/pub?output=csv',
         vcpUrl: null,
         mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
-        objetivos: { actos: 6, cond: 4 }
+        objetivos: { actos: 6, cond: 4 },
+        showVCP: false
     },
     LAPAMPITA: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv',
         vcpUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv',
         mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
         vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
-        objetivos: { actos: 66, cond: 44 }
+        objetivos: { actos: 66, cond: 44 },
+        showVCP: true
     }
 };
 
@@ -370,6 +301,7 @@ let VCP_URL = SUCURSALES_CONFIG.MALAGUENO.vcpUrl;
 let currentMapping = SUCURSALES_CONFIG.MALAGUENO.mapping;
 let currentVcpMapping = null;
 let currentObjetivos = { actos: 66, cond: 44 };
+let currentShowVCP = true;
 
 const OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
@@ -377,7 +309,7 @@ let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendCh
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
 
-let actosNovedades = 0, vcpNovedades = 0, soundEnabled = true;
+let actosNovedades = 0, vcpNovedades = 0;
 let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
 let lastResetDate = new Date().toDateString();
 
@@ -402,11 +334,10 @@ function playNotificationSound() {
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain); gain.connect(audioCtx.destination);
-        osc.frequency.value = 880; gain.gain.value = 0.6;
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.6);
-        osc.stop(audioCtx.currentTime + 0.6);
-        if (navigator.vibrate) navigator.vibrate(200);
-    } catch(e) { console.log("Audio:", e); }
+        osc.frequency.value = 880; gain.gain.value = 0.3;
+        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + 0.3);
+        osc.stop(audioCtx.currentTime + 0.3);
+    } catch(e) { console.log("Audio no soportado:", e); }
 }
 
 function toggleSound() {
@@ -457,51 +388,39 @@ const CATEGORIES_VCP = [
 
 function classifyData(desc, useVCP = false) { if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0; for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } } return best; }
 
-function parseCSV(text) { 
-    const lines = text.split('\n').filter(l => l.trim()); 
-    const r = []; 
-    for (let i = 1; i < lines.length; i++) { 
-        const line = lines[i]; 
-        const cols = []; 
-        let cur = '', inq = false; 
-        for (let ch of line) { 
-            if (ch === '"') inq = !inq; 
-            else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } 
-            else cur += ch; 
-        } 
-        cols.push(cur.trim()); 
-        if (cols.length >= 10) r.push(cols); 
-    } 
-    return r; 
-}
+function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
 
 function showToast(tipo, titulo, mensaje, sector, persona, desc) { 
     playNotificationSound();
     const toast = document.createElement('div'); 
     toast.className = 'toast-notification'; 
-    const icono = tipo === 'actos' ? '🔔📋🛡️' : '🔔🎯🚧'; 
-    toast.innerHTML = `<div class="flex items-center gap-2 mb-1"><span class="text-sm">${icono}</span><strong class="text-xs text-emerald-400">${titulo}</strong></div>
-                       <div class="text-[11px] text-slate-200 font-bold">👤 ${persona || 'Desconocido'}</div>
-                       <div class="text-[9px] text-slate-400">🏭 ${sector || 'No especificado'}</div>
-                       <div class="text-[9px] text-slate-400 truncate">📝 ${(desc || '').substring(0, 60)}</div>`; 
+    toast.innerHTML = `<div class="flex items-center gap-2 mb-1"><strong class="text-xs text-amber-400">${titulo}</strong></div><div class="text-[11px] text-slate-200 font-bold">👤 ${persona || 'Desconocido'}</div><div class="text-[9px] text-slate-400">🏭 ${sector || 'No especificado'}</div><div class="text-[9px] text-slate-400 truncate">📝 ${(desc || '').substring(0, 60)}</div>`; 
     document.body.appendChild(toast); 
     setTimeout(() => toast.remove(), 6000); 
 }
 
-function showToastSimple(mensaje, tipo = 'info') {
-    const toast = document.createElement('div');
-    toast.className = 'toast-notification';
-    const color = tipo === 'causa' ? '#ffaa00' : (tipo === 'mes' ? '#00ff88' : '#c084fc');
-    toast.style.borderLeftColor = color;
-    toast.innerHTML = `<div class="flex items-center gap-2"><span class="text-sm">📊</span><strong class="text-xs text-emerald-400">Interacción</strong></div><div class="text-[11px] text-slate-200">${mensaje}</div>`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+function actualizarLED(tipo, hayNovedad) { 
+    const ledDiv = document.getElementById(`${tipo}Led`); 
+    if (!ledDiv) return; 
+    if (hayNovedad) { 
+        ledDiv.className = 'siren-green'; 
+        setTimeout(() => { const otroLed = document.getElementById(`${tipo}Led`); if (otroLed) otroLed.className = 'siren-red'; }, 5000); 
+    } 
 }
 
-function actualizarLED(tipo, hayNovedad) { 
-    const led = document.getElementById(`${tipo}Led`); 
-    if(!led) return; 
-    if(hayNovedad){ led.className = 'siren-green'; setTimeout(()=>{ const otro = document.getElementById(`${tipo}Led`); if(otro) otro.className = 'siren-red'; },5000); } 
+function actualizarObjetivosUI() {
+    document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.actos}`;
+    document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.cond}`;
+    document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos + currentObjetivos.cond}) 👷`;
+    document.getElementById('objetivosMeta').innerHTML = `🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos + currentObjetivos.cond} Total`;
+}
+
+function toggleVCPVisibility(show) {
+    const vcpSection = document.getElementById('vcpSection');
+    if (vcpSection) {
+        if (show) vcpSection.classList.remove('hidden-section');
+        else vcpSection.classList.add('hidden-section');
+    }
 }
 
 function limpiarFiltroGrafico() {
@@ -510,7 +429,7 @@ function limpiarFiltroGrafico() {
     if (monthSelect) { monthSelect.value = 'todo'; state.mes = 'todo'; }
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Filtro de mes eliminado', 'mes');
+    showToastSimple('🧹 Filtro de mes eliminado - Mostrando todos los meses');
 }
 
 function limpiarFiltroCausa() {
@@ -521,44 +440,31 @@ function limpiarFiltroCausa() {
     document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Filtro de causa eliminado', 'causa');
+    showToastSimple('🧹 Filtro de causa eliminado - Mostrando todas las causas');
 }
 
 function limpiarTodosLosFiltros() {
     selectedCausa = null;
     state.causaRaiz = 'todas';
-    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (clearBtn) clearBtn.classList.add('hidden-section');
     document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
     selectedChartMonth = null;
     const monthSelect = document.getElementById('monthFilter');
     if (monthSelect) { monthSelect.value = 'todo'; state.mes = 'todo'; }
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Todos los filtros limpiados', 'info');
+    showToastSimple('🧹 Todos los filtros han sido limpiados');
 }
 
-function filtrarPorCausa(causaId, causaNombre) {
-    if (selectedCausa === causaId) {
-        limpiarFiltroCausa();
-    } else {
-        selectedCausa = causaId;
-        state.causaRaiz = causaId;
-        document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');
-        document.querySelectorAll('.category-card').forEach(card => {
-            card.classList.remove('causa-seleccionada');
-            if (card.getAttribute('data-causa-id') === causaId) card.classList.add('causa-seleccionada');
-        });
-        updateTrendChart();
-        applyGeneralFilters();
-        showToastSimple(`🔍 Filtrado por causa: ${causaNombre}`, 'causa');
-    }
-}
-
-function actualizarObjetivosUI() {
-    document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.actos}`;
-    document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.cond}`;
-    document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos + currentObjetivos.cond}) 👷`;
-    document.getElementById('objetivosMeta').innerHTML = `🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos + currentObjetivos.cond} Total`;
+function showToastSimple(mensaje) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-notification';
+    toast.style.background = '#1e293b';
+    toast.style.borderLeftColor = '#fbbf24';
+    toast.innerHTML = `<div class="flex items-center gap-2"><span class="text-sm">📊</span><strong class="text-xs text-amber-400">Interacción</strong></div><div class="text-[11px] text-slate-200">${mensaje}</div>`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
 }
 
 function cambiarSucursal(sucursal) {
@@ -574,7 +480,8 @@ function cambiarSucursal(sucursal) {
     const monthSelect = document.getElementById('monthFilter');
     if (monthSelect) monthSelect.value = 'todo';
     document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
-    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (clearBtn) clearBtn.classList.add('hidden-section');
     
     const config = SUCURSALES_CONFIG[sucursal];
     if (config) {
@@ -583,16 +490,15 @@ function cambiarSucursal(sucursal) {
         currentMapping = config.mapping;
         currentVcpMapping = config.vcpMapping || null;
         currentObjetivos = config.objetivos;
+        currentShowVCP = config.showVCP;
         actualizarObjetivosUI();
+        toggleVCPVisibility(currentShowVCP);
     }
     
-    if (sucursal === 'MALAGUENO') {
-        document.getElementById('btnMalagueno').classList.add('active');
-    } else if (sucursal === 'BARKER') {
-        document.getElementById('btnBarker').classList.add('active');
-    } else if (sucursal === 'LAPAMPITA') {
-        document.getElementById('btnLaPampita').classList.add('active');
-    }
+    if (sucursal === 'MALAGUENO') document.getElementById('btnMalagueno').classList.add('active');
+    else if (sucursal === 'BARKER') document.getElementById('btnBarker').classList.add('active');
+    else if (sucursal === 'LAPAMPITA') document.getElementById('btnLaPampita').classList.add('active');
+    
     loadData();
 }
 
@@ -608,95 +514,56 @@ async function loadData() {
             const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
             const rows1 = parseCSV(await res1.text()); 
             ACTOS_COND_DATA = []; 
-            
             for (let i = 0; i < rows1.length; i++) { 
                 const row = rows1[i]; 
                 const esNueva = currentSucursal === 'MALAGUENO' && i >= 225; 
                 let fecha, tipoRaw, sector, observador, desc, cerradoRaw; 
                 if (esNueva) { 
                     const colU = row[20] || ''; 
-                    if (colU.toUpperCase().startsWith('AI-')) { 
-                        tipoRaw = 'Acto Inseguro'; 
-                        desc = colU.replace(/^AI-\s*/i, '').trim(); 
-                    } else if (colU.toUpperCase().startsWith('CI-')) { 
-                        tipoRaw = 'Condición Insegura'; 
-                        desc = colU.replace(/^CI-\s*/i, '').trim(); 
-                    } else { 
-                        tipoRaw = ''; 
-                        desc = colU; 
-                    } 
-                    fecha = row[11] || ''; 
-                    observador = row[13] || ''; 
-                    sector = row[14] || ''; 
-                    cerradoRaw = row[23] || ''; 
+                    if (colU.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = colU.replace(/^AI-\s*/i, '').trim(); } 
+                    else if (colU.toUpperCase().startsWith('CI-')) { tipoRaw = 'Condición Insegura'; desc = colU.replace(/^CI-\s*/i, '').trim(); } 
+                    else { tipoRaw = ''; desc = colU; } 
+                    fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; 
                 } else { 
                     if (row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
-                    fecha = row[currentMapping.fecha] || ''; 
-                    tipoRaw = row[currentMapping.tipo] || ''; 
-                    sector = row[currentMapping.sector] || ''; 
-                    observador = row[currentMapping.observador] || ''; 
-                    desc = row[currentMapping.descripcion] || ''; 
-                    cerradoRaw = row[currentMapping.cerrado] || ''; 
+                    fecha = row[currentMapping.fecha] || ''; tipoRaw = row[currentMapping.tipo] || ''; sector = row[currentMapping.sector] || ''; observador = row[currentMapping.observador] || ''; desc = row[currentMapping.descripcion] || ''; cerradoRaw = row[currentMapping.cerrado] || ''; 
                 } 
-                
                 const fechaParseada = parseFecha(fecha);
                 if (!fechaParseada.valido) continue;
-                
-                let tipo = 'otro'; 
-                if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
-                else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
+                let tipo = 'otro'; if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; 
                 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); 
                 const cat = classifyData(desc, false); 
-                ACTOS_COND_DATA.push({ 
-                    fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), 
-                    descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
-                }); 
+                ACTOS_COND_DATA.push({ fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat }); 
             } 
             console.log(`✅ ACTOS ${currentSucursal}: ${ACTOS_COND_DATA.length}`); 
             document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
         }
         
-        if (VCP_URL) {
+        if (currentShowVCP && VCP_URL) {
             const res2 = await fetch(VCP_URL + '&t=' + timestamp); 
             const rows2 = parseCSV(await res2.text()); 
             VCP_DATA = []; 
             const vcpMapping = currentVcpMapping;
-            
             for (let i = 0; i < rows2.length; i++) { 
                 const row = rows2[i]; 
                 let fechaRaw, personaObs, sector, desc, coment;
-                
                 if (vcpMapping) {
-                    fechaRaw = row[vcpMapping.fecha] || ''; 
-                    personaObs = (row[vcpMapping.persona] || '').trim(); 
-                    sector = row[vcpMapping.sector] || ''; 
-                    desc = row[vcpMapping.descripcion] || ''; 
-                    coment = row[vcpMapping.comentarios] || ''; 
+                    fechaRaw = row[vcpMapping.fecha] || ''; personaObs = (row[vcpMapping.persona] || '').trim(); sector = row[vcpMapping.sector] || ''; desc = row[vcpMapping.descripcion] || ''; coment = row[vcpMapping.comentarios] || ''; 
                 } else {
-                    fechaRaw = row[2] || ''; 
-                    personaObs = (row[1] || '').trim(); 
-                    sector = (row[3] || '').toLowerCase().trim() || 'general'; 
-                    desc = row[32] || ''; 
-                    coment = row[28] || ''; 
+                    fechaRaw = row[2] || ''; personaObs = (row[1] || '').trim(); sector = (row[3] || '').toLowerCase().trim() || 'general'; desc = row[32] || ''; coment = row[28] || ''; 
                 }
-                
                 const fecha = fechaRaw.split(' ')[0]; 
                 const fd = parseFecha(fecha);
                 if (!fd.valido) continue;
                 if (!personaObs) continue; 
-                
                 const cat = classifyData(desc, true); 
-                VCP_DATA.push({ 
-                    fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, 
-                    comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat 
-                }); 
+                VCP_DATA.push({ fecha, tipo: 'vcp', sector, personaObservada: personaObs, descripcion: desc, comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat }); 
             } 
             console.log(`✅ VCP ${currentSucursal}: ${VCP_DATA.length}`);
             document.getElementById('totalVCP').innerText = VCP_DATA.length; 
         } else {
             VCP_DATA = [];
             document.getElementById('totalVCP').innerText = '0'; 
-            console.log(`⚠️ VCP no disponible para ${currentSucursal}`);
         }
         
         populateSupervisors(); 
@@ -705,13 +572,13 @@ async function loadData() {
     } catch(e) { console.error(e); alert('Error al cargar datos: ' + e.message); } 
 }
 
-function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
+function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
+
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
     let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
     document.getElementById('kpiActos').innerText = actos.length; document.getElementById('kpiCondiciones').innerText = cond.length;
-    let pA = Math.min(actos.length/currentObjetivos.actos*100,100);
-    let pC = Math.min(cond.length/currentObjetivos.cond*100,100);
+    let pA = Math.min(actos.length/currentObjetivos.actos*100,100), pC = Math.min(cond.length/currentObjetivos.cond*100,100);
     document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
     document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
     let up = (id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
@@ -721,6 +588,7 @@ function applyGeneralFilters() {
     updateTrendChart();
     renderGeneralTable(f);
 }
+
 function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
     let counts = {}; categories.forEach(c=>counts[c.id]=0);
     data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -730,7 +598,7 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
         let val = counts[c.id] || 0, pct = Math.round(val/total*100);
         let div = document.createElement('div');
         let isActive = (stateKey === 'vcpCausa' && state.vcpCausa === c.id) || (stateKey === 'causaRaiz' && state.causaRaiz === c.id);
-        div.className = `category-card p-2 text-center relative ${isActive ? 'active' : ''}`;
+        div.className = `category-card p-3 text-center relative ${isActive ? 'active' : ''}`;
         if (selectedCausa === c.id) div.classList.add('causa-seleccionada');
         div.setAttribute('data-causa-id', c.id);
         div.style.borderColor = c.color;
@@ -740,21 +608,33 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
                 else { state.vcpCausa = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
                 applyVCPFilters();
             } else {
-                filtrarPorCausa(c.id, c.name);
+                if (selectedCausa === c.id) limpiarFiltroCausa();
+                else { selectedCausa = c.id; state.causaRaiz = c.id; document.getElementById(clearBtnId).classList.remove('hidden-section'); }
+                document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
+                div.classList.add('causa-seleccionada');
+                updateTrendChart();
+                applyGeneralFilters();
+                showToastSimple(`🔍 Filtrado por causa: ${c.name}`);
             }
         };
-        div.innerHTML = `<div class="text-xl">${c.icon}</div><div class="text-[10px] font-bold mt-1">${c.name}</div><div class="text-xl font-black" style="color:${c.color}">${val}</div><div class="text-[9px] text-slate-400">${pct}%</div>`;
+        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`;
         container.appendChild(div);
     });
 }
+
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
     let ctx = document.getElementById(canvasId).getContext('2d');
     if (canvasId === 'categoryChart' && categoryChart) categoryChart.destroy();
-    let chart = new Chart(ctx, { type: 'doughnut', data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
+    let chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
+        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let total = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
+    });
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
+
 function updateTrendChart() {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     let datosFiltrados = ACTOS_COND_DATA;
@@ -768,13 +648,30 @@ function updateTrendChart() {
         data: {
             labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
             datasets: [
-                { label: selectedCausa ? `⚠️ ACTOS (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '⚠️ ACTOS', data: actosPorMes, borderColor: '#00ff88', backgroundColor: 'rgba(0,255,136,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const index = ctx.dataIndex; const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '#ffaa00' : '#00ff88'; }, pointBorderColor: '#0f1520', pointBorderWidth: 2 },
-                { label: selectedCausa ? `🏚️ CONDICIONES (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '🏚️ CONDICIONES', data: condPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const index = ctx.dataIndex; const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '#ffaa00' : '#c084fc'; }, pointBorderColor: '#0f1520', pointBorderWidth: 2 }
+                { label: selectedCausa ? `⚠️ ACTOS (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '⚠️ ACTOS', data: actosPorMes, borderColor: '#06b6d4', backgroundColor: 'rgba(6, 182, 212, 0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const index = ctx.dataIndex; const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '#f59e0b' : '#06b6d4'; }, pointBorderColor: 'white', pointBorderWidth: 2 },
+                { label: selectedCausa ? `🏚️ CONDICIONES (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name || 'Filtrado'})` : '🏚️ CONDICIONES', data: condPorMes, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const index = ctx.dataIndex; const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '#f59e0b' : '#f59e0b'; }, pointBorderColor: 'white', pointBorderWidth: 2 }
             ]
         },
-        options: { responsive: true, maintainAspectRatio: true, onClick: (event, activeElements) => { if (activeElements.length > 0) { const dataIndex = activeElements[0].index; const mesSeleccionado = meses[dataIndex]; selectedChartMonth = mesSeleccionado; const monthSelect = document.getElementById('monthFilter'); if (monthSelect) { monthSelect.value = mesSeleccionado; state.mes = mesSeleccionado; } updateTrendChart(); applyGeneralFilters(); showToastSimple(`📅 Filtrado por mes: ${mesSeleccionado.toUpperCase()}`, 'mes'); } }, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { return `${ctx.dataset.label}: ${ctx.parsed.y}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, callback: function(val, index) { const mes = meses[index].charAt(0).toUpperCase() + meses[index].slice(1); const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '👉 ' + mes + ' 👈' : mes; } }, grid: { display: false } } } }
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            onClick: (event, activeElements) => {
+                if (activeElements.length > 0) {
+                    const dataIndex = activeElements[0].index;
+                    const mesSeleccionado = meses[dataIndex];
+                    selectedChartMonth = mesSeleccionado;
+                    const monthSelect = document.getElementById('monthFilter');
+                    if (monthSelect) { monthSelect.value = mesSeleccionado; state.mes = mesSeleccionado; }
+                    updateTrendChart();
+                    applyGeneralFilters();
+                    showToastSimple(`📅 Filtrado por mes: ${mesSeleccionado.toUpperCase()}`);
+                }
+            },
+            plugins: { legend: { position: 'top', labels: { font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { return `${ctx.dataset.label}: ${ctx.parsed.y}`; } } } },
+            scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 10 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } }
+        }
     });
 }
+
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -785,34 +682,47 @@ function applyVCPFilters() {
     updateVCPCharts(f);
     renderVCPTable(f);
 }
+
 function updateVCPCharts(data) {
     let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
     let ctxDona = document.getElementById('vcpCategoryChart').getContext('2d');
     if (vcpCategoryChart) vcpCategoryChart.destroy();
-    vcpCategoryChart = new Chart(ctxDona, { type: 'doughnut', data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    vcpCategoryChart = new Chart(ctxDona, {
+        type: 'doughnut',
+        data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
+        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let total = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
+    });
+    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     let vcpPorMes = meses.map(mes => data.filter(e => e.mes === mes).length);
     let ctxTrend = document.getElementById('vcpTrendChart').getContext('2d');
     if (vcpTrendChart) vcpTrendChart.destroy();
-    vcpTrendChart = new Chart(ctxTrend, { type: 'line', data: { labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; return `${ctx.dataset.label}: ${val}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } } });
+    vcpTrendChart = new Chart(ctxTrend, {
+        type: 'line',
+        data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white', pointBorderWidth: 2 }] },
+        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } }
+    });
 }
+
 function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
+
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
 function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{ if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1); }); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(name=>sel.innerHTML+=`<option value="${name}">🧑‍🏭 ${name} (${counts.get(name)} VCPs)</option>`); updatePersonVCPStatsOnly(); }
 function updatePersonVCPStatsOnly() { let person = document.getElementById('vcpPersonFilter').value, month = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); document.getElementById('personVCPCount').innerText = f.length; if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; else document.getElementById('personLastVCP').innerText = '-'; }
-function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#00ff88');applyGeneralFilters();}
-function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00ff88');applyGeneralFilters();}
-function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
-function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
-function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20,25,35,0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
-function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#2563eb');applyGeneralFilters();}
+function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#2563eb');applyGeneralFilters();}
+function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#d97706');applyVCPFilters();}
+function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#d97706');applyVCPFilters();}
+function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';});active.classList.add('active');active.style.background=color;active.style.color='white';}
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b hover:bg-slate-50 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
+
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
-        let hoy = new Date(), fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
+        let hoy = new Date(), dia = String(hoy.getDate()).padStart(2,'0'), mes = String(hoy.getMonth()+1).padStart(2,'0'), anio = hoy.getFullYear();
+        let fechaFormatoISO = `${anio}-${mes}-${dia}`;
         if (!ACTOS_URL) return;
         try {
             let ra = await fetch(ACTOS_URL+'&t='+Date.now()); 
@@ -827,25 +737,38 @@ async function checkNewReports(){
             }
             let ca = document.getElementById('realTimeReportsActos'); 
             if(ca) { 
+                let nuevosNoNotificados = [];
+                for (let act of newAct) {
+                    let idUnico = `${act[13] || act[5]}|${act[6]}|${act[0]}`;
+                    if (!reportesNotificadosActos.has(idUnico)) {
+                        nuevosNoNotificados.push(act);
+                        reportesNotificadosActos.add(idUnico);
+                    }
+                }
                 if(newAct.length > 0){ 
                     ca.innerHTML = ''; 
                     newAct.slice(-5).forEach(r=>{
-                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#00ff88';
+                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#10b981';
                         let observador = (r[13] && r[13].trim() !== '') ? r[13] : (r[5] || 'Desconocido');
                         let sector = (r[2] && r[2].trim() !== '') ? r[2] : (r[14] || 'No especificado');
                         let descripcion = r[6] || '';
-                        d.innerHTML = `<div class="font-bold text-emerald-300">👤 ${observador}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${descripcion.substring(0,50)}</div>`;
+                        d.innerHTML = `<div class="font-bold text-emerald-700 text-[11px]">👤 ${observador}</div><div class="text-slate-500 text-[9px]">🏭 ${sector}</div><div class="text-slate-500 text-[9px] truncate">📝 ${descripcion.substring(0,50)}</div>`;
                         ca.appendChild(d);
                     }); 
-                    if(newAct.length > actosNovedades) { 
+                    if(nuevosNoNotificados.length > 0) { 
                         actosNovedades = newAct.length; actualizarLED('actos', true); 
-                        document.getElementById('actosNovedadBadge').innerText=actosNovedades; 
-                        document.getElementById('actosNovedadBadge').classList.remove('hidden');
+                        let primerNuevo = nuevosNoNotificados[0];
+                        let observadorNombre = (primerNuevo[13] && primerNuevo[13].trim() !== '') ? primerNuevo[13] : (primerNuevo[5] || 'Desconocido');
+                        let sectorLugar = (primerNuevo[2] && primerNuevo[2].trim() !== '') ? primerNuevo[2] : (primerNuevo[14] || 'No especificado');
+                        showToast('actos', `🚨 NUEVO REPORTE`, {}, sectorLugar, observadorNombre, primerNuevo[6]); 
+                        const badge = document.getElementById('actosNovedadBadge');
+                        badge.innerText = actosNovedades;
+                        badge.classList.remove('hidden');
                     } 
                 } else { if(ca.innerHTML === '' || ca.innerHTML.includes('Sin novedades') === false) ca.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; }
             }
         } catch(e) { console.error("Error ACTOS:", e); }
-        if (!VCP_URL) return;
+        if (!currentShowVCP || !VCP_URL) return;
         try {
             let rv = await fetch(VCP_URL+'&t='+Date.now()); 
             let rvRows = parseCSV(await rv.text());
@@ -856,113 +779,118 @@ async function checkNewReports(){
             }
             let cv = document.getElementById('realTimeReportsVCP'); 
             if(cv) { 
+                let nuevosNoNotificadosV = [];
+                for (let v of newV) {
+                    let idUnico = `${v[1]}|${v[32]}|${v[0]}`;
+                    if (!reportesNotificadosVCP.has(idUnico)) {
+                        nuevosNoNotificadosV.push(v);
+                        reportesNotificadosVCP.add(idUnico);
+                    }
+                }
                 if(newV.length > 0){ 
                     cv.innerHTML = ''; 
                     newV.slice(-5).forEach(r=>{
-                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#c084fc';
-                        let persona = r[1] || 'Desconocido', sector = r[3] || 'No especificado', desc = r[32] || '';
-                        d.innerHTML = `<div class="font-bold text-purple-300">🧑‍🏭 ${persona}</div><div class="text-slate-400">🏭 ${sector}</div><div class="text-slate-500 truncate">📝 ${desc.substring(0,50)}</div>`;
+                        let d=document.createElement('div'); d.className='report-item'; d.style.borderLeftColor='#f59e0b';
+                        let persona = r[1] || 'Desconocido';
+                        let sector = r[3] || 'No especificado';
+                        let descripcion = r[32] || '';
+                        d.innerHTML = `<div class="font-bold text-amber-700 text-[11px]">🧑‍🏭 ${persona}</div><div class="text-slate-500 text-[9px]">🏭 ${sector}</div><div class="text-slate-500 text-[9px] truncate">📝 ${descripcion.substring(0,50)}</div>`;
                         cv.appendChild(d);
                     }); 
-                    if(newV.length > vcpNovedades) { 
+                    if(nuevosNoNotificadosV.length > 0) { 
                         vcpNovedades = newV.length; actualizarLED('vcp', true); 
-                        document.getElementById('vcpNovedadBadge').innerText=vcpNovedades; 
-                        document.getElementById('vcpNovedadBadge').classList.remove('hidden');
+                        let primerNuevo = nuevosNoNotificadosV[0];
+                        showToast('vcp', `🚨 NUEVO REPORTE VCP`, {}, primerNuevo[3] || 'No especificado', primerNuevo[1], primerNuevo[32]); 
+                        const badge = document.getElementById('vcpNovedadBadge');
+                        badge.innerText = vcpNovedades;
+                        badge.classList.remove('hidden');
                     } 
                 } else { if(cv.innerHTML === '' || cv.innerHTML.includes('Sin novedades') === false) cv.innerHTML='<p class="text-slate-400 text-center py-2">📭 Sin novedades hoy</p>'; }
             }
         } catch(e) { console.error("Error VCP:", e); }
     } catch(e){ console.error(e); } 
 }
+
 function openModal(r, idx, data) { 
     currentModalData = data; currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
+    const modalContent = modal.querySelector('.modal-bounce');
+    modalContent.style.animation = 'none';
+    modalContent.offsetHeight;
+    modalContent.style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
     if(r.tipo === 'vcp'){ 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-400">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-600">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-600">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`; 
     } else { 
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`; 
+        content.innerHTML = `<div class="space-y-2"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-cyan-600">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-cyan-600">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`; 
     } 
-    modal.classList.remove('hidden-section'); modal.style.display='flex'; updateNavButtons(); 
+    modal.classList.remove('hidden-section'); 
+    modal.style.display='flex'; 
+    updateNavButtons(); 
 }
+
 function closeReportModal(){let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none';}
 function updateNavButtons(){let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`;}
 function goToNextModal(){if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function forceRefreshData(){loadData();}
+
 function abrirModalSupervisor(tipo) {
-    const supervisor = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value;
+    const supervisor = document.getElementById('supervisorSelect').value;
+    const mes = document.getElementById('supervisorMonthSelect').value;
     if (supervisor === 'todos') { alert("⚠️ Seleccione un supervisor específico"); return; }
     let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
     let filtrados = ACTOS_COND_DATA.filter(e => e.observador === supervisor && (mes === 'todo' || e.mes === mes));
     let datosTipo = filtrados.filter(e => e.tipo === tipo);
     if (datosTipo.length === 0) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${supervisor} en ${nombreMes}.`); return; }
     let titulo = tipo === 'acto' ? `⚠️ ACTOS de ${supervisor}` : `🏚️ CONDICIONES de ${supervisor}`;
-    let colorTitulo = tipo === 'acto' ? '#00ff88' : '#c084fc';
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-emerald-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Supervisor: <span class="text-emerald-400 font-bold">${supervisor}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-emerald-400 font-bold">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    let colorTitulo = tipo === 'acto' ? '#0891b2' : '#d97706';
+    let html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nombreMes}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${supervisor}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${datosTipo.length}</span> ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     datosTipo.forEach(e => {
-        let badgeEstado = e.cerrado ? '<span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-900/60 text-rose-400 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
-        let descCorta = e.descripcion.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion;
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReporteSupervisor(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2">${badgeEstado}</td></tr>`;
+        let badgeEstado = e.cerrado ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>';
+        html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0,60)}${e.descripcion.length>60?'...':''}</td><td class="p-2">${badgeEstado}<tr>`;
     });
     html += `</tbody></table></div>`;
     document.getElementById('modalSupervisorTitle').innerHTML = titulo;
     document.getElementById('modalSupervisorTitle').style.color = colorTitulo;
     document.getElementById('supervisorModalContent').innerHTML = html;
     const modal = document.getElementById('supervisorDetailModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
-    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    const modalContent = modal.querySelector('.modal-bounce');
+    modalContent.style.animation = 'none';
+    modalContent.offsetHeight;
+    modalContent.style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
 }
-function verDetalleReporteSupervisor(reporte) {
-    closeSupervisorModal();
-    const index = ACTOS_COND_DATA.findIndex(r => r.fecha === reporte.fecha && r.descripcion === reporte.descripcion && r.observador === reporte.observador);
-    if (index !== -1) { openModal(ACTOS_COND_DATA[index], index, ACTOS_COND_DATA); }
-    else { currentModalData = [reporte]; currentModalIndex = 0;
-        let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
-        const modalContent = modal.querySelector('.modal-content');
-        modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-emerald-400">📅 Fecha:</strong> ${reporte.fecha}</p><p><strong class="text-emerald-400">👤 Observador:</strong> ${reporte.observador}</p><p><strong class="text-emerald-400">📋 Tipo:</strong> ${reporte.tipo.toUpperCase()}</p><p><strong class="text-emerald-400">🏭 Sector:</strong> ${reporte.sector}</p><p><strong class="text-emerald-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p><p><strong class="text-emerald-400">📝 Descripción:</strong> ${reporte.descripcion}</p><p><strong class="text-emerald-400">⚙️ Estado:</strong> ${reporte.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`;
-        modal.classList.remove('hidden-section'); modal.style.display = 'flex'; updateNavButtons();
-    }
-}
+
 function closeSupervisorModal() { const m = document.getElementById('supervisorDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
+
 function abrirModalPersonaVCP() {
-    const persona = document.getElementById('vcpPersonFilter').value, mes = document.getElementById('vcpPersonMonthFilter').value;
+    const persona = document.getElementById('vcpPersonFilter').value;
+    const mes = document.getElementById('vcpPersonMonthFilter').value;
     if (persona === 'todos') { alert("⚠️ Seleccione una persona específica"); return; }
     let nombreMes = mes === 'todo' ? 'Todos los meses' : mes.charAt(0).toUpperCase() + mes.slice(1);
     let filtrados = VCP_DATA.filter(e => e.personaObservada === persona && (mes === 'todo' || e.mes === mes));
     if (filtrados.length === 0) { alert(`No hay VCPs para ${persona} en ${nombreMes}.`); return; }
-    let html = `<div class="mb-3 pb-2 border-b border-slate-700"><p class="text-sm text-slate-400">📅 Período: <span class="text-purple-400 font-bold">${nombreMes}</span></p><p class="text-sm text-slate-400">👤 Persona: <span class="text-purple-400 font-bold">${persona}</span></p><p class="text-sm text-slate-400">📊 Total: <span class="text-purple-400 font-bold">${filtrados.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-800"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    let html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nombreMes}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${persona}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${filtrados.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     filtrados.forEach(e => {
         let descCorta = e.descripcion.length > 50 ? e.descripcion.substring(0,50)+'...' : e.descripcion;
         let comentCorto = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0,30)+'...' : (e.comentarios || '-');
-        html += `<tr class="border-b border-slate-700/50 hover:bg-slate-800/50 cursor-pointer" onclick="verDetalleReportePersonaVCP(${JSON.stringify(e).replace(/'/g, "&#39;").replace(/"/g, '&quot;')})"><td class="p-2 font-bold text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs" title="${e.descripcion.replace(/"/g, '&quot;')}">${descCorta}</td><td class="p-2 max-w-xs" title="${(e.comentarios || '-').replace(/"/g, '&quot;')}">${comentCorto}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
+        html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${descCorta}</td><td class="p-2 max-w-xs">${comentCorto}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
     });
     html += `</tbody></table></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${persona}`;
     document.getElementById('personaVCPModalContent').innerHTML = html;
     const modal = document.getElementById('personaVCPModal');
-    const modalContent = modal.querySelector('.modal-content');
-    modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
-    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    const modalContent = modal.querySelector('.modal-bounce');
+    modalContent.style.animation = 'none';
+    modalContent.offsetHeight;
+    modalContent.style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
 }
-function verDetalleReportePersonaVCP(reporte) {
-    closePersonaVCPModal();
-    const index = VCP_DATA.findIndex(r => r.fecha === reporte.fecha && r.descripcion === reporte.descripcion && r.personaObservada === reporte.personaObservada);
-    if (index !== -1) { openModal(VCP_DATA[index], index, VCP_DATA); }
-    else { currentModalData = [reporte]; currentModalIndex = 0;
-        let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
-        const modalContent = modal.querySelector('.modal-content');
-        modalContent.classList.remove('modal-bounce'); void modalContent.offsetHeight; modalContent.classList.add('modal-bounce');
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-400">📅 Fecha:</strong> ${reporte.fecha}</p><p><strong class="text-purple-400">🧑‍🏭 Persona:</strong> ${reporte.personaObservada}</p><p><strong class="text-purple-400">🏭 Sector:</strong> ${reporte.sector}</p><p><strong class="text-purple-400">🏷️ Categoría:</strong> ${reporte.categoria.icon} ${reporte.categoria.name}</p><p><strong class="text-purple-400">📝 Descripción:</strong> ${reporte.descripcion}</p><p><strong class="text-purple-400">💬 Comentarios:</strong> ${reporte.comentarios || '-'}</p><p><strong class="text-purple-400">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;
-        modal.classList.remove('hidden-section'); modal.style.display = 'flex'; updateNavButtons();
-    }
-}
+
 function closePersonaVCPModal() { const m = document.getElementById('personaVCPModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
-// EVENTOS
 document.getElementById('monthFilter')?.addEventListener('change',e=>{state.mes=e.target.value;selectedChartMonth=null;applyGeneralFilters();updateTrendChart();});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{state.vcpMes=e.target.value;applyVCPFilters();});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>updateSupervisorCard());
