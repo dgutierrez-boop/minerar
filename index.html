@@ -343,7 +343,6 @@ let currentSucursal = 'MALAGUENO';
 let selectedChartMonth = null;
 let selectedCausa = null;
 
-// URLs de cada sucursal
 const SUCURSALES_CONFIG = {
     MALAGUENO: {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv',
@@ -361,7 +360,6 @@ const SUCURSALES_CONFIG = {
         actosUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv',
         vcpUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv',
         mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
-        // CORREGIDO: persona en columna 4 (índice 4) que es la columna E
         vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
         objetivos: { actos: 66, cond: 44 }
     }
@@ -512,7 +510,7 @@ function limpiarFiltroGrafico() {
     if (monthSelect) { monthSelect.value = 'todo'; state.mes = 'todo'; }
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Filtro de mes eliminado - Mostrando todos los meses', 'mes');
+    showToastSimple('🧹 Filtro de mes eliminado', 'mes');
 }
 
 function limpiarFiltroCausa() {
@@ -523,7 +521,7 @@ function limpiarFiltroCausa() {
     document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada'));
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Filtro de causa eliminado - Mostrando todas las causas', 'causa');
+    showToastSimple('🧹 Filtro de causa eliminado', 'causa');
 }
 
 function limpiarTodosLosFiltros() {
@@ -536,7 +534,7 @@ function limpiarTodosLosFiltros() {
     if (monthSelect) { monthSelect.value = 'todo'; state.mes = 'todo'; }
     updateTrendChart();
     applyGeneralFilters();
-    showToastSimple('🧹 Todos los filtros han sido limpiados', 'info');
+    showToastSimple('🧹 Todos los filtros limpiados', 'info');
 }
 
 function filtrarPorCausa(causaId, causaNombre) {
@@ -723,7 +721,6 @@ function applyGeneralFilters() {
     updateTrendChart();
     renderGeneralTable(f);
 }
-
 function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId) {
     let counts = {}; categories.forEach(c=>counts[c.id]=0);
     data.forEach(e => { if(e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -750,7 +747,6 @@ function updateCategoryCards(data, categories, stateKey, containerId, clearBtnId
         container.appendChild(div);
     });
 }
-
 function updateChartsDona(data, categories, canvasId) {
     let counts = {}; categories.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -759,7 +755,6 @@ function updateChartsDona(data, categories, canvasId) {
     let chart = new Chart(ctx, { type: 'doughnut', data: { labels: categories.map(c => `${c.icon} ${c.name}`), datasets: [{ data: categories.map(c => counts[c.id] || 0), backgroundColor: categories.map(c => c.color), borderWidth: 2, borderColor: '#0f1520', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { color: '#cbd5e1', font: { size: 8, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle', boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { let totalCtx = ctx.dataset.data.reduce((a,b)=>a+b,0); let pct = Math.round((ctx.parsed/totalCtx)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } } });
     if (canvasId === 'categoryChart') categoryChart = chart;
 }
-
 function updateTrendChart() {
     const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
     let datosFiltrados = ACTOS_COND_DATA;
@@ -780,7 +775,6 @@ function updateTrendChart() {
         options: { responsive: true, maintainAspectRatio: true, onClick: (event, activeElements) => { if (activeElements.length > 0) { const dataIndex = activeElements[0].index; const mesSeleccionado = meses[dataIndex]; selectedChartMonth = mesSeleccionado; const monthSelect = document.getElementById('monthFilter'); if (monthSelect) { monthSelect.value = mesSeleccionado; state.mes = mesSeleccionado; } updateTrendChart(); applyGeneralFilters(); showToastSimple(`📅 Filtrado por mes: ${mesSeleccionado.toUpperCase()}`, 'mes'); } }, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { return `${ctx.dataset.label}: ${ctx.parsed.y}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 10 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, callback: function(val, index) { const mes = meses[index].charAt(0).toUpperCase() + meses[index].slice(1); const mesSel = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return index === mesSel ? '👉 ' + mes + ' 👈' : mes; } }, grid: { display: false } } } }
     });
 }
-
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -791,7 +785,6 @@ function applyVCPFilters() {
     updateVCPCharts(f);
     renderVCPTable(f);
 }
-
 function updateVCPCharts(data) {
     let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
@@ -804,7 +797,6 @@ function updateVCPCharts(data) {
     if (vcpTrendChart) vcpTrendChart.destroy();
     vcpTrendChart = new Chart(ctxTrend, { type: 'line', data: { labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)), datasets: [{ label: '🎯 VCP', data: vcpPorMes, borderColor: '#c084fc', backgroundColor: 'rgba(192,132,252,0.05)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#c084fc', pointBorderColor: '#0f1520', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { color: '#cbd5e1', font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let val = ctx.raw; if (val === null) return 'Sin datos'; return `${ctx.dataset.label}: ${val}`; } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(100,100,150,0.2)' }, ticks: { color: '#cbd5e1', stepSize: 5 } }, x: { ticks: { color: '#cbd5e1', font: { size: 9, weight: 'bold' } }, grid: { display: false } } } } });
 }
-
 function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
@@ -815,9 +807,8 @@ function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00f
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
 function setStatusVCP(s,btn){state.vcpEstado=s;updateButtons('vcpStatusButtons',btn,'#c084fc');applyVCPFilters();}
 function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='rgba(20,25,35,0.7)';b.style.color='#b0c4de';});active.classList.add('active');active.style.background=`linear-gradient(95deg, ${color}, ${color}d0)`;active.style.color='#05050a';}
-function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}<td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
+function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
 function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
-
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
@@ -883,7 +874,6 @@ async function checkNewReports(){
         } catch(e) { console.error("Error VCP:", e); }
     } catch(e){ console.error(e); } 
 }
-
 function openModal(r, idx, data) { 
     currentModalData = data; currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
