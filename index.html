@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Minerar 2026 - Panel de Seguridad | Versión FINAL</title>
+    <title>Minerar 2026 - Panel de Seguridad | Sucursales</title>
     
     <!-- Favicons -->
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
@@ -18,7 +18,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
-        /* ========== ESTILOS ORIGINALES COMPLETOS ========== */
+        /* ========== ESTILOS ORIGINALES ========== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
@@ -192,6 +192,41 @@
             background: rgba(0,255,136,0.15);
             transform: translateY(-2px);
         }
+        
+        /* ========== ESTILOS PARA BOTONES DE SUCURSALES ========== */
+        .sucursal-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 13px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            background: rgba(20, 25, 35, 0.7);
+            border: 2px solid rgba(100,100,150,0.4);
+            color: #b0c4de;
+        }
+        .sucursal-btn.active {
+            background: rgba(0,0,0,0.3);
+        }
+        .sucursal-btn:hover {
+            transform: translateY(-2px);
+        }
+        /* Colores específicos para cada sucursal cuando está activa */
+        .btn-malagueno.active {
+            border-color: #00ff88 !important;
+            box-shadow: 0 0 12px rgba(0,255,136,0.4);
+            color: #00ff88;
+        }
+        .btn-lobos.active {
+            border-color: #ff8800 !important;
+            box-shadow: 0 0 12px rgba(255,136,0,0.4);
+            color: #ff8800;
+        }
+        .btn-pampita.active {
+            border-color: #c084fc !important;
+            box-shadow: 0 0 12px rgba(192,132,252,0.4);
+            color: #c084fc;
+        }
     </style>
 </head>
 <body>
@@ -215,7 +250,16 @@
 
     <!-- ACTOS Y CONDICIONES -->
     <div class="glass-card p-5 mb-6">
-        <div class="text-center mb-3"><h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2><p class="text-xs text-slate-400">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p></div>
+        <!-- Título con botones de sucursales -->
+        <div class="text-center mb-3">
+            <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
+                <button id="btnMalagueno" class="sucursal-btn btn-malagueno active">🏔️ MALAGUEÑO</button>
+                <button id="btnLobos" class="sucursal-btn btn-lobos">🐺 LOBOS</button>
+                <button id="btnPampita" class="sucursal-btn btn-pampita">🌸 LA PAMPITA</button>
+            </div>
+            <h2 class="text-lg font-black bg-gradient-to-r from-emerald-400 to-purple-400 bg-clip-text text-transparent">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
+            <p class="text-xs text-slate-400">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+        </div>
         <div class="grid md:grid-cols-3 gap-4 my-4">
             <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-emerald-400">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-emerald-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full"></div></div></div>
             <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-purple-400">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-purple-300 my-1">0</div><div class="flex justify-between text-[11px]"><span>🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-slate-700 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-purple-500 to-purple-400 rounded-full"></div></div></div>
@@ -292,7 +336,7 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE ACTOS/COND (original con efecto rebote) -->
+<!-- MODALES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-emerald-400">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-white">&times;</button></div>
@@ -302,7 +346,6 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE SUPERVISOR (nuevo con efecto rebote) -->
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-emerald-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4">
@@ -316,7 +359,6 @@
     </div>
 </div>
 
-<!-- MODAL DETALLE PERSONA VCP (nuevo con efecto rebote) -->
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-50" style="display:none;">
     <div class="bg-slate-900/95 rounded-2xl p-6 shadow-2xl border border-purple-500/50 modal-content modal-bounce">
         <div class="flex justify-between items-center mb-4">
@@ -332,8 +374,25 @@
 
 <script>
 // ==================== CONSTANTES ====================
-const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
-const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
+// SUCURSAL ACTUAL (por defecto MALAGUEÑO)
+let currentSucursal = 'MALAGUENO';
+
+// URLs para cada sucursal
+// MALAGUEÑO (actual - funcionando)
+const MALAGUENO_ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
+const MALAGUENO_VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
+
+// LOBOS (pendiente - mostrará mensaje)
+const LOBOS_ACTOS_URL = null;
+const LOBOS_VCP_URL = null;
+
+// LA PAMPITA (pendiente - mostrará mensaje)
+const PAMPITA_ACTOS_URL = null;
+const PAMPITA_VCP_URL = null;
+
+// URLs activas según sucursal
+let ACTOS_URL = MALAGUENO_ACTOS_URL;
+let VCP_URL = MALAGUENO_VCP_URL;
 
 const OBJ_ACTOS = 66, OBJ_COND = 44, OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
@@ -341,7 +400,6 @@ let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendCh
 let state = { mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos', vcpCausa: 'todas', supervisor: 'todos', supervisorMes: 'todo' };
 let currentModalIndex = 0, currentModalData = [];
 
-// ========== NOVEDADES DEL DÍA CON RESET AUTOMÁTICO ==========
 let actosNovedades = 0;
 let vcpNovedades = 0;
 let soundEnabled = true;
@@ -379,7 +437,6 @@ function checkAndResetDailyCounters() {
     }
 }
 
-// ==================== SONIDO ====================
 function playNotificationSound() {
     if (!soundEnabled) return;
     try {
@@ -415,7 +472,6 @@ function toggleSound() {
     }
 }
 
-// ==================== FUNCIÓN CORREGIDA - SOLO AÑO 2026 ====================
 function parseFecha(f) { 
     if (!f) return { dia: '', mes: '', valido: false }; 
     let fechaStr = f.toString().split(' ')[0].trim();
@@ -450,7 +506,6 @@ function parseFecha(f) {
     return { dia: '', mes: '', valido: false };
 }
 
-// CATEGORÍAS
 const CATEGORIES_ACTOS = [
     { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp','casco','guantes','lentes','arnés'] },
     { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza','orden','aceite','derrame'] },
@@ -468,6 +523,7 @@ const CATEGORIES_VCP = [
 ];
 
 function classifyData(desc, useVCP = false) { if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0; for (let c of cats) { let s = c.keywords.filter(k => d.includes(k)).length; if (s > max) { max = s; best = c; } } return best; }
+
 function parseCSV(text) { const lines = text.split('\n').filter(l => l.trim()), r = []; for (let i = 1; i < lines.length; i++) { const line = lines[i], cols = []; let cur = '', inq = false; for (let ch of line) { if (ch === '"') inq = !inq; else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; } else cur += ch; } cols.push(cur.trim()); if (cols.length >= 10) r.push(cols); } return r; }
 
 function showToast(tipo, titulo, mensaje, sector, persona, desc) { 
@@ -495,9 +551,59 @@ function actualizarLED(tipo, hayNovedad) {
     } 
 }
 
+// ==================== FUNCIÓN PARA CAMBIAR DE SUCURSAL ====================
+function cambiarSucursal(sucursal) {
+    currentSucursal = sucursal;
+    
+    // Actualizar clases de los botones
+    document.getElementById('btnMalagueno').classList.remove('active');
+    document.getElementById('btnLobos').classList.remove('active');
+    document.getElementById('btnPampita').classList.remove('active');
+    
+    if (sucursal === 'MALAGUENO') {
+        document.getElementById('btnMalagueno').classList.add('active');
+        ACTOS_URL = MALAGUENO_ACTOS_URL;
+        VCP_URL = MALAGUENO_VCP_URL;
+        loadData();
+    } else if (sucursal === 'LOBOS') {
+        document.getElementById('btnLobos').classList.add('active');
+        if (LOBOS_ACTOS_URL === null) {
+            alert('🚧 SUCURSAL LOBOS - EN DESARROLLO 🚧\n\nPróximamente se cargarán sus datos.\nPor ahora, puede ver el diseño y la estructura.');
+            // Mantener datos anteriores visualmente
+        } else {
+            ACTOS_URL = LOBOS_ACTOS_URL;
+            VCP_URL = LOBOS_VCP_URL;
+            loadData();
+        }
+    } else if (sucursal === 'PAMPITA') {
+        document.getElementById('btnPampita').classList.add('active');
+        if (PAMPITA_ACTOS_URL === null) {
+            alert('🚧 SUCURSAL LA PAMPITA - EN DESARROLLO 🚧\n\nPróximamente se cargarán sus datos.\nPor ahora, puede ver el diseño y la estructura.');
+            // Mantener datos anteriores visualmente
+        } else {
+            ACTOS_URL = PAMPITA_ACTOS_URL;
+            VCP_URL = PAMPITA_VCP_URL;
+            loadData();
+        }
+    }
+}
+
 async function loadData() { 
     try { 
         const timestamp = Date.now(); 
+        
+        console.log(`🔄 Cargando datos para sucursal: ${currentSucursal}`);
+        
+        if (!ACTOS_URL || !VCP_URL) {
+            console.log("URLs no disponibles para esta sucursal");
+            // Mostrar datos vacíos pero mantener estructura
+            ACTOS_COND_DATA = [];
+            VCP_DATA = [];
+            document.getElementById('totalActosCond').innerText = '0';
+            document.getElementById('totalVCP').innerText = '0';
+            applyAllFilters();
+            return;
+        }
         
         const res1 = await fetch(ACTOS_URL + '&t=' + timestamp); 
         const rows1 = parseCSV(await res1.text()); 
@@ -544,7 +650,7 @@ async function loadData() {
                 descripcion: desc.trim(), cerrado, mes: fechaParseada.mes, dia: fechaParseada.dia, categoria: cat 
             }); 
         } 
-        console.log(`✅ ACTOS 2026 cargados: ${ACTOS_COND_DATA.length}`); 
+        console.log(`✅ ACTOS 2026 cargados: ${ACTOS_COND_DATA.length} para ${currentSucursal}`); 
         
         const res2 = await fetch(VCP_URL + '&t=' + timestamp); 
         const rows2 = parseCSV(await res2.text()); 
@@ -568,7 +674,7 @@ async function loadData() {
                 comentarios: coment, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat 
             }); 
         } 
-        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length}`); 
+        console.log(`✅ VCP 2026 cargados: ${VCP_DATA.length} para ${currentSucursal}`); 
         
         document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; 
         document.getElementById('totalVCP').innerText = VCP_DATA.length; 
@@ -580,7 +686,6 @@ async function loadData() {
 
 function applyAllFilters() { applyGeneralFilters(); applyVCPFilters(); updateSupervisorCard(); }
 
-// ==================== ACTOS ====================
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
     let actos = f.filter(e => e.tipo === 'acto'), cond = f.filter(e => e.tipo === 'condicion');
@@ -638,7 +743,6 @@ function updateTrendChart() {
     });
 }
 
-// ==================== VCP ====================
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -714,14 +818,7 @@ function clearCausaFilter() { state.causaRaiz = 'todas'; document.getElementById
 function populateSupervisors() { let sups = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; sups.forEach(s=>sel.innerHTML+=`<option value="${s}">👤 ${s}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let sup = document.getElementById('supervisorSelect').value, mes = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(sup==='todos'||e.observador===sup)&&(mes==='todo'||e.mes===mes)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
 function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{ if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1); }); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(name=>sel.innerHTML+=`<option value="${name}">🧑‍🏭 ${name} (${counts.get(name)} VCPs)</option>`); updatePersonVCPStatsOnly(); }
-function updatePersonVCPStatsOnly() { 
-    let person = document.getElementById('vcpPersonFilter').value; 
-    let month = document.getElementById('vcpPersonMonthFilter').value; 
-    let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); 
-    document.getElementById('personVCPCount').innerText = f.length; 
-    if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; 
-    else document.getElementById('personLastVCP').innerText = '-'; 
-}
+function updatePersonVCPStatsOnly() { let person = document.getElementById('vcpPersonFilter').value, month = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(person==='todos'||v.personaObservada===person)&&(month==='todo'||v.mes===month)); document.getElementById('personVCPCount').innerText = f.length; if(f.length) document.getElementById('personLastVCP').innerText = f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes; else document.getElementById('personLastVCP').innerText = '-'; }
 function setSector(s,btn){state.sector=s;updateButtons('sectorButtons',btn,'#00ff88');applyGeneralFilters();}
 function setStatus(s,btn){state.estado=s;updateButtons('statusButtons',btn,'#00ff88');applyGeneralFilters();}
 function setVCPSector(s,btn){state.vcpSector=s;updateButtons('vcpSectorButtons',btn,'#c084fc');applyVCPFilters();}
@@ -730,7 +827,6 @@ function updateButtons(cid,active,color){document.querySelectorAll(`#${cid} .btn
 function renderGeneralTable(data){ let tb=document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-emerald-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-emerald-300">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-emerald-900/60 text-emerald-400':'bg-purple-900/60 text-purple-400'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-emerald-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-900/60 text-emerald-400':'bg-rose-900/60 text-rose-400'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr);}); }
 function renderVCPTable(data){ let tb=document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr=document.createElement('tr');tr.className='border-b border-slate-700/50 hover:bg-purple-950/20 cursor-pointer';tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-purple-300">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-purple-300">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-purple-400">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}</td><td class="p-2"><span class="bg-emerald-900/60 text-emerald-400 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr);}); }
 
-// ==================== REPORTES EN VIVO ====================
 async function checkNewReports(){ 
     try { 
         checkAndResetDailyCounters();
@@ -743,6 +839,11 @@ async function checkNewReports(){
         let fechaFormatoISO = `${anio}-${mes}-${dia}`;
         
         console.log("🔍 Buscando novedades de HOY:", fechaFormatoISO);
+        
+        if (!ACTOS_URL) {
+            console.log("No hay URL activa para ACTOS");
+            return;
+        }
         
         try {
             let ra = await fetch(ACTOS_URL+'&t='+Date.now()); 
@@ -821,6 +922,11 @@ async function checkNewReports(){
             }
         } catch(e) { 
             console.error("Error en ACTOS:", e); 
+        }
+        
+        if (!VCP_URL) {
+            console.log("No hay URL activa para VCP");
+            return;
         }
         
         try {
@@ -906,13 +1012,11 @@ async function checkNewReports(){
     } catch(e){ console.error("Error general en checkNewReports:", e); } 
 }
 
-// ==================== MODALES ====================
 function openModal(r, idx, data) { 
     currentModalData = data; 
     currentModalIndex = idx; 
     let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent'); 
     
-    // Aplicar efecto rebote
     const modalContent = modal.querySelector('.modal-content');
     modalContent.classList.remove('modal-bounce');
     void modalContent.offsetHeight;
@@ -934,7 +1038,6 @@ function goToNextModal(){if(currentModalIndex<currentModalData.length-1){current
 function goToPreviousModal(){if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);}}
 function forceRefreshData(){loadData();}
 
-// ==================== MODAL SUPERVISOR ====================
 function abrirModalSupervisor(tipo) {
     const supervisor = document.getElementById('supervisorSelect').value;
     const mes = document.getElementById('supervisorMonthSelect').value;
@@ -993,7 +1096,7 @@ function abrirModalSupervisor(tipo) {
     });
     
     html += `</tbody>
-              </table>
+             </table>
                 </div>`;
     
     document.getElementById('modalSupervisorTitle').innerHTML = titulo;
@@ -1053,7 +1156,6 @@ function closeSupervisorModal() {
     m.style.display = 'none';
 }
 
-// ==================== MODAL PERSONA VCP (NUEVO) ====================
 function abrirModalPersonaVCP() {
     const persona = document.getElementById('vcpPersonFilter').value;
     const mes = document.getElementById('vcpPersonMonthFilter').value;
@@ -1109,7 +1211,7 @@ function abrirModalPersonaVCP() {
     });
     
     html += `</tbody>
-              </table>
+             </table>
                 </div>`;
     
     document.getElementById('modalPersonaVCPTitle').innerHTML = titulo;
@@ -1176,10 +1278,14 @@ document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>
 document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
 
-// Eventos para los números clickeables
 document.getElementById('actosCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('acto'));
 document.getElementById('condCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('condicion'));
 document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
+
+// Eventos para botones de sucursales
+document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
+document.getElementById('btnLobos')?.addEventListener('click', () => cambiarSucursal('LOBOS'));
+document.getElementById('btnPampita')?.addEventListener('click', () => cambiarSucursal('PAMPITA'));
 
 window.onload = () => {
     loadData();
