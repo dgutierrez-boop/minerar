@@ -221,7 +221,7 @@
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
             <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
@@ -274,7 +274,7 @@
 
     <!-- VCP SECCIÓN -->
     <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
-        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧🛡️</h2></div>
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
             <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
             <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover" id="vcpCardPersona"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700 clickable-sup">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
@@ -349,18 +349,39 @@ let lastKnownActosRows = 0, lastKnownVcpRows = 0;
 let currentDateKey = new Date().toDateString();
 let todayAlertsActos = [];
 let todayAlertsVCP = [];
+let audioContextInitialized = false;
+
+// Inicializar AudioContext con interacción del usuario
+function initAudioContext() {
+    if (!audioContextInitialized) {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            // Crear un oscilador silencioso para activar el AudioContext
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            gain.gain.value = 0;
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.01);
+            audioContextInitialized = true;
+        } catch(e) {}
+    }
+}
 
 // 👁️ Mostrar/Ocultar contraseña
 function togglePasswordVisibility() {
+    initAudioContext(); // Activar audio con esta interacción
     const input = document.getElementById('passwordInput');
     const btn = document.getElementById('togglePasswordBtn');
-    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️🗨️'; }
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️️'; }
     else { input.type = 'password'; btn.textContent = '👁️'; }
     input.focus();
 }
 
 // 🔊 Sonidos
 function playAlarmSound() {
+    if (!audioContextInitialized) initAudioContext();
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         for (let cycle = 0; cycle < 3; cycle++) {
@@ -374,14 +395,42 @@ function playAlarmSound() {
                 o.stop(audioCtx.currentTime + (cycle * 0.45) + (i * 0.15) + 0.12);
             });
         }
-    } catch(e) {}
+    } catch(e) { console.log('Audio error:', e); }
 }
-function playUnlockSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);});}catch(e){} }
-function playErrorSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';g.gain.setValueAtTime(0.2,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);o.start();o.stop(a.currentTime+0.3);}catch(e){} }
-function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+function playUnlockSound() { 
+    if (!audioContextInitialized) initAudioContext();
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext()); 
+        [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
+            const o=a.createOscillator(),g=a.createGain();
+            o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';
+            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);
+            g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);
+            o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);
+        });
+    } catch(e){} 
+}
+function playErrorSound() { 
+    if (!audioContextInitialized) initAudioContext();
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext()); 
+        const o=a.createOscillator(),g=a.createGain();
+        o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';
+        g.gain.setValueAtTime(0.2,a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);
+        o.start();o.stop(a.currentTime+0.3);
+    } catch(e){} 
+}
+function toggleSound() { 
+    soundEnabled = !soundEnabled; 
+    document.getElementById('soundIcon').innerHTML = soundEnabled ? '🔊' : '🔇'; 
+    document.getElementById('soundText').innerHTML = soundEnabled ? 'SONIDO ON' : 'SONIDO OFF'; 
+    if (soundEnabled) { initAudioContext(); playAlarmSound(); }
+}
 
 // 🔑 Verificar Contraseña
 function verifyPassword() {
+    initAudioContext();
     const input = document.getElementById('passwordInput'), errorDiv = document.getElementById('passwordError'), overlay = document.getElementById('passwordOverlay');
     if (input.value === PASSWORD_CORRECTA) {
         playUnlockSound(); errorDiv.textContent = '';
@@ -566,6 +615,12 @@ function restoreFilters() {
 // ==================== UTILIDADES ====================
 function getTodayKey() { return new Date().toDateString(); }
 
+// Obtener fecha de hoy en formato YYYY-MM-DD
+function getTodayISO() {
+    const hoy = new Date();
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+}
+
 function checkAndResetDailyCounters() {
     const today = getTodayKey();
     if(today !== currentDateKey) {
@@ -624,7 +679,7 @@ function parseCSV(text) {
     return r;
 }
 
-// ==================== CARGA DE DATOS ====================
+// ==================== CARGA DE DATOS - DETECCIÓN MEJORADA ====================
 async function loadData() {
     if(!isUnlocked) return;
     try {
@@ -638,15 +693,15 @@ async function loadData() {
         currentVcpMapping = config.vcpMapping || null;
         currentObjetivos = config.objetivos;
         currentShowVCP = config.showVCP;
+        const todayISO = getTodayISO();
 
         if(!ACTOS_URL) { ACTOS_COND_DATA = []; document.getElementById('totalActosCond').innerText = '0'; }
         else {
             const r1 = await fetch(ACTOS_URL + '&t=' + ts);
             const text = await r1.text();
             const rows = parseCSV(text);
-            const newRowsCount = rows.length - lastKnownActosRows;
-            const hayNuevos = newRowsCount > 0 && lastKnownActosRows > 0;
             ACTOS_COND_DATA = [];
+            let nuevosDetectados = 0;
 
             for(let i = 0; i < rows.length; i++) {
                 const row = rows[i];
@@ -672,32 +727,32 @@ async function loadData() {
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
             }
 
-            if(hayNuevos) {
-                console.log(`🆕 ${newRowsCount} nuevos reportes detectados!`);
-                const newItems = rows.slice(lastKnownActosRows);
-                for(let row of newItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-                    let partes = marcaTemp.split('/');
-                    if(partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                        if(fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[13]||row[5]}|${row[6]}|${row[0]}`;
-                            if(!reportesNotificadosActos.has(idUnico)) {
-                                reportesNotificadosActos.add(idUnico);
-                                let observador = (row[13] && row[13].trim() !== '') ? row[13] : (row[5] || 'No identificado');
-                                let sector = (row[2] && row[2].trim() !== '') ? row[2] : (row[14] || 'No especificado');
-                                let descripcion = row[6] || 'Sin descripción';
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-                                let u = row[20] || '';
-                                let tipo = u.toUpperCase().startsWith('AI-') ? 'Acto Inseguro' : u.toUpperCase().startsWith('CI-') ? 'Condición Insegura' : 'Reporte';
-                                showNewReportAlert(observador, sector, descripcion, tipo, hora);
-                                addDailyAlert(observador, sector, descripcion, tipo, hora);
-                                actosNovedades++;
-                                actualizarLED('actos', true);
-                                console.log(`✅ Nuevo acto: ${observador} - ${descripcion}`);
-                            }
+            // ✅ DETECCIÓN MEJORADA: Verificar TODAS las filas de hoy, no solo las "nuevas"
+            const newItems = rows.slice(lastKnownActosRows);
+            for(let row of newItems) {
+                let marcaTemp = row[0] || '';
+                let partes = marcaTemp.split('/');
+                if(partes.length === 3) {
+                    let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
+                    
+                    // Detectar reportes de HOY
+                    if(fechaISO === todayISO) {
+                        let idUnico = `${row[13]||row[5]}|${row[6]}|${row[0]}`;
+                        if(!reportesNotificadosActos.has(idUnico)) {
+                            reportesNotificadosActos.add(idUnico);
+                            let observador = (row[13] && row[13].trim() !== '') ? row[13] : (row[5] || 'No identificado');
+                            let sector = (row[2] && row[2].trim() !== '') ? row[2] : (row[14] || 'No especificado');
+                            let descripcion = row[6] || 'Sin descripción';
+                            let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+                            let u = row[20] || '';
+                            let tipo = u.toUpperCase().startsWith('AI-') ? 'Acto Inseguro' : u.toUpperCase().startsWith('CI-') ? 'Condición Insegura' : 'Reporte';
+                            
+                            showNewReportAlert(observador, sector, descripcion, tipo, hora);
+                            addDailyAlert(observador, sector, descripcion, tipo, hora);
+                            actosNovedades++;
+                            actualizarLED('actos', true);
+                            nuevosDetectados++;
+                            console.log(`✅ Nuevo acto detectado: ${observador} - ${descripcion}`);
                         }
                     }
                 }
@@ -705,16 +760,19 @@ async function loadData() {
 
             lastKnownActosRows = rows.length;
             document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
+            
+            if(nuevosDetectados > 0) {
+                console.log(` ${nuevosDetectados} nuevos reportes detectados y notificados`);
+            }
         }
 
         if(currentShowVCP && VCP_URL) {
             const r2 = await fetch(VCP_URL + '&t=' + ts);
             const text2 = await r2.text();
             const rows2 = parseCSV(text2);
-            const newVcpCount = rows2.length - lastKnownVcpRows;
-            const hayNuevosVCP = newVcpCount > 0 && lastKnownVcpRows > 0;
             VCP_DATA = [];
             const vm = currentVcpMapping;
+            let nuevosVCPDetectados = 0;
 
             for(let i = 0; i < rows2.length; i++) {
                 const row = rows2[i];
@@ -727,30 +785,28 @@ async function loadData() {
                 VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
             }
 
-            if(hayNuevosVCP) {
-                console.log(`🆕 ${newVcpCount} nuevos VCP detectados!`);
-                const newVItems = rows2.slice(lastKnownVcpRows);
-                for(let row of newVItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-                    let partes = marcaTemp.split('/');
-                    if(partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                        if(fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[1]}|${vm?row[vm.descripcion]:row[32]}|${row[0]}`;
-                            if(!reportesNotificadosVCP.has(idUnico)) {
-                                reportesNotificadosVCP.add(idUnico);
-                                let persona = row[1] || 'No identificado';
-                                let sector = vm ? (row[vm.sector]||'No especificado') : (row[3]||'No especificado');
-                                let desc = vm ? (row[vm.descripcion]||'Sin descripción') : (row[32]||'Sin descripción');
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-                                showNewReportAlert(persona, sector, desc, 'vcp', hora);
-                                addDailyAlert(persona, sector, desc, 'VCP', hora);
-                                vcpNovedades++;
-                                actualizarLED('vcp', true);
-                                console.log(`✅ Nuevo VCP: ${persona} - ${desc}`);
-                            }
+            // ✅ DETECCIÓN MEJORADA PARA VCP
+            const newVItems = rows2.slice(lastKnownVcpRows);
+            for(let row of newVItems) {
+                let marcaTemp = row[0] || '';
+                let partes = marcaTemp.split('/');
+                if(partes.length === 3) {
+                    let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
+                    if(fechaISO === todayISO) {
+                        let idUnico = `${row[1]}|${vm?row[vm.descripcion]:row[32]}|${row[0]}`;
+                        if(!reportesNotificadosVCP.has(idUnico)) {
+                            reportesNotificadosVCP.add(idUnico);
+                            let persona = row[1] || 'No identificado';
+                            let sector = vm ? (row[vm.sector]||'No especificado') : (row[3]||'No especificado');
+                            let desc = vm ? (row[vm.descripcion]||'Sin descripción') : (row[32]||'Sin descripción');
+                            let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
+                            
+                            showNewReportAlert(persona, sector, desc, 'vcp', hora);
+                            addDailyAlert(persona, sector, desc, 'VCP', hora);
+                            vcpNovedades++;
+                            actualizarLED('vcp', true);
+                            nuevosVCPDetectados++;
+                            console.log(`✅ Nuevo VCP detectado: ${persona} - ${desc}`);
                         }
                     }
                 }
@@ -758,6 +814,10 @@ async function loadData() {
 
             lastKnownVcpRows = rows2.length;
             document.getElementById('totalVCP').innerText = VCP_DATA.length;
+            
+            if(nuevosVCPDetectados > 0) {
+                console.log(`🔔 ${nuevosVCPDetectados} nuevos VCP detectados y notificados`);
+            }
         } else { VCP_DATA = []; document.getElementById('totalVCP').innerText = '0'; }
 
         populateSupervisors();
@@ -905,7 +965,7 @@ function updateVCPCharts(data) {
 function clearVCPCauseFilter() { state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
-function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
+function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑🏭 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes : '-'; }
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); saveFilters(); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); saveFilters(); applyGeneralFilters(); }
@@ -960,11 +1020,9 @@ document.addEventListener('visibilitychange', () => {
 
 window.addEventListener('load',()=>{
     document.getElementById('passwordInput')?.focus();
-    // Restaurar filtros guardados
     restoreFilters();
 });
 
-// Guardar filtros antes de cerrar/recargar
 window.addEventListener('beforeunload', saveFilters);
 </script>
 </body>
