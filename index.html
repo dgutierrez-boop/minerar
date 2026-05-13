@@ -143,12 +143,10 @@
         <div class="password-lock-icon">🔐</div>
         <h2 class="text-xl font-black text-slate-800 mb-2">ACCESO RESTRINGIDO</h2>
         <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
-        
         <div class="relative w-full">
             <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off">
             <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px; line-height: 1;" title="Mostrar/Ocultar contraseña">👁️</button>
         </div>
-        
         <button onclick="verifyPassword()" class="password-btn w-full mt-2">🔓 DESBLOQUEAR PANEL</button>
         <div id="passwordError" class="password-error"></div>
         <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
@@ -165,7 +163,7 @@
         <p class="welcome-text">"Cada acto preventivo es una vida protegida. En Minerar, tu compromiso diario hace que todos vuelvan a casa sanos y salvos."</p>
         <button id="enterPanelBtn" class="welcome-btn">ACCEDER AL PANEL DE CONTROL ▶️</button>
         <div class="auto-progress"><div class="auto-progress-bar" id="autoProgressBar"></div></div>
-        <p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">4</span>s...</p>
+        <p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">5</span>s...</p>
     </div>
 </div>
 
@@ -195,7 +193,7 @@
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
             <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
@@ -303,10 +301,9 @@ let alertAutoClose = null, alertCountdownInterval = null;
 function togglePasswordVisibility() {
     const input = document.getElementById('passwordInput');
     const btn = document.getElementById('togglePasswordBtn');
-    
     if (input.type === 'password') {
         input.type = 'text';
-        btn.textContent = '👁️‍🗨️';
+        btn.textContent = '👁️🗨️';
     } else {
         input.type = 'password';
         btn.textContent = '👁️';
@@ -333,7 +330,7 @@ function playAlarmSound() {
 }
 function playUnlockSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);});}catch(e){} }
 function playErrorSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';g.gain.setValueAtTime(0.2,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);o.start();o.stop(a.currentTime+0.3);}catch(e){} }
-function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; if(soundEnabled) playAlarmSound(); }
+function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; if(soundEnabled) playAlarmSound(); }
 
 // 🔑 Verificar Contraseña
 function verifyPassword() {
@@ -347,14 +344,17 @@ function verifyPassword() {
     }
 }
 
-// 🌊 Pantalla de Bienvenida
+// 🌊 Pantalla de Bienvenida (5 segundos)
 function showWelcomeScreen() {
     const welcome = document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex';
-    let seconds = 4; const countdownEl = document.getElementById('autoCountdown'); const bar = document.getElementById('autoProgressBar');
+    let seconds = 5;
+    const countdownEl = document.getElementById('autoCountdown');
+    const bar = document.getElementById('autoProgressBar');
     bar.style.width = '0%';
-    progressInterval = setInterval(()=>{ bar.style.width = ((4-seconds)/4*100)+'%'; }, 100);
+    progressInterval = setInterval(()=>{ bar.style.width = ((5-seconds)/5*100)+'%'; }, 100);
     autoCountdownTimer = setInterval(()=>{ seconds--; countdownEl.textContent = seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} }, 1000);
 }
+
 function enterMainPanel() {
     clearInterval(autoCountdownTimer); clearInterval(progressInterval);
     const welcome = document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease';
@@ -362,9 +362,10 @@ function enterMainPanel() {
         welcome.style.display='none'; welcome.classList.add('hidden-section');
         document.getElementById('mainContent').classList.remove('hidden-section');
         isUnlocked = true;
-        loadData();
-        setTimeout(()=>checkNewReports(), 5000);
-        refreshIntervals.push(setInterval(()=>checkNewReports(), 20000));
+        loadData().then(() => { updateBadgesVisibility(); });
+        setTimeout(()=>checkNewReports(), 3000);
+        refreshIntervals.push(setInterval(()=>checkNewReports(), 15000));
+        refreshIntervals.push(setInterval(()=>checkAndResetDailyCounters(), 60000));
     }, 400);
 }
 
@@ -376,17 +377,14 @@ function showNewReportAlert(persona, sector, desc, tipo, hora) {
     alertDismissed = false;
     const alertEl = document.getElementById('newReportAlert');
     const contentEl = document.getElementById('alertContent');
-    
     contentEl.innerHTML = `
         <div class="alert-person">👤 ${persona || 'No identificado'}</div>
         <div class="alert-sector">🏭 ${sector || 'Sector no especificado'}</div>
         <div class="alert-desc">${tipo === 'vcp' ? '🎯' : tipo?.toLowerCase().includes('acto') ? '⚠️' : '🏚️'} <strong>${tipo?.toUpperCase() || 'Reporte'}</strong><br>${desc || 'Sin descripción'}</div>
         <div class="alert-time">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit', second:'2-digit'})}</div>
     `;
-    
     alertEl.classList.add('show');
     playAlarmSound();
-    
     let secs = 15;
     const countdownEl = document.getElementById('alertCountdown');
     countdownEl.textContent = secs;
@@ -416,10 +414,8 @@ function updateDailyAlertsUI() {
     const list = document.getElementById('dailyAlertsList');
     const countEl = document.getElementById('alertCount');
     const btnText = document.getElementById('todayAlertsBtnText');
-    
     countEl.textContent = todayAlerts.length;
     btnText.textContent = `Hoy (${todayAlerts.length})`;
-    
     list.innerHTML = todayAlerts.map(a => `
         <div class="daily-alert-item">
             <div class="flex justify-between items-start">
@@ -431,10 +427,16 @@ function updateDailyAlertsUI() {
             <div class="text-[10px] text-slate-500 mt-1">${(a.desc||'').substring(0,80)}${(a.desc||'').length>80?'...':''}</div>
         </div>
     `).join('');
-    
     if(todayAlerts.length === 0) {
         list.innerHTML = '<div class="text-center text-slate-400 py-4 text-xs">📭 Sin reportes hoy</div>';
     }
+}
+
+function updateBadgesVisibility() {
+    const actosBadge = document.getElementById('actosNovedadBadge');
+    const vcpBadge = document.getElementById('vcpNovedadBadge');
+    if(actosNovedades > 0 && actosBadge) { actosBadge.innerText = actosNovedades; actosBadge.classList.remove('hidden'); }
+    if(vcpNovedades > 0 && vcpBadge) { vcpBadge.innerText = vcpNovedades; vcpBadge.classList.remove('hidden'); }
 }
 
 // ==================== LÓGICA DEL PANEL ====================
@@ -458,8 +460,8 @@ let lastKnownActosRows = 0, lastKnownVcpRows = 0;
 function getTodayKey() { return new Date().toDateString(); }
 let currentDateKey = getTodayKey();
 
-function checkAndResetDailyCounters() { 
-    const today = getTodayKey(); 
+function checkAndResetDailyCounters() {
+    const today = getTodayKey();
     if (today !== currentDateKey) {
         currentDateKey = today;
         todayAlerts = [];
@@ -467,27 +469,34 @@ function checkAndResetDailyCounters() {
         reportesNotificadosVCP.clear();
         lastKnownActosRows = 0;
         lastKnownVcpRows = 0;
+        actosNovedades = 0; vcpNovedades = 0;
         updateDailyAlertsUI();
         const ca = document.getElementById('realTimeReportsActos'), cv = document.getElementById('realTimeReportsVCP');
         if(ca) ca.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Nuevo día - Sin reportes</p>';
         if(cv) cv.innerHTML = '<p class="text-slate-400 text-center py-2">📭 Nuevo día - Sin reportes</p>';
-    } 
+        const ab = document.getElementById('actosNovedadBadge'), vb = document.getElementById('vcpNovedadBadge');
+        if(ab) ab.classList.add('hidden'); if(vb) vb.classList.add('hidden');
+    }
 }
 
 async function loadData() {
     if(!isUnlocked) return;
-    try { 
-        const ts = Date.now(); 
+    try {
+        const ts = Date.now();
         console.log(`🔄 Cargando ${currentSucursal}...`);
-        if(!ACTOS_URL) { ACTOS_COND_DATA = []; document.getElementById('totalActosCond').innerText = '0'; }
-        else {
+
+        // ACTOS Y CONDICIONES
+        if(!ACTOS_URL) {
+            ACTOS_COND_DATA = [];
+            document.getElementById('totalActosCond').innerText = '0';
+        } else {
             const r1 = await fetch(ACTOS_URL + '&t=' + ts);
             const text = await r1.text();
             const rows = parseCSV(text);
+            const newRowsCount = rows.length - lastKnownActosRows;
+            const hayNuevos = newRowsCount > 0 && lastKnownActosRows > 0;
             ACTOS_COND_DATA = [];
-            
-            let newRowsCount = rows.length - lastKnownActosRows;
-            
+
             for(let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const esNueva = currentSucursal === 'MALAGUENO' && i >= 225;
@@ -511,9 +520,11 @@ async function loadData() {
                 const cat = classifyData(desc, false);
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
             }
-            
-            if(newRowsCount > 0 && lastKnownActosRows > 0) {
-                let newItems = rows.slice(lastKnownActosRows);
+
+            // Procesar nuevos reportes
+            if(hayNuevos) {
+                console.log(`🆕 ${newRowsCount} nuevos reportes detectados!`);
+                const newItems = rows.slice(lastKnownActosRows);
                 for(let row of newItems) {
                     let marcaTemp = row[0] || '';
                     let hoy = new Date();
@@ -531,30 +542,32 @@ async function loadData() {
                                 let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
                                 let u = row[20] || '';
                                 let tipo = u.toUpperCase().startsWith('AI-') ? 'Acto Inseguro' : u.toUpperCase().startsWith('CI-') ? 'Condición Insegura' : 'Reporte';
-                                
                                 showNewReportAlert(observador, sector, descripcion, tipo, hora);
                                 addDailyAlert(observador, sector, descripcion, tipo, hora);
                                 actosNovedades++;
                                 actualizarLED('actos', true);
                                 showToast('actos', '🚨 ¡NUEVO REPORTE!', {}, sector, observador, descripcion);
+                                console.log(`✅ Nuevo acto: ${observador} - ${descripcion}`);
                             }
                         }
                     }
                 }
             }
-            
+
             lastKnownActosRows = rows.length;
             document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
         }
-        
+
+        // VCP
         if(currentShowVCP && VCP_URL) {
             const r2 = await fetch(VCP_URL + '&t=' + ts);
             const text2 = await r2.text();
             const rows2 = parseCSV(text2);
+            const newVcpCount = rows2.length - lastKnownVcpRows;
+            const hayNuevosVCP = newVcpCount > 0 && lastKnownVcpRows > 0;
             VCP_DATA = [];
-            let newVcpCount = rows2.length - lastKnownVcpRows;
-            
             const vm = currentVcpMapping;
+
             for(let i = 0; i < rows2.length; i++) {
                 const row = rows2[i];
                 let fr, po, sec, des, com;
@@ -565,9 +578,10 @@ async function loadData() {
                 const cat = classifyData(des, true);
                 VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
             }
-            
-            if(newVcpCount > 0 && lastKnownVcpRows > 0) {
-                let newVItems = rows2.slice(lastKnownVcpRows);
+
+            if(hayNuevosVCP) {
+                console.log(`🆕 ${newVcpCount} nuevos VCP detectados!`);
+                const newVItems = rows2.slice(lastKnownVcpRows);
                 for(let row of newVItems) {
                     let marcaTemp = row[0] || '';
                     let hoy = new Date();
@@ -583,24 +597,33 @@ async function loadData() {
                                 let sector = vm ? (row[vm.sector]||'No especificado') : (row[3]||'No especificado');
                                 let desc = vm ? (row[vm.descripcion]||'Sin descripción') : (row[32]||'Sin descripción');
                                 let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-                                
                                 showNewReportAlert(persona, sector, desc, 'vcp', hora);
                                 addDailyAlert(persona, sector, desc, 'VCP', hora);
                                 vcpNovedades++;
                                 actualizarLED('vcp', true);
                                 showToast('vcp', '🚨 ¡NUEVO VCP!', {}, sector, persona, desc);
+                                console.log(`✅ Nuevo VCP: ${persona} - ${desc}`);
                             }
                         }
                     }
                 }
             }
-            
+
             lastKnownVcpRows = rows2.length;
             document.getElementById('totalVCP').innerText = VCP_DATA.length;
-        } else { VCP_DATA = []; document.getElementById('totalVCP').innerText = '0'; }
-        
-        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters();
-    } catch(e) { console.error(e); }
+        } else {
+            VCP_DATA = [];
+            document.getElementById('totalVCP').innerText = '0';
+        }
+
+        populateSupervisors();
+        populateVCPPeopleFilter();
+        applyAllFilters();
+        updateBadgesVisibility();
+
+    } catch(e) {
+        console.error('Error cargando datos:', e);
+    }
 }
 
 function checkNewReports() {
