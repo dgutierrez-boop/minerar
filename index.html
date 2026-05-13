@@ -67,7 +67,7 @@
         .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 2px solid #fbbf24; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .password-lock-icon { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; display: inline-block; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; letter-spacing: 1px; height: 52px; }
+        .password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; letter-spacing: 1px; height: 52px; padding-right: 50px !important; }
         .password-input:focus { outline: none; border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2); }
         .password-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; height: 52px; }
         .password-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); }
@@ -117,9 +117,7 @@
         @media (max-width: 640px) {
             .password-card { padding: 24px 18px !important; border-radius: 20px !important; }
             .password-lock-icon { font-size: 48px; margin-bottom: 12px; }
-            .password-input { height: 48px; font-size: 15px; padding: 0 50px 0 14px !important; }
-            #togglePasswordBtn { padding: 10px; right: 8px; }
-            #togglePasswordBtn span { font-size: 22px; }
+            .password-input { height: 48px; font-size: 15px; }
             .password-btn { height: 48px; font-size: 15px; padding: 12px !important; }
             .welcome-card { padding: 30px 20px; }
             .welcome-icon { font-size: 44px; }
@@ -147,10 +145,8 @@
         <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
         
         <div class="relative w-full">
-            <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off" style="padding-right: 50px;">
-            <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px; line-height: 1;" title="Mostrar/Ocultar contraseña">
-                👁️
-            </button>
+            <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off">
+            <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px; line-height: 1;" title="Mostrar/Ocultar contraseña">👁️</button>
         </div>
         
         <button onclick="verifyPassword()" class="password-btn w-full mt-2">🔓 DESBLOQUEAR PANEL</button>
@@ -199,18 +195,14 @@
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
             <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative"><div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP 🚧</div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative"><div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP </div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
             <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
-            <button onclick="toggleDailyAlerts()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
-                📋 <span id="todayAlertsBtnText">Hoy (0)</span>
-            </button>
-            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
-                <span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span>
-            </button>
+            <button onclick="toggleDailyAlerts()" class="bg-amber-100 hover:bg-amber-200 text-amber-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">📋 <span id="todayAlertsBtnText">Hoy (0)</span></button>
+            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
         </div>
     </div>
 
@@ -307,11 +299,25 @@ let isUnlocked = false;
 let refreshIntervals = [], autoCountdownTimer = null, progressInterval = null;
 let alertAutoClose = null, alertCountdownInterval = null;
 
+// 👁️ Mostrar/Ocultar contraseña
+function togglePasswordVisibility() {
+    const input = document.getElementById('passwordInput');
+    const btn = document.getElementById('togglePasswordBtn');
+    
+    if (input.type === 'password') {
+        input.type = 'text';
+        btn.textContent = '👁️‍🗨️';
+    } else {
+        input.type = 'password';
+        btn.textContent = '👁️';
+    }
+    input.focus();
+}
+
 // 🔊 Sonidos mejorados
 function playAlarmSound() {
     try {
         const a = new (window.AudioContext || window.webkitAudioContext)();
-        // Sirena de 3 tonos repetidos (más fuerte y notorio)
         for (let cycle = 0; cycle < 3; cycle++) {
             [880, 1046, 1175].forEach((f, i) => {
                 const o = a.createOscillator(), g = a.createGain();
@@ -357,19 +363,10 @@ function enterMainPanel() {
         document.getElementById('mainContent').classList.remove('hidden-section');
         isUnlocked = true;
         loadData();
-        // Primer chequeo a los 5 segundos, luego cada 20 segundos
         setTimeout(()=>checkNewReports(), 5000);
         refreshIntervals.push(setInterval(()=>checkNewReports(), 20000));
     }, 400);
 }
-
-// 👁️ Toggle Contraseña & Enter key
-document.addEventListener('DOMContentLoaded', () => {
-    const toggleBtn = document.getElementById('togglePasswordBtn'), input = document.getElementById('passwordInput'), eye = document.getElementById('eyeIcon');
-    if (toggleBtn) { toggleBtn.addEventListener('click', ()=>{ input.type=input.type==='password'?'text':'password'; eye.textContent=input.type==='password'?'👁️':'👁️‍🗨️'; input.focus(); }); input.addEventListener('keypress', e=>{if(e.key==='Enter')verifyPassword();}); }
-    document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
-    input?.focus();
-});
 
 // 🚨 ALERTA DE NUEVO REPORTE
 let todayAlerts = [];
@@ -390,7 +387,6 @@ function showNewReportAlert(persona, sector, desc, tipo, hora) {
     alertEl.classList.add('show');
     playAlarmSound();
     
-    // Auto-cerrar en 15 segundos
     let secs = 15;
     const countdownEl = document.getElementById('alertCountdown');
     countdownEl.textContent = secs;
@@ -490,7 +486,6 @@ async function loadData() {
             const rows = parseCSV(text);
             ACTOS_COND_DATA = [];
             
-            // Detectar nuevas filas
             let newRowsCount = rows.length - lastKnownActosRows;
             
             for(let i = 0; i < rows.length; i++) {
@@ -517,7 +512,6 @@ async function loadData() {
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
             }
             
-            // Verificar si hay filas nuevas que no se habían notificado
             if(newRowsCount > 0 && lastKnownActosRows > 0) {
                 let newItems = rows.slice(lastKnownActosRows);
                 for(let row of newItems) {
@@ -665,7 +659,7 @@ function updateTrendChart() {
     let aPM = meses.map(m=>df.filter(e=>e.mes===m&&e.tipo==='acto').length), cPM = meses.map(m=>df.filter(e=>e.mes===m&&e.tipo==='condicion').length);
     const ctx = document.getElementById('trendChart').getContext('2d');
     if(trendChart)trendChart.destroy();
-    trendChart = new Chart(ctx, { type:'line', {labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:selectedCausa?`⚠️ ACTOS (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name||'Filtrado'})`:'⚠️ ACTOS',data:aPM,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:6,pointHoverRadius:10,pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#06b6d4';},pointBorderColor:'white',pointBorderWidth:2},{label:selectedCausa?`🏚️ CONDICIONES (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name||'Filtrado'})`:'🏚️ CONDICIONES',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:6,pointHoverRadius:10,pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#f59e0b';},pointBorderColor:'white',pointBorderWidth:2}]}, options:{responsive:true,maintainAspectRatio:true,onClick:(ev,ae)=>{if(ae.length>0){const di=ae[0].index;const ms=meses[di];selectedChartMonth=ms;const m=document.getElementById('monthFilter');if(m){m.value=ms;state.mes=ms;}updateTrendChart();applyGeneralFilters();showToastSimple(`📅 Filtrado: ${ms.toUpperCase()}`);}},plugins:{legend:{position:'top',labels:{font:{size:9,weight:'bold'},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y}`}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:10}},x:{ticks:{font:{size:9}},grid:{display:false}}}} });
+    trendChart = new Chart(ctx, { type:'line', data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:selectedCausa?`⚠️ ACTOS (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name||'Filtrado'})`:'⚠️ ACTOS',data:aPM,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:6,pointHoverRadius:10,pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#06b6d4';},pointBorderColor:'white',pointBorderWidth:2},{label:selectedCausa?`🏚️ CONDICIONES (${CATEGORIES_ACTOS.find(c=>c.id===selectedCausa)?.name||'Filtrado'})`:'🏚️ CONDICIONES',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:6,pointHoverRadius:10,pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#f59e0b';},pointBorderColor:'white',pointBorderWidth:2}]}, options:{responsive:true,maintainAspectRatio:true,onClick:(ev,ae)=>{if(ae.length>0){const di=ae[0].index;const ms=meses[di];selectedChartMonth=ms;const m=document.getElementById('monthFilter');if(m){m.value=ms;state.mes=ms;}updateTrendChart();applyGeneralFilters();showToastSimple(`📅 Filtrado: ${ms.toUpperCase()}`);}},plugins:{legend:{position:'top',labels:{font:{size:9,weight:'bold'},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y}`}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:10}},x:{ticks:{font:{size:9}},grid:{display:false}}}} });
 }
 
 function applyVCPFilters() {
@@ -682,13 +676,13 @@ function updateVCPCharts(data) {
     vcpCategoryChart = new Chart(ctxD, { type:'doughnut', data:{labels:CATEGORIES_VCP.map(c=>`${c.icon} ${c.name}`),datasets:[{data:CATEGORIES_VCP.map(c=>counts[c.id]||0),backgroundColor:CATEGORIES_VCP.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:15}]}, options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:9},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>{let t=ctx.dataset.data.reduce((a,b)=>a+b,0);let p=Math.round((ctx.parsed/t)*100);return `${ctx.label}: ${ctx.parsed} (${p}%)`;}}}},animation:{animateRotate:true}} });
     const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; let vPM = m.map(mes=>data.filter(e=>e.mes===mes).length);
     let ctxT = document.getElementById('vcpTrendChart').getContext('2d'); if(vcpTrendChart)vcpTrendChart.destroy();
-    vcpTrendChart = new Chart(ctxT, { type:'line', {labels:m.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white',pointBorderWidth:2}]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:5}},x:{ticks:{font:{size:9}},grid:{display:false}}}} });
+    vcpTrendChart = new Chart(ctxT, { type:'line', data:{labels:m.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white',pointBorderWidth:2}]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:5}},x:{ticks:{font:{size:9}},grid:{display:false}}}} });
 }
 
 function clearVCPCauseFilter() { state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn').classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
-function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑‍🏭 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
+function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑🏭 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes : '-'; }
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); applyGeneralFilters(); }
@@ -739,6 +733,8 @@ document.getElementById('vcpCardPersona')?.addEventListener('click',()=>abrirMod
 document.getElementById('btnMalagueno')?.addEventListener('click',()=>cambiarSucursal('MALAGUENO'));
 document.getElementById('btnBarker')?.addEventListener('click',()=>cambiarSucursal('BARKER'));
 document.getElementById('btnLaPampita')?.addEventListener('click',()=>cambiarSucursal('LAPAMPITA'));
+document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
+document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
 
 window.addEventListener('load',()=>{document.getElementById('passwordInput')?.focus();});
 </script>
