@@ -715,7 +715,28 @@ function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-fi
 function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
 function renderVCPTable(data) { let tb = document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
 
-function parseFecha(f) { if(!f)return{dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(); let p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'),m=parseInt(p[1]),a=parseInt(p[2]); if(p[2].length===2)a=2000+a; if(m>=1&&m<=12&&a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return{dia,mes:meses[m-1],valido:true}; } } p=s.split('-'); if(p.length>=3) { let a=parseInt(p[0]),m=parseInt(p[1]),d=p[2].padStart(2,'0'); if(m>=1&&m<=12&&a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return{dia,mes:meses[m-1],valido:true}; } } return{dia:'',mes:'',valido:false}; }
+function parseFecha(f) {
+    if(!f) return {dia:'',mes:'',valido:false};
+    let s = f.toString().split(' ')[0].trim();
+    let p = s.split('/');
+    if(p.length>=3) {
+        let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]);
+        if(p[2].length===2) a=2000+a;
+        if(m>=1 && m<=12 && a===2026) {
+            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return {dia: d, mes: meses[m-1], valido: true};
+        }
+    }
+    p = s.split('-');
+    if(p.length>=3) {
+        let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0');
+        if(m>=1 && m<=12 && a===2026) {
+            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return {dia: d, mes: meses[m-1], valido: true};
+        }
+    }
+    return {dia:'',mes:'',valido:false};
+}
 function classifyData(desc,useVCP=false) { if(!desc)return useVCP?CATEGORIES_VCP[0]:CATEGORIES_ACTOS[5]; let d=desc.toLowerCase(),cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS,best=cats[0],max=0; for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best; }
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){const line=lines[i],cols=[];let cur='',inq=false;for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;}cols.push(cur.trim());if(cols.length>=10)r.push(cols);} return r; }
 
