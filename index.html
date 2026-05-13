@@ -145,12 +145,14 @@
         <div class="password-lock-icon">🔐</div>
         <h2 class="text-xl font-black text-slate-800 mb-2">ACCESO RESTRINGIDO</h2>
         <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
+        
         <div class="relative w-full">
-            <input type="password" id="passwordInput" class="password-input pr-12" placeholder="Ingrese contraseña..." autocomplete="off">
-            <button type="button" id="togglePasswordBtn" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-amber-600 transition-colors p-2 rounded focus:outline-none focus:ring-2 focus:ring-amber-400" aria-label="Mostrar/Ocultar contraseña" title="Ver contraseña">
-                <span id="eyeIcon" class="text-xl">👁️</span>
+            <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off" style="padding-right: 50px;">
+            <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px; line-height: 1;" title="Mostrar/Ocultar contraseña">
+                👁️
             </button>
         </div>
+        
         <button onclick="verifyPassword()" class="password-btn w-full mt-2">🔓 DESBLOQUEAR PANEL</button>
         <div id="passwordError" class="password-error"></div>
         <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
