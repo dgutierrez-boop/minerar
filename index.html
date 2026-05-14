@@ -5,108 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Minerar 2026 - Panel de Seguridad | Modo Claro</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-    <meta name="theme-color" content="#fbbf24">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
         body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
+        
+        /* Estilos Generales */
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
         .glass-card:hover { transform: translateY(-3px); border-color: #fbbf24; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15); background: rgba(255, 255, 255, 0.98); }
         .header-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        
+        /* KPIs */
         .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
         .kpi-amber { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
         .kpi-supervisor { border-left: 5px solid #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
+        
+        /* Botones y Filtros */
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left; border: 1px solid #e2e8f0; background: white; color: #475569; }
         .btn-filter.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #2563eb; }
+        .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
+        .sucursal-btn.active { background: #fef3c7; border-color: #f59e0b; color: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+        
+        /* Categorias */
         .category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; position: relative; }
         .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
         .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
-        .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-        .category-card.causa-seleccionada { box-shadow: 0 0 0 3px #f59e0b; background: #fef3c7; border-color: #f59e0b; transform: scale(1.02); }
+        
+        /* Estados */
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
         .status-warn { background: #fef3c7; color: #d97706; border: 1px solid #fed7aa; }
         .status-low { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
+        
+        /* Tablas */
         .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
-        .table-scroll::-webkit-scrollbar { width: 5px; background: #e2e8f0; border-radius: 10px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
+        
+        /* Animaciones */
         @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
         .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
+        
+        /* LED y Sirenas */
         @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
         @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #22c55e; } 50% { opacity: 0.5; box-shadow: 0 0 15px #22c55e; } }
         .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
         .siren-green { width: 14px; height: 14px; background: #22c55e; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #22c55e; display: inline-block; }
-        .report-item { transition: all 0.3s ease; animation: slideIn 0.3s ease-out; background: #f8fafc; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid; }
+        
+        /* Feed de reportes */
+        .report-item { transition: all 0.3s ease; animation: slideIn 0.4s ease-out; background: #f8fafc; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid; }
         @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .logo-shield { width: 60px; height: 60px; background: linear-gradient(135deg, #fff8e7, #fff3d6); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); border: 2px solid #fbbf24; }
-        .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
-        .sucursal-btn.active { background: #fef3c7; border-color: #f59e0b; color: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-        .sucursal-btn:hover { transform: translateY(-2px); border-color: #fbbf24; }
-        .sucursal-icon { width: 20px; height: 20px; object-fit: contain; }
-        .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
-        .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 8px currentColor; }
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } .header-container h1 { font-size: 18px; } .glass-card { padding: 16px 14px; } .table-scroll { max-height: 300px; } .chart-container { height: 220px; } body { padding: 10px; font-size: 13px; } }
-
-        /* 🔐 PANTALLA DE ACCESO */
-        #passwordOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.3s ease-out; padding: 20px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 2px solid #fbbf24; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        
+        /* Login y Bienvenida */
+        .watermark { position: fixed; bottom: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.12); z-index: 10001; pointer-events: none; user-select: none; letter-spacing: 1.5px; }
+        #passwordOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 20px; }
+        .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); border: 2px solid #fbbf24; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
         .password-lock-icon { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; display: inline-block; }
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
         .password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; letter-spacing: 1px; height: 52px; padding-right: 50px !important; }
         .password-input:focus { outline: none; border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2); }
         .password-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; height: 52px; }
         .password-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); }
-        .password-btn:active { transform: translateY(0); }
         .password-error { color: #ef4444; font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 20px; animation: shake 0.3s ease-in-out; }
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .password-hint { font-size: 11px; color: #64748b; margin-top: 20px; padding-top: 16px; border-top: 1px dashed #e2e8f0; }
-        .unlock-success { color: #22c55e; font-size: 48px; animation: bounceIn 0.5s ease-out; }
-        @keyframes bounceIn { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-        /* 🌊 BIENVENIDA */
+        
         #welcomeOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #451a03 100%); display: flex; align-items: center; justify-content: center; z-index: 9998; transition: opacity 0.4s ease; }
-        .welcome-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 480px; text-align: center; border: 1px solid rgba(251,191,36,0.3); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: modalBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
+        .welcome-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 480px; text-align: center; border: 1px solid rgba(251,191,36,0.3); box-shadow: 0 25px 50px rgba(0,0,0,0.5); animation: modalBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
         .welcome-icon { font-size: 56px; margin-bottom: 16px; animation: pulse 3s infinite; }
         .welcome-title { color: white; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
         .welcome-divider { width: 80px; height: 4px; background: #f59e0b; margin: 16px auto; border-radius: 2px; }
         .welcome-slogan { color: #fbbf24; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
         .welcome-text { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
         .welcome-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-        .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.4); }
         .auto-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 16px; overflow: hidden; }
         .auto-progress-bar { height: 100%; width: 0%; background: #fbbf24; border-radius: 2px; transition: width 0.1s linear; }
-
-        /* 🚨 ALERTA EN PANTALLA COMPLETA */
+        
+        /* Alerta Emergente */
         #newReportAlert { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #newReportAlert.show { opacity: 1; pointer-events: all; }
         .alert-card { background: white; border-radius: 28px; padding: 32px 24px; width: 90%; max-width: 520px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f59e0b; animation: alertBounce 0.5s cubic-bezier(0.34,1.56,0.64,1); }
         @keyframes alertBounce { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
         .alert-icon { font-size: 64px; animation: sirenPulse 1s infinite; }
         @keyframes sirenPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #f59e0b); } 50% { transform: scale(1.15); filter: drop-shadow(0 0 20px #ef4444); } }
-        .alert-title { font-size: 22px; font-weight: 900; color: #dc2626; margin: 12px 0 4px; }
-        .alert-person { font-size: 26px; font-weight: 800; color: #1e293b; margin: 8px 0; }
-        .alert-sector { font-size: 16px; color: #6366f1; font-weight: 700; margin-bottom: 8px; }
-        .alert-desc { font-size: 14px; color: #475569; background: #f8fafc; padding: 12px; border-radius: 12px; margin: 12px 0; line-height: 1.5; border-left: 4px solid #fbbf24; }
-        .alert-time { font-size: 13px; color: #94a3b8; }
         .alert-dismiss { margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .alert-dismiss:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
-
-        /* 📊 Badges pulsantes */
+        
+        /* Badges Pulsantes */
         .pulse-badge {
             position: fixed;
             width: 45px;
@@ -134,34 +122,19 @@
             background: linear-gradient(135deg, #f59e0b, #d97706);
             animation: pulseBadgeAmber 2s infinite;
         }
-        @keyframes pulseBadgeCyan {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); }
-            50% { transform: scale(1.15); box-shadow: 0 0 30px rgba(6, 182, 212, 0.9); }
-        }
-        @keyframes pulseBadgeAmber {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); }
-            50% { transform: scale(1.15); box-shadow: 0 0 30px rgba(245, 158, 11, 0.9); }
-        }
-
-        /* 🖋️ MARCA DE AGUA */
-        .watermark { position: fixed; bottom: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.12); z-index: 10001; pointer-events: none; user-select: none; letter-spacing: 1.5px; }
-        @media (max-width: 640px) {
-            .password-card { padding: 24px 18px !important; border-radius: 20px !important; }
-            .password-lock-icon { font-size: 48px; margin-bottom: 12px; }
-            .password-input { height: 48px; font-size: 15px; }
-            .password-btn { height: 48px; font-size: 15px; padding: 12px !important; }
-            .welcome-card { padding: 30px 20px; }
-            .welcome-icon { font-size: 44px; }
-            .welcome-title { font-size: 22px; }
-            .welcome-slogan { font-size: 16px; }
-            .welcome-text { font-size: 13px; }
-            .alert-card { padding: 24px 16px; }
-            .alert-person { font-size: 22px; }
+        @keyframes pulseBadgeCyan { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(6, 182, 212, 0.6); } 50% { transform: scale(1.15); box-shadow: 0 0 30px rgba(6, 182, 212, 0.9); } }
+        @keyframes pulseBadgeAmber { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(245, 158, 11, 0.6); } 50% { transform: scale(1.15); box-shadow: 0 0 30px rgba(245, 158, 11, 0.9); } }
+        
+        @media (max-width: 768px) { 
+            .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } 
+            .header-container h1 { font-size: 18px; } 
+            .glass-card { padding: 16px 14px; } 
+            .table-scroll { max-height: 300px; } 
+            .chart-container { height: 220px; } 
+            body { padding: 10px; font-size: 13px; }
             .pulse-badge { width: 40px; height: 40px; font-size: 14px; top: 15px; }
             .pulse-badge-actos { right: 150px; }
-            .watermark { font-size: 9px; bottom: 8px; right: 10px; }
         }
-        @media (max-width: 380px) { .password-card { padding: 20px 14px !important; width: 96% !important; } .password-lock-icon { font-size: 40px; } }
     </style>
 </head>
 <body>
@@ -192,7 +165,7 @@
 <!-- 🌊 PANTALLA DE BIENVENIDA -->
 <div id="welcomeOverlay" class="hidden-section">
     <div class="welcome-card">
-        <div class="welcome-icon">👷‍️⛑️️</div>
+        <div class="welcome-icon">👷‍️️️</div>
         <h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
         <div class="welcome-divider"></div>
         <p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
@@ -219,7 +192,7 @@
 <div class="max-w-7xl mx-auto">
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
-            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
+            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" style="width:60px;height:60px;object-fit:contain;"></div>
             <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
@@ -234,9 +207,9 @@
     <div class="glass-card p-6 mb-6">
         <div class="text-center mb-4">
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnMalagueno" class="sucursal-btn active" onclick="cambiarSucursal('MALAGUENO')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER</button>
-                <button id="btnLaPampita" class="sucursal-btn" onclick="cambiarSucursal('LAPAMPITA')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA</button>
+                <button id="btnMalagueno" class="sucursal-btn active" onclick="cambiarSucursal('MALAGUENO')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon" style="width:20px;height:20px;"> MALAGUEÑO</button>
+                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon" style="width:20px;height:20px;"> BARKER</button>
+                <button id="btnLaPampita" class="sucursal-btn" onclick="cambiarSucursal('LAPAMPITA')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon" style="width:20px;height:20px;"> LA PAMPITA</button>
             </div>
             <h2 id="objetivosTitulo" class="text-xl font-black text-slate-800">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
             <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
@@ -280,7 +253,7 @@
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
-                <!-- ✅ REPORTES VCP EN VIVO - AHORA AQUÍ EN LA SECCIÓN CORRECTA -->
+                <!-- ✅ REPORTES VCP EN VIVO -->
                 <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200">
                     <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-amber-700">📢 VCP EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div>
                     <div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
@@ -324,12 +297,9 @@
 </div>
 
 <script>
-// ==================== CONFIGURACIÓN DE CONTRASEÑA ====================
+// ==================== CONFIGURACIÓN ====================
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
 let isUnlocked = false;
-let refreshIntervals = [], autoCountdownTimer = null, progressInterval = null;
-let alertCountdownInterval = null;
-let soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
 let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
 const SUCURSALES_CONFIG = {
@@ -360,17 +330,15 @@ function initAudioContext() {
     }
 }
 
-// 👁️ Mostrar/Ocultar contraseña
 function togglePasswordVisibility() {
     initAudioContext();
     const input = document.getElementById('passwordInput');
     const btn = document.getElementById('togglePasswordBtn');
-    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️🗨️'; }
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️️'; }
     else { input.type = 'password'; btn.textContent = '👁️'; }
     input.focus();
 }
 
-// 🔊 Sonidos
 function playAlarmSound() {
     if (!audioContextInitialized) initAudioContext();
     try {
@@ -388,11 +356,36 @@ function playAlarmSound() {
         }
     } catch(e) {}
 }
-function playUnlockSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);});}catch(e){} }
-function playErrorSound() { try { const a=new(window.AudioContext||window.webkitAudioContext)(); const o=a.createOscillator(),g=a.createGain();o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';g.gain.setValueAtTime(0.2,a.currentTime);g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);o.start();o.stop(a.currentTime+0.3);}catch(e){} }
-function toggleSound() { soundEnabled = !soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+function playUnlockSound() { 
+    if (!audioContextInitialized) initAudioContext();
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext()); 
+        [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
+            const o=a.createOscillator(),g=a.createGain();
+            o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';
+            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);
+            g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);
+            o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);
+        });
+    } catch(e){} 
+}
+function playErrorSound() { 
+    if (!audioContextInitialized) initAudioContext();
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext()); 
+        const o=a.createOscillator(),g=a.createGain();
+        o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';
+        g.gain.setValueAtTime(0.2,a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);
+        o.start();o.stop(a.currentTime+0.3);
+    } catch(e){} 
+}
+function toggleSound() { 
+    soundEnabled = !soundEnabled; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
+    document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
+}
 
-// 🔑 Verificar Contraseña
 function verifyPassword() {
     initAudioContext();
     const input = document.getElementById('passwordInput'), errorDiv = document.getElementById('passwordError'), overlay = document.getElementById('passwordOverlay');
@@ -405,7 +398,6 @@ function verifyPassword() {
     }
 }
 
-// 🌊 Bienvenida (5 segundos)
 function showWelcomeScreen() {
     const welcome = document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex';
     let seconds = 5;
@@ -424,14 +416,12 @@ function enterMainPanel() {
         document.getElementById('mainContent').classList.remove('hidden-section');
         isUnlocked = true;
         loadData().then(() => { updatePulseBadges(); });
-        // Auto-refresh cada 15 segundos
         setInterval(() => {
             checkNewReports();
         }, 15000);
     }, 400);
 }
 
-// 🚨 ALERTA DE NUEVO REPORTE
 function showNewReportAlert(persona, sector, desc, tipo, hora) {
     const alertEl = document.getElementById('newReportAlert');
     const contentEl = document.getElementById('alertContent');
@@ -448,6 +438,7 @@ function showNewReportAlert(persona, sector, desc, tipo, hora) {
     alertCountdownInterval = setInterval(()=>{ secs--; document.getElementById('alertCountdown').textContent = secs; if(secs <= 0) dismissAlert(); }, 1000);
 }
 function dismissAlert() { clearInterval(alertCountdownInterval); document.getElementById('newReportAlert').classList.remove('show'); }
+
 function toggleActosAlerts() {
     const count = todayAlertsActos.length;
     if (count === 0) { alert('📋 REPORTES DE ACTOS HOY\n\n📭 Sin reportes hoy'); return; }
@@ -474,18 +465,21 @@ function updatePulseBadges() {
     const badgeActos = document.getElementById('pulseBadgeActos');
     const badgeVCP = document.getElementById('pulseBadgeVCP');
     
-    if (todayAlertsActos.length > 0) {
-        badgeActos.textContent = todayAlertsActos.length;
-        badgeActos.classList.remove('hidden-section');
-    } else {
-        badgeActos.classList.add('hidden-section');
+    if (badgeActos) {
+        if (todayAlertsActos.length > 0) {
+            badgeActos.textContent = todayAlertsActos.length;
+            badgeActos.classList.remove('hidden-section');
+        } else {
+            badgeActos.classList.add('hidden-section');
+        }
     }
-    
-    if (todayAlertsVCP.length > 0) {
-        badgeVCP.textContent = todayAlertsVCP.length;
-        badgeVCP.classList.remove('hidden-section');
-    } else {
-        badgeVCP.classList.add('hidden-section');
+    if (badgeVCP) {
+        if (todayAlertsVCP.length > 0) {
+            badgeVCP.textContent = todayAlertsVCP.length;
+            badgeVCP.classList.remove('hidden-section');
+        } else {
+            badgeVCP.classList.add('hidden-section');
+        }
     }
 }
 
@@ -506,10 +500,10 @@ function updateRealTimeUI() {
         else vcpLed.className = 'siren-red';
     }
     
-    // ✅ REPORTES DE ACTOS
+    // ACTOS FEED
     if(todayAlertsActos.length > 0) {
         actosContainer.innerHTML = todayAlertsActos.map(a => `
-            <div class="report-item" style="border-left-color:#10b981;">
+            <div class="report-item feed-item" style="border-left-color:#10b981;">
                 <div class="flex justify-between items-start">
                     <span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span>
                     <span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto') ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span>
@@ -523,10 +517,10 @@ function updateRealTimeUI() {
         actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>';
     }
     
-    // ✅ REPORTES DE VCP (AHORA EN SU SECCIÓN CORRECTA)
+    // VCP FEED
     if(todayAlertsVCP.length > 0) {
         vcpContainer.innerHTML = todayAlertsVCP.map(a => `
-            <div class="report-item" style="border-left-color:#f59e0b;">
+            <div class="report-item feed-item" style="border-left-color:#f59e0b;">
                 <div class="flex justify-between items-start">
                     <span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span>
                     <span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span>
@@ -540,9 +534,6 @@ function updateRealTimeUI() {
         vcpContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>';
     }
 }
-
-// ==================== UTILIDADES ====================
-function getTodayKey() { return new Date().toDateString(); }
 
 function checkAndResetDailyCounters() {
     const today = getTodayKey();
@@ -602,7 +593,6 @@ function parseCSV(text) {
     return r;
 }
 
-// ==================== CARGA DE DATOS ====================
 async function loadData() {
     if(!isUnlocked) return;
     try {
@@ -616,20 +606,29 @@ async function loadData() {
         currentVcpMapping = config.vcpMapping || null;
         currentObjetivos = config.objetivos;
         currentShowVCP = config.showVCP;
+        
+        const hoy = new Date();
+        const todayISO = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+        
+        // Recargar feeds para mostrar todo lo de hoy
+        todayAlertsActos = [];
+        todayAlertsVCP = [];
 
-        if(!ACTOS_URL) { ACTOS_COND_DATA = []; document.getElementById('totalActosCond').innerText = '0'; }
-        else {
+        if(!ACTOS_URL) { 
+            ACTOS_COND_DATA = []; 
+            document.getElementById('totalActosCond').innerText = '0'; 
+        } else {
             const r1 = await fetch(ACTOS_URL + '&t=' + ts);
             const text = await r1.text();
             const rows = parseCSV(text);
-            const newRowsCount = rows.length - lastKnownActosRows;
-            const hayNuevos = newRowsCount > 0 && lastKnownActosRows > 0;
             ACTOS_COND_DATA = [];
+            let nuevosDetectados = 0;
 
             for(let i = 0; i < rows.length; i++) {
                 const row = rows[i];
                 const esNueva = currentSucursal === 'MALAGUENO' && i >= 225;
                 let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
+                
                 if(esNueva) {
                     const u = row[20] || '';
                     if(u.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = u.replace(/^AI-\s*/i, '').trim(); }
@@ -640,43 +639,35 @@ async function loadData() {
                     if(row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
                     fecha = row[currentMapping.fecha] || ''; tipoRaw = row[currentMapping.tipo] || ''; sector = row[currentMapping.sector] || ''; observador = row[currentMapping.observador] || ''; desc = row[currentMapping.descripcion] || ''; cerradoRaw = row[currentMapping.cerrado] || '';
                 }
+                
                 const fd = parseFecha(fecha);
                 if(!fd.valido) continue;
+                
                 let tipo = 'otro';
                 if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
                 else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
+                
                 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
                 const cat = classifyData(desc, false);
+                
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
-            }
-
-            if(hayNuevos) {
-                console.log(`🆕 ${newRowsCount} nuevos reportes detectados!`);
-                const newItems = rows.slice(lastKnownActosRows);
-                for(let row of newItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-                    let partes = marcaTemp.split('/');
-                    if(partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                        if(fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[13]||row[5]}|${row[6]}|${row[0]}`;
-                            if(!reportesNotificadosActos.has(idUnico)) {
-                                reportesNotificadosActos.add(idUnico);
-                                let observador = (row[13] && row[13].trim() !== '') ? row[13] : (row[5] || 'No identificado');
-                                let sector = (row[2] && row[2].trim() !== '') ? row[2] : (row[14] || 'No especificado');
-                                let descripcion = row[6] || 'Sin descripción';
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-                                let u = row[20] || '';
-                                let tipo = u.toUpperCase().startsWith('AI-') ? 'Acto Inseguro' : u.toUpperCase().startsWith('CI-') ? 'Condición Insegura' : 'Reporte';
-                                showNewReportAlert(observador, sector, descripcion, tipo, hora);
-                                addDailyAlert(observador, sector, descripcion, tipo, hora);
-                                actosNovedades++;
-                                actualizarLED('actos', true);
-                                console.log(`✅ Nuevo acto: ${observador} - ${descripcion}`);
-                            }
-                        }
+                
+                // ✅ DETECTAR REPORTES DE HOY Y AGREGARLOS AL FEED
+                const fechaISO = `${fd.valido ? fechaRaw.split('/')[2] : ''}-${fd.valido ? fechaRaw.split('/')[1].padStart(2,'0') : ''}-${fd.valido ? fechaRaw.split('/')[0].padStart(2,'0') : ''}`;
+                if(fechaISO === todayISO) {
+                    const idUnico = `${observador}|${desc}|${fecha}`;
+                    if(!reportesNotificadosActos.has(idUnico)) {
+                        reportesNotificadosActos.add(idUnico);
+                        const hora = fechaRaw.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+                        todayAlertsActos.unshift({
+                            persona: observador,
+                            tipo: tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND',
+                            descripcion: desc,
+                            sector: sector,
+                            hora: hora,
+                            timestamp: Date.now()
+                        });
+                        nuevosDetectados++;
                     }
                 }
             }
@@ -689,10 +680,9 @@ async function loadData() {
             const r2 = await fetch(VCP_URL + '&t=' + ts);
             const text2 = await r2.text();
             const rows2 = parseCSV(text2);
-            const newVcpCount = rows2.length - lastKnownVcpRows;
-            const hayNuevosVCP = newVcpCount > 0 && lastKnownVcpRows > 0;
             VCP_DATA = [];
             const vm = currentVcpMapping;
+            let nuevosVCPDetectados = 0;
 
             for(let i = 0; i < rows2.length; i++) {
                 const row = rows2[i];
@@ -703,33 +693,23 @@ async function loadData() {
                 if(!fd.valido || !po) continue;
                 const cat = classifyData(des, true);
                 VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
-            }
-
-            if(hayNuevosVCP) {
-                console.log(`🆕 ${newVcpCount} nuevos VCP detectados!`);
-                const newVItems = rows2.slice(lastKnownVcpRows);
-                for(let row of newVItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth()+1).padStart(2,'0')}-${String(hoy.getDate()).padStart(2,'0')}`;
-                    let partes = marcaTemp.split('/');
-                    if(partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
-                        if(fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[1]}|${vm?row[vm.descripcion]:row[32]}|${row[0]}`;
-                            if(!reportesNotificadosVCP.has(idUnico)) {
-                                reportesNotificadosVCP.add(idUnico);
-                                let persona = row[1] || 'No identificado';
-                                let sector = vm ? (row[vm.sector]||'No especificado') : (row[3]||'No especificado');
-                                let desc = vm ? (row[vm.descripcion]||'Sin descripción') : (row[32]||'Sin descripción');
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
-                                showNewReportAlert(persona, sector, desc, 'vcp', hora);
-                                addDailyAlert(persona, sector, desc, 'VCP', hora);
-                                vcpNovedades++;
-                                actualizarLED('vcp', true);
-                                console.log(`✅ Nuevo VCP: ${persona} - ${desc}`);
-                            }
-                        }
+                
+                // ✅ DETECTAR VCP DE HOY
+                const fechaISO = `${fd.valido ? fr.split('/')[2] : ''}-${fd.valido ? fr.split('/')[1].padStart(2,'0') : ''}-${fd.valido ? fr.split('/')[0].padStart(2,'0') : ''}`;
+                if(fechaISO === todayISO) {
+                    const idUnico = `${po}|${des}|${fr}`;
+                    if(!reportesNotificadosVCP.has(idUnico)) {
+                        reportesNotificadosVCP.add(idUnico);
+                        const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+                        todayAlertsVCP.unshift({
+                            persona: po,
+                            tipo: '🎯 VCP',
+                            descripcion: des,
+                            sector: sec,
+                            hora: hora,
+                            timestamp: Date.now()
+                        });
+                        nuevosVCPDetectados++;
                     }
                 }
             }
@@ -741,6 +721,8 @@ async function loadData() {
         populateSupervisors();
         populateVCPPeopleFilter();
         applyAllFilters();
+        updatePulseBadges();
+        updateRealTimeUI();
 
     } catch(e) {
         console.error('Error cargando datos:', e);
@@ -755,7 +737,6 @@ function checkNewReports() {
 
 function forceRefreshData() { if(isUnlocked) loadData(); }
 
-// ==================== APLICAR FILTROS ====================
 function applyAllFilters() {
     applyGeneralFilters();
     if(currentShowVCP) applyVCPFilters();
@@ -852,7 +833,7 @@ function updateVCPCharts(data) {
 function clearVCPCauseFilter() { state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
-function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑🏭 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
+function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes : '-'; }
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); applyGeneralFilters(); }
@@ -870,7 +851,6 @@ function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto')
 function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null;selectedChartMonth=null;state.causaRaiz='todas';state.mes='todo'; const m=document.getElementById('monthFilter');if(m)m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('causa-seleccionada')); const cb=document.getElementById('clearCausaBtn');if(cb)cb.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ACTOS_URL=c.actosUrl;VCP_URL=c.vcpUrl;currentMapping=c.mapping;currentVcpMapping=c.vcpMapping||null;currentObjetivos=c.objetivos;currentShowVCP=c.showVCP;actualizarObjetivosUI();toggleVCPVisibility(currentShowVCP);} document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked)loadData(); }
 
-// ==================== MODALES ====================
 function openModal(r,idx,data) { if(!isUnlocked)return; currentModalData=data;currentModalIndex=idx; let modal=document.getElementById('reportDetailModal'),content=document.getElementById('reportModalContent'); modal.querySelector('.modal-bounce').style.animation='none';modal.querySelector('.modal-bounce').offsetHeight;modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; if(r.tipo==='vcp'){content.innerHTML=`<div class="space-y-2"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-600">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-600">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;} else {content.innerHTML=`<div class="space-y-2"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-cyan-600">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-cyan-600">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`;} modal.classList.remove('hidden-section');modal.style.display='flex';updateNavButtons(); }
 function closeReportModal() { let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none'; }
 function updateNavButtons() { let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`; }
@@ -882,7 +862,6 @@ function closeSupervisorModal() { let m=document.getElementById('supervisorDetai
 function abrirModalPersonaVCP() { if(!isUnlocked)return; let p=document.getElementById('vcpPersonFilter').value,m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("⚠️ Seleccione una persona");return;} let nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1),f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p} en ${nm}.`);return;} let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; f.forEach(e=>{let dc=e.descripcion.length>50?e.descripcion.substring(0,50)+'...':e.descripcion,cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;}); html+=`</tbody></table></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none';mod.querySelector('.modal-bounce').offsetHeight;mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section');mod.style.display='flex'; }
 function closePersonaVCPModal() { let m=document.getElementById('personaVCPModal');m.classList.add('hidden-section');m.style.display='none'; }
 
-// Event listeners
 document.getElementById('monthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.mes=e.target.value;selectedChartMonth=null;applyGeneralFilters();updateTrendChart();}});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.vcpMes=e.target.value;applyVCPFilters();}});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>{if(isUnlocked)updateSupervisorCard();});
@@ -898,7 +877,6 @@ document.getElementById('btnLaPampita')?.addEventListener('click',()=>cambiarSuc
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
 document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
 
-// Detectar cuando vuelve a la pestaña para verificar nuevos reportes
 document.addEventListener('visibilitychange', () => {
     if (!document.hidden && isUnlocked) {
         checkNewReports();
