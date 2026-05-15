@@ -301,24 +301,25 @@ let alertCountdownInterval = null;
 let soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
 let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
+
+// ✅ URLs ACTUALIZADAS CON LOS NUEVOS APPS SCRIPTS
 const SUCURSALES_CONFIG = {
     MALAGUENO: { 
-        actosUrl: 'https://script.google.com/a/macros/minerar.com.ar/s/AKfycbyp1jQ8Ji72XTVvnNusq52KFFYBSmLn69-Byp2JwMtfSV_cCBzSmSiHks5vGXwspca_/exec?key=' + APPS_SCRIPT_KEY, 
-        vcpUrl: 'https://script.google.com/a/macros/minerar.com.ar/s/AKfycbywnesvuaKqhczA9YLAMNHApuVPJhiGt_cXE3uGI59E_VZV_Qw3y8_OQgNd3oEYjvW0Uw/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbwzF3Lu9HaRsTanpCbFVdjfeUNoFXq-YnVCEpATFLvzIWdEoTHv3wIqA6FWYE6fsLNQ/exec?key=' + APPS_SCRIPT_KEY, 
+        vcpUrl: 'https://script.google.com/macros/s/AKfycbwchNhR5YUSXabaUgqEOSgwagY_3DTLKowOe-4gXU-fKP2aZojxjlzSF9X3d87NQhjMmA/exec?key=' + APPS_SCRIPT_KEY, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:66,cond:44}, 
         showVCP:true 
     },
     BARKER: { 
-        actosUrl: 'https://script.google.com/a/macros/minerar.com.ar/s/AKfycbwLIGFC4uP_R94ag12uEj76ER3Shju8fuBUlEf1e0O0LBM4imk9thurugdnwwdpttj9/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbxdonMRaPa3La6eTsu32ujIkBHqCbNCcCvDuONbXx-XvsBg1jn5Z374j73-WpmyiyVE/exec?key=' + APPS_SCRIPT_KEY, 
         vcpUrl:null, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:6,cond:4}, 
         showVCP:false 
     },
     LAPAMPITA: { 
-        // ✅ URL ACTUALIZADA CON EL ÚLTIMO APPS SCRIPT
-        actosUrl: 'https://script.google.com/a/macros/minerar.com.ar/s/AKfycbyLOIUKQ4H1iKlBomzed0YCJ_x_5iyVH0YVcE0R5uU51jamd1G2o00q_c9Kxy7vc9XEfw/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbzr4GgogtWawCrA_RIDeWphbjPcGjAUa6ykc0jcTpzan1awrhe2bXXgfz_s2g_yLuCbQA/exec?key=' + APPS_SCRIPT_KEY, 
         vcpUrl:null, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:66,cond:44}, 
