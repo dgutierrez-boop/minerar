@@ -53,7 +53,6 @@
         .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
         .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 8px currentColor; }
         @media (max-width: 768px) { .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } .header-container h1 { font-size: 18px; } .glass-card { padding: 16px 14px; } .table-scroll { max-height: 300px; } .chart-container { height: 220px; } body { padding: 10px; font-size: 13px; } }
-
         #passwordOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.3s ease-out; padding: 20px; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 2px solid #fbbf24; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
@@ -69,7 +68,6 @@
         .password-hint { font-size: 11px; color: #64748b; margin-top: 20px; padding-top: 16px; border-top: 1px dashed #e2e8f0; }
         .unlock-success { color: #22c55e; font-size: 48px; animation: bounceIn 0.5s ease-out; }
         @keyframes bounceIn { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
         #welcomeOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #451a03 100%); display: flex; align-items: center; justify-content: center; z-index: 9998; transition: opacity 0.4s ease; }
         .welcome-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 480px; text-align: center; border: 1px solid rgba(251,191,36,0.3); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: modalBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
         .welcome-icon { font-size: 56px; margin-bottom: 16px; animation: pulse 3s infinite; }
@@ -81,7 +79,6 @@
         .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.4); }
         .auto-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 16px; overflow: hidden; }
         .auto-progress-bar { height: 100%; width: 0%; background: #fbbf24; border-radius: 2px; transition: width 0.1s linear; }
-
         #newReportAlert { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
         #newReportAlert.show { opacity: 1; pointer-events: all; }
         .alert-card { background: white; border-radius: 28px; padding: 32px 24px; width: 90%; max-width: 520px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f59e0b; animation: alertBounce 0.5s cubic-bezier(0.34,1.56,0.64,1); }
@@ -95,17 +92,14 @@
         .alert-time { font-size: 13px; color: #94a3b8; }
         .alert-dismiss { margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
         .alert-dismiss:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
-
         .pulse-badge { position: fixed; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 900; color: white; z-index: 9997; cursor: pointer; }
         .pulse-badge-actos { top: 14px; right: 100px; background: #06b6d4; animation: pulseCyan 2s infinite; box-shadow: 0 0 15px rgba(6, 182, 212, 0.5); }
         .pulse-badge-vcp { top: 14px; right: 10px; background: #f59e0b; animation: pulseAmber 2s infinite; box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); }
         @keyframes pulseCyan { 0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(6, 182, 212, 0.5); } 50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(6, 182, 212, 0.8); } }
         @keyframes pulseAmber { 0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(245, 158, 11, 0.5); } 50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(245, 158, 11, 0.8); } }
-
         .card-alert-badge { position: absolute; top: -10px; right: -10px; width: 24px; height: 24px; background: #ef4444; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 900; border: 2px solid white; box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); animation: pulse-red 1.8s infinite; cursor: pointer; z-index: 5; }
         .card-alert-badge.hidden { display: none; }
         @keyframes pulse-red { 0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.6); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } }
-
         .watermark { position: fixed; bottom: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.12); z-index: 10001; pointer-events: none; user-select: none; letter-spacing: 1.5px; }
         @media (max-width: 640px) {
             .password-card { padding: 24px 18px !important; border-radius: 20px !important; }
@@ -127,12 +121,9 @@
     </style>
 </head>
 <body>
-
 <div class="watermark" id="watermark">BY DHG</div>
-
 <div id="pulseBadgeActos" class="pulse-badge pulse-badge-actos hidden-section" onclick="toggleActosAlerts()" title="Reportes de Actos hoy">0</div>
 <div id="pulseBadgeVCP" class="pulse-badge pulse-badge-vcp hidden-section" onclick="toggleVCPAlerts()" title="Reportes de VCP hoy">0</div>
-
 <div id="passwordOverlay">
     <div class="password-card">
         <div class="password-lock-icon">🔐</div>
@@ -147,7 +138,6 @@
         <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
     </div>
 </div>
-
 <div id="welcomeOverlay" class="hidden-section">
     <div class="welcome-card">
         <div class="welcome-icon">👷‍♂️⛑️🛡️</div>
@@ -160,7 +150,6 @@
         <p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">5</span>s...</p>
     </div>
 </div>
-
 <div id="newReportAlert">
     <div class="alert-card">
         <div class="alert-icon">🚨</div>
@@ -170,7 +159,6 @@
         <p class="text-[10px] text-slate-400 mt-2">La alerta se cerrará automáticamente en <span id="alertCountdown">15</span>s</p>
     </div>
 </div>
-
 <div id="mainContent" class="hidden-section">
 <div class="max-w-7xl mx-auto">
     <div class="header-container flex flex-wrap justify-between items-center">
@@ -185,7 +173,6 @@
             <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
         </div>
     </div>
-
     <div class="glass-card p-6 mb-6">
         <div class="text-center mb-4">
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
@@ -226,9 +213,7 @@
             </main>
         </div>
     </div>
-
     <hr class="my-4">
-
     <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
         <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
@@ -257,7 +242,6 @@
     </div>
 </div>
 </div>
-
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
@@ -280,7 +264,6 @@
         <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
-
 <div id="dailyAlertsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200 max-h-[80vh] overflow-hidden">
         <div class="flex justify-between items-center mb-4">
@@ -294,7 +277,8 @@
 
 <script>
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
-const APPS_SCRIPT_KEY = 'Minerar#2026$Seg';
+const APPS_SCRIPT_KEY = 'PMMasAgiles1122SEG';
+
 let isUnlocked = false;
 let refreshIntervals = [], autoCountdownTimer = null, progressInterval = null;
 let alertCountdownInterval = null;
@@ -302,24 +286,24 @@ let soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
 let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
 
-// ✅ URLs ACTUALIZADAS CON LOS NUEVOS APPS SCRIPTS
+// ✅ URLs REALES ACTUALIZADAS
 const SUCURSALES_CONFIG = {
     MALAGUENO: { 
-        actosUrl: 'https://script.google.com/macros/s/AKfycbwzF3Lu9HaRsTanpCbFVdjfeUNoFXq-YnVCEpATFLvzIWdEoTHv3wIqA6FWYE6fsLNQ/exec?key=' + APPS_SCRIPT_KEY, 
-        vcpUrl: 'https://script.google.com/macros/s/AKfycbwchNhR5YUSXabaUgqEOSgwagY_3DTLKowOe-4gXU-fKP2aZojxjlzSF9X3d87NQhjMmA/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbzOMklveFzYVqeRYvOs4JKRSP1g-1DUk8ejiW6i-vpTTwBHS5pdLAcNLzHCMlSmTPpo/exec?key=' + APPS_SCRIPT_KEY, 
+        vcpUrl: 'https://script.google.com/macros/s/AKfycbzRhPWqe-mH-snjdXVKnoJ_BPs9y2rVjHxmURXfSG-IZyvxcIUXeb4iXxeckGu7Uy-d/exec?key=' + APPS_SCRIPT_KEY, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:66,cond:44}, 
         showVCP:true 
     },
     BARKER: { 
-        actosUrl: 'https://script.google.com/macros/s/AKfycbxdonMRaPa3La6eTsu32ujIkBHqCbNCcCvDuONbXx-XvsBg1jn5Z374j73-WpmyiyVE/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbzS9pYg6H6VlnMdQflRO7rq1zkOZyw-DetEcrRR3gXrKsOiG_bwv0uFXnWfOlfsp1NA/exec?key=' + APPS_SCRIPT_KEY, 
         vcpUrl:null, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:6,cond:4}, 
         showVCP:false 
     },
     LAPAMPITA: { 
-        actosUrl: 'https://script.google.com/macros/s/AKfycbzr4GgogtWawCrA_RIDeWphbjPcGjAUa6ykc0jcTpzan1awrhe2bXXgfz_s2g_yLuCbQA/exec?key=' + APPS_SCRIPT_KEY, 
+        actosUrl: 'https://script.google.com/macros/s/AKfycbzDc4c-BnOpywp5g-ruR5EBqN9jYKFLwURtQxSVuhx42xjUkpZE0yAa_bkkN8_7tRS7mQ/exec?key=' + APPS_SCRIPT_KEY, 
         vcpUrl:null, 
         mapping:{fecha:0,tipo:1,sector:2,observador:5,descripcion:6,cerrado:8,causa:null}, 
         objetivos:{actos:66,cond:44}, 
@@ -338,7 +322,6 @@ let currentDateKey = new Date().toDateString();
 let todayAlertsActos = {};
 let todayAlertsVCP = {};
 let audioContextInitialized = false;
-
 let badgeActosVisible = localStorage.getItem('minerar_badge_actos') === 'true';
 let badgeVCPVisible = localStorage.getItem('minerar_badge_vcp') === 'true';
 
@@ -357,7 +340,6 @@ function initAudioContext() {
         } catch(e) {}
     }
 }
-
 function togglePasswordVisibility() {
     initAudioContext();
     const input = document.getElementById('passwordInput');
@@ -366,7 +348,6 @@ function togglePasswordVisibility() {
     else { input.type = 'password'; btn.textContent = '👁️'; }
     input.focus();
 }
-
 function playAlarmSound() {
     if (!audioContextInitialized) initAudioContext();
     try {
@@ -414,7 +395,6 @@ function toggleSound() {
     document.getElementById('soundText').innerHTML = soundEnabled ? 'SONIDO ON' : 'SONIDO OFF';
     if (soundEnabled) { initAudioContext(); playAlarmSound(); }
 }
-
 function verifyPassword() {
     initAudioContext();
     const input = document.getElementById('passwordInput'), errorDiv = document.getElementById('passwordError'), overlay = document.getElementById('passwordOverlay');
@@ -426,7 +406,6 @@ function verifyPassword() {
         playErrorSound(); errorDiv.textContent = '🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'), 500);
     }
 }
-
 function showWelcomeScreen() {
     const welcome = document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex';
     let seconds = 5;
@@ -436,7 +415,6 @@ function showWelcomeScreen() {
     progressInterval = setInterval(()=>{ bar.style.width = ((5-seconds)/5*100)+'%'; }, 100);
     autoCountdownTimer = setInterval(()=>{ seconds--; countdownEl.textContent = seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} }, 1000);
 }
-
 function enterMainPanel() {
     clearInterval(autoCountdownTimer); clearInterval(progressInterval);
     const welcome = document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease';
@@ -444,24 +422,15 @@ function enterMainPanel() {
         welcome.style.display='none'; welcome.classList.add('hidden-section');
         document.getElementById('mainContent').classList.remove('hidden-section');
         isUnlocked = true;
-        loadData().then(() => { 
-            updatePulseBadges(); 
-            updateCardBadges(); 
-        });
+        loadData().then(() => { updatePulseBadges(); updateCardBadges(); });
         setTimeout(()=>checkNewReports(), 3000);
         refreshIntervals.push(setInterval(()=>checkNewReports(), 20000));
     }, 400);
 }
-
 function showNewReportAlert(persona, sector, desc, tipo, hora) {
     const alertEl = document.getElementById('newReportAlert');
     const contentEl = document.getElementById('alertContent');
-    contentEl.innerHTML = `
-        <div class="alert-person">👤 ${persona || 'No identificado'}</div>
-        <div class="alert-sector">🏭 ${sector || 'Sector no especificado'}</div>
-        <div class="alert-desc">${tipo === 'vcp' ? '🎯' : tipo?.toLowerCase().includes('acto') ? '⚠️' : '🏚️'} <strong>${tipo?.toUpperCase() || 'Reporte'}</strong><br>${desc || 'Sin descripción'}</div>
-        <div class="alert-time">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>
-    `;
+    contentEl.innerHTML = `<div class="alert-person">👤 ${persona || 'No identificado'}</div><div class="alert-sector">🏭 ${sector || 'Sector no especificado'}</div><div class="alert-desc">${tipo === 'vcp' ? '🎯' : tipo?.toLowerCase().includes('acto') ? '⚠️' : '🏚️'} <strong>${tipo?.toUpperCase() || 'Reporte'}</strong><br>${desc || 'Sin descripción'}</div><div class="alert-time">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>`;
     alertEl.classList.add('show');
     playAlarmSound();
     let secs = 15;
@@ -469,132 +438,60 @@ function showNewReportAlert(persona, sector, desc, tipo, hora) {
     alertCountdownInterval = setInterval(()=>{ secs--; document.getElementById('alertCountdown').textContent = secs; if(secs <= 0) dismissAlert(); }, 1000);
 }
 function dismissAlert() { clearInterval(alertCountdownInterval); document.getElementById('newReportAlert').classList.remove('show'); }
-
-function toggleActosAlerts() {
-    const list = todayAlertsActos[currentSucursal] || [];
-    showDailyAlertsModal('📋 REPORTES DE ACTOS HOY', list, 'acto');
-}
-
-function toggleVCPAlerts() {
-    const list = todayAlertsVCP[currentSucursal] || [];
-    showDailyAlertsModal('📋 REPORTES DE VCP HOY', list, 'vcp');
-}
-
+function toggleActosAlerts() { const list = todayAlertsActos[currentSucursal] || []; showDailyAlertsModal('📋 REPORTES DE ACTOS HOY', list, 'acto'); }
+function toggleVCPAlerts() { const list = todayAlertsVCP[currentSucursal] || []; showDailyAlertsModal('📋 REPORTES DE VCP HOY', list, 'vcp'); }
 function showDailyAlertsModal(title, alerts, type) {
     const modal = document.getElementById('dailyAlertsModal');
     const titleEl = document.getElementById('dailyAlertsTitle');
     const contentEl = document.getElementById('dailyAlertsContent');
-    
     titleEl.textContent = title;
     titleEl.className = `font-black text-2xl ${type === 'vcp' ? 'text-purple-700' : 'text-cyan-700'}`;
-    
-    if (alerts.length === 0) {
-        contentEl.innerHTML = '<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>';
-    } else {
-        contentEl.innerHTML = alerts.map((a, i) => `
-            <div class="border-l-4 ${type === 'vcp' ? 'border-purple-500 bg-purple-50' : 'border-cyan-500 bg-cyan-50'} p-4 rounded-lg mb-3">
-                <div class="flex justify-between items-start mb-2">
-                    <span class="text-xs font-bold ${type === 'vcp' ? 'text-purple-700' : 'text-cyan-700'}">#${i + 1}</span>
-                    <span class="text-xs text-slate-500">🕒 ${a.hora}</span>
-                </div>
-                <div class="font-bold text-slate-800 mb-1">👤 ${a.persona || 'No identificado'}</div>
-                <div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector || 'No especificado'}</div>
-                <div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.desc || 'Sin descripción'}</div>
-                <div class="text-xs text-slate-400 mt-2">${a.tipo || 'Reporte'}</div>
-            </div>
-        `).join('');
-    }
-    
+    if (alerts.length === 0) { contentEl.innerHTML = '<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
+    else { contentEl.innerHTML = alerts.map((a, i) => `<div class="border-l-4 ${type === 'vcp' ? 'border-purple-500 bg-purple-50' : 'border-cyan-500 bg-cyan-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type === 'vcp' ? 'text-purple-700' : 'text-cyan-700'}">#${i + 1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona || 'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector || 'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.desc || 'Sin descripción'}</div><div class="text-xs text-slate-400 mt-2">${a.tipo || 'Reporte'}</div></div>`).join(''); }
     modal.querySelector('.modal-bounce').style.animation = 'none';
     modal.querySelector('.modal-bounce').offsetHeight;
     modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
-    
     modal.classList.remove('hidden-section');
     modal.style.display = 'flex';
 }
-
-function closeDailyAlertsModal() {
-    const modal = document.getElementById('dailyAlertsModal');
-    modal.classList.add('hidden-section');
-    modal.style.display = 'none';
-}
-
+function closeDailyAlertsModal() { const modal = document.getElementById('dailyAlertsModal'); modal.classList.add('hidden-section'); modal.style.display = 'none'; }
 function addDailyAlert(persona, sector, desc, tipo, hora) {
     const alertData = { persona, sector, desc, tipo, hora, timestamp: Date.now() };
     const key = currentSucursal;
     if (!todayAlertsActos[key]) todayAlertsActos[key] = [];
     if (!todayAlertsVCP[key]) todayAlertsVCP[key] = [];
-    
-    if (tipo && tipo.toLowerCase().includes('vcp')) {
-        todayAlertsVCP[key].unshift(alertData);
-    } else {
-        todayAlertsActos[key].unshift(alertData);
-    }
-    updatePulseBadges();
-    updateRealTimeUI();
-    
-    if (tipo && tipo.toLowerCase().includes('vcp')) {
-        badgeVCPVisible = true;
-        localStorage.setItem('minerar_badge_vcp', 'true');
-    } else {
-        badgeActosVisible = true;
-        localStorage.setItem('minerar_badge_actos', 'true');
-    }
+    if (tipo && tipo.toLowerCase().includes('vcp')) { todayAlertsVCP[key].unshift(alertData); }
+    else { todayAlertsActos[key].unshift(alertData); }
+    updatePulseBadges(); updateRealTimeUI();
+    if (tipo && tipo.toLowerCase().includes('vcp')) { badgeVCPVisible = true; localStorage.setItem('minerar_badge_vcp', 'true'); }
+    else { badgeActosVisible = true; localStorage.setItem('minerar_badge_actos', 'true'); }
     updateCardBadges();
 }
-
 function updatePulseBadges() {
     const badgeActos = document.getElementById('pulseBadgeActos');
     const badgeVCP = document.getElementById('pulseBadgeVCP');
     const currentActos = todayAlertsActos[currentSucursal] || [];
     const currentVCP = todayAlertsVCP[currentSucursal] || [];
-    
-    if (currentActos.length > 0) {
-        badgeActos.textContent = currentActos.length;
-        badgeActos.classList.remove('hidden-section');
-    } else {
-        badgeActos.classList.add('hidden-section');
-    }
-    if (currentVCP.length > 0) {
-        badgeVCP.textContent = currentVCP.length;
-        badgeVCP.classList.remove('hidden-section');
-    } else {
-        badgeVCP.classList.add('hidden-section');
-    }
+    if (currentActos.length > 0) { badgeActos.textContent = currentActos.length; badgeActos.classList.remove('hidden-section'); }
+    else { badgeActos.classList.add('hidden-section'); }
+    if (currentVCP.length > 0) { badgeVCP.textContent = currentVCP.length; badgeVCP.classList.remove('hidden-section'); }
+    else { badgeVCP.classList.add('hidden-section'); }
 }
-
 function updateCardBadges() {
     const badgeActos = document.getElementById('badgeActosCard');
     const badgeVCP = document.getElementById('badgeVCPCard');
     const currentActos = todayAlertsActos[currentSucursal] || [];
     const currentVCP = todayAlertsVCP[currentSucursal] || [];
-    
-    if (badgeActosVisible && currentActos.length > 0) {
-        badgeActos.textContent = currentActos.length > 9 ? '9+' : currentActos.length;
-        badgeActos.classList.remove('hidden');
-    } else {
-        badgeActos.classList.add('hidden');
-    }
-    
-    if (badgeVCPVisible && currentVCP.length > 0) {
-        badgeVCP.textContent = currentVCP.length > 9 ? '9+' : currentVCP.length;
-        badgeVCP.classList.remove('hidden');
-    } else {
-        badgeVCP.classList.add('hidden');
-    }
+    if (badgeActosVisible && currentActos.length > 0) { badgeActos.textContent = currentActos.length > 9 ? '9+' : currentActos.length; badgeActos.classList.remove('hidden'); }
+    else { badgeActos.classList.add('hidden'); }
+    if (badgeVCPVisible && currentVCP.length > 0) { badgeVCP.textContent = currentVCP.length > 9 ? '9+' : currentVCP.length; badgeVCP.classList.remove('hidden'); }
+    else { badgeVCP.classList.add('hidden'); }
 }
-
 function acknowledgeBadge(type) {
-    if (type === 'actos') {
-        badgeActosVisible = false;
-        localStorage.setItem('minerar_badge_actos', 'false');
-    } else if (type === 'vcp') {
-        badgeVCPVisible = false;
-        localStorage.setItem('minerar_badge_vcp', 'false');
-    }
+    if (type === 'actos') { badgeActosVisible = false; localStorage.setItem('minerar_badge_actos', 'false'); }
+    else if (type === 'vcp') { badgeVCPVisible = false; localStorage.setItem('minerar_badge_vcp', 'false'); }
     updateCardBadges();
 }
-
 function updateRealTimeUI() {
     const actosContainer = document.getElementById('realTimeReportsActos');
     const vcpContainer = document.getElementById('realTimeReportsVCP');
@@ -602,48 +499,21 @@ function updateRealTimeUI() {
     const vcpLed = document.getElementById('vcpLed');
     const currentActos = todayAlertsActos[currentSucursal] || [];
     const currentVCP = todayAlertsVCP[currentSucursal] || [];
-    
     if(!actosContainer || !vcpContainer) return;
     if(actosLed) { if(currentActos.length > 0) actosLed.className = 'siren-green'; else actosLed.className = 'siren-red'; }
     if(vcpLed) { if(currentVCP.length > 0) vcpLed.className = 'siren-green'; else vcpLed.className = 'siren-red'; }
-    
     if(currentActos.length > 0) {
-        actosContainer.innerHTML = currentActos.map(a => `
-            <div class="report-item" style="border-left-color:#10b981;">
-                <div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto') ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div>
-                <div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div>
-                <div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div>
-                <div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc||'').substring(0,60)}</div>
-            </div>
-        `).join('');
-    } else {
-        actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>';
-    }
+        actosContainer.innerHTML = currentActos.map(a => `<div class="report-item" style="border-left-color:#10b981;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto') ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc||'').substring(0,60)}</div></div>`).join('');
+    } else { actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>'; }
     if(currentVCP.length > 0) {
-        vcpContainer.innerHTML = currentVCP.map(a => `
-            <div class="report-item" style="border-left-color:#f59e0b;">
-                <div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div>
-                <div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div>
-                <div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div>
-                <div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc||'').substring(0,60)}</div>
-            </div>
-        `).join('');
-    } else {
-        vcpContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>';
-    }
+        vcpContainer.innerHTML = currentVCP.map(a => `<div class="report-item" style="border-left-color:#f59e0b;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc||'').substring(0,60)}</div></div>`).join('');
+    } else { vcpContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>'; }
 }
-
 function saveFilters() {
     if (!isUnlocked) return;
-    const filters = {
-        mes: state.mes, sector: state.sector, estado: state.estado, causaRaiz: state.causaRaiz,
-        vcpMes: state.vcpMes, vcpSector: state.vcpSector, vcpEstado: state.vcpEstado, vcpCausa: state.vcpCausa,
-        supervisor: document.getElementById('supervisorSelect')?.value || 'todos',
-        supervisorMes: document.getElementById('supervisorMonthSelect')?.value || 'todo'
-    };
+    const filters = { mes: state.mes, sector: state.sector, estado: state.estado, causaRaiz: state.causaRaiz, vcpMes: state.vcpMes, vcpSector: state.vcpSector, vcpEstado: state.vcpEstado, vcpCausa: state.vcpCausa, supervisor: document.getElementById('supervisorSelect')?.value || 'todos', supervisorMes: document.getElementById('supervisorMonthSelect')?.value || 'todo' };
     try { localStorage.setItem('minerar_filtros', JSON.stringify(filters)); } catch(e) {}
 }
-
 function restoreFilters() {
     try {
         const saved = localStorage.getItem('minerar_filtros');
@@ -662,34 +532,22 @@ function restoreFilters() {
         }
     } catch(e) {}
 }
-
 function getTodayKey() { return new Date().toDateString(); }
-function getTodayISO() {
-    const hoy = new Date();
-    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-}
-
+function getTodayISO() { const hoy = new Date(); return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`; }
 function checkAndResetDailyCounters() {
     const today = getTodayKey();
     if(today !== currentDateKey) {
         currentDateKey = today;
-        todayAlertsActos = {};
-        todayAlertsVCP = {};
-        reportesNotificadosActos.clear();
-        reportesNotificadosVCP.clear();
-        lastKnownActosRows = 0;
-        lastKnownVcpRows = 0;
+        todayAlertsActos = {}; todayAlertsVCP = {};
+        reportesNotificadosActos.clear(); reportesNotificadosVCP.clear();
+        lastKnownActosRows = 0; lastKnownVcpRows = 0;
         actosNovedades = 0; vcpNovedades = 0;
-        badgeActosVisible = false;
-        badgeVCPVisible = false;
+        badgeActosVisible = false; badgeVCPVisible = false;
         localStorage.setItem('minerar_badge_actos', 'false');
         localStorage.setItem('minerar_badge_vcp', 'false');
-        updatePulseBadges();
-        updateRealTimeUI();
-        updateCardBadges();
+        updatePulseBadges(); updateRealTimeUI(); updateCardBadges();
     }
 }
-
 function parseFecha(f) {
     if(!f) return {dia:'',mes:'',valido:false};
     let s = f.toString().split(' ')[0].trim();
@@ -712,7 +570,6 @@ function parseFecha(f) {
     }
     return {dia:'',mes:'',valido:false};
 }
-
 function classifyData(desc,useVCP=false) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
@@ -720,28 +577,22 @@ function classifyData(desc,useVCP=false) {
     let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0;
     for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best;
 }
-
 async function loadData() {
     if(!isUnlocked) return;
     try {
         const ts = Date.now();
         console.log(`🔄 Cargando ${currentSucursal}...`);
         const config = SUCURSALES_CONFIG[currentSucursal];
-        ACTOS_URL = config.actosUrl;
-        VCP_URL = config.vcpUrl;
-        currentMapping = config.mapping;
-        currentVcpMapping = config.vcpMapping || null;
-        currentObjetivos = config.objetivos;
-        currentShowVCP = config.showVCP;
+        ACTOS_URL = config.actosUrl; VCP_URL = config.vcpUrl;
+        currentMapping = config.mapping; currentVcpMapping = config.vcpMapping || null;
+        currentObjetivos = config.objetivos; currentShowVCP = config.showVCP;
         const todayISO = getTodayISO();
         console.log(`📅 Fecha hoy: ${todayISO}`);
-
         if(!ACTOS_URL) { ACTOS_COND_DATA = []; document.getElementById('totalActosCond').innerText = '0'; }
         else {
             try {
                 const r1 = await fetch(ACTOS_URL + '&t=' + ts);
                 const text = await r1.text();
-                
                 if (text.includes('❌') || text.includes('Acceso denegado')) {
                     console.error('❌ Error de autenticación con Apps Script');
                     alert('Error: No se pudo acceder a los datos. Verificá la clave del Apps Script.');
@@ -751,32 +602,20 @@ async function loadData() {
                     console.log(`📊 Total filas Actos: ${rows.length}`);
                     ACTOS_COND_DATA = [];
                     let nuevosDetectados = 0;
-
                     for(let i = 0; i < rows.length; i++) {
                         const row = rows[i];
                         let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
-                        
                         if(row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
-                        
-                        fecha = row[currentMapping.fecha] || ''; 
-                        tipoRaw = row[currentMapping.tipo] || ''; 
-                        sector = row[currentMapping.sector] || ''; 
-                        observador = row[currentMapping.observador] || ''; 
-                        desc = row[currentMapping.descripcion] || ''; 
-                        cerradoRaw = row[currentMapping.cerrado] || '';
-                        
+                        fecha = row[currentMapping.fecha] || ''; tipoRaw = row[currentMapping.tipo] || ''; sector = row[currentMapping.sector] || ''; observador = row[currentMapping.observador] || ''; desc = row[currentMapping.descripcion] || ''; cerradoRaw = row[currentMapping.cerrado] || '';
                         const fd = parseFecha(fecha);
                         if(!fd.valido) continue;
-                        
                         let tipo = 'otro';
                         if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
                         else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
-                        
                         let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
                         const cat = classifyData(desc, false);
                         ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
                     }
-
                     for(let i = 0; i < rows.length; i++) {
                         const row = rows[i];
                         let marcaTemp = row[0] || '';
@@ -796,9 +635,7 @@ async function loadData() {
                                     let tipo = row[currentMapping.tipo] || 'Reporte';
                                     showNewReportAlert(observador, sector, descripcion, tipo, hora);
                                     addDailyAlert(observador, sector, descripcion, tipo, hora);
-                                    actosNovedades++;
-                                    actualizarLED('actos', true);
-                                    nuevosDetectados++;
+                                    actosNovedades++; actualizarLED('actos', true); nuevosDetectados++;
                                 }
                             }
                         }
@@ -807,27 +644,19 @@ async function loadData() {
                     lastKnownActosRows = rows.length;
                     document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
                 }
-            } catch(fetchError) {
-                console.error('❌ Error fetching Actos:', fetchError);
-                ACTOS_COND_DATA = [];
-            }
+            } catch(fetchError) { console.error('❌ Error fetching Actos:', fetchError); ACTOS_COND_DATA = []; }
         }
-
         if(currentShowVCP && VCP_URL) {
             try {
                 const r2 = await fetch(VCP_URL + '&t=' + ts);
                 const text2 = await r2.text();
-                
-                if (text2.includes('❌') || text2.includes('Acceso denegado')) {
-                    console.error('❌ Error de autenticación con Apps Script VCP');
-                    VCP_DATA = [];
-                } else {
+                if (text2.includes('❌') || text2.includes('Acceso denegado')) { console.error('❌ Error de autenticación con Apps Script VCP'); VCP_DATA = []; }
+                else {
                     const rows2 = parseCSV(text2);
                     console.log(`📊 Total filas VCP: ${rows2.length}`);
                     VCP_DATA = [];
                     const vm = currentVcpMapping;
                     let nuevosVCPDetectados = 0;
-
                     for(let i = 0; i < rows2.length; i++) {
                         const row = rows2[i];
                         let fr, po, sec, des, com;
@@ -838,7 +667,6 @@ async function loadData() {
                         const cat = classifyData(des, true);
                         VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
                     }
-
                     for(let i = 0; i < rows2.length; i++) {
                         const row = rows2[i];
                         let marcaTemp = row[0] || '';
@@ -857,9 +685,7 @@ async function loadData() {
                                     let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', {hour:'2-digit',minute:'2-digit'});
                                     showNewReportAlert(persona, sector, desc, 'vcp', hora);
                                     addDailyAlert(persona, sector, desc, 'VCP', hora);
-                                    vcpNovedades++;
-                                    actualizarLED('vcp', true);
-                                    nuevosVCPDetectados++;
+                                    vcpNovedades++; actualizarLED('vcp', true); nuevosVCPDetectados++;
                                 }
                             }
                         }
@@ -868,64 +694,32 @@ async function loadData() {
                     lastKnownVcpRows = rows2.length;
                     document.getElementById('totalVCP').innerText = VCP_DATA.length;
                 }
-            } catch(fetchError) {
-                console.error('❌ Error fetching VCP:', fetchError);
-                VCP_DATA = [];
-            }
+            } catch(fetchError) { console.error('❌ Error fetching VCP:', fetchError); VCP_DATA = []; }
         } else { VCP_DATA = []; document.getElementById('totalVCP').innerText = '0'; }
-
-        populateSupervisors();
-        populateVCPPeopleFilter();
-        applyAllFilters();
-        updateCardBadges();
-    } catch(e) {
-        console.error('❌ Error cargando datos:', e);
-    }
+        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updateCardBadges();
+    } catch(e) { console.error('❌ Error cargando datos:', e); }
 }
-
 function parseCSV(text) {
     const lines = text.split('\n').filter(l => l.trim());
     const result = [];
-    
     for(let i = 0; i < lines.length; i++) {
         const line = lines[i];
         const cols = [];
         let cur = '';
         let inQuotes = false;
-        
         for(let ch of line) {
-            if(ch === '"') {
-                inQuotes = !inQuotes;
-            } else if(ch === ',' && !inQuotes) {
-                cols.push(cur.trim());
-                cur = '';
-            } else {
-                cur += ch;
-            }
+            if(ch === '"') { inQuotes = !inQuotes; }
+            else if(ch === ',' && !inQuotes) { cols.push(cur.trim()); cur = ''; }
+            else { cur += ch; }
         }
         cols.push(cur.trim());
-        
-        if(cols.length >= 5) {
-            result.push(cols);
-        }
+        if(cols.length >= 5) { result.push(cols); }
     }
-    
     return result;
 }
-
-function checkNewReports() {
-    if(!isUnlocked) return;
-    checkAndResetDailyCounters();
-    loadData();
-}
+function checkNewReports() { if(!isUnlocked) return; checkAndResetDailyCounters(); loadData(); }
 function forceRefreshData() { if(isUnlocked) loadData(); }
-
-function applyAllFilters() {
-    applyGeneralFilters();
-    if(currentShowVCP) applyVCPFilters();
-    updateSupervisorCard();
-}
-
+function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && (state.causaRaiz==='todas'||e.categoria.id===state.causaRaiz));
     let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion');
@@ -935,10 +729,8 @@ function applyGeneralFilters() {
     document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
     let up = (id,p) => { let el = document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} };
     up('actosStatus',pA); up('condStatus',pC);
-    updateCategoryCards(f, 'actos');
-    updateChartsDona(f, 'actos'); updateTrendChart(); renderGeneralTable(f);
+    updateCategoryCards(f, 'actos'); updateChartsDona(f, 'actos'); updateTrendChart(); renderGeneralTable(f);
 }
-
 function updateCategoryCards(data, type) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
@@ -965,7 +757,6 @@ function updateCategoryCards(data, type) {
         cont.appendChild(div);
     });
 }
-
 function updateChartsDona(data, type) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
@@ -978,10 +769,8 @@ function updateChartsDona(data, type) {
     if(type==='actos'&&categoryChart)categoryChart.destroy();
     if(type!=='actos'&&vcpCategoryChart)vcpCategoryChart.destroy();
     let chart = new Chart(ctx, { type:'doughnut', data:{labels:cats.map(c=>`${c.icon} ${c.name}`),datasets:[{data:cats.map(c=>counts[c.id]||0),backgroundColor:cats.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:15}]}, options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:9,weight:'bold'},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>{let total=ctx.dataset.data.reduce((a,b)=>a+b,0);let pct=Math.round((ctx.parsed/total)*100);return `${ctx.label}: ${ctx.parsed} (${pct}%)`;}}}},animation:{animateRotate:true}} });
-    if(type==='actos')categoryChart=chart;
-    else vcpCategoryChart=chart;
+    if(type==='actos')categoryChart=chart; else vcpCategoryChart=chart;
 }
-
 function updateTrendChart() {
     const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
     let df = ACTOS_COND_DATA;
@@ -990,34 +779,8 @@ function updateTrendChart() {
     const ctx = document.getElementById('trendChart')?.getContext('2d');
     if(!ctx) return;
     if(trendChart)trendChart.destroy();
-    trendChart = new Chart(ctx, {
-        type:'line',
-        data:{
-            labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),
-            datasets:[
-                {label:selectedCausa?`⚠️ ACTOS (Filtrado)`:'⚠️ ACTOS', data:aPM, borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.1)', borderWidth:3, fill:true, tension:0.3, pointRadius:6, pointHoverRadius:10, pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#06b6d4';}, pointBorderColor:'white', pointBorderWidth:2},
-                {label:selectedCausa?`🏚️ CONDICIONES (Filtrado)`:'🏚️ CONDICIONES', data:cPM, borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.1)', borderWidth:3, fill:true, tension:0.3, pointRadius:6, pointHoverRadius:10, pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#f59e0b';}, pointBorderColor:'white', pointBorderWidth:2}
-            ]
-        },
-        options:{
-            responsive:true, maintainAspectRatio:true,
-            onClick:(ev,ae)=>{
-                if(ae.length>0){
-                    const di=ae[0].index;
-                    const ms=meses[di];
-                    selectedChartMonth=ms;
-                    const m=document.getElementById('monthFilter');
-                    if(m){m.value=ms;state.mes=ms;}
-                    updateTrendChart();
-                    applyGeneralFilters();
-                }
-            },
-            plugins:{legend:{position:'top',labels:{font:{size:9,weight:'bold'},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y}`}}},
-            scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:10}},x:{ticks:{font:{size:9}},grid:{display:false}}}
-        }
-    });
+    trendChart = new Chart(ctx, { type:'line', data:{ labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)), datasets:[ {label:selectedCausa?`⚠️ ACTOS (Filtrado)`:'⚠️ ACTOS', data:aPM, borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.1)', borderWidth:3, fill:true, tension:0.3, pointRadius:6, pointHoverRadius:10, pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#06b6d4';}, pointBorderColor:'white', pointBorderWidth:2}, {label:selectedCausa?`🏚️ CONDICIONES (Filtrado)`:'🏚️ CONDICIONES', data:cPM, borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.1)', borderWidth:3, fill:true, tension:0.3, pointRadius:6, pointHoverRadius:10, pointBackgroundColor:(ctx)=>{const i=ctx.dataIndex;const ms=selectedChartMonth?meses.indexOf(selectedChartMonth):-1;return i===ms?'#f59e0b':'#f59e0b';}, pointBorderColor:'white', pointBorderWidth:2} ] }, options:{ responsive:true, maintainAspectRatio:true, onClick:(ev,ae)=>{ if(ae.length>0){ const di=ae[0].index; const ms=meses[di]; selectedChartMonth=ms; const m=document.getElementById('monthFilter'); if(m){m.value=ms;state.mes=ms;} updateTrendChart(); applyGeneralFilters(); } }, plugins:{legend:{position:'top',labels:{font:{size:9,weight:'bold'},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>`${ctx.dataset.label}: ${ctx.parsed.y}`}}}, scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:10}},x:{ticks:{font:{size:9}},grid:{display:false}}} });
 }
-
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && (state.vcpCausa==='todas'||e.categoria.id===state.vcpCausa));
     let pct = Math.min(f.length/OBJ_VCP*100,100);
@@ -1025,7 +788,6 @@ function applyVCPFilters() {
     document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%';
     updateCategoryCards(f, 'vcp'); updateVCPCharts(f); renderVCPTable(f);
 }
-
 function updateVCPCharts(data) {
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
     let counts = {}; CATEGORIES_VCP.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria&&counts[e.categoria.id]!==undefined)counts[e.categoria.id]++;});
@@ -1035,7 +797,6 @@ function updateVCPCharts(data) {
     let ctxT = document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart)vcpTrendChart.destroy();
     vcpTrendChart = new Chart(ctxT, { type:'line', data:{labels:m.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white',pointBorderWidth:2}]}, options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:5}},x:{ticks:{font:{size:9}},grid:{display:false}}}} });
 }
-
 function clearVCPCauseFilter() { state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
 function updateSupervisorCard() { let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length; }
@@ -1048,7 +809,6 @@ function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons'
 function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';}); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
 function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
 function renderVCPTable(data) { let tb = document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
-
 function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getElementById('monthFilter'); if(m){m.value='todo';state.mes='todo';} saveFilters(); updateTrendChart(); applyGeneralFilters(); }
 function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; const c=document.getElementById('clearCausaBtn'); if(c)c.classList.add('hidden-section'); document.querySelectorAll('.category-card').forEach(card=>card.classList.remove('causa-seleccionada')); saveFilters(); updateTrendChart(); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); saveFilters(); }
@@ -1056,18 +816,15 @@ function actualizarLED(tipo,hay) { const l = document.getElementById(`${tipo}Led
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null;selectedChartMonth=null;state.causaRaiz='todas';state.mes='todo'; const m=document.getElementById('monthFilter');if(m)m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('causa-seleccionada')); const cb=document.getElementById('clearCausaBtn');if(cb)cb.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ACTOS_URL=c.actosUrl;VCP_URL=c.vcpUrl;currentMapping=c.mapping;currentVcpMapping=c.vcpMapping||null;currentObjetivos=c.objetivos;currentShowVCP=c.showVCP;actualizarObjetivosUI();toggleVCPVisibility(currentShowVCP);} document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked)loadData(); }
-
 function openModal(r,idx,data) { if(!isUnlocked)return; currentModalData=data;currentModalIndex=idx; let modal=document.getElementById('reportDetailModal'),content=document.getElementById('reportModalContent'); modal.querySelector('.modal-bounce').style.animation='none';modal.querySelector('.modal-bounce').offsetHeight;modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; if(r.tipo==='vcp'){content.innerHTML=`<div class="space-y-2"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-600">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-600">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;} else {content.innerHTML=`<div class="space-y-2"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-cyan-600">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-cyan-600">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`;} modal.classList.remove('hidden-section');modal.style.display='flex';updateNavButtons(); }
 function closeReportModal() { let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none'; }
 function updateNavButtons() { let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);} }
 function goToPreviousModal() { if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);} }
-
 function abrirModalSupervisor(tipo) { if(!isUnlocked)return; let s=document.getElementById('supervisorSelect').value,m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("⚠️ Seleccione un supervisor");return;} let nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1),f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)),dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`);return;} let t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`,ct=tipo==='acto'?'#0891b2':'#d97706',html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; dt.forEach(e=>{let be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0,60)}${e.descripcion.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`;}); html+=`</tbody></table></div>`; document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html; const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none';mod.querySelector('.modal-bounce').offsetHeight;mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section');mod.style.display='flex'; }
 function closeSupervisorModal() { let m=document.getElementById('supervisorDetailModal');m.classList.add('hidden-section');m.style.display='none'; }
 function abrirModalPersonaVCP() { if(!isUnlocked)return; let p=document.getElementById('vcpPersonFilter').value,m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("⚠️ Seleccione una persona");return;} let nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1),f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p} en ${nm}.`);return;} let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; f.forEach(e=>{let dc=e.descripcion.length>50?e.descripcion.substring(0,50)+'...':e.descripcion,cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;}); html+=`</tbody></table></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none';mod.querySelector('.modal-bounce').offsetHeight;mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section');mod.style.display='flex'; }
 function closePersonaVCPModal() { let m=document.getElementById('personaVCPModal');m.classList.add('hidden-section');m.style.display='none'; }
-
 document.getElementById('monthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.mes=e.target.value;selectedChartMonth=null;saveFilters();applyGeneralFilters();updateTrendChart();}});
 document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.vcpMes=e.target.value;saveFilters();applyVCPFilters();}});
 document.getElementById('supervisorSelect')?.addEventListener('change',()=>{if(isUnlocked){saveFilters();updateSupervisorCard();}});
@@ -1082,16 +839,8 @@ document.getElementById('btnBarker')?.addEventListener('click',()=>cambiarSucurs
 document.getElementById('btnLaPampita')?.addEventListener('click',()=>cambiarSucursal('LAPAMPITA'));
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
 document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
-
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && isUnlocked) { checkNewReports(); }
-});
-
-window.addEventListener('load',()=>{
-    document.getElementById('passwordInput')?.focus();
-    restoreFilters();
-});
-
+document.addEventListener('visibilitychange', () => { if (!document.hidden && isUnlocked) { checkNewReports(); } });
+window.addEventListener('load',()=>{ document.getElementById('passwordInput')?.focus(); restoreFilters(); });
 window.addEventListener('beforeunload', saveFilters);
 </script>
 </body>
