@@ -717,6 +717,251 @@ document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiar
 document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
 document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
 
+// ==================== AUDIO SYSTEM (FALTABA) ====================
+window.audioContextInitialized = false;
+window.audioContext = null;
+
+window.initAudioContext = function() {
+    if (window.audioContextInitialized) return true;
+    try {
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (window.audioContext.state === 'suspended') window.audioContext.resume();
+        window.audioContextInitialized = true;
+        return true;
+    } catch(e) { return false; }
+}
+
+window.playAlarmSound = function() {
+    if (!soundEnabled || !window.audioContextInitialized) return;
+    if (window.audioContext.state === 'suspended') window.audioContext.resume();
+    try {
+        for (let cycle = 0; cycle < 3; cycle++) {
+            const baseTime = window.audioContext.currentTime + (cycle * 0.5);
+            [880, 1175, 1568].forEach((freq, index) => {
+                const osc = window.audioContext.createOscillator();
+                const gain = window.audioContext.createGain();
+                osc.connect(gain); gain.connect(window.audioContext.destination);
+                osc.frequency.value = freq; osc.type = 'square';
+                const start = baseTime + (index * 0.12);
+                gain.gain.setValueAtTime(0.5, start);
+                gain.gain.exponentialRampToValueAtTime(0.01, start + 0.1);
+                osc.start(start); osc.stop(start + 0.1);
+            });
+        }
+    } catch(e) {}
+}
+
+function playUnlockSound() {
+    if (!soundEnabled) return;
+    window.initAudioContext();
+    try {
+        const a = new(window.AudioContext||window.webkitAudioContext)();
+        [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
+            const o=a.createOscillator(),g=a.createGain();
+            o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';
+            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1);
+            g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2);
+            o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2);
+        });
+    } catch(e){}
+}
+
+function playErrorSound() {
+    if (!soundEnabled) return;
+    window.initAudioContext();
+    try {
+        const a=new(window.AudioContext||window.webkitAudioContext)();
+        const o=a.createOscillator(),g=a.createGain();
+        o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth';
+        g.gain.setValueAtTime(0.2,a.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3);
+        o.start();o.stop(a.currentTime+0.3);
+    } catch(e){}
+}
+
+function toggleSound() {
+    soundEnabled = !soundEnabled;
+    document.getElementById('soundIcon').innerHTML = soundEnabled ? '🔊' : '🔇';
+    document.getElementById('soundText').innerHTML = soundEnabled ? 'SONIDO ON' : 'SONIDO OFF';
+}
+
+// ==================== VCP FUNCTIONS (FALTABAN) ====================
+function applyVCPFilters() {
+    let f = VCP_DATA.filter(e => 
+        (state.vcpMes==='todo'||e.mes===state.vcpMes) && 
+        (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && 
+        (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && 
+        (state.vcpCausa==='todas'||e.categoria?.id===state.vcpCausa)
+    );
+    let pct = Math.min(f.length/OBJ_VCP*100,100);
+    let vs = document.getElementById('vcpStatus');
+    if(vs) {
+        if(pct>=100) vs.innerText='✅ Cumplido';
+        else if(pct>=70) vs.innerText='⚠ Casi';
+        else vs.innerText='⚠ Pendiente';
+    }
+    document.getElementById('vcpBar').style.width = pct+'%';
+    document.getElementById('vcpCurrent').innerText = f.length;
+    document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
+    updateCategoryCards(f, 'vcp');
+    renderVCPTable(f);
+}
+
+function renderVCPTable(data) {
+    let tb = document.getElementById('vcpTableBody'); if(!tb) return;
+    tb.innerHTML = '';
+    const sorted = [...data].sort((a,b) => new Date(b.fecha)-new Date(a.fecha));
+    const hoy = new Date();
+    const diaHoy = hoy.getDate().toString().padStart(2,'0');
+    const mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    
+    sorted.slice(0,50).forEach(e => {
+        let tr = document.createElement('tr');
+        let esHoy = (e.dia===diaHoy && e.mes===mesHoy);
+        tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
+        tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}${esHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">HOY</span>':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${e.descripcion?.substring(0,40)||'-'}${e.descripcion?.length>40?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,20)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`;
+        tb.appendChild(tr);
+    });
+}
+
+function updatePersonVCPStatsOnly() {
+    let p = document.getElementById('vcpPersonFilter')?.value || 'todos';
+    let m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo';
+    let f = VCP_DATA.filter(v => (p==='todos'||v.personaObservada===p) && (m==='todo'||v.mes===m));
+    document.getElementById('personVCPCount').innerText = f.length;
+    document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes : '-';
+}
+
+function populateVCPPeopleFilter() {
+    let counts = new Map();
+    VCP_DATA.forEach(v => { if(v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada)||0)+1); });
+    let sel = document.getElementById('vcpPersonFilter'); if(!sel) return;
+    sel.innerHTML = '<option value="todos">👥 Todas las personas</option>';
+    [...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`);
+    updatePersonVCPStatsOnly();
+}
+
+// ==================== GRÁFICOS (COMPLETOS) ====================
+function updateChartsDona(data, type) {
+    const cats = type==='actos' ? 
+        [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}] :
+        [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
+    
+    const canvasId = type==='actos' ? 'categoryChart' : 'vcpCategoryChart';
+    const ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return;
+    
+    let counts = {}; cats.forEach(c=>counts[c.id]=0);
+    data.forEach(e=>{ if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0)+1; });
+    
+    if(type==='actos' && categoryChart) categoryChart.destroy();
+    if(type!=='actos' && vcpCategoryChart) vcpCategoryChart.destroy();
+    
+    const chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: cats.map(c=>`${c.icon} ${c.name}`),
+            datasets: [{
+                data: cats.map(c=>counts[c.id]||0),
+                backgroundColor: cats.map(c=>c.color),
+                borderWidth: 2, borderColor: 'white', hoverOffset: 10
+            }]
+        },
+        options: {
+            cutout: '60%',
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { font: {size:9}, usePointStyle:true }},
+                tooltip: { callbacks: { label: (ctx) => {
+                    const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+                    const pct = Math.round((ctx.parsed/total)*100);
+                    return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
+                }}}
+            }
+        }
+    });
+    if(type==='actos') categoryChart = chart; else vcpCategoryChart = chart;
+}
+
+function updateTrendChart() {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const ctx = document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return;
+    
+    let aPM = meses.map(m => ACTOS_COND_DATA.filter(e=>e.mes===m && e.tipo==='acto').length);
+    let cPM = meses.map(m => ACTOS_COND_DATA.filter(e=>e.mes===m && e.tipo==='condicion').length);
+    
+    if(trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),
+            datasets: [
+                { label:'⚠️ Actos', data:aPM, borderColor:'#06b6d4', backgroundColor:'rgba(6,182,212,0.1)', tension:0.3, fill:true },
+                { label:'🏚️ Condiciones', data:cPM, borderColor:'#f59e0b', backgroundColor:'rgba(245,158,11,0.1)', tension:0.3, fill:true }
+            ]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { position:'top', labels:{font:{size:9}} }},
+            scales: { y: { beginAtZero:true, ticks:{stepSize:10} }, x: { ticks:{font:{size:9}} } }
+        }
+    });
+}
+
+// ==================== EVENT LISTENERS COMPLETOS ====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Filtros Actos
+    document.getElementById('monthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.mes=e.target.value; applyGeneralFilters(); }});
+    document.getElementById('supervisorSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); });
+    document.getElementById('supervisorMonthSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); });
+    
+    // Filtros VCP
+    document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.vcpMes=e.target.value; applyVCPFilters(); }});
+    document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+    document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+    
+    // Clickables
+    document.getElementById('actosCardSupervisor')?.addEventListener('click', () => {});
+    document.getElementById('condCardSupervisor')?.addEventListener('click', () => {});
+    document.getElementById('vcpCardPersona')?.addEventListener('click', () => {});
+    
+    // Audio init
+    document.addEventListener('click', function initAudio() {
+        window.initAudioContext();
+        document.removeEventListener('click', initAudio);
+    }, {once:true});
+});
+
+function updateSupervisorCard() {
+    let s = document.getElementById('supervisorSelect')?.value || 'todos';
+    let m = document.getElementById('supervisorMonthSelect')?.value || 'todo';
+    let f = ACTOS_COND_DATA.filter(e => (s==='todos'||e.observador===s) && (m==='todo'||e.mes===m));
+    document.getElementById('supActosCount').innerText = f.filter(e=>e.tipo==='acto').length;
+    document.getElementById('supCondCount').innerText = f.filter(e=>e.tipo==='condicion').length;
+}
+
+function populateSupervisors() {
+    let s = [...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort();
+    let sel = document.getElementById('supervisorSelect'); if(!sel) return;
+    sel.innerHTML = '<option value="todos">🔘 Todos</option>';
+    s.forEach(x => sel.innerHTML += `<option value="${x}">👤 ${x}</option>`);
+    updateSupervisorCard();
+}
+
+function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); applyGeneralFilters(); }
+function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); applyGeneralFilters(); }
+function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#d97706'); applyVCPFilters(); }
+function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#d97706'); applyVCPFilters(); }
+
+function updateButtons(cid,act,col) {
+    document.querySelectorAll(`#${cid} .btn-filter`).forEach(b => { b.classList.remove('active'); b.style.background='white'; b.style.color='#475569'; });
+    act.classList.add('active'); act.style.background=col; act.style.color='white';
+}
+
+function limpiarFiltroGrafico() { state.mes='todo'; const m=document.getElementById('monthFilter'); if(m)m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
+function limpiarFiltroCausa() { state.causaRaiz='todas'; applyGeneralFilters(); }
+function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
+function clearVCPCauseFilter() { state.vcpCausa='todas'; applyVCPFilters(); }
+
 </script>
 </body>
 </html>
