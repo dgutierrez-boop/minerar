@@ -254,6 +254,19 @@
         <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
+
+<!-- MODAL PARA REPORTES DE HOY -->
+<div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
+    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200 max-h-[80vh] overflow-hidden">
+        <div class="flex justify-between items-center mb-4">
+            <h2 id="dailyReportsTitle" class="font-black text-2xl text-cyan-700">📋 Reportes de Hoy</h2>
+            <button onclick="closeDailyReportsModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button>
+        </div>
+        <div id="dailyReportsContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
+        <button onclick="closeDailyReportsModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+    </div>
+</div>
+
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
         <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
@@ -341,8 +354,14 @@ let actosNovedades = 0, vcpNovedades = 0;
 let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
 let lastKnownActosRows = 0, lastKnownVcpRows = 0;
 let currentDateKey = new Date().toDateString();
-let todayAlertsActos = [];
-let todayAlertsVCP = [];
+
+// Alertas POR SUCURSAL (objeto con clave por sucursal)
+let todayAlertsBySucursal = {
+    MALAGUENO: { actos: [], vcp: [] },
+    BARKER: { actos: [], vcp: [] },
+    LAPAMPITA: { actos: [], vcp: [] }
+};
+
 let soundEnabled = true;
 let isModalOpen = false;
 let alertCountdownInterval = null;
@@ -529,32 +548,57 @@ function dismissAlert() {
     if(alertEl) alertEl.classList.remove('show');
 }
 
+// Mostrar modal con lista de reportes de hoy
 function toggleActosAlerts() {
-    const count = todayAlertsActos.length;
-    if (count === 0) { 
-        alert('📋 REPORTES DE ACTOS HOY\n\n📭 Sin reportes hoy'); 
-        return; 
-    }
-    let mensaje = `📋 REPORTES DE ACTOS HOY (${count})\n\n`;
-    todayAlertsActos.forEach((a,i) => {
-        mensaje += `${i+1}. 🕒 ${a.hora} - ${a.persona}\n   🏭 ${a.sector}\n   📝 ${(a.desc||'').substring(0,60)}\n\n`;
-    });
-    alert(mensaje);
-    acknowledgeBadge('actos');
+    const alerts = todayAlertsBySucursal[currentSucursal].actos;
+    showDailyReportsModal('actos', alerts);
 }
 
 function toggleVCPAlerts() {
-    const count = todayAlertsVCP.length;
-    if (count === 0) { 
-        alert('📋 REPORTES DE VCP HOY\n\n📭 Sin reportes hoy'); 
-        return; 
+    const alerts = todayAlertsBySucursal[currentSucursal].vcp;
+    showDailyReportsModal('vcp', alerts);
+}
+
+function showDailyReportsModal(type, alerts) {
+    const modal = document.getElementById('dailyReportsModal');
+    const titleEl = document.getElementById('dailyReportsTitle');
+    const contentEl = document.getElementById('dailyReportsContent');
+    
+    const title = type === 'actos' ? '📋 REPORTES DE ACTOS HOY' : '📋 REPORTES DE VCP HOY';
+    const colorClass = type === 'actos' ? 'text-cyan-700' : 'text-purple-700';
+    
+    titleEl.textContent = title;
+    titleEl.className = `font-black text-2xl ${colorClass}`;
+    
+    if (alerts.length === 0) {
+        contentEl.innerHTML = '<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>';
+    } else {
+        contentEl.innerHTML = alerts.map((a, i) => `
+            <div class="border-l-4 ${type === 'actos' ? 'border-cyan-500 bg-cyan-50' : 'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold ${type === 'actos' ? 'text-cyan-700' : 'text-purple-700'}">#${i + 1}</span>
+                    <span class="text-xs text-slate-500">🕒 ${a.hora}</span>
+                </div>
+                <div class="font-bold text-slate-800 mb-1">👤 ${a.persona || 'No identificado'}</div>
+                <div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector || 'No especificado'}</div>
+                <div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.desc || 'Sin descripción'}</div>
+                <div class="text-xs text-slate-400 mt-2">${a.tipo || 'Reporte'}</div>
+            </div>
+        `).join('');
     }
-    let mensaje = `📋 REPORTES DE VCP HOY (${count})\n\n`;
-    todayAlertsVCP.forEach((a,i) => {
-        mensaje += `${i+1}. 🕒 ${a.hora} - ${a.persona}\n   🏭 ${a.sector}\n   📝 ${(a.desc||'').substring(0,60)}\n\n`;
-    });
-    alert(mensaje);
-    acknowledgeBadge('vcp');
+    
+    modal.querySelector('.modal-bounce').style.animation = 'none';
+    modal.querySelector('.modal-bounce').offsetHeight;
+    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+}
+
+function closeDailyReportsModal() {
+    const modal = document.getElementById('dailyReportsModal');
+    modal.classList.add('hidden-section');
+    modal.style.display = 'none';
 }
 
 function acknowledgeBadge(type) {
@@ -565,9 +609,9 @@ function acknowledgeBadge(type) {
 function addDailyAlert(persona, sector, desc, tipo, hora) {
     const alertData = { persona, sector, desc, tipo, hora, timestamp: Date.now() };
     if (tipo && tipo.toLowerCase().includes('vcp')) {
-        todayAlertsVCP.unshift(alertData);
+        todayAlertsBySucursal[currentSucursal].vcp.unshift(alertData);
     } else {
-        todayAlertsActos.unshift(alertData);
+        todayAlertsBySucursal[currentSucursal].actos.unshift(alertData);
     }
     updatePulseBadges();
     updateRealTimeUI();
@@ -576,18 +620,19 @@ function addDailyAlert(persona, sector, desc, tipo, hora) {
 function updatePulseBadges() {
     const badgeActosCard = document.getElementById('actosNovedadBadge');
     const badgeVCPCard = document.getElementById('vcpNovedadBadge');
+    const currentAlerts = todayAlertsBySucursal[currentSucursal];
     
     if (badgeActosCard) {
-        if (todayAlertsActos.length > 0) {
-            badgeActosCard.textContent = Math.min(todayAlertsActos.length, 9);
+        if (currentAlerts.actos.length > 0) {
+            badgeActosCard.textContent = Math.min(currentAlerts.actos.length, 9);
             badgeActosCard.classList.remove('hidden');
         } else {
             badgeActosCard.classList.add('hidden');
         }
     }
     if (badgeVCPCard) {
-        if (todayAlertsVCP.length > 0) {
-            badgeVCPCard.textContent = Math.min(todayAlertsVCP.length, 9);
+        if (currentAlerts.vcp.length > 0) {
+            badgeVCPCard.textContent = Math.min(currentAlerts.vcp.length, 9);
             badgeVCPCard.classList.remove('hidden');
         } else {
             badgeVCPCard.classList.add('hidden');
@@ -600,14 +645,15 @@ function updateRealTimeUI() {
     const vcpContainer = document.getElementById('realTimeReportsVCP');
     const actosLed = document.getElementById('actosLed');
     const vcpLed = document.getElementById('vcpLed');
+    const currentAlerts = todayAlertsBySucursal[currentSucursal];
     
     if(!actosContainer || !vcpContainer) return;
     
-    if(actosLed) actosLed.className = todayAlertsActos.length > 0 ? 'siren-green' : 'siren-red';
-    if(vcpLed) vcpLed.className = todayAlertsVCP.length > 0 ? 'siren-green' : 'siren-red';
+    if(actosLed) actosLed.className = currentAlerts.actos.length > 0 ? 'siren-green' : 'siren-red';
+    if(vcpLed) vcpLed.className = currentAlerts.vcp.length > 0 ? 'siren-green' : 'siren-red';
     
-    if(todayAlertsActos.length > 0) {
-        actosContainer.innerHTML = todayAlertsActos.map(a => `
+    if(currentAlerts.actos.length > 0) {
+        actosContainer.innerHTML = currentAlerts.actos.map(a => `
             <div class="report-item feed-item" style="border-left-color:#10b981;">
                 <div class="flex justify-between items-start">
                     <span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span>
@@ -622,8 +668,8 @@ function updateRealTimeUI() {
         actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>';
     }
     
-    if(todayAlertsVCP.length > 0) {
-        vcpContainer.innerHTML = todayAlertsVCP.map(a => `
+    if(currentAlerts.vcp.length > 0) {
+        vcpContainer.innerHTML = currentAlerts.vcp.map(a => `
             <div class="report-item feed-item" style="border-left-color:#f59e0b;">
                 <div class="flex justify-between items-start">
                     <span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span>
@@ -643,8 +689,11 @@ function checkAndResetDailyCounters() {
     const today = getTodayKey();
     if(today !== currentDateKey) {
         currentDateKey = today;
-        todayAlertsActos = [];
-        todayAlertsVCP = [];
+        // Resetear alertas de TODAS las sucursales
+        Object.keys(todayAlertsBySucursal).forEach(suc => {
+            todayAlertsBySucursal[suc].actos = [];
+            todayAlertsBySucursal[suc].vcp = [];
+        });
         reportesNotificadosActos.clear();
         reportesNotificadosVCP.clear();
         lastKnownActosRows = 0;
@@ -711,7 +760,7 @@ async function loadData() {
                 
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
                 
-                // DETECTAR REPORTES DE HOY
+                // DETECTAR REPORTES DE HOY (SOLO PARA LA SUCURSAL ACTUAL)
                 const fechaPartes = fecha.split('/');
                 const fechaISO = fechaPartes.length === 3 ? `${fechaPartes[2]}-${fechaPartes[1].padStart(2,'0')}-${fechaPartes[0].padStart(2,'0')}` : '';
                 
@@ -720,7 +769,7 @@ async function loadData() {
                     if(!reportesNotificadosActos.has(idUnico)) {
                         reportesNotificadosActos.add(idUnico);
                         const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
-                        todayAlertsActos.unshift({
+                        todayAlertsBySucursal[currentSucursal].actos.unshift({
                             persona: observador,
                             tipo: tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND',
                             descripcion: desc,
@@ -755,7 +804,7 @@ async function loadData() {
                 const cat = classifyData(des, true);
                 VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
                 
-                // DETECTAR VCP DE HOY
+                // DETECTAR VCP DE HOY (SOLO PARA LA SUCURSAL ACTUAL)
                 const frPartes = fr.split('/');
                 const fechaISO = frPartes.length === 3 ? `${frPartes[2]}-${frPartes[1].padStart(2,'0')}-${frPartes[0].padStart(2,'0')}` : '';
                 
@@ -764,7 +813,7 @@ async function loadData() {
                     if(!reportesNotificadosVCP.has(idUnico)) {
                         reportesNotificadosVCP.add(idUnico);
                         const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
-                        todayAlertsVCP.unshift({
+                        todayAlertsBySucursal[currentSucursal].vcp.unshift({
                             persona: po,
                             tipo: '🎯 VCP',
                             descripcion: des,
