@@ -307,6 +307,58 @@
 </div>
 
 <script>
+// ==================== FUNCIONES UTILITARIAS (AL PRINCIPIO) ====================
+function getTodayKey() { 
+    return new Date().toDateString(); 
+}
+
+function getTodayISO() {
+    const hoy = new Date();
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+}
+
+function parseFecha(f) {
+    if(!f) return {dia:'',mes:'',valido:false};
+    let s = f.toString().split(' ')[0].trim();
+    let p = s.split('/');
+    if(p.length>=3) {
+        let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]);
+        if(p[2].length===2) a=2000+a;
+        if(m>=1 && m<=12 && a===2026) {
+            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return {dia: d, mes: meses[m-1], valido: true};
+        }
+    }
+    p = s.split('-');
+    if(p.length>=3) {
+        let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0');
+        if(m>=1 && m<=12 && a===2026) {
+            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            return {dia: d, mes: meses[m-1], valido: true};
+        }
+    }
+    return {dia:'',mes:'',valido:false};
+}
+
+function classifyData(desc,useVCP=false) {
+    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
+    const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
+    if(!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5];
+    let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0;
+    for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best;
+}
+
+function parseCSV(text) {
+    const lines=text.split('\n').filter(l=>l.trim()), r=[];
+    for(let i=1;i<lines.length;i++){
+        const line=lines[i],cols=[];let cur='',inq=false;
+        for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;}
+        cols.push(cur.trim());
+        if(cols.length>=10)r.push(cols);
+    }
+    return r;
+}
+
 // ==================== CONFIGURACIÓN ====================
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
 let isUnlocked = false;
@@ -420,7 +472,7 @@ function playErrorSound() {
 
 function toggleSound() { 
     soundEnabled = !soundEnabled; 
-    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
@@ -642,55 +694,6 @@ function checkAndResetDailyCounters() {
         updatePulseBadges();
         updateRealTimeUI();
     }
-}
-
-// ==================== DATA PARSING ====================
-function getTodayKey() { return new Date().toDateString(); }
-function getTodayISO() {
-    const hoy = new Date();
-    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-}
-
-function parseFecha(f) {
-    if(!f) return {dia:'',mes:'',valido:false};
-    let s = f.toString().split(' ')[0].trim();
-    let p = s.split('/');
-    if(p.length>=3) {
-        let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]);
-        if(p[2].length===2) a=2000+a;
-        if(m>=1 && m<=12 && a===2026) {
-            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            return {dia: d, mes: meses[m-1], valido: true};
-        }
-    }
-    p = s.split('-');
-    if(p.length>=3) {
-        let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0');
-        if(m>=1 && m<=12 && a===2026) {
-            const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-            return {dia: d, mes: meses[m-1], valido: true};
-        }
-    }
-    return {dia:'',mes:'',valido:false};
-}
-
-function classifyData(desc,useVCP=false) {
-    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
-    const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
-    if(!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5];
-    let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0;
-    for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best;
-}
-
-function parseCSV(text) {
-    const lines=text.split('\n').filter(l=>l.trim()), r=[];
-    for(let i=1;i<lines.length;i++){
-        const line=lines[i],cols=[];let cur='',inq=false;
-        for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;}
-        cols.push(cur.trim());
-        if(cols.length>=10)r.push(cols);
-    }
-    return r;
 }
 
 // ==================== DATA LOADING ====================
