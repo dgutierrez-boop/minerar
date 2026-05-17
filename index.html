@@ -45,6 +45,8 @@
         table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
+        tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f59e0b; }
+        tr.row-hoy:hover { background-color: #fde68a !important; }
         
         /* Animaciones */
         @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
@@ -142,7 +144,7 @@
 <!-- 🖋️ MARCA DE AGUA -->
 <div class="watermark" id="watermark">BY DHG</div>
 
-<!-- 🔐 BADGES PULSANTES -->
+<!-- 🔔 BADGES PULSANTES FLOTANTES -->
 <div id="pulseBadgeActos" class="pulse-badge pulse-badge-actos hidden-section" onclick="toggleActosAlerts()" title="Ver reportes de Actos hoy">0</div>
 <div id="pulseBadgeVCP" class="pulse-badge pulse-badge-vcp hidden-section" onclick="toggleVCPAlerts()" title="Ver reportes de VCP hoy">0</div>
 
@@ -165,7 +167,7 @@
 <!-- 🌊 PANTALLA DE BIENVENIDA -->
 <div id="welcomeOverlay" class="hidden-section">
     <div class="welcome-card">
-        <div class="welcome-icon">👷‍️️️</div>
+        <div class="welcome-icon">👷‍️⛑️️</div>
         <h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
         <div class="welcome-divider"></div>
         <p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
@@ -193,11 +195,19 @@
     <div class="header-container flex flex-wrap justify-between items-center">
         <div class="flex items-center gap-4">
             <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img" style="width:60px;height:60px;object-fit:contain;"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
         </div>
         <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative"><div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP </div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative cursor-pointer" onclick="toggleActosAlerts()">
+                <div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div>
+                <div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div>
+                <div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
+            </div>
+            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative cursor-pointer" onclick="toggleVCPAlerts()">
+                <div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP </div>
+                <div id="totalVCP" class="text-3xl font-black text-amber-800">0</div>
+                <div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div>
+            </div>
             <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
             <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
         </div>
@@ -318,48 +328,73 @@ let lastKnownActosRows = 0, lastKnownVcpRows = 0;
 let currentDateKey = new Date().toDateString();
 let todayAlertsActos = [];
 let todayAlertsVCP = [];
-let audioContextInitialized = false;
+let soundEnabled = true;
+let isModalOpen = false;
+let alertCountdownInterval = null;
+let autoCountdownTimer = null;
+let progressInterval = null;
 
-// Inicializar AudioContext
-function initAudioContext() {
-    if (!audioContextInitialized) {
-        try {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            audioContextInitialized = true;
-        } catch(e) {}
+// ==================== AUDIO SYSTEM ====================
+window.audioContextInitialized = false;
+window.audioContext = null;
+
+window.initAudioContext = function() {
+    if (window.audioContextInitialized) return true;
+    try {
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        if (window.audioContext.state === 'suspended') {
+            window.audioContext.resume();
+        }
+        window.audioContextInitialized = true;
+        console.log('✅ Audio Context inicializado');
+        return true;
+    } catch(e) {
+        console.warn('⚠️ Audio Context error:', e);
+        return false;
     }
 }
 
-function togglePasswordVisibility() {
-    initAudioContext();
-    const input = document.getElementById('passwordInput');
-    const btn = document.getElementById('togglePasswordBtn');
-    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️️'; }
-    else { input.type = 'password'; btn.textContent = '👁️'; }
-    input.focus();
-}
-
-function playAlarmSound() {
-    if (!audioContextInitialized) initAudioContext();
+window.playAlarmSound = function() {
+    if (!soundEnabled) return;
+    
+    if (!window.audioContextInitialized) {
+        const success = window.initAudioContext();
+        if (!success) return;
+    }
+    
+    if (window.audioContext.state === 'suspended') {
+        window.audioContext.resume();
+    }
+    
     try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         for (let cycle = 0; cycle < 3; cycle++) {
-            [880, 1046, 1175].forEach((f, i) => {
-                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
-                o.connect(g); g.connect(audioCtx.destination);
-                o.frequency.value = f; o.type = 'square';
-                g.gain.setValueAtTime(0.4, audioCtx.currentTime + (cycle * 0.45) + (i * 0.15));
-                g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (cycle * 0.45) + (i * 0.15) + 0.12);
-                o.start(audioCtx.currentTime + (cycle * 0.45) + (i * 0.15));
-                o.stop(audioCtx.currentTime + (cycle * 0.45) + (i * 0.15) + 0.12);
+            const baseTime = window.audioContext.currentTime + (cycle * 0.5);
+            [880, 1175, 1568].forEach((freq, index) => {
+                const oscillator = window.audioContext.createOscillator();
+                const gainNode = window.audioContext.createGain();
+                oscillator.connect(gainNode);
+                gainNode.connect(window.audioContext.destination);
+                oscillator.frequency.value = freq;
+                oscillator.type = 'square';
+                const startTime = baseTime + (index * 0.12);
+                const endTime = startTime + 0.1;
+                gainNode.gain.setValueAtTime(0.5, startTime);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, endTime);
+                oscillator.start(startTime);
+                oscillator.stop(endTime);
             });
         }
-    } catch(e) {}
+        console.log('🔊 Alarma reproducida');
+    } catch(e) {
+        console.error('❌ Error reproduciendo alarma:', e);
+    }
 }
+
 function playUnlockSound() { 
-    if (!audioContextInitialized) initAudioContext();
+    if (!soundEnabled) return;
+    window.initAudioContext();
     try { 
-        const a=new(window.AudioContext||window.webkitAudioContext()); 
+        const a = new(window.AudioContext||window.webkitAudioContext()); 
         [523.25,659.25,783.99,1046.50].forEach((f,i)=>{
             const o=a.createOscillator(),g=a.createGain();
             o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine';
@@ -369,8 +404,10 @@ function playUnlockSound() {
         });
     } catch(e){} 
 }
+
 function playErrorSound() { 
-    if (!audioContextInitialized) initAudioContext();
+    if (!soundEnabled) return;
+    window.initAudioContext();
     try { 
         const a=new(window.AudioContext||window.webkitAudioContext()); 
         const o=a.createOscillator(),g=a.createGain();
@@ -380,18 +417,29 @@ function playErrorSound() {
         o.start();o.stop(a.currentTime+0.3);
     } catch(e){} 
 }
+
 function toggleSound() { 
     soundEnabled = !soundEnabled; 
     document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
+// ==================== AUTH & WELCOME ====================
+function togglePasswordVisibility() {
+    window.initAudioContext();
+    const input = document.getElementById('passwordInput');
+    const btn = document.getElementById('togglePasswordBtn');
+    if (input.type === 'password') { input.type = 'text'; btn.textContent = '🙈'; }
+    else { input.type = 'password'; btn.textContent = '👁️'; }
+    input.focus();
+}
+
 function verifyPassword() {
-    initAudioContext();
+    window.initAudioContext();
     const input = document.getElementById('passwordInput'), errorDiv = document.getElementById('passwordError'), overlay = document.getElementById('passwordOverlay');
     if (input.value === PASSWORD_CORRECTA) {
         playUnlockSound(); errorDiv.textContent = '';
-        overlay.innerHTML = '<div class="password-card"><div class="unlock-success">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>';
+        overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>';
         setTimeout(() => { overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); }, 300); }, 1000);
     } else {
         playErrorSound(); errorDiv.textContent = '🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'), 500);
@@ -417,37 +465,72 @@ function enterMainPanel() {
         isUnlocked = true;
         loadData().then(() => { updatePulseBadges(); });
         setInterval(() => {
-            checkNewReports();
+            if (!isModalOpen) checkNewReports();
         }, 15000);
     }, 400);
 }
 
+// ==================== ALERT SYSTEM ====================
 function showNewReportAlert(persona, sector, desc, tipo, hora) {
+    if (!soundEnabled) return;
+    
     const alertEl = document.getElementById('newReportAlert');
     const contentEl = document.getElementById('alertContent');
+    
+    if (!alertEl || !contentEl) return;
+    if (alertEl.classList.contains('show')) return;
+    
+    const iconoTipo = tipo === 'vcp' ? '🎯' : (tipo.toLowerCase().includes('acto') ? '⚠️' : '🏚️');
+    const tituloTipo = tipo === 'vcp' ? 'VCP' : tipo.toUpperCase();
+    
     contentEl.innerHTML = `
         <div class="alert-person">👤 ${persona || 'No identificado'}</div>
         <div class="alert-sector">🏭 ${sector || 'Sector no especificado'}</div>
-        <div class="alert-desc">${tipo === 'vcp' ? '🎯' : tipo?.toLowerCase().includes('acto') ? '⚠️' : '🏚️'} <strong>${tipo?.toUpperCase() || 'Reporte'}</strong><br>${desc || 'Sin descripción'}</div>
+        <div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc || 'Sin descripción'}</div>
         <div class="alert-time">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>
     `;
+    
     alertEl.classList.add('show');
-    if(soundEnabled) playAlarmSound();
+    window.playAlarmSound();
+    
     let secs = 15;
     document.getElementById('alertCountdown').textContent = secs;
-    alertCountdownInterval = setInterval(()=>{ secs--; document.getElementById('alertCountdown').textContent = secs; if(secs <= 0) dismissAlert(); }, 1000);
+    
+    if (alertCountdownInterval) clearInterval(alertCountdownInterval);
+    alertCountdownInterval = setInterval(()=>{ 
+        secs--; 
+        const el = document.getElementById('alertCountdown');
+        if(el) el.textContent = secs; 
+        if(secs <= 0) dismissAlert(); 
+    }, 1000);
 }
-function dismissAlert() { clearInterval(alertCountdownInterval); document.getElementById('newReportAlert').classList.remove('show'); }
+
+function dismissAlert() { 
+    if (alertCountdownInterval) {
+        clearInterval(alertCountdownInterval);
+        alertCountdownInterval = null;
+    }
+    const alertEl = document.getElementById('newReportAlert');
+    if(alertEl) alertEl.classList.remove('show');
+}
 
 function toggleActosAlerts() {
     const count = todayAlertsActos.length;
     if (count === 0) { alert('📋 REPORTES DE ACTOS HOY\n\n📭 Sin reportes hoy'); return; }
     alert(`📋 REPORTES DE ACTOS HOY (${count})\n\n` + todayAlertsActos.map((a,i) => `${i+1}. 🕒 ${a.hora} - ${a.persona}\n   🏭 ${a.sector}\n   📝 ${(a.desc||'').substring(0,60)}`).join('\n\n'));
+    acknowledgeBadge('actos');
 }
+
 function toggleVCPAlerts() {
     const count = todayAlertsVCP.length;
     if (count === 0) { alert('📋 REPORTES DE VCP HOY\n\n📭 Sin reportes hoy'); return; }
     alert(`📋 REPORTES DE VCP HOY (${count})\n\n` + todayAlertsVCP.map((a,i) => `${i+1}. 🕒 ${a.hora} - ${a.persona}\n   🏭 ${a.sector}\n   📝 ${(a.desc||'').substring(0,60)}`).join('\n\n'));
+    acknowledgeBadge('vcp');
+}
+
+function acknowledgeBadge(type) {
+    const badge = document.getElementById(type === 'actos' ? 'actosNovedadBadge' : 'vcpNovedadBadge');
+    if(badge) badge.classList.add('hidden');
 }
 
 function addDailyAlert(persona, sector, desc, tipo, hora) {
@@ -464,10 +547,12 @@ function addDailyAlert(persona, sector, desc, tipo, hora) {
 function updatePulseBadges() {
     const badgeActos = document.getElementById('pulseBadgeActos');
     const badgeVCP = document.getElementById('pulseBadgeVCP');
+    const badgeActosCard = document.getElementById('actosNovedadBadge');
+    const badgeVCPCard = document.getElementById('vcpNovedadBadge');
     
     if (badgeActos) {
         if (todayAlertsActos.length > 0) {
-            badgeActos.textContent = todayAlertsActos.length;
+            badgeActos.textContent = Math.min(todayAlertsActos.length, 9) + (todayAlertsActos.length > 9 ? '+' : '');
             badgeActos.classList.remove('hidden-section');
         } else {
             badgeActos.classList.add('hidden-section');
@@ -475,10 +560,26 @@ function updatePulseBadges() {
     }
     if (badgeVCP) {
         if (todayAlertsVCP.length > 0) {
-            badgeVCP.textContent = todayAlertsVCP.length;
+            badgeVCP.textContent = Math.min(todayAlertsVCP.length, 9) + (todayAlertsVCP.length > 9 ? '+' : '');
             badgeVCP.classList.remove('hidden-section');
         } else {
             badgeVCP.classList.add('hidden-section');
+        }
+    }
+    if (badgeActosCard) {
+        if (todayAlertsActos.length > 0) {
+            badgeActosCard.textContent = Math.min(todayAlertsActos.length, 9);
+            badgeActosCard.classList.remove('hidden');
+        } else {
+            badgeActosCard.classList.add('hidden');
+        }
+    }
+    if (badgeVCPCard) {
+        if (todayAlertsVCP.length > 0) {
+            badgeVCPCard.textContent = Math.min(todayAlertsVCP.length, 9);
+            badgeVCPCard.classList.remove('hidden');
+        } else {
+            badgeVCPCard.classList.add('hidden');
         }
     }
 }
@@ -491,16 +592,9 @@ function updateRealTimeUI() {
     
     if(!actosContainer || !vcpContainer) return;
     
-    if(actosLed) {
-        if(todayAlertsActos.length > 0) actosLed.className = 'siren-green';
-        else actosLed.className = 'siren-red';
-    }
-    if(vcpLed) {
-        if(todayAlertsVCP.length > 0) vcpLed.className = 'siren-green';
-        else vcpLed.className = 'siren-red';
-    }
+    if(actosLed) actosLed.className = todayAlertsActos.length > 0 ? 'siren-green' : 'siren-red';
+    if(vcpLed) vcpLed.className = todayAlertsVCP.length > 0 ? 'siren-green' : 'siren-red';
     
-    // ACTOS FEED
     if(todayAlertsActos.length > 0) {
         actosContainer.innerHTML = todayAlertsActos.map(a => `
             <div class="report-item feed-item" style="border-left-color:#10b981;">
@@ -517,7 +611,6 @@ function updateRealTimeUI() {
         actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>';
     }
     
-    // VCP FEED
     if(todayAlertsVCP.length > 0) {
         vcpContainer.innerHTML = todayAlertsVCP.map(a => `
             <div class="report-item feed-item" style="border-left-color:#f59e0b;">
@@ -549,6 +642,13 @@ function checkAndResetDailyCounters() {
         updatePulseBadges();
         updateRealTimeUI();
     }
+}
+
+// ==================== DATA PARSING ====================
+function getTodayKey() { return new Date().toDateString(); }
+function getTodayISO() {
+    const hoy = new Date();
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
 }
 
 function parseFecha(f) {
@@ -593,6 +693,7 @@ function parseCSV(text) {
     return r;
 }
 
+// ==================== DATA LOADING ====================
 async function loadData() {
     if(!isUnlocked) return;
     try {
@@ -608,11 +709,9 @@ async function loadData() {
         currentShowVCP = config.showVCP;
         
         const hoy = new Date();
-        const todayISO = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-        
-        // Recargar feeds para mostrar todo lo de hoy
-        todayAlertsActos = [];
-        todayAlertsVCP = [];
+        const todayISO = getTodayISO();
+        const diaHoy = hoy.getDate().toString().padStart(2, '0');
+        const mesHoyNombre = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
 
         if(!ACTOS_URL) { 
             ACTOS_COND_DATA = []; 
@@ -652,28 +751,26 @@ async function loadData() {
                 
                 ACTOS_COND_DATA.push({fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat});
                 
-               // ✅ DETECTAR REPORTES DE HOY Y AGREGARLOS AL FEED
-// Usar 'fecha' en lugar de 'fechaRaw'
-const fechaPartes = fecha.split('/');
-const fechaISO = fechaPartes.length === 3 ? 
-    `${fechaPartes[2]}-${fechaPartes[1].padStart(2,'0')}-${fechaPartes[0].padStart(2,'0')}` : '';
-
-if(fechaISO === todayISO) {
-    const idUnico = `${observador}|${desc}|${fecha}`;
-    if(!reportesNotificadosActos.has(idUnico)) {
-        reportesNotificadosActos.add(idUnico);
-        const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
-        todayAlertsActos.unshift({
-            persona: observador,
-            tipo: tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND',
-            descripcion: desc,
-            sector: sector,
-            hora: hora,
-            timestamp: Date.now()
-        });
-        nuevosDetectados++;
-    }
-}
+                // DETECTAR REPORTES DE HOY
+                const fechaPartes = fecha.split('/');
+                const fechaISO = fechaPartes.length === 3 ? `${fechaPartes[2]}-${fechaPartes[1].padStart(2,'0')}-${fechaPartes[0].padStart(2,'0')}` : '';
+                
+                if(fechaISO === todayISO) {
+                    const idUnico = `${observador}|${desc}|${fecha}`;
+                    if(!reportesNotificadosActos.has(idUnico)) {
+                        reportesNotificadosActos.add(idUnico);
+                        const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+                        todayAlertsActos.unshift({
+                            persona: observador,
+                            tipo: tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND',
+                            descripcion: desc,
+                            sector: sector,
+                            hora: hora,
+                            timestamp: Date.now()
+                        });
+                        nuevosDetectados++;
+                    }
+                }
             }
 
             lastKnownActosRows = rows.length;
@@ -698,27 +795,26 @@ if(fechaISO === todayISO) {
                 const cat = classifyData(des, true);
                 VCP_DATA.push({fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat});
                 
-               // ✅ DETECTAR VCP DE HOY
-const frPartes = fr.split('/');
-const fechaISO = frPartes.length === 3 ? 
-    `${frPartes[2]}-${frPartes[1].padStart(2,'0')}-${frPartes[0].padStart(2,'0')}` : '';
-
-if(fechaISO === todayISO) {
-    const idUnico = `${po}|${des}|${fr}`;
-    if(!reportesNotificadosVCP.has(idUnico)) {
-        reportesNotificadosVCP.add(idUnico);
-        const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
-        todayAlertsVCP.unshift({
-            persona: po,
-            tipo: '🎯 VCP',
-            descripcion: des,
-            sector: sec,
-            hora: hora,
-            timestamp: Date.now()
-        });
-        nuevosVCPDetectados++;
-    }
-}
+                // DETECTAR VCP DE HOY
+                const frPartes = fr.split('/');
+                const fechaISO = frPartes.length === 3 ? `${frPartes[2]}-${frPartes[1].padStart(2,'0')}-${frPartes[0].padStart(2,'0')}` : '';
+                
+                if(fechaISO === todayISO) {
+                    const idUnico = `${po}|${des}|${fr}`;
+                    if(!reportesNotificadosVCP.has(idUnico)) {
+                        reportesNotificadosVCP.add(idUnico);
+                        const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+                        todayAlertsVCP.unshift({
+                            persona: po,
+                            tipo: '🎯 VCP',
+                            descripcion: des,
+                            sector: sec,
+                            hora: hora,
+                            timestamp: Date.now()
+                        });
+                        nuevosVCPDetectados++;
+                    }
+                }
             }
 
             lastKnownVcpRows = rows2.length;
@@ -732,18 +828,19 @@ if(fechaISO === todayISO) {
         updateRealTimeUI();
 
     } catch(e) {
-        console.error('Error cargando datos:', e);
+        console.error('❌ Error cargando datos:', e);
     }
 }
 
 function checkNewReports() {
-    if(!isUnlocked) return;
+    if(!isUnlocked || isModalOpen) return;
     checkAndResetDailyCounters();
     loadData();
 }
 
 function forceRefreshData() { if(isUnlocked) loadData(); }
 
+// ==================== FILTERS & RENDERING ====================
 function applyAllFilters() {
     applyGeneralFilters();
     if(currentShowVCP) applyVCPFilters();
@@ -847,50 +944,303 @@ function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563
 function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#d97706'); applyVCPFilters(); }
 function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#d97706'); applyVCPFilters(); }
 function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';}); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
-function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
-function renderVCPTable(data) { let tb = document.getElementById('vcpTableBody'); tb.innerHTML=''; data.slice(0,50).forEach((e,i)=>{let tr = document.createElement('tr'); tr.className='border-b hover:bg-slate-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,data); tr.innerHTML=`<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
 
+// 🟢 TABLAS ORDENADAS POR FECHA (MÁS RECIENTES PRIMERO) + RESALTADO
+function renderGeneralTable(data) { 
+    let tb = document.getElementById('generalTableBody'); 
+    tb.innerHTML = ''; 
+    
+    // Ordenar: más recientes primero
+    const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`);
+        const dateB = new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`);
+        return dateB - dateA;
+    });
+    
+    const hoy = new Date();
+    const diaHoy = hoy.getDate().toString().padStart(2, '0');
+    const mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    
+    sortedData.slice(0, 50).forEach((e, i) => {
+        let tr = document.createElement('tr'); 
+        
+        // Detectar si es de hoy
+        let esDeHoy = (e.dia === diaHoy && e.mes === mesHoy);
+        tr.className = esDeHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
+        tr.onclick = () => openModal(e, i, sortedData);
+        
+        let iconoFecha = esDeHoy ? '🔥' : '📅';
+        let etiquetaNuevo = esDeHoy ? '<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>' : '';
+        
+        tr.innerHTML = `<td class="p-2 text-cyan-700">${iconoFecha} ${e.dia}/${e.mes} ${etiquetaNuevo}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,55)}${e.descripcion.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; 
+        tb.appendChild(tr); 
+    }); 
+}
+
+function renderVCPTable(data) { 
+    let tb = document.getElementById('vcpTableBody'); 
+    tb.innerHTML = ''; 
+    
+    // Ordenar: más recientes primero
+    const sortedData = [...data].sort((a, b) => {
+        const dateA = new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`);
+        const dateB = new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`);
+        return dateB - dateA;
+    });
+    
+    const hoy = new Date();
+    const diaHoy = hoy.getDate().toString().padStart(2, '0');
+    const mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    
+    sortedData.slice(0, 50).forEach((e, i) => {
+        let tr = document.createElement('tr'); 
+        
+        let esDeHoy = (e.dia === diaHoy && e.mes === mesHoy);
+        tr.className = esDeHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
+        tr.onclick = () => openModal(e, i, sortedData);
+        
+        let iconoFecha = esDeHoy ? '🔥' : '📅';
+        let etiquetaNuevo = esDeHoy ? '<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>' : '';
+        
+        tr.innerHTML = `<td class="p-2 text-amber-700">${iconoFecha} ${e.dia}/${e.mes} ${etiquetaNuevo}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0,50)||'-'}${e.descripcion.length>50?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,30)||'-'}${e.comentarios?.length>30?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; 
+        tb.appendChild(tr); 
+    }); 
+}
+
+// ==================== MODALS ====================
+function openModal(r, idx, data) { 
+    if(!isUnlocked) return; 
+    
+    isModalOpen = true;
+    currentModalData = data; 
+    currentModalIndex = idx;
+    
+    let modal = document.getElementById('reportDetailModal');
+    let content = document.getElementById('reportModalContent');
+    
+    modal.querySelector('.modal-bounce').style.animation = 'none';
+    modal.querySelector('.modal-bounce').offsetHeight;
+    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
+    
+    if(r.tipo === 'vcp') {
+        content.innerHTML = `
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p>
+                    <p><strong class="text-purple-600">🧑 Persona:</strong> ${r.personaObservada}</p>
+                    <p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p>
+                    <p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p>
+                </div>
+                <hr class="border-slate-200 my-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p>
+                <div class="bg-purple-50 p-3 rounded-lg border border-purple-100">
+                    <p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion || '-'}</p>
+                </div>
+                ${r.comentarios ? `
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p>
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200">
+                    <p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p>
+                </div>` : ''}
+            </div>
+        `;
+    } else {
+        content.innerHTML = `
+            <div class="space-y-3">
+                <div class="grid grid-cols-2 gap-2 text-sm">
+                    <p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p>
+                    <p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p>
+                    <p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p>
+                    <p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p>
+                </div>
+                <hr class="border-slate-200 my-2">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📖 LO SUCEDIDO (Descripción):</p>
+                <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-500 shadow-sm">
+                    <p class="text-[15px] text-slate-800 font-medium leading-relaxed break-words whitespace-pre-wrap">${r.descripcion || 'Sin descripción detallada.'}</p>
+                </div>
+                <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100">
+                    <p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado ? '<span class="text-emerald-600 font-bold">🔒 CERRADO</span>' : '<span class="text-red-500 font-bold">⚠️ ABIERTO</span>'}</p>
+                </div>
+            </div>
+        `;
+    }
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    updateNavButtons();
+}
+
+function closeReportModal() { 
+    let m = document.getElementById('reportDetailModal');
+    m.classList.add('hidden-section');
+    m.style.display = 'none';
+    isModalOpen = false;
+}
+
+function updateNavButtons() { 
+    let p = document.getElementById('btnPrev'), n = document.getElementById('btnNext'), c = document.getElementById('modalCounter');
+    let hp = currentModalIndex > 0, hn = currentModalIndex < currentModalData.length - 1;
+    p.disabled = !hp; n.disabled = !hn;
+    c.innerText = `${currentModalIndex + 1} / ${currentModalData.length}`; 
+}
+
+function goToNextModal() { 
+    if(currentModalIndex < currentModalData.length - 1) {
+        currentModalIndex++;
+        openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData);
+    } 
+}
+
+function goToPreviousModal() { 
+    if(currentModalIndex > 0) {
+        currentModalIndex--;
+        openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData);
+    } 
+}
+
+function abrirModalSupervisor(tipo) { 
+    if(!isUnlocked) return; 
+    let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; 
+    if(s === 'todos') { alert("⚠️ Seleccione un supervisor"); return; } 
+    let nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1), 
+        f = ACTOS_COND_DATA.filter(e => e.observador === s && (m === 'todo' || e.mes === m)), 
+        dt = f.filter(e => e.tipo === tipo); 
+    if(!dt.length) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s} en ${nm}.`); return; } 
+    let t = tipo === 'acto' ? `⚠️ ACTOS de ${s}` : `🏚️ CONDICIONES de ${s}`, 
+        ct = tipo === 'acto' ? '#0891b2' : '#d97706', 
+        html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; 
+    dt.forEach(e => {
+        let be = e.cerrado ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; 
+        html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0,60)}${e.descripcion.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`;
+    }); 
+    html += `</tbody></table></div>`; 
+    document.getElementById('modalSupervisorTitle').innerHTML = t; 
+    document.getElementById('modalSupervisorTitle').style.color = ct; 
+    document.getElementById('supervisorModalContent').innerHTML = html; 
+    const mod = document.getElementById('supervisorDetailModal'); 
+    mod.querySelector('.modal-bounce').style.animation = 'none';
+    mod.querySelector('.modal-bounce').offsetHeight;
+    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
+    mod.classList.remove('hidden-section');
+    mod.style.display = 'flex'; 
+}
+
+function closeSupervisorModal() { 
+    let m = document.getElementById('supervisorDetailModal');
+    m.classList.add('hidden-section');
+    m.style.display = 'none'; 
+}
+
+function abrirModalPersonaVCP() { 
+    if(!isUnlocked) return; 
+    let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value; 
+    if(p === 'todos') { alert("⚠️ Seleccione una persona"); return; } 
+    let nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1), 
+        f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m)); 
+    if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; } 
+    let html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; 
+    f.forEach(e => {
+        let dc = e.descripcion.length > 50 ? e.descripcion.substring(0,50) + '...' : e.descripcion,
+            cc = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0,30) + '...' : (e.comentarios || '-'); 
+        html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;
+    }); 
+    html += `</tbody></table></div>`; 
+    document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${p}`; 
+    document.getElementById('personaVCPModalContent').innerHTML = html; 
+    const mod = document.getElementById('personaVCPModal'); 
+    mod.querySelector('.modal-bounce').style.animation = 'none';
+    mod.querySelector('.modal-bounce').offsetHeight;
+    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
+    mod.classList.remove('hidden-section');
+    mod.style.display = 'flex'; 
+}
+
+function closePersonaVCPModal() { 
+    let m = document.getElementById('personaVCPModal');
+    m.classList.add('hidden-section');
+    m.style.display = 'none'; 
+}
+
+// ==================== UTILS ====================
 function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getElementById('monthFilter'); if(m){m.value='todo';state.mes='todo';} updateTrendChart(); applyGeneralFilters(); }
 function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; const c=document.getElementById('clearCausaBtn'); if(c)c.classList.add('hidden-section'); document.querySelectorAll('.category-card').forEach(card=>card.classList.remove('causa-seleccionada')); updateTrendChart(); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
 function actualizarLED(tipo,hay) { const l = document.getElementById(`${tipo}Led`); if(!l)return; if(hay){l.className='siren-green'; setTimeout(()=>{const o=document.getElementById(`${tipo}Led`);if(o)o.className='siren-red';},5000);} }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
-function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null;selectedChartMonth=null;state.causaRaiz='todas';state.mes='todo'; const m=document.getElementById('monthFilter');if(m)m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('causa-seleccionada')); const cb=document.getElementById('clearCausaBtn');if(cb)cb.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ACTOS_URL=c.actosUrl;VCP_URL=c.vcpUrl;currentMapping=c.mapping;currentVcpMapping=c.vcpMapping||null;currentObjetivos=c.objetivos;currentShowVCP=c.showVCP;actualizarObjetivosUI();toggleVCPVisibility(currentShowVCP);} document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked)loadData(); }
 
-function openModal(r,idx,data) { if(!isUnlocked)return; currentModalData=data;currentModalIndex=idx; let modal=document.getElementById('reportDetailModal'),content=document.getElementById('reportModalContent'); modal.querySelector('.modal-bounce').style.animation='none';modal.querySelector('.modal-bounce').offsetHeight;modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; if(r.tipo==='vcp'){content.innerHTML=`<div class="space-y-2"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-600">📝 Descripción:</strong> ${r.descripcion||'-'}</p><p><strong class="text-purple-600">💬 Comentarios:</strong> ${r.comentarios||'-'}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;} else {content.innerHTML=`<div class="space-y-2"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-cyan-600">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-cyan-600">⚙️ Estado:</strong> ${r.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</p></div>`;} modal.classList.remove('hidden-section');modal.style.display='flex';updateNavButtons(); }
-function closeReportModal() { let m=document.getElementById('reportDetailModal');m.classList.add('hidden-section');m.style.display='none'; }
-function updateNavButtons() { let p=document.getElementById('btnPrev'),n=document.getElementById('btnNext'),c=document.getElementById('modalCounter'),hp=currentModalIndex>0,hn=currentModalIndex<currentModalData.length-1;p.disabled=!hp;n.disabled=!hn;c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`; }
-function goToNextModal() { if(currentModalIndex<currentModalData.length-1){currentModalIndex++;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);} }
-function goToPreviousModal() { if(currentModalIndex>0){currentModalIndex--;openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData);} }
+function cambiarSucursal(suc) { 
+    currentSucursal = suc; 
+    ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id => document.getElementById(id)?.classList.remove('active')); 
+    selectedCausa = null;
+    selectedChartMonth = null;
+    state.causaRaiz = 'todas';
+    state.mes = 'todo'; 
+    const m = document.getElementById('monthFilter');
+    if(m) m.value = 'todo'; 
+    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('causa-seleccionada')); 
+    const cb = document.getElementById('clearCausaBtn');
+    if(cb) cb.classList.add('hidden-section'); 
+    const c = SUCURSALES_CONFIG[suc]; 
+    if(c) {
+        ACTOS_URL = c.actosUrl;
+        VCP_URL = c.vcpUrl;
+        currentMapping = c.mapping;
+        currentVcpMapping = c.vcpMapping || null;
+        currentObjetivos = c.objetivos;
+        currentShowVCP = c.showVCP;
+        actualizarObjetivosUI();
+        toggleVCPVisibility(currentShowVCP);
+    } 
+    document.getElementById(suc === 'MALAGUENO' ? 'btnMalagueno' : suc === 'BARKER' ? 'btnBarker' : 'btnLaPampita')?.classList.add('active'); 
+    if(isUnlocked) loadData(); 
+}
 
-function abrirModalSupervisor(tipo) { if(!isUnlocked)return; let s=document.getElementById('supervisorSelect').value,m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("⚠️ Seleccione un supervisor");return;} let nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1),f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)),dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`);return;} let t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`,ct=tipo==='acto'?'#0891b2':'#d97706',html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; dt.forEach(e=>{let be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0,60)}${e.descripcion.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`;}); html+=`</tbody></table></div>`; document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html; const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none';mod.querySelector('.modal-bounce').offsetHeight;mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section');mod.style.display='flex'; }
-function closeSupervisorModal() { let m=document.getElementById('supervisorDetailModal');m.classList.add('hidden-section');m.style.display='none'; }
-function abrirModalPersonaVCP() { if(!isUnlocked)return; let p=document.getElementById('vcpPersonFilter').value,m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("⚠️ Seleccione una persona");return;} let nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1),f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p} en ${nm}.`);return;} let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; f.forEach(e=>{let dc=e.descripcion.length>50?e.descripcion.substring(0,50)+'...':e.descripcion,cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`;}); html+=`</tbody></table></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none';mod.querySelector('.modal-bounce').offsetHeight;mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section');mod.style.display='flex'; }
-function closePersonaVCPModal() { let m=document.getElementById('personaVCPModal');m.classList.add('hidden-section');m.style.display='none'; }
-
-document.getElementById('monthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.mes=e.target.value;selectedChartMonth=null;applyGeneralFilters();updateTrendChart();}});
-document.getElementById('vcpMonthFilter')?.addEventListener('change',e=>{if(isUnlocked){state.vcpMes=e.target.value;applyVCPFilters();}});
-document.getElementById('supervisorSelect')?.addEventListener('change',()=>{if(isUnlocked)updateSupervisorCard();});
-document.getElementById('supervisorMonthSelect')?.addEventListener('change',()=>{if(isUnlocked)updateSupervisorCard();});
-document.getElementById('vcpPersonFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
-document.getElementById('vcpPersonMonthFilter')?.addEventListener('change',updatePersonVCPStatsOnly);
-document.getElementById('actosCardSupervisor')?.addEventListener('click',()=>abrirModalSupervisor('acto'));
-document.getElementById('condCardSupervisor')?.addEventListener('click',()=>abrirModalSupervisor('condicion'));
-document.getElementById('vcpCardPersona')?.addEventListener('click',()=>abrirModalPersonaVCP());
-document.getElementById('btnMalagueno')?.addEventListener('click',()=>cambiarSucursal('MALAGUENO'));
-document.getElementById('btnBarker')?.addEventListener('click',()=>cambiarSucursal('BARKER'));
-document.getElementById('btnLaPampita')?.addEventListener('click',()=>cambiarSucursal('LAPAMPITA'));
+// ==================== EVENT LISTENERS ====================
+document.getElementById('monthFilter')?.addEventListener('change', e => {
+    if(isUnlocked) {
+        state.mes = e.target.value;
+        selectedChartMonth = null;
+        applyGeneralFilters();
+        updateTrendChart();
+    }
+});
+document.getElementById('vcpMonthFilter')?.addEventListener('change', e => {
+    if(isUnlocked) {
+        state.vcpMes = e.target.value;
+        applyVCPFilters();
+    }
+});
+document.getElementById('supervisorSelect')?.addEventListener('change', () => {
+    if(isUnlocked) updateSupervisorCard();
+});
+document.getElementById('supervisorMonthSelect')?.addEventListener('change', () => {
+    if(isUnlocked) updateSupervisorCard();
+});
+document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+document.getElementById('actosCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('acto'));
+document.getElementById('condCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('condicion'));
+document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
+document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
+document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
+document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
 document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
 
 document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && isUnlocked) {
+    if (!document.hidden && isUnlocked && !isModalOpen) {
         checkNewReports();
     }
 });
 
-window.addEventListener('load',()=>{document.getElementById('passwordInput')?.focus();});
+window.addEventListener('load', () => {
+    document.getElementById('passwordInput')?.focus();
+    // Inicializar audio al cargar
+    document.addEventListener('click', function initAudio() {
+        window.initAudioContext();
+        document.removeEventListener('click', initAudio);
+    }, { once: true });
+});
 </script>
 </body>
 </html>
