@@ -280,21 +280,123 @@ let alertCountdownInterval = null, autoCountdownTimer = null, progressInterval =
 
 // ==================== AUDIO ====================
 window.audioContextInitialized = false; window.audioContext = null;
-window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
-window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { const success = window.initAudioContext(); if(!success) return; } if(window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
-function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
-function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
-function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+window.initAudioContext = function() { 
+    if(window.audioContextInitialized) return true; 
+    try { 
+        window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); 
+        if(window.audioContext.state === 'suspended') window.audioContext.resume(); 
+        window.audioContextInitialized = true; 
+        return true; 
+    } catch(e) { return false; } 
+};
+window.playAlarmSound = function() { 
+    if(!soundEnabled) return; 
+    if(!window.audioContextInitialized) { 
+        const success = window.initAudioContext(); 
+        if(!success) return; 
+    } 
+    if(window.audioContext.state === 'suspended') window.audioContext.resume(); 
+    try { 
+        for(let cycle=0; cycle<3; cycle++) { 
+            const baseTime = window.audioContext.currentTime + (cycle*0.5); 
+            [880,1175,1568].forEach((freq,idx)=>{ 
+                const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); 
+                osc.connect(gain); gain.connect(window.audioContext.destination); 
+                osc.frequency.value=freq; osc.type='square'; 
+                const start=baseTime+(idx*0.12); 
+                gain.gain.setValueAtTime(0.5,start); 
+                gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); 
+                osc.start(start); osc.stop(start+0.1); 
+            }); 
+        } 
+    } catch(e) {} 
+};
+function playUnlockSound() { 
+    if(!soundEnabled) return; 
+    window.initAudioContext(); 
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext)(); 
+        [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ 
+            const o=a.createOscillator(),g=a.createGain(); 
+            o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; 
+            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); 
+            g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); 
+            o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); 
+        }); 
+    } catch(e){} 
+}
+function playErrorSound() { 
+    if(!soundEnabled) return; 
+    window.initAudioContext(); 
+    try { 
+        const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); 
+        o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; 
+        g.gain.setValueAtTime(0.2,a.currentTime); 
+        g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); 
+        o.start();o.stop(a.currentTime+0.3); 
+    } catch(e){} 
+}
+function toggleSound() { 
+    soundEnabled=!soundEnabled; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
+    document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
+}
 
 // ==================== LOGIN ====================
-function togglePasswordVisibility() { window.initAudioContext(); const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } input.focus(); }
-function verifyPassword() { window.initAudioContext(); const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); if(input.value===PASSWORD_CORRECTA) { playUnlockSound(); errorDiv.textContent=''; overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; setTimeout(()=>{ overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); },1000); } else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); } }
-function showWelcomeScreen() { const welcome=document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex'; let seconds=5; const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); bar.style.width='0%'; progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); autoCountdownTimer=setInterval(()=>{ seconds--; countdownEl.textContent=seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} },1000); }
-function enterMainPanel() { clearInterval(autoCountdownTimer); clearInterval(progressInterval); const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); }
+function togglePasswordVisibility() { 
+    window.initAudioContext(); 
+    const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); 
+    if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } 
+    else { input.type='password'; btn.textContent='👁️'; } 
+    input.focus(); 
+}
+function verifyPassword() { 
+    window.initAudioContext(); 
+    const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); 
+    if(input.value===PASSWORD_CORRECTA) { 
+        playUnlockSound(); errorDiv.textContent=''; 
+        overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; 
+        setTimeout(()=>{ 
+            overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; 
+            setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); 
+        },1000); 
+    } else { 
+        playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; 
+        input.value=''; input.focus(); input.classList.add('border-red-400'); 
+        setTimeout(()=>input.classList.remove('border-red-400'),500); 
+    } 
+}
+function showWelcomeScreen() { 
+    const welcome=document.getElementById('welcomeOverlay'); 
+    welcome.classList.remove('hidden-section'); welcome.style.display='flex'; 
+    let seconds=5; 
+    const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); 
+    bar.style.width='0%'; 
+    progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); 
+    autoCountdownTimer=setInterval(()=>{ 
+        seconds--; countdownEl.textContent=seconds; 
+        if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} 
+    },1000); 
+}
+function enterMainPanel() { 
+    clearInterval(autoCountdownTimer); clearInterval(progressInterval); 
+    const welcome=document.getElementById('welcomeOverlay'); 
+    welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; 
+    setTimeout(()=>{ 
+        welcome.style.display='none'; welcome.classList.add('hidden-section'); 
+        document.getElementById('mainContent').classList.remove('hidden-section'); 
+        isUnlocked=true; 
+        loadData().then(()=>{updatePulseBadges();}); 
+        setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); 
+    },400); 
+}
 
 // ==================== FUNCIONES UTILITARIAS ====================
 function getTodayKey() { return new Date().toDateString(); }
-function getTodayISO() { const hoy = new Date(); return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`; }
+function getTodayISO() { 
+    const hoy = new Date(); 
+    return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`; 
+}
 function parseFecha(f) {
     if(!f) return {dia:'',mes:'',valido:false};
     let s = f.toString().split(' ')[0].trim();
