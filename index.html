@@ -84,6 +84,8 @@
 </head>
 <body>
 <div class="watermark" id="watermark">BY DHG</div>
+
+<!-- 🔐 LOGIN -->
 <div id="passwordOverlay">
     <div class="password-card">
         <div class="password-lock-icon">🔐</div>
@@ -98,6 +100,8 @@
         <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
     </div>
 </div>
+
+<!-- 🌊 BIENVENIDA -->
 <div id="welcomeOverlay" class="hidden-section">
     <div class="welcome-card">
         <div class="welcome-icon">👷‍️️️</div>
@@ -110,6 +114,8 @@
         <p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">5</span>s...</p>
     </div>
 </div>
+
+<!-- 🚨 ALERTA -->
 <div id="newReportAlert">
     <div class="alert-card">
         <div class="alert-icon">🚨</div>
@@ -119,6 +125,8 @@
         <p class="text-[10px] text-slate-400 mt-2">La alerta se cerrará automáticamente en <span id="alertCountdown">15</span>s</p>
     </div>
 </div>
+
+<!-- CONTENIDO PRINCIPAL -->
 <div id="mainContent" class="hidden-section">
 <div class="max-w-7xl mx-auto">
     <div class="header-container flex flex-wrap justify-between items-center">
@@ -141,7 +149,10 @@
             <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
         </div>
     </div>
+
     <div id="welcomeMessage" class="mb-4 text-center"><p class="text-lg font-bold text-emerald-600"></p></div>
+
+    <!-- ACTOS Y CONDICIONES -->
     <div class="glass-card p-6 mb-6">
         <div class="text-center mb-4">
             <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
@@ -179,7 +190,10 @@
             </main>
         </div>
     </div>
+
     <hr class="my-4">
+
+    <!-- VCP SECCIÓN -->
     <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
         <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
@@ -205,6 +219,8 @@
     </div>
 </div>
 </div>
+
+<!-- MODALES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
         <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
@@ -213,6 +229,7 @@
         <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
+
 <div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200 max-h-[80vh] overflow-hidden">
         <div class="flex justify-between items-center mb-4">
@@ -223,6 +240,7 @@
         <button onclick="closeDailyReportsModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
+
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
         <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
@@ -230,6 +248,7 @@
         <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
+
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
         <div class="flex justify-between items-center mb-4"><h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-700">📋 Detalle de VCP por Persona</h2><button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
@@ -237,7 +256,42 @@
         <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
     </div>
 </div>
+
 <script>
+// ==================== CONFIGURACIÓN ====================
+const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
+let isUnlocked = false, currentUser = null, soundEnabled = true;
+let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
+let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
+const SUCURSALES_CONFIG = {
+    MALAGUENO: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv', mapping:{fecha:3,tipo:1,sector:2,observador:5,descripcion:6,cerrado:23,causa:null}, objetivos:{actos:66,cond:44}, showVCP:true },
+    BARKER: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2r4qjkNaf963qsk0BRCZDI5OocDmF9gmTIGbXKpsf7cpEoN8Ws64d0b2Tnkpb9qTLFq8Vjk-2Kd9X/pub?output=csv', vcpUrl:null, mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:12}, objetivos:{actos:6,cond:4}, showVCP:false },
+    LAPAMPITA: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv', mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:18}, vcpMapping:{fecha:2,persona:4,sector:5,descripcion:6,comentarios:15}, objetivos:{actos:66,cond:44}, showVCP:true }
+};
+const OBJ_VCP = 30;
+let ACTOS_COND_DATA = [], VCP_DATA = [];
+let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
+let state = {mes:'todo',sector:'general',estado:'todos',causaRaiz:'todas',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos',vcpCausa:'todas',supervisor:'todos',supervisorMes:'todo'};
+let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
+let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
+let currentDateKey = new Date().toDateString();
+let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
+let alertCountdownInterval = null, autoCountdownTimer = null, progressInterval = null;
+
+// ==================== AUDIO ====================
+window.audioContextInitialized = false; window.audioContext = null;
+window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
+window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { const success = window.initAudioContext(); if(!success) return; } if(window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
+function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
+function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
+function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+
+// ==================== LOGIN ====================
+function togglePasswordVisibility() { window.initAudioContext(); const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } input.focus(); }
+function verifyPassword() { window.initAudioContext(); const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); if(input.value===PASSWORD_CORRECTA) { playUnlockSound(); errorDiv.textContent=''; overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; setTimeout(()=>{ overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); },1000); } else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); } }
+function showWelcomeScreen() { const welcome=document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex'; let seconds=5; const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); bar.style.width='0%'; progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); autoCountdownTimer=setInterval(()=>{ seconds--; countdownEl.textContent=seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} },1000); }
+function enterMainPanel() { clearInterval(autoCountdownTimer); clearInterval(progressInterval); const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); }
+
 // ==================== FUNCIONES UTILITARIAS ====================
 function getTodayKey() { return new Date().toDateString(); }
 function getTodayISO() { const hoy = new Date(); return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`; }
@@ -280,80 +334,6 @@ function parseCSV(text) {
     }
     return r;
 }
-
-// ==================== CONFIGURACIÓN ====================
-const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
-let isUnlocked = false;
-let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
-let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
-const SUCURSALES_CONFIG = {
-    MALAGUENO: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv', mapping:{fecha:3,tipo:1,sector:2,observador:5,descripcion:6,cerrado:23,causa:null}, objetivos:{actos:66,cond:44}, showVCP:true },
-    BARKER: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2r4qjkNaf963qsk0BRCZDI5OocDmF9gmTIGbXKpsf7cpEoN8Ws64d0b2Tnkpb9qTLFq8Vjk-2Kd9X/pub?output=csv', vcpUrl:null, mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:12}, objetivos:{actos:6,cond:4}, showVCP:false },
-    LAPAMPITA: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv', mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:18}, vcpMapping:{fecha:2,persona:4,sector:5,descripcion:6,comentarios:15}, objetivos:{actos:66,cond:44}, showVCP:true }
-};
-const OBJ_VCP = 30;
-let ACTOS_COND_DATA = [], VCP_DATA = [];
-let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
-let state = {mes:'todo',sector:'general',estado:'todos',causaRaiz:'todas',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos',vcpCausa:'todas',supervisor:'todos',supervisorMes:'todo'};
-let currentModalIndex = 0, currentModalData = [];
-let actosNovedades = 0, vcpNovedades = 0;
-let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
-let lastKnownActosRows = 0, lastKnownVcpRows = 0;
-let currentDateKey = new Date().toDateString();
-let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
-let soundEnabled = true, isModalOpen = false, alertCountdownInterval = null, autoCountdownTimer = null, progressInterval = null;
-
-// ==================== AUDIO SYSTEM ====================
-window.audioContextInitialized = false; window.audioContext = null;
-window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
-window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { const success = window.initAudioContext(); if(!success) return; } if(window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
-function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
-function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
-function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
-
-// ==================== LOGIN ====================
-function togglePasswordVisibility() { window.initAudioContext(); const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } input.focus(); }
-function verifyPassword() { window.initAudioContext(); const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); if(input.value===PASSWORD_CORRECTA) { playUnlockSound(); errorDiv.textContent=''; overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; setTimeout(()=>{ overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); },1000); } else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); } }
-function showWelcomeScreen() { const welcome=document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex'; let seconds=5; const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); bar.style.width='0%'; progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); autoCountdownTimer=setInterval(()=>{ seconds--; countdownEl.textContent=seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} },1000); }
-function enterMainPanel() { clearInterval(autoCountdownTimer); clearInterval(progressInterval); const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); }
-
-// ==================== ALERTAS ====================
-function showNewReportAlert(persona, sector, desc, tipo, hora) { if(!soundEnabled) return; const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); contentEl.innerHTML=`<div class="alert-person">👤 ${persona||'No identificado'}</div><div class="alert-sector">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc||'Sin descripción'}</div><div class="alert-time">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; alertEl.classList.add('show'); window.playAlarmSound(); let secs=15; document.getElementById('alertCountdown').textContent=secs; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); }
-function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval=null; } const alertEl=document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
-function toggleActosAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].actos; showDailyReportsModal('actos',alerts); }
-function toggleVCPAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].vcp; showDailyReportsModal('vcp',alerts); }
-function showDailyReportsModal(type, alerts) {
-    const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent');
-    const title=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY', colorClass=type==='actos'?'text-cyan-700':'text-purple-700';
-    titleEl.textContent=title; titleEl.className=`font-black text-2xl ${colorClass}`;
-    if(alerts.length===0) { contentEl.innerHTML='<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
-    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
-    modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
-}
-function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
-function acknowledgeBadge(type) { const badge=document.getElementById(type==='actos'?'actosNovedadBadge':'vcpNovedadBadge'); if(badge) badge.classList.add('hidden'); }
-function addDailyAlert(persona, sector, desc, tipo, hora, causas) {
-    const alertData={persona, sector, desc, tipo, hora, causas, timestamp:Date.now()};
-    if(tipo&&tipo.toLowerCase().includes('vcp')) { todayAlertsBySucursal[currentSucursal].vcp.unshift(alertData); }
-    else { todayAlertsBySucursal[currentSucursal].actos.unshift(alertData); }
-    updatePulseBadges(); updateRealTimeUI();
-}
-function updatePulseBadges() {
-    const badgeActosCard=document.getElementById('actosNovedadBadge'), badgeVCPCard=document.getElementById('vcpNovedadBadge'), currentAlerts=todayAlertsBySucursal[currentSucursal];
-    if(badgeActosCard) { if(currentAlerts.actos.length>0) { badgeActosCard.textContent=Math.min(currentAlerts.actos.length,9); badgeActosCard.classList.remove('hidden'); } else { badgeActosCard.classList.add('hidden'); } }
-    if(badgeVCPCard) { if(currentAlerts.vcp.length>0) { badgeVCPCard.textContent=Math.min(currentAlerts.vcp.length,9); badgeVCPCard.classList.remove('hidden'); } else { badgeVCPCard.classList.add('hidden'); } }
-}
-function updateRealTimeUI() {
-    const actosContainer=document.getElementById('realTimeReportsActos'), vcpContainer=document.getElementById('realTimeReportsVCP'), actosLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), currentAlerts=todayAlertsBySucursal[currentSucursal];
-    if(!actosContainer||!vcpContainer) return;
-    if(actosLed) actosLed.className=currentAlerts.actos.length>0?'siren-green':'siren-red';
-    if(vcpLed) vcpLed.className=currentAlerts.vcp.length>0?'siren-green':'siren-red';
-    if(currentAlerts.actos.length>0) { actosContainer.innerHTML=currentAlerts.actos.map(a=>`<div class="report-item feed-item" style="border-left-color:#10b981;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto')?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
-    else { actosContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>'; }
-    if(currentAlerts.vcp.length>0) { vcpContainer.innerHTML=currentAlerts.vcp.map(a=>`<div class="report-item feed-item" style="border-left-color:#f59e0b;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
-    else { vcpContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>'; }
-}
-function checkAndResetDailyCounters() { const today=getTodayKey(); if(today!==currentDateKey) { currentDateKey=today; Object.keys(todayAlertsBySucursal).forEach(suc=>{todayAlertsBySucursal[suc].actos=[];todayAlertsBySucursal[suc].vcp=[];}); reportesNotificadosActos.clear(); reportesNotificadosVCP.clear(); lastKnownActosRows=0; lastKnownVcpRows=0; actosNovedades=0; vcpNovedades=0; updatePulseBadges(); updateRealTimeUI(); } }
 
 // ==================== CARGA DE DATOS ====================
 async function loadData() {
@@ -422,7 +402,7 @@ async function loadData() {
         populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI();
     } catch(e) { console.error('❌ Error cargando datos:',e); }
 }
-function checkNewReports() { if(!isUnlocked||isModalOpen) return; checkAndResetDailyCounters(); loadData(); }
+function checkNewReports() { if(!isUnlocked||isModalOpen) return; loadData(); }
 function forceRefreshData() { if(isUnlocked) loadData(); }
 
 // ==================== FILTROS ====================
@@ -460,6 +440,22 @@ function updateTrendChart() {
     if(trendChart) trendChart.destroy();
     trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'⚠️ Actos',data:aPM,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}});
 }
+function applyVCPFilters() {
+    let f=VCP_DATA.filter(e=>(state.vcpMes==='todo'||e.mes===state.vcpMes)&&(state.vcpSector==='general'||e.sector.includes(state.vcpSector))&&(state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))&&(state.vcpCausa==='todas'||e.categoria?.id===state.vcpCausa));
+    let pct=Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus');
+    if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; }
+    document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%';
+    updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f);
+}
+function updateVCPCharts(data) {
+    const CATEGORIES_VCP=[{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
+    let counts={}; CATEGORIES_VCP.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;});
+    const ctxD=document.getElementById('vcpCategoryChart')?.getContext('2d'); if(vcpCategoryChart)vcpCategoryChart.destroy();
+    vcpCategoryChart=new Chart(ctxD,{type:'doughnut',data:{labels:CATEGORIES_VCP.map(c=>`${c.icon} ${c.name}`),datasets:[{data:CATEGORIES_VCP.map(c=>counts[c.id]||0),backgroundColor:CATEGORIES_VCP.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:15}]},options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:9},usePointStyle:true,pointStyle:'circle'}},tooltip:{callbacks:{label:(ctx)=>{let t=ctx.dataset.data.reduce((a,b)=>a+b,0);let p=Math.round((ctx.parsed/t)*100);return `${ctx.label}: ${ctx.parsed} (${p}%)`;}}}},animation:{animateRotate:true}}});
+    const m=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM=m.map(mes=>data.filter(e=>e.mes===mes).length);
+    const ctxT=document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart)vcpTrendChart.destroy();
+    vcpTrendChart=new Chart(ctxT,{type:'line',data:{labels:m.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white',pointBorderWidth:2}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,grid:{color:'rgba(0,0,0,0.05)'},ticks:{stepSize:5}},x:{ticks:{font:{size:9}},grid:{display:false}}}}});
+}
 function renderGeneralTable(data) {
     let tb=document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML='';
     const sortedData=[...data].sort((a,b)=>{const dateA=new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`); const dateB=new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`); return dateB-dateA;});
@@ -472,13 +468,6 @@ function renderGeneralTable(data) {
         tr.innerHTML=`<td class="p-2 text-cyan-700">${iconoFecha} ${e.dia}/${e.mes} ${etiqueta}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${e.descripcion?.substring(0,55)||''}${e.descripcion?.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`;
         tb.appendChild(tr);
     });
-}
-function applyVCPFilters() {
-    let f=VCP_DATA.filter(e=>(state.vcpMes==='todo'||e.mes===state.vcpMes)&&(state.vcpSector==='general'||e.sector.includes(state.vcpSector))&&(state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))&&(state.vcpCausa==='todas'||e.categoria?.id===state.vcpCausa));
-    let pct=Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus');
-    if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; }
-    document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%';
-    updateCategoryCards(f,'vcp'); renderVCPTable(f);
 }
 function renderVCPTable(data) {
     let tb=document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML='';
@@ -503,6 +492,44 @@ function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getE
 function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
 function clearVCPCauseFilter() { state.vcpCausa='todas'; applyVCPFilters(); }
+
+// ==================== ALERTAS ====================
+function showNewReportAlert(persona, sector, desc, tipo, hora) { if(!soundEnabled) return; const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); contentEl.innerHTML=`<div class="alert-person">👤 ${persona||'No identificado'}</div><div class="alert-sector">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc||'Sin descripción'}</div><div class="alert-time">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; alertEl.classList.add('show'); window.playAlarmSound(); let secs=15; document.getElementById('alertCountdown').textContent=secs; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); }
+function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval=null; } const alertEl=document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
+function toggleActosAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].actos; showDailyReportsModal('actos',alerts); }
+function toggleVCPAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].vcp; showDailyReportsModal('vcp',alerts); }
+function showDailyReportsModal(type, alerts) {
+    const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent');
+    const title=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY', colorClass=type==='actos'?'text-cyan-700':'text-purple-700';
+    titleEl.textContent=title; titleEl.className=`font-black text-2xl ${colorClass}`;
+    if(alerts.length===0) { contentEl.innerHTML='<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
+    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
+    modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
+}
+function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
+function acknowledgeBadge(type) { const badge=document.getElementById(type==='actos'?'actosNovedadBadge':'vcpNovedadBadge'); if(badge) badge.classList.add('hidden'); }
+function addDailyAlert(persona, sector, desc, tipo, hora, causas) {
+    const alertData={persona, sector, desc, tipo, hora, causas, timestamp:Date.now()};
+    if(tipo&&tipo.toLowerCase().includes('vcp')) { todayAlertsBySucursal[currentSucursal].vcp.unshift(alertData); }
+    else { todayAlertsBySucursal[currentSucursal].actos.unshift(alertData); }
+    updatePulseBadges(); updateRealTimeUI();
+}
+function updatePulseBadges() {
+    const badgeActosCard=document.getElementById('actosNovedadBadge'), badgeVCPCard=document.getElementById('vcpNovedadBadge'), currentAlerts=todayAlertsBySucursal[currentSucursal];
+    if(badgeActosCard) { if(currentAlerts.actos.length>0) { badgeActosCard.textContent=Math.min(currentAlerts.actos.length,9); badgeActosCard.classList.remove('hidden'); } else { badgeActosCard.classList.add('hidden'); } }
+    if(badgeVCPCard) { if(currentAlerts.vcp.length>0) { badgeVCPCard.textContent=Math.min(currentAlerts.vcp.length,9); badgeVCPCard.classList.remove('hidden'); } else { badgeVCPCard.classList.add('hidden'); } }
+}
+function updateRealTimeUI() {
+    const actosContainer=document.getElementById('realTimeReportsActos'), vcpContainer=document.getElementById('realTimeReportsVCP'), actosLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), currentAlerts=todayAlertsBySucursal[currentSucursal];
+    if(!actosContainer||!vcpContainer) return;
+    if(actosLed) actosLed.className=currentAlerts.actos.length>0?'siren-green':'siren-red';
+    if(vcpLed) vcpLed.className=currentAlerts.vcp.length>0?'siren-green':'siren-red';
+    if(currentAlerts.actos.length>0) { actosContainer.innerHTML=currentAlerts.actos.map(a=>`<div class="report-item feed-item" style="border-left-color:#10b981;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto')?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
+    else { actosContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>'; }
+    if(currentAlerts.vcp.length>0) { vcpContainer.innerHTML=currentAlerts.vcp.map(a=>`<div class="report-item feed-item" style="border-left-color:#f59e0b;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
+    else { vcpContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>'; }
+}
+function checkAndResetDailyCounters() { const today=getTodayKey(); if(today!==currentDateKey) { currentDateKey=today; Object.keys(todayAlertsBySucursal).forEach(suc=>{todayAlertsBySucursal[suc].actos=[];todayAlertsBySucursal[suc].vcp=[];}); reportesNotificadosActos.clear(); reportesNotificadosVCP.clear(); updatePulseBadges(); updateRealTimeUI(); } }
 
 // ==================== MODALES ====================
 function openModal(r,idx,data) {
