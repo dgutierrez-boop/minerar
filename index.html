@@ -23,7 +23,6 @@
         .sucursal-btn.active { background: #fef3c7; border-color: #f59e0b; color: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
         .category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; position: relative; }
         .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        /* Estilo para la tarjeta seleccionada/filtrada */
         .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
         .category-card.selected { box-shadow: 0 0 0 4px #f59e0b; background: #fffbeb; border-color: #d97706; transform: scale(1.02); }
         .hidden-section { display: none !important; }
@@ -266,7 +265,7 @@
 // ==================== CONFIGURACIÓN ====================
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
 let isUnlocked = false, currentUser = null, soundEnabled = true;
-let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
+let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null, selectedVCPCausa = null;
 let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
 const SUCURSALES_CONFIG = {
     MALAGUENO: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv', mapping:{fecha:3,tipo:1,sector:2,observador:5,descripcion:6,cerrado:23,causa:null}, objetivos:{actos:66,cond:44}, showVCP:true },
@@ -343,7 +342,7 @@ function playErrorSound() {
 }
 function toggleSound() { 
     soundEnabled=!soundEnabled; 
-    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
@@ -519,15 +518,13 @@ function forceRefreshData() { if(isUnlocked) loadData(); }
 // ==================== FILTROS ====================
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
 function applyGeneralFilters() {
-    // Filtramos los datos según el estado actual
     let f = ACTOS_COND_DATA.filter(e => 
         (state.mes==='todo'||e.mes===state.mes) && 
         (state.sector==='general'||e.sector.includes(state.sector)) && 
         (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && 
-        (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa) // Aquí usamos selectedCausa
+        (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa)
     );
     
-    // Aplicamos el filtro de causa raíz seleccionada (interacción con tarjetas)
     if(selectedCausa && selectedCausa !== 'todas') {
         f = f.filter(e => e.categoria?.id === selectedCausa);
     }
@@ -540,7 +537,6 @@ function applyGeneralFilters() {
     let up=(id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
     up('actosStatus',pA); up('condStatus',pC);
     
-    // Actualizamos tarjetas, gráficos y tabla con los datos filtrados
     updateCategoryCards(f,'actos'); 
     updateChartsDona(f,'actos'); 
     updateTrendChart(f); 
@@ -556,23 +552,30 @@ function updateCategoryCards(data,type) {
     cats.forEach(c=>{ 
         let val=counts[c.id]||0, pct=Math.round(val/total*100); 
         let div=document.createElement('div'); 
-        let isActive = selectedCausa === c.id;
+        let isActive = (type==='actos' ? selectedCausa === c.id : selectedVCPCausa === c.id);
         div.className=`category-card p-3 text-center relative cursor-pointer ${isActive ? 'selected' : ''}`; 
         div.style.borderColor=isActive ? '#d97706' : c.color; 
         
-        // INTERACCIÓN: Click en tarjeta
         div.onclick = () => {
-            if (isActive) {
-                // Si ya está activa, la desactivamos (toggle off)
-                selectedCausa = 'todas';
-                document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+            if (type==='actos') {
+                if (isActive) {
+                    selectedCausa = 'todas';
+                    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+                } else {
+                    selectedCausa = c.id;
+                    document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');
+                }
+                applyGeneralFilters();
             } else {
-                // Si no está activa, la activamos
-                selectedCausa = c.id;
-                document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');
+                if (isActive) {
+                    selectedVCPCausa = 'todas';
+                    document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
+                } else {
+                    selectedVCPCausa = c.id;
+                    document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section');
+                }
+                applyVCPFilters();
             }
-            // Refrescamos todo
-            applyGeneralFilters();
         };
         
         div.innerHTML=`<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; 
@@ -589,14 +592,23 @@ function updateChartsDona(data,type) {
 }
 function updateTrendChart(data) {
     const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx=document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return;
-    // Usamos los datos ya filtrados que vienen de applyGeneralFilters
     let sourceData = data || ACTOS_COND_DATA;
     let aPM=meses.map(m=>sourceData.filter(e=>e.mes===m&&e.tipo==='acto').length), cPM=meses.map(m=>sourceData.filter(e=>e.mes===m&&e.tipo==='condicion').length);
     if(trendChart) trendChart.destroy();
     trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'⚠️ Actos',data:aPM,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}});
 }
 function applyVCPFilters() {
-    let f=VCP_DATA.filter(e=>(state.vcpMes==='todo'||e.mes===state.vcpMes)&&(state.vcpSector==='general'||e.sector.includes(state.vcpSector))&&(state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))&&(state.vcpCausa==='todas'||e.categoria?.id===state.vcpCausa));
+    let f = VCP_DATA.filter(e => 
+        (state.vcpMes==='todo'||e.mes===state.vcpMes) && 
+        (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && 
+        (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && 
+        (state.vcpCausa==='todas'||selectedVCPCausa==='todas'||e.categoria?.id===selectedVCPCausa)
+    );
+    
+    if(selectedVCPCausa && selectedVCPCausa !== 'todas') {
+        f = f.filter(e => e.categoria?.id === selectedVCPCausa);
+    }
+    
     let pct=Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus');
     if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; }
     document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%';
@@ -652,7 +664,7 @@ function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-fi
 function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
 function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
-function clearVCPCauseFilter() { state.vcpCausa='todas'; applyVCPFilters(); }
+function clearVCPCauseFilter() { selectedVCPCausa=null; state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 
 // ==================== ALERTAS ====================
 function showNewReportAlert(persona, sector, desc, tipo, hora) { if(!soundEnabled) return; const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); contentEl.innerHTML=`<div class="alert-person">👤 ${persona||'No identificado'}</div><div class="alert-sector">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc||'Sin descripción'}</div><div class="alert-time">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; alertEl.classList.add('show'); window.playAlarmSound(); let secs=15; document.getElementById('alertCountdown').textContent=secs; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); }
@@ -759,10 +771,11 @@ function closePersonaVCPModal() { const m=document.getElementById('personaVCPMod
 // ==================== UTILS ====================
 function cambiarSucursal(suc) {
     currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
-    selectedCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo';
+    selectedCausa=null; selectedVCPCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo';
     const m=document.getElementById('monthFilter'); if(m) m.value='todo';
     document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected'));
     const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section');
+    const cb2=document.getElementById('clearVCPCauseBtn'); if(cb2) cb2.classList.add('hidden-section');
     const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
     document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active');
     if(isUnlocked) loadData();
