@@ -290,9 +290,10 @@
 </div>
 <script>
 // ==================== CONFIGURACIÓN DE SEGURIDAD ====================
-const MASTER_PASSWORD = 'PMMasAgiles1122SEG'; // Contraseña maestra
+const MASTER_PASSWORD = 'PMMasAgiles1122SEG';
 let isUnlocked = false;
 let currentUser = null;
+let soundEnabled = true;  // ← AGREGAR ESTA LÍNEA
 let alertCountdownInterval = null;
 let autoCountdownTimer = null;
 
@@ -406,7 +407,25 @@ function getTodayISO() {
 
 function parseFecha(f) {
     if(!f) return {dia:'',mes:'',valido:false};
-    let s = f.toString().split(' ')[0].trim();
+    let s = f.toString().trim();
+    
+    // Intentar formato: Tue Jan 06 2026 00:00:00 GMT-0300
+    if (s.includes('GMT') || s.includes('UTC')) {
+        try {
+            const date = new Date(s);
+            if (!isNaN(date.getTime())) {
+                const d = date.getDate().toString().padStart(2,'0');
+                const m = date.getMonth(); // 0-11
+                const a = date.getFullYear();
+                const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+                if (a === 2026 && m >= 0 && m <= 11) {
+                    return {dia: d, mes: meses[m], valido: true};
+                }
+            }
+        } catch(e) {}
+    }
+    
+    // Intentar formato: 06/01/2026
     let p = s.split('/');
     if(p.length>=3) {
         let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]);
@@ -416,9 +435,9 @@ function parseFecha(f) {
             return {dia: d, mes: meses[m-1], valido: true};
         }
     }
+    
     return {dia:'',mes:'',valido:false};
 }
-
 function classifyData(desc,useVCP=false) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
