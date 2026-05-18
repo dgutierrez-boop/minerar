@@ -147,6 +147,9 @@
             </div>
             <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
             <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
+            <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
+                <span>🚪</span> <span class="hidden md:inline">SALIR</span>
+            </button>
         </div>
     </div>
 
@@ -389,6 +392,10 @@ function enterMainPanel() {
         loadData().then(()=>{updatePulseBadges();}); 
         setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); 
     },400); 
+}
+function logout() {
+    localStorage.clear();
+    location.reload();
 }
 
 // ==================== FUNCIONES UTILITARIAS ====================
