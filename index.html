@@ -171,8 +171,8 @@
             <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
             <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
                 <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 sup-card-hover" id="actosCardSupervisor"><span class="text-[10px] text-cyan-700">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700 clickable-sup">0</div></div>
-                    <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 sup-card-hover" id="condCardSupervisor"><span class="text-[10px] text-amber-700">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700 clickable-sup">0</div></div>
+                    <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 sup-card-hover cursor-pointer" id="actosCardSupervisor" onclick="abrirModalSupervisor('acto')"><span class="text-[10px] text-cyan-700">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div></div>
+                    <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 sup-card-hover cursor-pointer" id="condCardSupervisor" onclick="abrirModalSupervisor('condicion')"><span class="text-[10px] text-amber-700">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700">0</div></div>
                 </div>
             </div>
         </div>
@@ -201,7 +201,7 @@
         <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
             <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover" id="vcpCardPersona"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700 clickable-sup">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
@@ -341,7 +341,7 @@ function playErrorSound() {
 }
 function toggleSound() { 
     soundEnabled=!soundEnabled; 
-    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
@@ -464,7 +464,7 @@ async function loadData() {
                     else if(u.toUpperCase().startsWith('CI-')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI-\s*/i,'').trim(); }
                     else { tipoRaw=''; desc=u; }
                     fecha=row[11]||''; observador=row[13]||''; sector=row[14]||''; cerradoRaw=row[23]||'';
-                    causas=row[19]||''; // 👈 Columna T - Causas
+                    causas=row[19]||'';
                 } else {
                     if(row.length<Math.max(currentMapping.fecha,currentMapping.tipo,currentMapping.sector,currentMapping.observador,currentMapping.descripcion)+1) continue;
                     fecha=row[currentMapping.fecha]||''; tipoRaw=row[currentMapping.tipo]||''; sector=row[currentMapping.sector]||''; observador=row[currentMapping.observador]||''; desc=row[currentMapping.descripcion]||''; cerradoRaw=row[currentMapping.cerrado]||'';
@@ -591,7 +591,13 @@ function renderVCPTable(data) {
 function updatePersonVCPStatsOnly() { let p=document.getElementById('vcpPersonFilter')?.value||'todos', m=document.getElementById('vcpPersonMonthFilter')?.value||'todo', f=VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText=f.length; document.getElementById('personLastVCP').innerText=f.length?f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes:'-'; }
 function populateVCPPeopleFilter() { let counts=new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel=document.getElementById('vcpPersonFilter'); if(!sel) return; sel.innerHTML='<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 function populateSupervisors() { let s=[...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(), sel=document.getElementById('supervisorSelect'); if(!sel) return; sel.innerHTML='<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
-function updateSupervisorCard() { let s=document.getElementById('supervisorSelect')?.value||'todos', m=document.getElementById('supervisorMonthSelect')?.value||'todo', f=ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText=f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText=f.filter(e=>e.tipo==='condicion').length; }
+function updateSupervisorCard() { 
+    let s=document.getElementById('supervisorSelect')?.value||'todos', 
+        m=document.getElementById('supervisorMonthSelect')?.value||'todo', 
+        f=ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); 
+    document.getElementById('supActosCount').innerText=f.filter(e=>e.tipo==='acto').length; 
+    document.getElementById('supCondCount').innerText=f.filter(e=>e.tipo==='condicion').length; 
+}
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); applyGeneralFilters(); }
 function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#d97706'); applyVCPFilters(); }
@@ -658,28 +664,49 @@ function updateNavButtons() { const p=document.getElementById('btnPrev'), n=docu
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1) { currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0) { currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) {
-    if(!isUnlocked) return; const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value;
+    if(!isUnlocked) return; 
+    const s=document.getElementById('supervisorSelect').value, 
+          m=document.getElementById('supervisorMonthSelect').value;
     if(s==='todos') { alert("⚠️ Seleccione un supervisor"); return; }
-    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo);
+    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), 
+          f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), 
+          dt=f.filter(e=>e.tipo===tipo);
     if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; }
-    const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706';
+    const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, 
+          ct=tipo==='acto'?'#0891b2':'#d97706';
     let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; });
     html+=`</tbody></table></div>`;
-    document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html;
-    const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
+    document.getElementById('modalSupervisorTitle').innerHTML=t; 
+    document.getElementById('modalSupervisorTitle').style.color=ct; 
+    document.getElementById('supervisorModalContent').innerHTML=html;
+    const mod=document.getElementById('supervisorDetailModal'); 
+    mod.querySelector('.modal-bounce').style.animation='none'; 
+    mod.querySelector('.modal-bounce').offsetHeight; 
+    mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
+    mod.classList.remove('hidden-section'); 
+    mod.style.display='flex';
 }
 function closeSupervisorModal() { const m=document.getElementById('supervisorDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 function abrirModalPersonaVCP() {
-    if(!isUnlocked) return; const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value;
+    if(!isUnlocked) return; 
+    const p=document.getElementById('vcpPersonFilter').value, 
+          m=document.getElementById('vcpPersonMonthFilter').value;
     if(p==='todos') { alert("⚠️ Seleccione una persona"); return; }
-    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m));
+    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), 
+          f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m));
     if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
     let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
     html+=`</tbody></table></div>`;
-    document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html;
-    const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
+    document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; 
+    document.getElementById('personaVCPModalContent').innerHTML=html;
+    const mod=document.getElementById('personaVCPModal'); 
+    mod.querySelector('.modal-bounce').style.animation='none'; 
+    mod.querySelector('.modal-bounce').offsetHeight; 
+    mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
+    mod.classList.remove('hidden-section'); 
+    mod.style.display='flex';
 }
 function closePersonaVCPModal() { const m=document.getElementById('personaVCPModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 
