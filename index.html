@@ -23,7 +23,9 @@
         .sucursal-btn.active { background: #fef3c7; border-color: #f59e0b; color: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
         .category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; position: relative; }
         .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        /* Estilo para la tarjeta seleccionada/filtrada */
         .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
+        .category-card.selected { box-shadow: 0 0 0 4px #f59e0b; background: #fffbeb; border-color: #d97706; transform: scale(1.02); }
         .hidden-section { display: none !important; }
         .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
         .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
@@ -184,10 +186,10 @@
                 </div>
             </div></aside>
             <main>
-                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all">🧹 Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
+                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer hover:bg-purple-200">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
                 </div>
                 <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
@@ -211,7 +213,7 @@
                 </div>
             </div></aside>
             <main>
-                <div class="glass-card p-4 mb-4 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div></div>
+                <div class="glass-card p-4 mb-4 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer hover:bg-purple-200">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
                     <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
@@ -226,10 +228,10 @@
 <!-- MODALES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div>
         <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-3 text-sm"></div>
-        <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-600 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div>
-        <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+        <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-600 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer">Siguiente ➡</button></div>
+        <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold cursor-pointer">Cerrar</button>
     </div>
 </div>
 
@@ -237,26 +239,26 @@
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200 max-h-[80vh] overflow-hidden">
         <div class="flex justify-between items-center mb-4">
             <h2 id="dailyReportsTitle" class="font-black text-2xl text-cyan-700">📋 Reportes de Hoy</h2>
-            <button onclick="closeDailyReportsModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button>
+            <button onclick="closeDailyReportsModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button>
         </div>
         <div id="dailyReportsContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <button onclick="closeDailyReportsModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+        <button onclick="closeDailyReportsModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold cursor-pointer">Cerrar</button>
     </div>
 </div>
 
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div>
         <div id="supervisorModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+        <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold cursor-pointer">Cerrar</button>
     </div>
 </div>
 
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-700">📋 Detalle de VCP por Persona</h2><button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
+        <div class="flex justify-between items-center mb-4"><h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-700">📋 Detalle de VCP por Persona</h2><button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div>
         <div id="personaVCPModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+        <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold cursor-pointer">Cerrar</button>
     </div>
 </div>
 
@@ -341,7 +343,7 @@ function playErrorSound() {
 }
 function toggleSound() { 
     soundEnabled=!soundEnabled; 
-    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
@@ -517,7 +519,19 @@ function forceRefreshData() { if(isUnlocked) loadData(); }
 // ==================== FILTROS ====================
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
 function applyGeneralFilters() {
-    let f=ACTOS_COND_DATA.filter(e=>(state.mes==='todo'||e.mes===state.mes)&&(state.sector==='general'||e.sector.includes(state.sector))&&(state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado))&&(state.causaRaiz==='todas'||e.categoria?.id===state.causaRaiz));
+    // Filtramos los datos según el estado actual
+    let f = ACTOS_COND_DATA.filter(e => 
+        (state.mes==='todo'||e.mes===state.mes) && 
+        (state.sector==='general'||e.sector.includes(state.sector)) && 
+        (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && 
+        (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa) // Aquí usamos selectedCausa
+    );
+    
+    // Aplicamos el filtro de causa raíz seleccionada (interacción con tarjetas)
+    if(selectedCausa && selectedCausa !== 'todas') {
+        f = f.filter(e => e.categoria?.id === selectedCausa);
+    }
+
     let a=f.filter(e=>e.tipo==='acto'), c=f.filter(e=>e.tipo==='condicion');
     document.getElementById('kpiActos').innerText=a.length; document.getElementById('kpiCondiciones').innerText=c.length;
     let pA=Math.min(a.length/currentObjetivos.actos*100,100), pC=Math.min(c.length/currentObjetivos.cond*100,100);
@@ -525,7 +539,12 @@ function applyGeneralFilters() {
     document.getElementById('actosPctLabel').innerText=Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText=Math.round(pC)+'%';
     let up=(id,p)=>{let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}};
     up('actosStatus',pA); up('condStatus',pC);
-    updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(); renderGeneralTable(f);
+    
+    // Actualizamos tarjetas, gráficos y tabla con los datos filtrados
+    updateCategoryCards(f,'actos'); 
+    updateChartsDona(f,'actos'); 
+    updateTrendChart(f); 
+    renderGeneralTable(f);
 }
 function updateCategoryCards(data,type) {
     const CATEGORIES_ACTOS=[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}];
@@ -533,7 +552,32 @@ function updateCategoryCards(data,type) {
     const cats=type==='actos'?CATEGORIES_ACTOS:CATEGORIES_VCP, contId=type==='actos'?'categoryCards':'vcpCategoryCards';
     let counts={}; cats.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;});
     let total=data.length||1, cont=document.getElementById(contId); if(!cont) return; cont.innerHTML='';
-    cats.forEach(c=>{ let val=counts[c.id]||0, pct=Math.round(val/total*100); let div=document.createElement('div'); div.className=`category-card p-3 text-center relative`; div.style.borderColor=c.color; div.innerHTML=`<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; cont.appendChild(div); });
+    
+    cats.forEach(c=>{ 
+        let val=counts[c.id]||0, pct=Math.round(val/total*100); 
+        let div=document.createElement('div'); 
+        let isActive = selectedCausa === c.id;
+        div.className=`category-card p-3 text-center relative cursor-pointer ${isActive ? 'selected' : ''}`; 
+        div.style.borderColor=isActive ? '#d97706' : c.color; 
+        
+        // INTERACCIÓN: Click en tarjeta
+        div.onclick = () => {
+            if (isActive) {
+                // Si ya está activa, la desactivamos (toggle off)
+                selectedCausa = 'todas';
+                document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+            } else {
+                // Si no está activa, la activamos
+                selectedCausa = c.id;
+                document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');
+            }
+            // Refrescamos todo
+            applyGeneralFilters();
+        };
+        
+        div.innerHTML=`<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; 
+        cont.appendChild(div); 
+    });
 }
 function updateChartsDona(data,type) {
     const cats=type==='actos'?[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}]:[{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
@@ -543,9 +587,11 @@ function updateChartsDona(data,type) {
     const chart=new Chart(ctx,{type:'doughnut',data:{labels:cats.map(c=>`${c.icon} ${c.name}`),datasets:[{data:cats.map(c=>counts[c.id]||0),backgroundColor:cats.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:10}]},options:{cutout:'60%',responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:9},usePointStyle:true}},tooltip:{callbacks:{label:(ctx)=>{const total=ctx.dataset.data.reduce((a,b)=>a+b,0); const pct=Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`;}}}}}});
     if(type==='actos') categoryChart=chart; else vcpCategoryChart=chart;
 }
-function updateTrendChart() {
+function updateTrendChart(data) {
     const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx=document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return;
-    let aPM=meses.map(m=>ACTOS_COND_DATA.filter(e=>e.mes===m&&e.tipo==='acto').length), cPM=meses.map(m=>ACTOS_COND_DATA.filter(e=>e.mes===m&&e.tipo==='condicion').length);
+    // Usamos los datos ya filtrados que vienen de applyGeneralFilters
+    let sourceData = data || ACTOS_COND_DATA;
+    let aPM=meses.map(m=>sourceData.filter(e=>e.mes===m&&e.tipo==='acto').length), cPM=meses.map(m=>sourceData.filter(e=>e.mes===m&&e.tipo==='condicion').length);
     if(trendChart) trendChart.destroy();
     trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'⚠️ Actos',data:aPM,borderColor:'#06b6d4',backgroundColor:'rgba(6,182,212,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}});
 }
@@ -573,7 +619,7 @@ function renderGeneralTable(data) {
         let tr=document.createElement('tr'), esDeHoy=(e.dia===diaHoy&&e.mes===mesHoy);
         tr.className=esDeHoy?'row-hoy cursor-pointer':'border-b hover:bg-slate-50 cursor-pointer';
         tr.onclick=()=>openModal(e,i,sortedData);
-        let iconoFecha=esDeHoy?'🔥':'📅', etiqueta=esDeHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>':'';
+        let iconoFecha=esDeHoy?'🔥':'', etiqueta=esDeHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>':'';
         tr.innerHTML=`<td class="p-2 text-cyan-700">${iconoFecha} ${e.dia}/${e.mes} ${etiqueta}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${e.descripcion?.substring(0,55)||''}${e.descripcion?.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`;
         tb.appendChild(tr);
     });
@@ -604,7 +650,7 @@ function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons'
 function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#d97706'); applyVCPFilters(); }
 function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';}); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
 function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
-function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; applyGeneralFilters(); }
+function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
 function clearVCPCauseFilter() { state.vcpCausa='todas'; applyVCPFilters(); }
 
@@ -715,7 +761,7 @@ function cambiarSucursal(suc) {
     currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
     selectedCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo';
     const m=document.getElementById('monthFilter'); if(m) m.value='todo';
-    document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('causa-seleccionada'));
+    document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected'));
     const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section');
     const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
     document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active');
