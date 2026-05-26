@@ -104,49 +104,27 @@
         .badge-malagueno { background: #3b82f6; color: white; }
         .badge-barker { background: #10b981; color: white; }
         .badge-lapampita { background: #f59e0b; color: white; }
-        .zr-item {
-            transition: all 0.2s;
-            cursor: pointer;
-            border-radius: 8px;
-            padding: 8px;
-        }
-        .zr-item:hover {
-            transform: translateX(5px);
-            background: #f1f5f9;
-        }
+        .zr-item { transition: all 0.2s; cursor: pointer; border-radius: 8px; padding: 8px; }
+        .zr-item:hover { transform: translateX(5px); background: #f1f5f9; }
         .zr-ranking-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 6px;
-            border-left: 4px solid;
+            display: flex; align-items: center; gap: 10px; padding: 8px 12px;
+            background: white; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid;
         }
         .zr-ranking-1 { border-color: #fbbf24; background: #fffbeb; }
         .zr-ranking-2 { border-color: #e5e7eb; background: #f9fafb; }
         .zr-ranking-3 { border-color: #fcd34d; background: #fffbeb; }
         .zr-rank-num {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 800;
-            font-size: 12px;
+            width: 28px; height: 28px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 12px;
         }
         .zr-rank-1 { background: #fbbf24; color: #78350f; }
         .zr-rank-2 { background: #9ca3af; color: white; }
         .zr-rank-3 { background: #fcd34d; color: #78350f; }
         .zr-rank-default { background: #e2e8f0; color: #475569; }
         .zr-reincidencia {
-            background: #fef2f2;
-            border: 1px solid #fecaca;
-            border-radius: 10px;
-            padding: 10px;
-            margin-bottom: 8px;
+            background: #fef2f2; border: 1px solid #fecaca;
+            border-radius: 10px; padding: 10px; margin-bottom: 8px;
         }
         
         @media (max-width: 768px) { 
@@ -508,19 +486,11 @@ let currentDateKey = new Date().toDateString();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let alertCountdownInterval = null, autoCountdownTimer = null, progressInterval = null;
 
-// ==================== FUNCIONES UTILITARIAS GLOBALES ====================
-// Estas funciones deben estar disponibles globalmente
-window.getTodayKey = function() { 
-    return new Date().toDateString(); 
-};
-
+// ==================== FUNCIONES GLOBALES NECESARIAS ====================
+window.getTodayKey = function() { return new Date().toDateString(); };
 window.getTodayISO = function() { 
     const hoy = new Date(); 
     return `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`; 
-};
-
-window.getTodayDate = function() {
-    return window.getTodayISO();
 };
 
 // ==================== AUDIO ====================
@@ -536,10 +506,7 @@ window.initAudioContext = function() {
 };
 window.playAlarmSound = function() { 
     if(!soundEnabled) return; 
-    if(!window.audioContextInitialized) { 
-        const success = window.initAudioContext(); 
-        if(!success) return; 
-    } 
+    if(!window.audioContextInitialized) { const success = window.initAudioContext(); if(!success) return; } 
     if(window.audioContext.state === 'suspended') window.audioContext.resume(); 
     try { 
         for(let cycle=0; cycle<3; cycle++) { 
@@ -549,41 +516,32 @@ window.playAlarmSound = function() {
                 osc.connect(gain); gain.connect(window.audioContext.destination); 
                 osc.frequency.value=freq; osc.type='square'; 
                 const start=baseTime+(idx*0.12); 
-                gain.gain.setValueAtTime(0.5,start); 
-                gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); 
+                gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); 
                 osc.start(start); osc.stop(start+0.1); 
             }); 
         } 
     } catch(e) {} 
 };
-
 function playUnlockSound() { 
-    if(!soundEnabled) return; 
-    window.initAudioContext(); 
+    if(!soundEnabled) return; window.initAudioContext(); 
     try { 
         const a=new(window.AudioContext||window.webkitAudioContext)(); 
         [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ 
-            const o=a.createOscillator(),g=a.createGain(); 
-            o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; 
-            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); 
-            g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); 
+            const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; 
+            g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); 
             o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); 
         }); 
     } catch(e){} 
 }
-
 function playErrorSound() { 
-    if(!soundEnabled) return; 
-    window.initAudioContext(); 
+    if(!soundEnabled) return; window.initAudioContext(); 
     try { 
         const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); 
         o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; 
-        g.gain.setValueAtTime(0.2,a.currentTime); 
-        g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); 
+        g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); 
         o.start();o.stop(a.currentTime+0.3); 
     } catch(e){} 
 }
-
 function toggleSound() { 
     soundEnabled=!soundEnabled; 
     document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
@@ -594,64 +552,37 @@ function toggleSound() {
 function togglePasswordVisibility() { 
     window.initAudioContext(); 
     const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); 
-    if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } 
-    else { input.type='password'; btn.textContent='👁️'; } 
+    if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } 
     input.focus(); 
 }
-
 function verifyPassword() { 
     window.initAudioContext(); 
     const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); 
     if(input.value===PASSWORD_CORRECTA) { 
         playUnlockSound(); errorDiv.textContent=''; 
         overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; 
-        setTimeout(()=>{ 
-            overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; 
-            setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); 
-        },1000); 
+        setTimeout(()=>{ overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); },1000); 
     } else { 
-        playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; 
-        input.value=''; input.focus(); input.classList.add('border-red-400'); 
-        setTimeout(()=>input.classList.remove('border-red-400'),500); 
+        playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); 
     } 
 }
-
 function showWelcomeScreen() { 
-    const welcome=document.getElementById('welcomeOverlay'); 
-    welcome.classList.remove('hidden-section'); welcome.style.display='flex'; 
-    let seconds=5; 
-    const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); 
-    bar.style.width='0%'; 
+    const welcome=document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex'; 
+    let seconds=5; const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); bar.style.width='0%'; 
     progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); 
-    autoCountdownTimer=setInterval(()=>{ 
-        seconds--; countdownEl.textContent=seconds; 
-        if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} 
-    },1000); 
+    autoCountdownTimer=setInterval(()=>{ seconds--; countdownEl.textContent=seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} },1000); 
 }
-
 function enterMainPanel() { 
     clearInterval(autoCountdownTimer); clearInterval(progressInterval); 
-    const welcome=document.getElementById('welcomeOverlay'); 
-    welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; 
-    setTimeout(()=>{ 
-        welcome.style.display='none'; welcome.classList.add('hidden-section'); 
-        document.getElementById('mainContent').classList.remove('hidden-section'); 
-        isUnlocked=true; 
-        loadData().then(()=>{updatePulseBadges();}); 
-        setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); 
-    },400); 
+    const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; 
+    setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); 
 }
+function logout() { localStorage.clear(); location.reload(); }
 
-function logout() {
-    localStorage.clear();
-    location.reload();
-}
-
-// ==================== FUNCIONES DE FECHA ====================
+// ==================== FUNCIONES UTILITARIAS ====================
 function parseFecha(f) {
     if(!f) return {dia:'',mes:'',valido:false};
-    let s = f.toString().split(' ')[0].trim();
-    let p = s.split('/');
+    let s = f.toString().split(' ')[0].trim(), p = s.split('/');
     if(p.length>=3) {
         let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]);
         if(p[2].length===2) a=2000+a;
@@ -670,7 +601,6 @@ function parseFecha(f) {
     }
     return {dia:'',mes:'',valido:false};
 }
-
 function classifyData(desc,useVCP=false) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
@@ -678,98 +608,56 @@ function classifyData(desc,useVCP=false) {
     let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0;
     for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best;
 }
-
 function parseCSV(text) {
     const lines=text.split('\n').filter(l=>l.trim()), r=[];
     for(let i=1;i<lines.length;i++){
         const line=lines[i],cols=[];let cur='',inq=false;
         for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;}
-        cols.push(cur.trim());
-        if(cols.length>=10)r.push(cols);
+        cols.push(cur.trim()); if(cols.length>=10)r.push(cols);
     }
     return r;
 }
 
-// ==================== CARGA DE DATOS MULTI-SUCURSAL ====================
+// ==================== CARGA DE DATOS ====================
 async function cargarDatosSucursal(sucursal) {
-    const config = SUCURSALES_CONFIG[sucursal];
-    const ts = Date.now();
+    const config = SUCURSALES_CONFIG[sucursal], ts = Date.now();
     let actosData = [], vcpData = [];
-    
-    // Cargar Actos
     if(config.actosUrl) {
         try {
-            const r1 = await fetch(config.actosUrl + '&t=' + ts);
-            const text = await r1.text();
-            const rows = parseCSV(text);
-            const hoy = new Date(), todayISO = getTodayISO();
-            
+            const r1 = await fetch(config.actosUrl + '&t=' + ts), text = await r1.text(), rows = parseCSV(text), hoy = new Date();
             for(let i=0; i<rows.length; i++) {
-                const row = rows[i];
-                let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
-                
-                // Lógica específica para MALAGUENO (nuevos formatos)
+                const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
                 if(sucursal === 'MALAGUENO' && i >= 225) {
                     const u = row[20] || '';
                     if(u.toUpperCase().startsWith('AI-')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI-\s*/i,'').trim(); }
                     else if(u.toUpperCase().startsWith('CI-')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI-\s*/i,'').trim(); }
                     else { tipoRaw=''; desc=u; }
-                    fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || '';
-                    causas = row[19] || '';
+                    fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || '';
                 } else {
                     if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
                     fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
                 }
-                
                 const fd = parseFecha(fecha); if(!fd.valido) continue;
-                let tipo = 'otro'; 
-                if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; 
-                else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
+                let tipo = 'otro'; if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
                 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
                 const cat = classifyData(desc, false);
-                
-                actosData.push({
-                    fecha, tipo, sector: (sector || '').toLowerCase().trim(), 
-                    observador: (observador || '').trim(), descripcion: (desc || '').trim(), 
-                    causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, 
-                    categoria: cat, sucursal: sucursal
-                });
+                actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
             }
         } catch(e) { console.error(`❌ Error cargando actos de ${sucursal}:`, e); }
     }
-    
-    // Cargar VCP
     if(config.showVCP && config.vcpUrl) {
         try {
-            const r2 = await fetch(config.vcpUrl + '&t=' + ts);
-            const text2 = await r2.text();
-            const rows2 = parseCSV(text2);
-            const vm = config.vcpMapping;
-            
+            const r2 = await fetch(config.vcpUrl + '&t=' + ts), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
             for(let i=0; i<rows2.length; i++) {
-                const row = rows2[i]; 
-                let fr, po, sec, des, com;
-                if(vm) { 
-                    fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); 
-                    sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; 
-                } else { 
-                    fr = row[2] || ''; po = (row[1] || '').trim(); 
-                    sec = (row[3] || '').toLowerCase().trim() || 'general'; 
-                    des = row[32] || ''; com = row[28] || ''; 
-                }
+                const row = rows2[i]; let fr, po, sec, des, com;
+                if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; }
+                else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; }
                 const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue;
                 const cat = classifyData(des, true);
-                
-                vcpData.push({
-                    fecha: fr, tipo: 'vcp', sector: sec, 
-                    personaObservada: po, descripcion: des, comentarios: com, 
-                    cerrado: true, mes: fd.mes, dia: fd.dia, 
-                    categoria: cat, sucursal: sucursal
-                });
+                vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
             }
         } catch(e) { console.error(`❌ Error cargando VCP de ${sucursal}:`, e); }
     }
-    
     return { actos: actosData, vcp: vcpData };
 }
 
@@ -777,189 +665,488 @@ async function loadData() {
     if(!isUnlocked) return;
     try {
         const config = SUCURSALES_CONFIG[currentSucursal];
-        ACTOS_URL = config.actosUrl; VCP_URL = config.vcpUrl; 
-        currentMapping = config.mapping; currentVcpMapping = config.vcpMapping || null; 
-        currentObjetivos = config.objetivos; currentShowVCP = config.showVCP;
-        
-        // Cargar datos para la sucursal actual (para vista normal)
+        ACTOS_URL = config.actosUrl; VCP_URL = config.vcpUrl; currentMapping = config.mapping; currentVcpMapping = config.vcpMapping || null; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP;
         const result = await cargarDatosSucursal(currentSucursal);
-        ACTOS_COND_DATA = result.actos;
-        VCP_DATA = result.vcp;
-        
-        // Guardar en arrays globales para Resumen General
-        ALL_ACTOS_DATA[currentSucursal] = result.actos;
-        ALL_VCP_DATA[currentSucursal] = result.vcp;
-        
-        // Actualizar UI
+        ACTOS_COND_DATA = result.actos; VCP_DATA = result.vcp;
+        ALL_ACTOS_DATA[currentSucursal] = result.actos; ALL_VCP_DATA[currentSucursal] = result.vcp;
         document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
         document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0';
-        
-        populateSupervisors(); populateVCPPeopleFilter(); 
-        applyAllFilters(); updatePulseBadges(); updateRealTimeUI();
-        
+        populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI();
     } catch(e) { console.error('❌ Error cargando datos:', e); }
 }
 
 async function cargarTodosDatosParaResumen() {
-    // Cargar datos de todas las sucursales para el Resumen General
     for(const suc of ['MALAGUENO', 'BARKER', 'LAPAMPITA']) {
         if(!ALL_ACTOS_DATA[suc] || ALL_ACTOS_DATA[suc].length === 0) {
             const result = await cargarDatosSucursal(suc);
-            ALL_ACTOS_DATA[suc] = result.actos;
-            ALL_VCP_DATA[suc] = result.vcp;
+            ALL_ACTOS_DATA[suc] = result.actos; ALL_VCP_DATA[suc] = result.vcp;
         }
     }
 }
 
-function checkNewReports() { 
-    if(!isUnlocked || isModalOpen) return; 
-    loadData(); 
-    checkAndResetDailyCounters();
-}
+function checkNewReports() { if(!isUnlocked || isModalOpen) return; loadData(); checkAndResetDailyCounters(); }
+function forceRefreshData() { if(isUnlocked) loadData(); }
 
-function forceRefreshData() { 
-    if(isUnlocked) loadData(); 
-}
-
-// ==================== VERIFICACIÓN Y RESET DIARIO ====================
 function checkAndResetDailyCounters() { 
     const today = getTodayKey(); 
     if(today !== currentDateKey) { 
         currentDateKey = today; 
-        Object.keys(todayAlertsBySucursal).forEach(suc => {
-            todayAlertsBySucursal[suc].actos = [];
-            todayAlertsBySucursal[suc].vcp = [];
-        }); 
-        reportesNotificadosActos.clear(); 
-        reportesNotificadosVCP.clear(); 
-        updatePulseBadges(); 
-        updateRealTimeUI(); 
+        Object.keys(todayAlertsBySucursal).forEach(suc => { todayAlertsBySucursal[suc].actos = []; todayAlertsBySucursal[suc].vcp = []; }); 
+        reportesNotificadosActos.clear(); reportesNotificadosVCP.clear(); 
+        updatePulseBadges(); updateRealTimeUI(); 
     } 
 }
 
 // ==================== FILTROS ====================
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
-
 function applyGeneralFilters() {
-    let f = ACTOS_COND_DATA.filter(e => 
-        (state.mes==='todo'||e.mes===state.mes) && 
-        (state.sector==='general'||e.sector.includes(state.sector)) && 
-        (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && 
-        (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa)
-    );
-    
-    if(selectedCausa && selectedCausa !== 'todas') {
-        f = f.filter(e => e.categoria?.id === selectedCausa);
-    }
-
+    let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa));
+    if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa);
     let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion');
-    document.getElementById('kpiActos').innerText = a.length; 
-    document.getElementById('kpiCondiciones').innerText = c.length;
-    
-    let pA = Math.min(a.length/currentObjetivos.actos*100, 100), 
-        pC = Math.min(c.length/currentObjetivos.cond*100, 100);
-    
-    document.getElementById('actosBar').style.width = pA+'%'; 
-    document.getElementById('condBar').style.width = pC+'%';
-    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; 
-    document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
-    
-    let up = (id,p) => {
-        let el = document.getElementById(id); 
-        if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';}
-        else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';}
-        else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';}
-    };
+    document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length;
+    let pA = Math.min(a.length/currentObjetivos.actos*100, 100), pC = Math.min(c.length/currentObjetivos.cond*100, 100);
+    document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
+    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
+    let up = (id,p) => { let el = document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} };
     up('actosStatus',pA); up('condStatus',pC);
-    
-    updateCategoryCards(f,'actos'); 
-    updateChartsDona(f,'actos'); 
-    updateTrendChart(f); 
-    renderGeneralTable(f);
+    updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f);
 }
 
 function updateCategoryCards(data,type) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
-    const cats = type==='actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP, 
-          contId = type==='actos' ? 'categoryCards' : 'vcpCategoryCards';
-    
-    let counts = {}; cats.forEach(c => counts[c.id] = 0); 
-    data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
-    
-    let total = data.length || 1, cont = document.getElementById(contId); 
-    if(!cont) return; cont.innerHTML = '';
-    
+    const cats = type==='actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP, contId = type==='actos' ? 'categoryCards' : 'vcpCategoryCards';
+    let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    let total = data.length || 1, cont = document.getElementById(contId); if(!cont) return; cont.innerHTML = '';
     cats.forEach(c => { 
-        let val = counts[c.id] || 0, pct = Math.round(val/total*100); 
-        let div = document.createElement('div'); 
+        let val = counts[c.id] || 0, pct = Math.round(val/total*100); let div = document.createElement('div'); 
         let isActive = (type==='actos' ? selectedCausa === c.id : selectedVCPCausa === c.id);
-        div.className = `category-card p-3 text-center relative cursor-pointer ${isActive ? 'selected' : ''}`; 
-        div.style.borderColor = isActive ? '#d97706' : c.color; 
-        
+        div.className = `category-card p-3 text-center relative cursor-pointer ${isActive ? 'selected' : ''}`; div.style.borderColor = isActive ? '#d97706' : c.color;
         div.onclick = () => {
-            if (type==='actos') {
-                if (isActive) {
-                    selectedCausa = 'todas';
-                    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
-                } else {
-                    selectedCausa = c.id;
-                    document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');
-                }
-                applyGeneralFilters();
-            } else {
-                if (isActive) {
-                    selectedVCPCausa = 'todas';
-                    document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
-                } else {
-                    selectedVCPCausa = c.id;
-                    document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section');
-                }
-                applyVCPFilters();
-            }
+            if (type==='actos') { if (isActive) { selectedCausa = 'todas'; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); } else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); } applyGeneralFilters(); }
+            else { if (isActive) { selectedVCPCausa = 'todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); } else { selectedVCPCausa = c.id; document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section'); } applyVCPFilters(); }
         };
-        
-        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; 
-        cont.appendChild(div); 
+        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; cont.appendChild(div); 
     });
 }
 
 function updateChartsDona(data,type) {
-    const cats = type==='actos' ? 
-        [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'¡Hola! Veo los errores en la consola. El problema es que hay **funciones que no están definidas** y eso está rompiendo toda la funcionalidad. Déjame ayudarte a solucionarlo.
+    const cats = type==='actos' ? [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}] : [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
+    const canvasId = type==='actos' ? 'categoryChart' : 'vcpCategoryChart', ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return;
+    let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    if(type==='actos'&&categoryChart) categoryChart.destroy(); if(type!=='actos'&&vcpCategoryChart) vcpCategoryChart.destroy();
+    const chart = new Chart(ctx, { type: 'doughnut', data: { labels: cats.map(c => `${c.icon} ${c.name}`), datasets: [{ data: cats.map(c => counts[c.id] || 0), backgroundColor: cats.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] }, options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); const pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } } } });
+    if(type==='actos') categoryChart = chart; else vcpCategoryChart = chart;
+}
 
-## 🔍 **Problemas detectados:**
+function updateTrendChart(data) {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx = document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return;
+    let sourceData = data || ACTOS_COND_DATA;
+    let aPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='acto').length), cPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='condicion').length);
+    if(trendChart) trendChart.destroy();
+    trendChart = new Chart(ctx, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '⚠️ Actos', data: aPM, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true }, { label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 10 } }, x: { ticks: { font: { size: 9 } } } } } });
+}
 
-1. ❌ `getTodayKey is not defined` - Función faltante
-2. ❌ `checkNewReports` - Errores en la verificación de reportes
-3. ❌ El botón "RESUMEN GENERAL" no aparece
-4. ❌ Las notificaciones dejaron de funcionar
+function applyVCPFilters() {
+    let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && (state.vcpCausa==='todas'||selectedVCPCausa==='todas'||e.categoria?.id===selectedVCPCausa));
+    if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa);
+    let pct = Math.min(f.length/OBJ_VCP*100, 100), vs = document.getElementById('vcpStatus');
+    if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; }
+    document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
+    updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f);
+}
 
-## 🛠️ **Solución Rápida:**
+function updateVCPCharts(data) {
+    const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
+    let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+    const ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d'); if(vcpCategoryChart) vcpCategoryChart.destroy();
+    vcpCategoryChart = new Chart(ctxD, { type: 'doughnut', data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let t = ctx.dataset.data.reduce((a,b) => a+b, 0); let p = Math.round((ctx.parsed/t)*100); return `${ctx.label}: ${ctx.parsed} (${p}%)`; } } } }, animation: { animateRotate: true } } });
+    const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM = m.map(mes => data.filter(e => e.mes === mes).length);
+    const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart) vcpTrendChart.destroy();
+    vcpTrendChart = new Chart(ctxT, { type: 'line', data: { labels: m.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } } });
+}
 
-Necesito que verifiques **dónde colocaste el código**. Te explico:
+function renderGeneralTable(data) {
+    let tb = document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML = '';
+    const sortedData = [...data].sort((a,b) => { const dateA = new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`); const dateB = new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`); return dateB - dateA; });
+    const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    sortedData.slice(0,50).forEach((e,i) => {
+        let tr = document.createElement('tr'), esDeHoy = (e.dia === diaHoy && e.mes === mesHoy);
+        tr.className = esDeHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
+        tr.onclick = () => openModal(e, i, sortedData);
+        let iconoFecha = esDeHoy ? '🔥' : '', etiqueta = esDeHoy ? '<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>' : '';
+        tr.innerHTML = `<td class="p-2 text-cyan-700">${iconoFecha} ${e.dia}/${e.mes} ${etiqueta}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${e.descripcion?.substring(0,55)||''}${e.descripcion?.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`;
+        tb.appendChild(tr);
+    });
+}
 
-### **Verificación Paso a Paso:**
+function renderVCPTable(data) {
+    let tb = document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML = '';
+    const sorted = [...data].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)), hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    sorted.slice(0,50).forEach((e,i) => {
+        let tr = document.createElement('tr'), esHoy = (e.dia === diaHoy && e.mes === mesHoy);
+        tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
+        tr.onclick = () => openModal(e, i, sorted);
+        tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}${esHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">HOY</span>':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${e.descripcion?.substring(0,40)||'-'}${e.descripcion?.length>40?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,20)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`;
+        tb.appendChild(tr);
+    });
+}
 
-1. **Abre el archivo HTML** que estás usando
-2. **Busca en la consola** (F12) y dime:
-   - ¿Qué línea exacta marca el primer error?
-   - ¿Aparece el botón "📊 RESUMEN GENERAL" en el header?
+function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter')?.value || 'todos', m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo', f = VCP_DATA.filter(v => (p==='todos' || v.personaObservada===p) && (m==='todo' || v.mes===m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0].dia + '/' + f[0].mes : '-'; }
+function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v => { if(v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada)||0) + 1); }); let sel = document.getElementById('vcpPersonFilter'); if(!sel) return; sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
+function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort(), sel = document.getElementById('supervisorSelect'); if(!sel) return; sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x => sel.innerHTML += `<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
+function updateSupervisorCard() { let s = document.getElementById('supervisorSelect')?.value || 'todos', m = document.getElementById('supervisorMonthSelect')?.value || 'todo', f = ACTOS_COND_DATA.filter(e => (s==='todos' || e.observador===s) && (m==='todo' || e.mes===m)); document.getElementById('supActosCount').innerText = f.filter(e => e.tipo==='acto').length; document.getElementById('supCondCount').innerText = f.filter(e => e.tipo==='condicion').length; }
+function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#2563eb'); applyGeneralFilters(); }
+function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#2563eb'); applyGeneralFilters(); }
+function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#d97706'); applyVCPFilters(); }
+function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#d97706'); applyVCPFilters(); }
+function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b => { b.classList.remove('active'); b.style.background='white'; b.style.color='#475569'; }); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
+function limpiarFiltroGrafico() { selectedChartMonth=null; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
+function limpiarFiltroCausa() { selectedCausa=null; state.causaRaiz='todas'; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
+function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
+function clearVCPCauseFilter() { selectedVCPCausa=null; state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 
-### **Código que FALTA agregar:**
+// ==================== ALERTAS ====================
+function showNewReportAlert(persona, sector, desc, tipo, hora) { if(!soundEnabled) return; const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); contentEl.innerHTML=`<div class="alert-person">👤 ${persona||'No identificado'}</div><div class="alert-sector">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc||'Sin descripción'}</div><div class="alert-time">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; alertEl.classList.add('show'); window.playAlarmSound(); let secs=15; document.getElementById('alertCountdown').textContent=secs; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); }
+function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval=null; } const alertEl=document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
+function toggleActosAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].actos; showDailyReportsModal('actos',alerts); }
+function toggleVCPAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].vcp; showDailyReportsModal('vcp',alerts); }
+function showDailyReportsModal(type, alerts) {
+    const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent');
+    const title=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY', colorClass=type==='actos'?'text-cyan-700':'text-purple-700';
+    titleEl.textContent=title; titleEl.className=`font-black text-2xl ${colorClass}`;
+    if(alerts.length===0) { contentEl.innerHTML='<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
+    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
+    modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
+}
+function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
+function acknowledgeBadge(type) { const badge=document.getElementById(type==='actos'?'actosNovedadBadge':'vcpNovedadBadge'); if(badge) badge.classList.add('hidden'); }
+function addDailyAlert(persona, sector, desc, tipo, hora, causas) {
+    const alertData={persona, sector, desc, tipo, hora, causas, timestamp:Date.now()};
+    if(tipo&&tipo.toLowerCase().includes('vcp')) { todayAlertsBySucursal[currentSucursal].vcp.unshift(alertData); }
+    else { todayAlertsBySucursal[currentSucursal].actos.unshift(alertData); }
+    updatePulseBadges(); updateRealTimeUI();
+}
+function updatePulseBadges() {
+    const badgeActosCard=document.getElementById('actosNovedadBadge'), badgeVCPCard=document.getElementById('vcpNovedadBadge'), currentAlerts=todayAlertsBySucursal[currentSucursal];
+    if(badgeActosCard) { if(currentAlerts.actos.length>0) { badgeActosCard.textContent=Math.min(currentAlerts.actos.length,9); badgeActosCard.classList.remove('hidden'); } else { badgeActosCard.classList.add('hidden'); } }
+    if(badgeVCPCard) { if(currentAlerts.vcp.length>0) { badgeVCPCard.textContent=Math.min(currentAlerts.vcp.length,9); badgeVCPCard.classList.remove('hidden'); } else { badgeVCPCard.classList.add('hidden'); } }
+}
+function updateRealTimeUI() {
+    const actosContainer=document.getElementById('realTimeReportsActos'), vcpContainer=document.getElementById('realTimeReportsVCP'), actosLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), currentAlerts=todayAlertsBySucursal[currentSucursal];
+    if(!actosContainer||!vcpContainer) return;
+    if(actosLed) actosLed.className=currentAlerts.actos.length>0?'siren-green':'siren-red';
+    if(vcpLed) vcpLed.className=currentAlerts.vcp.length>0?'siren-green':'siren-red';
+    if(currentAlerts.actos.length>0) { actosContainer.innerHTML=currentAlerts.actos.map(a=>`<div class="report-item feed-item" style="border-left-color:#10b981;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto')?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
+    else { actosContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>'; }
+    if(currentAlerts.vcp.length>0) { vcpContainer.innerHTML=currentAlerts.vcp.map(a=>`<div class="report-item feed-item" style="border-left-color:#f59e0b;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); }
+    else { vcpContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>'; }
+}
 
-Asegúrate de tener **ESTO** en tu HTML:
+// ==================== MODALES PRINCIPALES ====================
+function openModal(r,idx,data) {
+    if(!isUnlocked) return; isModalOpen=true; currentModalData=data; currentModalIndex=idx;
+    const modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent');
+    if(!modal||!content) return;
+    modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    if(r.tipo==='vcp') {
+        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p><div class="bg-purple-50 p-3 rounded-lg border border-purple-100"><p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion||'-'}</p></div>${r.comentarios?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p><div class="bg-slate-50 p-3 rounded-lg border border-slate-200"><p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p></div>`:''}</div>`;
+    } else {
+        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo?.toUpperCase()||''}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📖 LO SUCEDIDO (Descripción):</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-500 shadow-sm"><p class="text-[15px] text-slate-800 font-medium leading-relaxed break-words whitespace-pre-wrap">${r.descripcion||'Sin descripción detallada.'}</p></div>${r.causas?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg border border-amber-200"><p class="text-sm text-amber-900 font-medium">${r.causas}</p></div>`:''}<div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600 font-bold">🔒 CERRADO</span>':'<span class="text-red-500 font-bold">⚠️ ABIERTO</span>'}</p></div></div>`;
+    }
+    modal.classList.remove('hidden-section'); modal.style.display='flex';
+}
+function closeReportModal() { const m=document.getElementById('reportDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
+function updateNavButtons() { const p=document.getElementById('btnPrev'), n=document.getElementById('btnNext'), c=document.getElementById('modalCounter'); const hp=currentModalIndex>0, hn=currentModalIndex<currentModalData.length-1; p.disabled=!hp; n.disabled=!hn; c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`; }
+function goToNextModal() { if(currentModalIndex<currentModalData.length-1) { currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
+function goToPreviousModal() { if(currentModalIndex>0) { currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
+function abrirModalSupervisor(tipo) {
+    if(!isUnlocked) return; const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value;
+    if(s==='todos') { alert("⚠️ Seleccione un supervisor"); return; }
+    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo);
+    if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; }
+    const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706';
+    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; });
+    html+=`</tbody></table></div>`;
+    document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html;
+    const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
+}
+function closeSupervisorModal() { const m=document.getElementById('supervisorDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
+function abrirModalPersonaVCP() {
+    if(!isUnlocked) return; const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value;
+    if(p==='todos') { alert("⚠️ Seleccione una persona"); return; }
+    const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m));
+    if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
+    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
+    html+=`</tbody></table></div>`;
+    document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html;
+    const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
+}
+function closePersonaVCPModal() { const m=document.getElementById('personaVCPModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 
-```html
-<!-- En el HEADER, antes del botón de SALIR -->
-<button onclick="abrirResumenGeneral()" class="resumen-btn">📊 RESUMEN GENERAL</button>
+// ==================== UTILS ====================
+function cambiarSucursal(suc) {
+    currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+    selectedCausa=null; selectedVCPCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo';
+    const m=document.getElementById('monthFilter'); if(m) m.value='todo';
+    document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected'));
+    const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section');
+    const cb2=document.getElementById('clearVCPCauseBtn'); if(cb2) cb2.classList.add('hidden-section');
+    const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
+    document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active');
+    if(isUnlocked) loadData();
+}
+function actualizarLED(tipo,hay) { const l=document.getElementById(`${tipo}Led`); if(!l) return; if(hay){l.className='siren-green'; setTimeout(()=>{const o=document.getElementById(`${tipo}Led`);if(o)o.className='siren-red';},5000);} }
+function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
+function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 
-<!-- El MODAL de contraseña (antes de </body>) -->
-<div id="resumenPasswordModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001]" style="display:none;">
-    <!-- ... contenido del modal ... -->
-</div>
+// ==================== RESUMEN GENERAL - FUNCIONES ====================
+function toggleResumenPasswordVisibility() {
+    const input = document.getElementById('resumenPasswordInput');
+    input.type = input.type === 'password' ? 'text' : 'password';
+}
+function abrirResumenGeneral() {
+    if(!isUnlocked) return;
+    const modal = document.getElementById('resumenPasswordModal');
+    if(!modal) return;
+    document.getElementById('resumenPasswordInput').value = '';
+    document.getElementById('resumenPasswordError').textContent = '';
+    modal.querySelector('.modal-bounce').style.animation = 'none';
+    modal.querySelector('.modal-bounce').offsetHeight;
+    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    setTimeout(() => document.getElementById('resumenPasswordInput')?.focus(), 100);
+}
+function cerrarResumenPasswordModal() {
+    const modal = document.getElementById('resumenPasswordModal');
+    if(modal) { modal.classList.add('hidden-section'); modal.style.display = 'none'; }
+}
+function verificarResumenPassword() {
+    const input = document.getElementById('resumenPasswordInput'), errorDiv = document.getElementById('resumenPasswordError'), modal = document.getElementById('resumenPasswordModal');
+    if(input.value === PASSWORD_RESUMEN) {
+        errorDiv.textContent = '';
+        cerrarResumenPasswordModal();
+        cargarTodosDatosParaResumen().then(() => { mostrarResumenGeneralModal(); });
+    } else {
+        playErrorSound();
+        errorDiv.textContent = '🔒 Contraseña incorrecta';
+        input.value = '';
+        input.focus();
+        input.classList.add('border-red-400');
+        setTimeout(() => input.classList.remove('border-red-400'), 500);
+    }
+}
+function mostrarResumenGeneralModal() {
+    const modal = document.getElementById('resumenGeneralModal');
+    if(!modal) return;
+    document.getElementById('resumenSucursalFiltro').value = 'todas';
+    document.getElementById('resumenMesFiltro').value = 'todo';
+    document.getElementById('resumenSectorFiltro').value = 'todos';
+    modal.querySelector('.modal-bounce').style.animation = 'none';
+    modal.querySelector('.modal-bounce').offsetHeight;
+    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    actualizarResumenGeneral();
+}
+function cerrarResumenGeneralModal() {
+    const modal = document.getElementById('resumenGeneralModal');
+    if(!modal) return;
+    modal.classList.add('hidden-section');
+    modal.style.display = 'none';
+    if(resumenChart1) { resumenChart1.destroy(); resumenChart1 = null; }
+    if(resumenChart2) { resumenChart2.destroy(); resumenChart2 = null; }
+}
+function actualizarResumenGeneral() {
+    const sucursal = document.getElementById('resumenSucursalFiltro').value;
+    const mes = document.getElementById('resumenMesFiltro').value;
+    const sector = document.getElementById('resumenSectorFiltro').value;
+    let datosActos = [], datosVCP = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+        datosActos = datosActos.concat(actosFiltrados);
+        if(ALL_VCP_DATA[suc]) {
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+            datosVCP = datosVCP.concat(vcpFiltrados);
+        }
+    });
+    const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
+    const totalCondiciones = datosActos.filter(d => d.tipo === 'condicion').length;
+    const totalVCP = datosVCP.length;
+    document.getElementById('resumenTotalActos').innerText = totalActos;
+    document.getElementById('resumenTotalCondiciones').innerText = totalCondiciones;
+    document.getElementById('resumenTotalVCP').innerText = totalVCP;
+    document.getElementById('resumenTotalGeneral').innerText = totalActos + totalCondiciones + totalVCP;
+    renderTopRankings(datosActos);
+    renderReincidencias(datosActos);
+    renderTablaResumen([...datosActos, ...datosVCP]);
+    renderChartsResumen(datosActos, datosVCP);
+}
+function renderTopRankings(datos) {
+    const actos = datos.filter(d => d.tipo === 'acto');
+    const countActos = {};
+    actos.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countActos[key] = (countActos[key] || 0) + 1; });
+    const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const containerActos = document.getElementById('topActosRanking');
+    if(containerActos) {
+        containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => `
+            <div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}">
+                <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
+                <div class="flex-1">
+                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                    <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
+                </div>
+                <div class="text-lg font-black text-red-600">${count}</div>
+            </div>
+        `).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
+    }
+    const conds = datos.filter(d => d.tipo === 'condicion');
+    const countConds = {};
+    conds.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countConds[key] = (countConds[key] || 0) + 1; });
+    const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const containerConds = document.getElementById('topCondRanking');
+    if(containerConds) {
+        containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => `
+            <div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706">
+                <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
+                <div class="flex-1">
+                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                    <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
+                </div>
+                <div class="text-lg font-black text-amber-600">${count}</div>
+            </div>
+        `).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
+    }
+}
+function renderReincidencias(datos) {
+    const reincMap = new Map();
+    datos.forEach(d => {
+        if(!d.observador || !d.categoria?.id) return;
+        const key = `${d.observador}|${d.categoria.id}`;
+        if(!reincMap.has(key)) { reincMap.set(key, {persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set()}); }
+        const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal);
+    });
+    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 15);
+    const container = document.getElementById('reincidenciasList');
+    if(container) {
+        container.innerHTML = reincList.length ? reincList.map(r => `
+            <div class="zr-reincidencia">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="font-bold text-sm text-slate-800">👤 ${r.persona}</span>
+                        <span class="text-xs text-slate-500 ml-2">${r.categoria?.icon} ${r.categoria?.name}</span>
+                    </div>
+                    <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold">${r.count}x</span>
+                </div>
+                <div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div>
+            </div>
+        `).join('') : '<p class="text-slate-400 text-center py-4">✅ Sin reincidencias detectadas</p>';
+    }
+}
+function renderTablaResumen(datos) {
+    const tbody = document.getElementById('resumenTablaBody');
+    if(!tbody) return;
+    const sorted = [...datos].sort((a,b) => {
+        const dateA = new Date(`${a.fecha?.split('/')[2] || 2026}-${a.fecha?.split('/')[1] || 1}-${a.fecha?.split('/')[0] || 1}`);
+        const dateB = new Date(`${b.fecha?.split('/')[2] || 2026}-${b.fecha?.split('/')[1] || 1}-${b.fecha?.split('/')[0] || 1}`);
+        return dateB - dateA;
+    }).slice(0, 100);
+    tbody.innerHTML = sorted.map(d => {
+        const badgeSuc = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
+        const tipoDisplay = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
+        const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700');
+        const safeData = JSON.stringify({ fecha: d.fecha || '', tipo: d.tipo || '', sector: d.sector || '', observador: d.observador || d.personaObservada || '', descripcion: d.descripcion || '', cerrado: d.cerrado !== undefined ? d.cerrado : true, categoria: d.categoria || {}, sucursal: d.sucursal || '', personaObservada: d.personaObservada || '', comentarios: d.comentarios || '' }).replace(/"/g, '&quot;');
+        return `<tr class="border-b hover:bg-slate-50 cursor-pointer zr-item" onclick="abrirModalDesdeResumen('${safeData}')">
+            <td class="p-2"><span class="badge-sucursal ${badgeSuc}">${d.sucursal}</span></td>
+            <td class="p-2 font-medium">${d.dia || '?'}/${d.mes || '?'}</td>
+            <td class="p-2 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>
+            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoDisplay}</span></td>
+            <td class="p-2 max-w-xs">${(d.descripcion || '-').substring(0, 40)}${(d.descripcion || '').length > 40 ? '...' : ''}</td>
+            <td class="p-2">🏭 ${d.sector || '-'}</td>
+            <td class="p-2">${d.observador ? '👔' : '👤'} ${d.observador || d.personaObservada || '-'}</td>
+            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>
+        </tr>`;
+    }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
+}
+function abrirModalDesdeResumen(dataJson) {
+    try { const data = JSON.parse(dataJson.replace(/&quot;/g, '"')); openModal(data, 0, [data]); } catch(e) { console.error('Error abriendo modal:', e); }
+}
+function renderChartsResumen(actosData, vcpData) {
+    const ctx1 = document.getElementById('topResponsablesChart')?.getContext('2d'); if(!ctx1) return;
+    const countResp = {}; [...actosData, ...vcpData].forEach(d => { const resp = d.observador || d.personaObservada || 'Sin identificar'; countResp[resp] = (countResp[resp] || 0) + 1; });
+    const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    if(resumenChart1) resumenChart1.destroy();
+    resumenChart1 = new Chart(ctx1, { type: 'bar', data: { labels: topResp.map(([n]) => n.length > 15 ? n.substring(0,15)+'...' : n), datasets: [{ label: 'Reportes', data: topResp.map(([,c]) => c), backgroundColor: 'rgba(124, 58, 237, 0.7)', borderColor: '#7c3aed', borderWidth: 2, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } } } });
+    const ctx2 = document.getElementById('evolucionSucursalChart')?.getContext('2d'); if(!ctx2) return;
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const dataBySuc = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+    const allData = [...actosData, ...vcpData];
+    meses.forEach(mes => { Object.keys(dataBySuc).forEach(suc => { dataBySuc[suc].push(allData.filter(d => d.mes === mes && d.sucursal === suc).length); }); });
+    if(resumenChart2) resumenChart2.destroy();
+    resumenChart2 = new Chart(ctx2, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '🏔️ Malagueño', data: dataBySuc.MALAGUENO, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true }, { label: '🌲 Barker', data: dataBySuc.BARKER, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true }, { label: '🌾 La Pampita', data: dataBySuc.LAPAMPITA, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 5, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
+}
+function exportarResumenExcel() {
+    const sucursal = document.getElementById('resumenSucursalFiltro').value;
+    const mes = document.getElementById('resumenMesFiltro').value;
+    const sector = document.getElementById('resumenSectorFiltro').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { d.sucursal = suc; if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+        datos = datos.concat(actosFiltrados);
+        if(ALL_VCP_DATA[suc]) {
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { d.sucursal = suc; if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+            datos = datos.concat(vcpFiltrados);
+        }
+    });
+    const headers = ['Sucursal','Fecha','Responsable','Tipo','Descripcion','Sector','Observador','Estado','Categoria'];
+    const rows = datos.map(d => [ d.sucursal || '', `${d.dia || '?'}/${d.mes || '?'}/2026`, d.observador || d.personaObservada || '', d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'Acto Inseguro' : 'Condicion Insegura'), `"${(d.descripcion || '').replace(/"/g, '""')}"`, d.sector || '', d.observador || d.personaObservada || '', d.cerrado !== false ? 'Cerrado' : 'Abierto', d.categoria?.name || '' ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ResumenGeneral_${new Date().toISOString().split('T')[0]}.csv`; link.click();
+    const btn = event?.target; if(btn) { const original = btn.innerHTML; btn.innerHTML = '✅ Exportado!'; setTimeout(() => btn.innerHTML = original, 2000); }
+}
 
-<!-- El MODAL principal (antes de </body>) -->
-<div id="resumenGeneralModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000]" style="display:none;">
-    <!-- ... contenido del modal ... -->
-</div>
+// ==================== EVENT LISTENERS ====================
+document.addEventListener('keydown', (e) => {
+    if(e.key === 'Escape') {
+        const modales = ['resumenGeneralModal', 'resumenPasswordModal'];
+        modales.forEach(id => {
+            const modal = document.getElementById(id);
+            if(modal && !modal.classList.contains('hidden-section')) {
+                if(id === 'resumenGeneralModal') cerrarResumenGeneralModal(); else cerrarResumenPasswordModal();
+            }
+        });
+    }
+});
+['resumenGeneralModal', 'resumenPasswordModal'].forEach(id => {
+    document.getElementById(id)?.addEventListener('click', (e) => { if(e.target.id === id) { if(id === 'resumenGeneralModal') cerrarResumenGeneralModal(); else cerrarResumenPasswordModal(); } });
+});
+document.getElementById('resumenPasswordInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') verificarResumenPassword(); });
+
+window.addEventListener('load', () => {
+    if(localStorage.getItem('isLoggedIn') === 'true') { currentUser = localStorage.getItem('currentUser'); isUnlocked = true; document.getElementById('passwordOverlay').style.display = 'none'; showWelcomeScreen(); }
+    else { document.getElementById('passwordInput')?.focus(); }
+    document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); });
+    document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
+    document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
+    document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
+    document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
+    document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true });
+});
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('monthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.mes = e.target.value; applyGeneralFilters(); }});
+    document.getElementById('supervisorSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); });
+    document.getElementById('supervisorMonthSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); });
+    document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.vcpMes = e.target.value; applyVCPFilters(); }});
+    document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+    document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+});
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen) { checkNewReports(); } });
+</script>
+</body>
+</html>
