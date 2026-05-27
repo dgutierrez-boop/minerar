@@ -161,7 +161,7 @@
 <!-- 🌊 BIENVENIDA -->
 <div id="welcomeOverlay" class="hidden-section">
     <div class="welcome-card">
-        <div class="welcome-icon">👷️️️</div>
+        <div class="welcome-icon">👷‍️️️</div>
         <h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
         <div class="welcome-divider"></div>
         <p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
@@ -172,10 +172,10 @@
     </div>
 </div>
 
-<!--  ALERTA EMERGENTE -->
+<!-- 🚨 ALERTA EMERGENTE -->
 <div id="newReportAlert">
     <div class="alert-card">
-        <div class="alert-icon"></div>
+        <div class="alert-icon">🚨</div>
         <h3 class="alert-title">⚠️ ¡NUEVO REPORTE DETECTADO!</h3>
         <div id="alertContent" class="mt-4"></div>
         <button onclick="dismissAlert()" class="alert-dismiss">✅ ENTENDIDO · CERRAR ALERTA</button>
@@ -230,9 +230,9 @@
             <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
         </div>
         <div class="grid md:grid-cols-3 gap-4 my-5">
-            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn"> Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div><div class="flex justify-between"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div><div class="flex justify-between"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
             <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo"> Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
+            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 sup-card-hover cursor-pointer" id="actosCardSupervisor" onclick="abrirModalSupervisor('acto')"><span class="text-[10px] text-cyan-700">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div></div>
                     <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 sup-card-hover cursor-pointer" id="condCardSupervisor" onclick="abrirModalSupervisor('condicion')"><span class="text-[10px] text-amber-700">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700">0</div></div>
@@ -240,19 +240,19 @@
             </div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4"><h3 class="font-black mb-2">🔍 FILTROS ACTOS ️</h3><label class="text-xs font-bold">📅 MES</label><select id="monthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+            <aside><div class="glass-card p-4"><h3 class="font-black mb-2">🔍 FILTROS ACTOS ⚙️</h3><label class="text-xs font-bold">📅 MES</label><select id="monthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
                 <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200 cursor-pointer" onclick="toggleActosAlerts()">
                     <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
                     <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
                 </div>
             </div></aside>
             <main>
-                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer hover:bg-purple-200">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all cursor-pointer"> Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
+                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer hover:bg-purple-200">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer"> Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
                 </div>
-                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2"> DETALLE DE ACTOS Y CONDICIONES </h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th> Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
@@ -261,13 +261,13 @@
 
     <!-- VCP SECCIÓN -->
     <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
-        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) ️</h2></div>
+        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
-            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn"> Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos"> Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo"> Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
+            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold"> ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
+            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
                 <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200 cursor-pointer" onclick="toggleVCPAlerts()">
                     <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-amber-700">📢 VCP EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div>
                     <div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
@@ -276,10 +276,10 @@
             <main>
                 <div class="glass-card p-4 mb-4 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer hover:bg-purple-200">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2"> DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
+                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
                     <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
                 </div>
-                <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th> Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
+                <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
             </main>
         </div>
     </div>
@@ -299,7 +299,7 @@
 <div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200 max-h-[80vh] overflow-hidden">
         <div class="flex justify-between items-center mb-4">
-            <h2 id="dailyReportsTitle" class="font-black text-2xl text-cyan-700"> Reportes de Hoy</h2>
+            <h2 id="dailyReportsTitle" class="font-black text-2xl text-cyan-700">📋 Reportes de Hoy</h2>
             <button onclick="closeDailyReportsModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button>
         </div>
         <div id="dailyReportsContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
@@ -309,7 +309,7 @@
 
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700"> Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div>
+        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div>
         <div id="supervisorModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
         <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold cursor-pointer">Cerrar</button>
     </div>
@@ -341,99 +341,120 @@
     </div>
 </div>
 
-<!-- 📊 MODAL RESUMEN GENERAL -->
+<!-- 📊 MODAL RESUMEN GENERAL - NUEVO DISEÑO INTERACTIVO -->
 <div id="resumenGeneralModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000]" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl w-[95%] max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl border-4 border-purple-600">
+    <div class="modal-bounce bg-white rounded-2xl w-[95%] max-w-7xl max-h-[90vh] shadow-2xl border-4 border-purple-600 overflow-hidden">
+        <!-- Header -->
         <div class="bg-gradient-to-r from-purple-700 to-indigo-800 p-4 flex justify-between items-center">
-            <h2 class="text-2xl font-black text-white">📊 RESUMEN GENERAL 📈 <span class="text-sm bg-yellow-400 text-purple-900 px-3 py-1 rounded-full ml-2">VISTA EJECUTIVA</span></h2>
-            <button onclick="cerrarResumenGeneralModal()" class="text-white text-3xl hover:text-yellow-300 cursor-pointer">&times;</button>
+            <div class="flex items-center gap-3">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="w-10 h-10 rounded-full border-2 border-white">
+                <div>
+                    <h2 class="text-2xl font-black text-white">📊 RESUMEN GENERAL</h2>
+                    <p class="text-purple-200 text-xs">Dashboard Ejecutivo Interactivo</p>
+                </div>
+            </div>
+            <button onclick="cerrarResumenGeneralModal()" class="text-white text-3xl hover:text-yellow-300 cursor-pointer transition-colors">&times;</button>
         </div>
-        <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-            <!-- FILTROS AUTOMÁTICOS CON LOGOS -->
-            <div class="flex gap-4 flex-wrap mb-6">
-                <select id="resumenSucursalFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
+        
+        <!-- Contenido con scroll -->
+        <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)] bg-gradient-to-br from-slate-50 to-blue-50">
+            <!-- Filtros -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <select id="resumenSucursalFiltro" class="border-2 border-purple-200 rounded-xl p-3 text-sm font-semibold focus:border-purple-500 focus:outline-none shadow-sm" onchange="actualizarResumenGeneral()">
                     <option value="todas">🌍 TODAS LAS SUCURSALES</option>
-                    <option value="MALAGUENO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-1"> MALAGUEÑO</option>
-                    <option value="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-1"> BARKER</option>
-                    <option value="LAPAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-1"> LA PAMPITA</option>
+                    <option value="MALAGUENO"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-2"> MALAGUEÑO</option>
+                    <option value="BARKER"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-2"> BARKER</option>
+                    <option value="LAPAMPITA"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="sucursal-logo inline mr-2"> LA PAMPITA</option>
                 </select>
-                <select id="resumenMesFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
+                <select id="resumenMesFiltro" class="border-2 border-purple-200 rounded-xl p-3 text-sm font-semibold focus:border-purple-500 focus:outline-none shadow-sm" onchange="actualizarResumenGeneral()">
                     <option value="todo">📅 TODOS LOS MESES</option>
                     <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
                     <option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option>
                     <option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option>
                     <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
                 </select>
-                <select id="resumenSectorFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
+                <select id="resumenSectorFiltro" class="border-2 border-purple-200 rounded-xl p-3 text-sm font-semibold focus:border-purple-500 focus:outline-none shadow-sm" onchange="actualizarResumenGeneral()">
                     <option value="todos">🏭 TODOS LOS SECTORES</option>
                     <option value="cantera">⛏️ Cantera</option>
                     <option value="taller">🔧 Taller</option>
                     <option value="obrador">🏢 Obrador</option>
                 </select>
-                <button onclick="exportarResumenExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700">📎 EXPORTAR EXCEL</button>
+                <button onclick="exportarResumenExcel()" class="bg-gradient-to-r from-emerald-500 to-teal-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:shadow-lg transition-all flex items-center justify-center gap-2">
+                    <span>📎</span> EXPORTAR EXCEL
+                </button>
             </div>
 
-            <!-- KPIs RESUMEN -->
+            <!-- KPIs Principales -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="glass-card p-4 text-center border-l-4 border-cyan-500">
-                    <div class="text-3xl font-black text-cyan-700" id="resumenTotalActos">0</div>
-                    <div class="text-xs text-slate-500">️ Total Actos</div>
+                <div class="glass-card p-5 text-center border-l-4 border-cyan-500 hover:scale-105 transition-transform cursor-pointer" onclick="abrirModalDetalle('actos')">
+                    <div class="text-4xl font-black text-cyan-600 mb-1" id="resumenTotalActos">0</div>
+                    <div class="text-xs font-bold text-slate-600 uppercase tracking-wide">⚠️ Total Actos</div>
+                    <div class="mt-2 text-[10px] text-slate-400">Click para ver detalle</div>
                 </div>
-                <div class="glass-card p-4 text-center border-l-4 border-amber-500">
-                    <div class="text-3xl font-black text-amber-700" id="resumenTotalCondiciones">0</div>
-                    <div class="text-xs text-slate-500">🏚️ Total Condiciones</div>
+                <div class="glass-card p-5 text-center border-l-4 border-amber-500 hover:scale-105 transition-transform cursor-pointer" onclick="abrirModalDetalle('condiciones')">
+                    <div class="text-4xl font-black text-amber-600 mb-1" id="resumenTotalCondiciones">0</div>
+                    <div class="text-xs font-bold text-slate-600 uppercase tracking-wide">🏚️ Total Condiciones</div>
+                    <div class="mt-2 text-[10px] text-slate-400">Click para ver detalle</div>
                 </div>
-                <div class="glass-card p-4 text-center border-l-4 border-emerald-500">
-                    <div class="text-3xl font-black text-emerald-700" id="resumenTotalVCP">0</div>
-                    <div class="text-xs text-slate-500">🎯 Total VCP</div>
+                <div class="glass-card p-5 text-center border-l-4 border-emerald-500 hover:scale-105 transition-transform cursor-pointer" onclick="abrirModalDetalle('vcp')">
+                    <div class="text-4xl font-black text-emerald-600 mb-1" id="resumenTotalVCP">0</div>
+                    <div class="text-xs font-bold text-slate-600 uppercase tracking-wide">🎯 Total VCP</div>
+                    <div class="mt-2 text-[10px] text-slate-400">Click para ver detalle</div>
                 </div>
-                <div class="glass-card p-4 text-center border-l-4 border-purple-500">
-                    <div class="text-3xl font-black text-purple-700" id="resumenTotalGeneral">0</div>
-                    <div class="text-xs text-slate-500">📊 Total General</div>
+                <div class="glass-card p-5 text-center border-l-4 border-purple-500 hover:scale-105 transition-transform cursor-pointer" onclick="abrirModalDetalle('total')">
+                    <div class="text-4xl font-black text-purple-600 mb-1" id="resumenTotalGeneral">0</div>
+                    <div class="text-xs font-bold text-slate-600 uppercase tracking-wide">📊 Total General</div>
+                    <div class="mt-2 text-[10px] text-slate-400">Click para ver todo</div>
                 </div>
             </div>
 
-            <!-- RANKINGS CON CORONITAS -->
+            <!-- Rankings Top 5 -->
             <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-4 border-l-4 border-red-600">
-                    <h3 class="text-xl font-black text-red-800 mb-4">⚠️ TOP 10 ACTOS INSEGUROS</h3>
+                <div class="bg-gradient-to-br from-red-50 to-pink-100 rounded-2xl p-5 border-2 border-red-200 shadow-lg">
+                    <h3 class="text-lg font-black text-red-800 mb-4 flex items-center gap-2">
+                        <span class="text-2xl">🏆</span> TOP 5 ACTOS INSEGUROS
+                    </h3>
                     <div id="topActosRanking" class="space-y-2"></div>
                 </div>
-                <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border-l-4 border-amber-600">
-                    <h3 class="text-xl font-black text-amber-800 mb-4">🏚️ TOP 10 CONDICIONES INSEGURAS</h3>
+                <div class="bg-gradient-to-br from-amber-50 to-yellow-100 rounded-2xl p-5 border-2 border-amber-200 shadow-lg">
+                    <h3 class="text-lg font-black text-amber-800 mb-4 flex items-center gap-2">
+                        <span class="text-2xl">🏆</span> TOP 5 CONDICIONES INSEGURAS
+                    </h3>
                     <div id="topCondRanking" class="space-y-2"></div>
                 </div>
             </div>
 
-            <!-- REINCIDENCIAS -->
-            <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl p-4 border-l-4 border-yellow-600 mb-6">
-                <h3 class="text-xl font-black text-yellow-800 mb-4">🔄 REINCIDENCIAS (misma persona + misma categoría)</h3>
-                <div id="reincidenciasList" class="space-y-2 max-h-64 overflow-y-auto"></div>
-            </div>
-
-            <!-- GRÁFICO TOP RESPONSABLES -->
-            <div class="glass-card p-4 mb-6">
-                <h3 class="text-lg font-black text-purple-800 mb-4"> TOP 10 RESPONSABLES</h3>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="topResponsablesChart"></canvas>
+            <!-- Gráficos Interactivos -->
+            <div class="grid md:grid-cols-2 gap-6 mb-6">
+                <div class="glass-card p-5 rounded-2xl shadow-lg">
+                    <h3 class="text-lg font-black text-purple-800 mb-4">📈 TOP 5 RESPONSABLES</h3>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="topResponsablesChart"></canvas>
+                    </div>
+                </div>
+                <div class="glass-card p-5 rounded-2xl shadow-lg">
+                    <h3 class="text-lg font-black text-purple-800 mb-4">📊 EVOLUCIÓN POR SUCURSAL</h3>
+                    <div class="chart-container" style="height: 250px;">
+                        <canvas id="evolucionSucursalChart"></canvas>
+                    </div>
                 </div>
             </div>
 
-            <!-- GRÁFICO EVOLUCIÓN POR SUCURSAL -->
-            <div class="glass-card p-4 mb-6">
-                <h3 class="text-lg font-black text-purple-800 mb-4">📈 EVOLUCIÓN MENSUAL POR SUCURSAL</h3>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="evolucionSucursalChart"></canvas>
-                </div>
+            <!-- Reincidencias -->
+            <div class="glass-card p-5 rounded-2xl shadow-lg mb-6 border-2 border-yellow-300">
+                <h3 class="text-lg font-black text-yellow-800 mb-4 flex items-center gap-2">
+                    <span class="text-2xl">⚠️</span> REINCIDENCIAS (misma persona + misma categoría)
+                </h3>
+                <div id="reincidenciasList" class="space-y-2 max-h-48 overflow-y-auto"></div>
             </div>
 
-            <!-- TABLA DETALLE -->
-            <div class="glass-card p-4">
+            <!-- Tabla Detalle -->
+            <div class="glass-card p-5 rounded-2xl shadow-lg">
                 <h3 class="text-lg font-black text-purple-800 mb-4">📋 DETALLE COMPLETO</h3>
-                <div class="table-scroll max-h-96">
+                <div class="table-scroll max-h-64 rounded-xl border border-slate-200">
                     <table class="w-full text-left text-xs">
                         <thead class="bg-purple-100 sticky top-0">
-                            <tr><th class="p-2">🏭 Sucursal</th><th>📅 Fecha</th><th> Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th> Observador</th><th>🔒 Estado</th></tr>
+                            <tr><th class="p-3 font-bold">🏭 Sucursal</th><th>📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🔒 Estado</th></tr>
                         </thead>
                         <tbody id="resumenTablaBody"></tbody>
                     </table>
@@ -557,7 +578,7 @@ function toggleSound() {
 function togglePasswordVisibility() { 
     window.initAudioContext(); 
     const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); 
-    if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='️'; } 
+    if(input.type==='password') { input.type='text'; btn.textContent='🙈'; } else { input.type='password'; btn.textContent='👁️'; } 
     input.focus(); 
 }
 function verifyPassword() { 
@@ -607,7 +628,7 @@ function parseFecha(f) {
     return {dia:'',mes:'',valido:false};
 }
 function classifyData(desc,useVCP=false) {
-    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
+    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}];
     if(!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5];
     let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0;
@@ -656,7 +677,7 @@ async function cargarDatosSucursal(sucursal) {
                     if(!reportesNotificadosActos.has(idUnico)) {
                         reportesNotificadosActos.add(idUnico);
                         const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-                        const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal};
+                        const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal};
                         todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte);
                         nuevosActos++;
                         // Mostrar alerta emergente
@@ -688,7 +709,7 @@ async function cargarDatosSucursal(sucursal) {
                     if(!reportesNotificadosVCP.has(idUnico)) {
                         reportesNotificadosVCP.add(idUnico);
                         const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
-                        const nuevoVCP = {persona:po, tipo:' VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal};
+                        const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal};
                         todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP);
                         nuevosVCP++;
                         // Mostrar alerta emergente
@@ -752,13 +773,13 @@ function applyGeneralFilters() {
     let pA = Math.min(a.length/currentObjetivos.actos*100, 100), pC = Math.min(c.length/currentObjetivos.cond*100, 100);
     document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%';
     document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%';
-    let up = (id,p) => { let el = document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText=' Pendiente';el.className='status-badge status-low';} };
+    let up = (id,p) => { let el = document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} };
     up('actosStatus',pA); up('condStatus',pC);
     updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f);
 }
 
 function updateCategoryCards(data,type) {
-    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}];
+    const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
     const cats = type==='actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP, contId = type==='actos' ? 'categoryCards' : 'vcpCategoryCards';
     let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
@@ -776,7 +797,7 @@ function updateCategoryCards(data,type) {
 }
 
 function updateChartsDona(data,type) {
-    const cats = type==='actos' ? [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'',color:'#ef4444'},{id:'area',name:'Área',icon:'️',color:'#ec4899'}] : [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
+    const cats = type==='actos' ? [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}] : [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
     const canvasId = type==='actos' ? 'categoryChart' : 'vcpCategoryChart', ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return;
     let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
     if(type==='actos'&&categoryChart) categoryChart.destroy(); if(type!=='actos'&&vcpCategoryChart) vcpCategoryChart.destroy();
@@ -796,7 +817,7 @@ function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && (state.vcpCausa==='todas'||selectedVCPCausa==='todas'||e.categoria?.id===selectedVCPCausa));
     if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa);
     let pct = Math.min(f.length/OBJ_VCP*100, 100), vs = document.getElementById('vcpStatus');
-    if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText=' Casi'; else vs.innerText='⚠ Pendiente'; }
+    if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; }
     document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
     updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f);
 }
@@ -832,7 +853,7 @@ function renderVCPTable(data) {
         let tr = document.createElement('tr'), esHoy = (e.dia === diaHoy && e.mes === mesHoy);
         tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer';
         tr.onclick = () => openModal(e, i, sorted);
-        tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}${esHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">HOY</span>':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2"> ${e.sector}</td><td class="p-2">${e.descripcion?.substring(0,40)||'-'}${e.descripcion?.length>40?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,20)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`;
+        tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}${esHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">HOY</span>':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${e.descripcion?.substring(0,40)||'-'}${e.descripcion?.length>40?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,20)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`;
         tb.appendChild(tr);
     });
 }
@@ -872,7 +893,7 @@ function showDailyReportsModal(type, alerts) {
     const title=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY', colorClass=type==='actos'?'text-cyan-700':'text-purple-700';
     titleEl.textContent=title; titleEl.className=`font-black text-2xl ${colorClass}`;
     if(alerts.length===0) { contentEl.innerHTML='<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
-    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500"> ${a.hora}</span><span class="text-[10px] bg-slate-200 px-2 py-0.5 rounded">${a.sucursal}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
+    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span><span class="text-[10px] bg-slate-200 px-2 py-0.5 rounded">${a.sucursal}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
     modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
 }
 function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
@@ -906,7 +927,7 @@ function openModal(r,idx,data) {
     if(!modal||!content) return;
     modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
     if(r.tipo==='vcp') {
-        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600"> Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p><div class="bg-purple-50 p-3 rounded-lg border border-purple-100"><p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion||'-'}</p></div>${r.comentarios?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p><div class="bg-slate-50 p-3 rounded-lg border border-slate-200"><p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p></div>`:''}</div>`;
+        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p><div class="bg-purple-50 p-3 rounded-lg border border-purple-100"><p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion||'-'}</p></div>${r.comentarios?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p><div class="bg-slate-50 p-3 rounded-lg border border-slate-200"><p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p></div>`:''}</div>`;
     } else {
         content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo?.toUpperCase()||''}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📖 LO SUCEDIDO (Descripción):</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-500 shadow-sm"><p class="text-[15px] text-slate-800 font-medium leading-relaxed break-words whitespace-pre-wrap">${r.descripcion||'Sin descripción detallada.'}</p></div>${r.causas?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg border border-amber-200"><p class="text-sm text-amber-900 font-medium">${r.causas}</p></div>`:''}<div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600 font-bold">🔒 CERRADO</span>':'<span class="text-red-500 font-bold">⚠️ ABIERTO</span>'}</p></div></div>`;
     }
@@ -922,7 +943,7 @@ function abrirModalSupervisor(tipo) {
     const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo);
     if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; }
     const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706';
-    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
+    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; });
     html+=`</tbody></table></div>`;
     document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html;
@@ -934,7 +955,7 @@ function abrirModalPersonaVCP() {
     if(p==='todos') { alert("⚠️ Seleccione una persona"); return; }
     const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m));
     if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
-    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500"> Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2"> Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2"> Estado</th></tr></thead><tbody>`;
+    let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
     html+=`</tbody></table></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html;
@@ -955,10 +976,10 @@ function cambiarSucursal(suc) {
     if(isUnlocked) loadData();
 }
 function actualizarLED(tipo,hay) { const l=document.getElementById(`${tipo}Led`); if(!l) return; if(hay){l.className='siren-green'; setTimeout(()=>{const o=document.getElementById(`${tipo}Led`);if(o)o.className='siren-red';},5000);} }
-function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) `; document.getElementById('objetivosMeta').innerHTML=` Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
+function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 
-// ==================== RESUMEN GENERAL - FUNCIONES ====================
+// ==================== RESUMEN GENERAL - FUNCIONES MEJORADAS ====================
 function toggleResumenPasswordVisibility() {
     const input = document.getElementById('resumenPasswordInput');
     input.type = input.type === 'password' ? 'text' : 'password';
@@ -1046,15 +1067,15 @@ function renderTopRankings(datos) {
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
     actos.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countActos[key] = (countActos[key] || 0) + 1; });
-    const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 5); // TOP 5
     const containerActos = document.getElementById('topActosRanking');
     if(containerActos) {
         containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => {
-            const corona = i === 0 ? '<span class="corona"></span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
-            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}">
+            const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'} cursor-pointer" onclick="abrirModalDetalleRanking('acto', ${i})">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
                 <div class="flex-1 relative">
-                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 40 ? '...' : ''}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
                     ${corona}
                 </div>
@@ -1065,15 +1086,15 @@ function renderTopRankings(datos) {
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     conds.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countConds[key] = (countConds[key] || 0) + 1; });
-    const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 5); // TOP 5
     const containerConds = document.getElementById('topCondRanking');
     if(containerConds) {
         containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => {
             const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
-            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706">
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'} cursor-pointer" onclick="abrirModalDetalleRanking('condicion', ${i})">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
                 <div class="flex-1 relative">
-                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 40 ? '...' : ''}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
                     ${corona}
                 </div>
@@ -1090,14 +1111,14 @@ function renderReincidencias(datos) {
         if(!reincMap.has(key)) { reincMap.set(key, {persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set()}); }
         const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal);
     });
-    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 15);
+    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 10);
     const container = document.getElementById('reincidenciasList');
     if(container) {
         container.innerHTML = reincList.length ? reincList.map(r => `
-            <div class="zr-reincidencia">
+            <div class="zr-reincidencia cursor-pointer" onclick="abrirModalDetalleReincidencia('${r.persona}')">
                 <div class="flex justify-between items-start">
                     <div>
-                        <span class="font-bold text-sm text-slate-800"> ${r.persona}</span>
+                        <span class="font-bold text-sm text-slate-800">👤 ${r.persona}</span>
                         <span class="text-xs text-slate-500 ml-2">${r.categoria?.icon} ${r.categoria?.name}</span>
                     </div>
                     <span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold">${r.count}x</span>
@@ -1114,23 +1135,21 @@ function renderTablaResumen(datos) {
         const dateA = new Date(`${a.fecha?.split('/')[2] || 2026}-${a.fecha?.split('/')[1] || 1}-${a.fecha?.split('/')[0] || 1}`);
         const dateB = new Date(`${b.fecha?.split('/')[2] || 2026}-${b.fecha?.split('/')[1] || 1}-${b.fecha?.split('/')[0] || 1}`);
         return dateB - dateA;
-    }).slice(0, 100);
+    }).slice(0, 50);
     tbody.innerHTML = sorted.map(d => {
         const badgeSuc = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
         const tipoDisplay = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
         const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700');
         const safeData = JSON.stringify({ fecha: d.fecha || '', tipo: d.tipo || '', sector: d.sector || '', observador: d.observador || d.personaObservada || '', descripcion: d.descripcion || '', cerrado: d.cerrado !== undefined ? d.cerrado : true, categoria: d.categoria || {}, sucursal: d.sucursal || '', personaObservada: d.personaObservada || '', comentarios: d.comentarios || '' }).replace(/"/g, '&quot;');
-        return `<tr class="border-b hover:bg-slate-50 cursor-pointer zr-item" onclick="abrirModalDesdeResumen('${safeData}')">
-            <td class="p-2"><span class="badge-sucursal ${badgeSuc}">${d.sucursal}</span></td>
-            <td class="p-2 font-medium">${d.dia || '?'}/${d.mes || '?'}</td>
-            <td class="p-2 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>
-            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoDisplay}</span></td>
-            <td class="p-2 max-w-xs">${(d.descripcion || '-').substring(0, 40)}${(d.descripcion || '').length > 40 ? '...' : ''}</td>
-            <td class="p-2">🏭 ${d.sector || '-'}</td>
-            <td class="p-2">${d.observador ? '👔' : '👤'} ${d.observador || d.personaObservada || '-'}</td>
-            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '️'}</span></td>
+        return `<tr class="border-b hover:bg-slate-50 cursor-pointer" onclick="abrirModalDesdeResumen('${safeData}')">
+            <td class="p-3"><span class="badge-sucursal ${badgeSuc}">${d.sucursal}</span></td>
+            <td class="p-3 font-medium">${d.dia || '?'}/${d.mes || '?'}</td>
+            <td class="p-3 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-full text-[10px] font-bold ${tipoClass}">${tipoDisplay}</span></td>
+            <td class="p-3 max-w-xs">${(d.descripcion || '-').substring(0, 50)}${(d.descripcion || '').length > 50 ? '...' : ''}</td>
+            <td class="p-3"><span class="px-2 py-1 rounded-full text-[10px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>
         </tr>`;
-    }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
+    }).join('') || '<tr><td colspan="6" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
 }
 function abrirModalDesdeResumen(dataJson) {
     try { const data = JSON.parse(dataJson.replace(/&quot;/g, '"')); openModal(data, 0, [data]); } catch(e) { console.error('Error abriendo modal:', e); }
@@ -1138,7 +1157,7 @@ function abrirModalDesdeResumen(dataJson) {
 function renderChartsResumen(actosData, vcpData) {
     const ctx1 = document.getElementById('topResponsablesChart')?.getContext('2d'); if(!ctx1) return;
     const countResp = {}; [...actosData, ...vcpData].forEach(d => { const resp = d.observador || d.personaObservada || 'Sin identificar'; countResp[resp] = (countResp[resp] || 0) + 1; });
-    const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 5); // TOP 5
     if(resumenChart1) resumenChart1.destroy();
     resumenChart1 = new Chart(ctx1, { type: 'bar', data: { labels: topResp.map(([n]) => n.length > 15 ? n.substring(0,15)+'...' : n), datasets: [{ label: 'Reportes', data: topResp.map(([,c]) => c), backgroundColor: 'rgba(124, 58, 237, 0.7)', borderColor: '#7c3aed', borderWidth: 2, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } } } });
     const ctx2 = document.getElementById('evolucionSucursalChart')?.getContext('2d'); if(!ctx2) return;
@@ -1147,7 +1166,7 @@ function renderChartsResumen(actosData, vcpData) {
     const allData = [...actosData, ...vcpData];
     meses.forEach(mes => { Object.keys(dataBySuc).forEach(suc => { dataBySuc[suc].push(allData.filter(d => d.mes === mes && d.sucursal === suc).length); }); });
     if(resumenChart2) resumenChart2.destroy();
-    resumenChart2 = new Chart(ctx2, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '🏔️ Malagueño', data: dataBySuc.MALAGUENO, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true }, { label: ' Barker', data: dataBySuc.BARKER, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true }, { label: '🌾 La Pampita', data: dataBySuc.LAPAMPITA, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 5, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
+    resumenChart2 = new Chart(ctx2, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '🏔️ Malagueño', data: dataBySuc.MALAGUENO, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true }, { label: '🌲 Barker', data: dataBySuc.BARKER, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true }, { label: '🌾 La Pampita', data: dataBySuc.LAPAMPITA, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 5, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
 }
 function exportarResumenExcel() {
     const sucursal = document.getElementById('resumenSucursalFiltro').value;
@@ -1169,6 +1188,18 @@ function exportarResumenExcel() {
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ResumenGeneral_${new Date().toISOString().split('T')[0]}.csv`; link.click();
     const btn = event?.target; if(btn) { const original = btn.innerHTML; btn.innerHTML = '✅ Exportado!'; setTimeout(() => btn.innerHTML = original, 2000); }
+}
+
+// Funciones auxiliares para modales interactivos
+function abrirModalDetalle(tipo) {
+    // Implementar modal de detalle según tipo
+    console.log('Abrir detalle de:', tipo);
+}
+function abrirModalDetalleRanking(tipo, index) {
+    console.log('Detalle ranking:', tipo, index);
+}
+function abrirModalDetalleReincidencia(persona) {
+    console.log('Detalle reincidencia:', persona);
 }
 
 // ==================== EVENT LISTENERS ====================
