@@ -2,1167 +2,905 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minerar 2026 - Panel de Seguridad | Modo Claro</title>
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
-    <link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
-    <meta name="theme-color" content="#fbbf24">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Minerar 2026 - COMPLETO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
-        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
-        .glass-card:hover { transform: translateY(-3px); border-color: #fbbf24; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15); background: rgba(255, 255, 255, 0.98); }
-        .header-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
-        .kpi-amber { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
-        .kpi-supervisor { border-left: 5px solid #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
-        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left; border: 1px solid #e2e8f0; background: white; color: #475569; }
-        .btn-filter.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #2563eb; }
-        .category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; position: relative; }
-        .category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .category-card.active { box-shadow: 0 0 0 3px #fbbf24; background: #fffbeb; border-color: #fbbf24; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #f8fafc 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 8px; }
+        .glass-card { background: white; border-radius: 12px; border: 1px solid rgba(226, 232, 240, 0.8); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); transition: all 0.2s ease; cursor: pointer; }
+        .glass-card:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+        .header-container { display: flex; flex-direction: row; justify-content: space-between; align-items: center; padding: 16px 24px; background: white; border-radius: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); margin-bottom: 24px; }
+        .kpi-cyan { border-left: 5px solid #06b6d4; }
+        .kpi-amber { border-left: 5px solid #f59e0b; }
+        .kpi-supervisor { border-left: 5px solid #6366f1; }
+        .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 6px; width: 100%; text-align: left; border: 2px solid #e2e8f0; background: white; }
+        .btn-filter.active { background: #2563eb; color: white; border-color: #2563eb; }
+        .category-card { transition: all 0.3s; cursor: pointer; border: 2px solid; border-radius: 12px; padding: 16px; text-align: center; position: relative; }
+        .category-card:hover { transform: scale(1.05); }
+        .category-card.active { box-shadow: 0 0 0 4px rgba(0,0,0,0.1); background: #f0f9ff; }
         .category-card.active::after { content: '✓'; position: absolute; top: 5px; right: 5px; background: #10b981; color: white; width: 18px; height: 18px; border-radius: 50%; font-size: 10px; display: flex; align-items: center; justify-content: center; }
-        .category-card.causa-seleccionada { box-shadow: 0 0 0 3px #f59e0b; background: #fef3c7; border-color: #f59e0b; transform: scale(1.02); }
         .hidden-section { display: none !important; }
-        .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
-        .status-warn { background: #fef3c7; color: #d97706; border: 1px solid #fed7aa; }
-        .status-low { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
-        .table-scroll::-webkit-scrollbar { width: 5px; background: #e2e8f0; border-radius: 10px; }
-        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
+        .status-badge { padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
+        .status-ok { background: #dcfce7; color: #16a34a; }
+        .status-warn { background: #fef3c7; color: #d97706; }
+        .status-low { background: #fee2e2; color: #dc2626; }
+        .person-item { cursor: pointer; transition: all 0.2s; }
+        .person-item:hover { transform: translateX(5px); background: #f1f5f9; }
+        .table-scroll { max-height: 300px; overflow-y: auto; overflow-x: auto; }
+        .table-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+        .table-scroll::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .table-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        table thead th { position: sticky; top: 0; background: white; z-index: 10; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
-        @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
-        .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
-        @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
-        @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #22c55e; } 50% { opacity: 0.5; box-shadow: 0 0 15px #22c55e; } }
-        .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
-        .siren-green { width: 14px; height: 14px; background: #22c55e; border-radius: 50%; animation: blink-green 0.5s infinite; box-shadow: 0 0 10px #22c55e; display: inline-block; }
-        .report-item { transition: all 0.3s ease; animation: slideIn 0.3s ease-out; background: #f8fafc; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid; }
-        @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @keyframes slideInRight { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        .logo-shield { width: 60px; height: 60px; background: linear-gradient(135deg, #fff8e7, #fff3d6); border-radius: 18px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3); border: 2px solid #fbbf24; }
-        .logo-img { max-width: 80%; max-height: 80%; object-fit: contain; }
-        .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
-        .sucursal-btn.active { background: #fef3c7; border-color: #f59e0b; color: #b45309; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-        .sucursal-btn:hover { transform: translateY(-2px); border-color: #fbbf24; }
-        .sucursal-icon { width: 20px; height: 20px; object-fit: contain; }
-        .clickable-sup { cursor: pointer; transition: all 0.2s ease; }
-        .clickable-sup:hover { transform: scale(1.08); text-shadow: 0 0 8px currentColor; }
-        @media (max-width: 768px) { .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } .header-container h1 { font-size: 18px; } .glass-card { padding: 16px 14px; } .table-scroll { max-height: 300px; } .chart-container { height: 220px; } body { padding: 10px; font-size: 13px; } }
-
-        /* 🔐 PANTALLA DE ACCESO */
-        #passwordOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); display: flex; align-items: center; justify-content: center; z-index: 9999; animation: fadeIn 0.3s ease-out; padding: 20px; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4); border: 2px solid #fbbf24; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .password-lock-icon { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; display: inline-block; }
-        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-        .password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; letter-spacing: 1px; height: 52px; padding-right: 50px !important; }
-        .password-input:focus { outline: none; border-color: #fbbf24; box-shadow: 0 0 0 4px rgba(251, 191, 36, 0.2); }
-        .password-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; height: 52px; }
-        .password-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4); }
-        .password-btn:active { transform: translateY(0); }
-        .password-error { color: #ef4444; font-size: 13px; font-weight: 600; margin-top: 12px; min-height: 20px; animation: shake 0.3s ease-in-out; }
-        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
-        .password-hint { font-size: 11px; color: #64748b; margin-top: 20px; padding-top: 16px; border-top: 1px dashed #e2e8f0; }
-        .unlock-success { color: #22c55e; font-size: 48px; animation: bounceIn 0.5s ease-out; }
-        @keyframes bounceIn { 0% { transform: scale(0); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-        /* 🌊 BIENVENIDA */
-        #welcomeOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #451a03 100%); display: flex; align-items: center; justify-content: center; z-index: 9998; transition: opacity 0.4s ease; }
-        .welcome-card { background: rgba(255,255,255,0.04); backdrop-filter: blur(16px); border-radius: 24px; padding: 40px 30px; width: 90%; max-width: 480px; text-align: center; border: 1px solid rgba(251,191,36,0.3); box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); animation: modalBounce 0.6s cubic-bezier(0.34,1.56,0.64,1); }
-        .welcome-icon { font-size: 56px; margin-bottom: 16px; animation: pulse 3s infinite; }
-        .welcome-title { color: white; font-size: 28px; font-weight: 900; margin-bottom: 8px; }
-        .welcome-divider { width: 80px; height: 4px; background: #f59e0b; margin: 16px auto; border-radius: 2px; }
-        .welcome-slogan { color: #fbbf24; font-size: 18px; font-weight: 700; margin-bottom: 8px; }
-        .welcome-text { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 24px; }
-        .welcome-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
-        .welcome-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(245,158,11,0.4); }
-        .auto-progress { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; margin-top: 16px; overflow: hidden; }
-        .auto-progress-bar { height: 100%; width: 0%; background: #fbbf24; border-radius: 2px; transition: width 0.1s linear; }
-
-        /* 🚨 ALERTA EN PANTALLA COMPLETA */
-        #newReportAlert { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
-        #newReportAlert.show { opacity: 1; pointer-events: all; }
-        .alert-card { background: white; border-radius: 28px; padding: 32px 24px; width: 90%; max-width: 520px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f59e0b; animation: alertBounce 0.5s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes alertBounce { 0% { transform: scale(0.5); opacity: 0; } 50% { transform: scale(1.05); } 100% { transform: scale(1); opacity: 1; } }
-        .alert-icon { font-size: 64px; animation: sirenPulse 1s infinite; }
-        @keyframes sirenPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #f59e0b); } 50% { transform: scale(1.15); filter: drop-shadow(0 0 20px #ef4444); } }
-        .alert-title { font-size: 22px; font-weight: 900; color: #dc2626; margin: 12px 0 4px; }
-        .alert-person { font-size: 26px; font-weight: 800; color: #1e293b; margin: 8px 0; }
-        .alert-sector { font-size: 16px; color: #6366f1; font-weight: 700; margin-bottom: 8px; }
-        .alert-desc { font-size: 14px; color: #475569; background: #f8fafc; padding: 12px; border-radius: 12px; margin: 12px 0; line-height: 1.5; border-left: 4px solid #fbbf24; }
-        .alert-time { font-size: 13px; color: #94a3b8; }
-        .alert-dismiss { margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
-        .alert-dismiss:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(245,158,11,0.4); }
-
-        /* 📊 Badge pulsante de reportes del día */
-        .daily-pulse-badge {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            background: #ef4444;
-            color: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 14px;
-            font-weight: 900;
-            z-index: 9997;
-            animation: pulseBadge 2s infinite;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-            cursor: pointer;
+        @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); } 70% { transform: scale(0.98) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        .modal-bounce { animation: modalBounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 20px; }
+        @media (max-width: 768px) {
+            .header-container { flex-direction: column; gap: 16px; text-align: center; }
+            section { grid-template-columns: 1fr !important; }
+            aside { grid-column: 1 / -1; }
+            main { grid-column: 1 / -1; }
         }
-        @keyframes pulseBadge {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); }
-            50% { transform: scale(1.15); box-shadow: 0 0 25px rgba(239, 68, 68, 0.8); }
-        }
-
-        /* 🖋️ MARCA DE AGUA */
-        .watermark { position: fixed; bottom: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.12); z-index: 10001; pointer-events: none; user-select: none; letter-spacing: 1.5px; }
-        @media (max-width: 640px) {
-            .password-card { padding: 24px 18px !important; border-radius: 20px !important; }
-            .password-lock-icon { font-size: 48px; margin-bottom: 12px; }
-            .password-input { height: 48px; font-size: 15px; }
-            .password-btn { height: 48px; font-size: 15px; padding: 12px !important; }
-            .welcome-card { padding: 30px 20px; }
-            .welcome-icon { font-size: 44px; }
-            .welcome-title { font-size: 22px; }
-            .welcome-slogan { font-size: 16px; }
-            .welcome-text { font-size: 13px; }
-            .alert-card { padding: 24px 16px; }
-            .alert-person { font-size: 22px; }
-            .watermark { font-size: 9px; bottom: 8px; right: 10px; }
-        }
-        @media (max-width: 380px) { .password-card { padding: 20px 14px !important; width: 96% !important; } .password-lock-icon { font-size: 40px; } }
     </style>
 </head>
 <body>
-
-<!-- 🖋️ MARCA DE AGUA -->
-<div class="watermark" id="watermark">BY DHG</div>
-
-<!-- 🔐 BADGE PULSANTE DE REPORTES DEL DÍA -->
-<div id="dailyPulseBadge" class="daily-pulse-badge hidden-section" onclick="toggleDailyAlerts()" title="Ver reportes del día">0</div>
-
-<!-- 🔐 PANTALLA DE ACCESO -->
-<div id="passwordOverlay">
-    <div class="password-card">
-        <div class="password-lock-icon">🔐</div>
-        <h2 class="text-xl font-black text-slate-800 mb-2">ACCESO RESTRINGIDO</h2>
-        <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
-        <div class="relative w-full">
-            <input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off">
-            <button type="button" id="togglePasswordBtn" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px; line-height: 1;" title="Mostrar/Ocultar contraseña">👁️</button>
-        </div>
-        <button onclick="verifyPassword()" class="password-btn w-full mt-2">🔓 DESBLOQUEAR PANEL</button>
-        <div id="passwordError" class="password-error"></div>
-        <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
-    </div>
-</div>
-
-<!-- 🌊 PANTALLA DE BIENVENIDA -->
-<div id="welcomeOverlay" class="hidden-section">
-    <div class="welcome-card">
-        <div class="welcome-icon">👷‍️️️</div>
-        <h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
-        <div class="welcome-divider"></div>
-        <p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
-        <p class="welcome-text">"Cada acto preventivo es una vida protegida. En Minerar, tu compromiso diario hace que todos vuelvan a casa sanos y salvos."</p>
-        <button id="enterPanelBtn" class="welcome-btn">ACCEDER AL PANEL DE CONTROL ▶️</button>
-        <div class="auto-progress"><div class="auto-progress-bar" id="autoProgressBar"></div></div>
-        <p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">5</span>s...</p>
-    </div>
-</div>
-
-<!-- 🚨 ALERTA DE NUEVO REPORTE -->
-<div id="newReportAlert">
-    <div class="alert-card">
-        <div class="alert-icon">🚨</div>
-        <h3 class="alert-title">⚠️ ¡NUEVO REPORTE DETECTADO!</h3>
-        <div id="alertContent" class="mt-4"></div>
-        <button onclick="dismissAlert()" class="alert-dismiss">✅ ENTENDIDO · CERRAR ALERTA</button>
-        <p class="text-[10px] text-slate-400 mt-2">La alerta se cerrará automáticamente en <span id="alertCountdown">15</span>s</p>
-    </div>
-</div>
-
-<!-- CONTENIDO PRINCIPAL -->
-<div id="mainContent" class="hidden-section">
 <div class="max-w-7xl mx-auto">
-    <div class="header-container flex flex-wrap justify-between items-center">
-        <div class="flex items-center gap-4">
-            <div class="logo-shield"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="logo-img"></div>
-            <div><h1 class="text-2xl font-black bg-gradient-to-r from-amber-700 to-yellow-600 bg-clip-text text-transparent">PANEL SEGURIDAD MINERA 2026 🛡️⛑️</h1><p class="text-xs text-emerald-600 font-semibold">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
+    <!-- HEADER -->
+    <div class="header-container">
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <svg width="60" height="60" viewBox="0 0 100 100" style="filter: drop-shadow(0 4px 6px rgba(59, 130, 246, 0.3));">
+                <defs><linearGradient id="shieldGrad" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#3B82F6;stop-opacity:1" /><stop offset="100%" style="stop-color:#1E40AF;stop-opacity:1" /></linearGradient></defs>
+                <path d="M50 5 L90 25 L90 65 L50 95 L10 65 L10 25 Z" fill="url(#shieldGrad)" stroke="#60A5FA" stroke-width="3"/>
+                <path d="M50 20 L75 32 L75 60 L50 80 L25 60 L25 32 Z" fill="#93C5FD" opacity="0.6"/>
+                <circle cx="50" cy="50" r="15" fill="white" opacity="0.9"/>
+                <path d="M50 35 L55 48 L68 48 L58 58 L62 72 L50 62 L38 72 L42 58 L32 48 L45 48 Z" fill="#F59E0B"/>
+            </svg>
+            <div>
+                <h1 style="font-size: 1.5rem; font-weight: 900; margin: 0;">PANEL SEGURIDAD MINERA 2026</h1>
+                <p style="color: #16a34a; font-weight: 700; font-size: 12px;">● SISTEMA ACTIVO</p>
+            </div>
         </div>
-        <div class="flex gap-3 items-center flex-wrap">
-            <div class="glass-card px-5 py-2 text-center border-l-4 border-cyan-500 relative"><div class="text-[9px] font-bold uppercase text-cyan-700">📋 ACTOS+COND 🛡️</div><div id="totalActosCond" class="text-3xl font-black text-cyan-800">0</div><div id="actosNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <div class="glass-card px-5 py-2 text-center border-l-4 border-amber-500 relative"><div class="text-[9px] font-bold uppercase text-amber-700">🎯 VCP </div><div id="totalVCP" class="text-3xl font-black text-amber-800">0</div><div id="vcpNovedadBadge" class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold rounded-full w-5 h-5 flex items-center justify-center animate-pulse">0</div></div>
-            <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
-            <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
+        <div style="display: flex; gap: 12px; align-items: center;">
+            <div style="background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #3b82f6;">
+                <div style="font-size: 10px; font-weight: 800; color: #1e40af; text-transform: uppercase;">Actos y Condiciones</div>
+                <div id="totalActosCond" style="font-size: 32px; font-weight: 900; color: #1e40af;">0</div>
+            </div>
+            <div style="background: linear-gradient(135deg, #D7CCC8 0%, #FFCCBC 100%); padding: 12px 20px; border-radius: 12px; text-align: center; border: 2px solid #8D6E63;">
+                <div style="font-size: 10px; font-weight: 800; color: #4E342E; text-transform: uppercase;">VCP</div>
+                <div id="totalVCP" style="font-size: 32px; font-weight: 900; color: #5D4037;">0</div>
+            </div>
+            <button onclick="forceRefreshData()" style="background: #10b981; color: white; border: none; padding: 12px 20px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+                🔄 Actualizar
+            </button>
         </div>
     </div>
 
-    <!-- ACTOS Y CONDICIONES -->
-    <div class="glass-card p-6 mb-6">
-        <div class="text-center mb-4">
-            <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
-                <button id="btnMalagueno" class="sucursal-btn active" onclick="cambiarSucursal('MALAGUENO')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> MALAGUEÑO</button>
-                <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> BARKER</button>
-                <button id="btnLaPampita" class="sucursal-btn" onclick="cambiarSucursal('LAPAMPITA')"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Logo" class="sucursal-icon"> LA PAMPITA</button>
-            </div>
-            <h2 id="objetivosTitulo" class="text-xl font-black text-slate-800">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110) 👷</h2>
-            <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
+    <!-- SECCIÓN 1: ACTOS Y CONDICIONES -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 24px; margin-bottom: 32px;">
+        <div style="text-align: center; margin-bottom: 8px;">
+            <h2 style="font-size: 18px; font-weight: 900; color: #1e293b; text-transform: uppercase;">📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (110)</h2>
+            <p style="font-size: 11px; color: #64748b;">Meta: 66 Actos + 44 Condiciones = 110 Total</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-4 my-5">
-            <div class="glass-card p-4 kpi-cyan"><div class="flex justify-between"><span class="font-bold text-cyan-800">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div><div class="flex justify-between"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div><div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-amber"><div class="flex justify-between"><span class="font-bold text-amber-800">🏚️ CONDICIONES (CI) 🔧</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4 kpi-supervisor"><p class="font-bold text-indigo-800">👔 CONTROL POR SUPERVISOR 🦺</p><div class="grid grid-cols-2 gap-2 my-2"><select id="supervisorSelect" class="border rounded-lg p-2 text-xs"><option value="todos">🔘 Todos</option></select><select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todo 2026</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 sup-card-hover" id="actosCardSupervisor"><span class="text-[10px] text-cyan-700">⚠️ ACTOS</span><div id="supActosCount" class="text-2xl font-black text-cyan-700 clickable-sup">0</div></div>
-                    <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 sup-card-hover" id="condCardSupervisor"><span class="text-[10px] text-amber-700">🏚️ CONDICIONES</span><div id="supCondCount" class="text-2xl font-black text-amber-700 clickable-sup">0</div></div>
+        
+        <section style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+            <div class="glass-card kpi-cyan" style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="font-size: 11px; font-weight: 900; color: #0891b2; text-transform: uppercase;">ACTOS (AI)</div>
+                    <span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                </div>
+                <div id="kpiActos" style="font-size: 2.5rem; font-weight: 900; color: #0891b2; margin: 8px 0;">0</div>
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                        <span>Objetivo: 66</span>
+                        <span id="actosPctLabel" style="font-weight: 800;">0%</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="actosBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4"><h3 class="font-black mb-2">🔍 FILTROS ACTOS ⚙️</h3><label class="text-xs font-bold">📅 MES</label><select id="monthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR</label><div id="sectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO</label><div id="statusButtons" class="flex flex-col gap-2"><button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
-                <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200">
-                    <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
-                    <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
+
+            <div class="glass-card kpi-amber" style="padding: 20px;">
+                <div style="display: flex; justify-content: space-between; align-items: start;">
+                    <div style="font-size: 11px; font-weight: 900; color: #d97706; text-transform: uppercase;">CONDICIONES (CI)</div>
+                    <span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span>
                 </div>
-                <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200">
-                    <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-amber-700">📢 VCP EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div>
-                    <div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
+                <div id="kpiCondiciones" style="font-size: 2.5rem; font-weight: 900; color: #d97706; margin: 8px 0;">0</div>
+                <div style="margin-top: 10px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 10px; color: #64748b; margin-bottom: 4px;">
+                        <span>Objetivo: 44</span>
+                        <span id="condPctLabel" style="font-weight: 800;">0%</span>
+                    </div>
+                    <div style="background: #e2e8f0; height: 8px; border-radius: 4px; overflow: hidden;">
+                        <div id="condBar" style="height: 100%; width: 0%; transition: width 0.3s;"></div>
+                    </div>
                 </div>
-            </div></aside>
-            <main>
-                <div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all">🧹 Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
-                    <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
+            </div>
+
+            <!-- ✅ NUEVA TARJETA: CONTROL POR SUPERVISOR -->
+            <div class="glass-card kpi-supervisor" style="padding: 20px;">
+                <div style="font-size: 11px; font-weight: 900; color: #4f46e5; text-transform: uppercase; margin-bottom: 12px;">👔 CONTROL POR SUPERVISOR</div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px;">
+                    <select id="supervisorSelect" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todos">Todos</option>
+                    </select>
+                    <select id="supervisorMonthSelect" style="padding: 6px; border-radius: 6px; border: 1px solid #e2e8f0; font-size: 10px; width: 100%;">
+                        <option value="todo">Todo 2026</option>
+                        <option value="enero">Enero</option>
+                        <option value="febrero">Febrero</option>
+                        <option value="marzo">Marzo</option>
+                        <option value="abril">Abril</option>
+                    </select>
                 </div>
-                <div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <div style="background: #f0f9ff; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #0891b2; font-weight: 700;">ACTOS</div>
+                        <div id="supActosCount" style="font-size: 24px; font-weight: 900; color: #0891b2;">0</div>
+                    </div>
+                    <div style="background: #fffbeb; padding: 10px; border-radius: 8px; text-align: center;">
+                        <div style="font-size: 10px; color: #d97706; font-weight: 700;">CONDICIONES</div>
+                        <div id="supCondCount" style="font-size: 24px; font-weight: 900; color: #d97706;">0</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
+            <aside>
+                <div class="glass-card" style="padding: 20px;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #1e293b; text-transform: uppercase;">🔍 FILTROS ACTOS</h3>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">MES</label>
+                        <select id="monthFilter" style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;">
+                            <option value="todo">📅 Todo 2026</option>
+                            <option value="enero">📅 Enero</option>
+                            <option value="febrero">📅 Febrero</option>
+                            <option value="marzo">📅 Marzo</option>
+                            <option value="abril">📅 Abril</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR</label>
+                        <div id="sectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setSector('general', this)" class="btn-filter active">🏭 GENERAL</button>
+                            <button onclick="setSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
+                            <button onclick="setSector('taller', this)" class="btn-filter">🔧 TALLER</button>
+                            <button onclick="setSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO</label>
+                        <div id="statusButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setStatus('todos', this)" class="btn-filter active">📊 TODOS</button>
+                            <button onclick="setStatus('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
+                            <button onclick="setStatus('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                <div class="glass-card" style="padding: 24px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <h3 style="font-weight: 900; text-transform: uppercase;">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                        <button id="clearCausaBtn" onclick="clearCausaFilter()" class="hidden-section" style="padding: 4px 10px; background: #fee2e2; color: #dc2626; border: none; border-radius: 12px; font-size: 10px; font-weight: 800; cursor: pointer;">✕ Quitar Filtro</button>
+                    </div>
+                    <div id="categoryCards" style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; margin-top: 12px;"></div>
+                    <div class="chart-container">
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="glass-card" style="padding: 24px;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; text-transform: uppercase;">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
+                    <div class="table-scroll">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th style="padding: 12px;">Tipo</th>
+                                    <th style="padding: 12px;">Observador</th>
+                                    <th style="padding: 12px;">Descripción</th>
+                                    <th style="padding: 12px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="generalTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
 
-    <hr class="my-4">
+    <hr style="border: 0; border-top: 2px solid #e2e8f0; margin: 32px 0;">
 
-    <!-- VCP SECCIÓN -->
-    <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
-        <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧🛡️</h2></div>
-        <div class="grid md:grid-cols-2 gap-4 my-5">
-            <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover" id="vcpCardPersona"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700 clickable-sup">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
+    <!-- SECCIÓN 2: VCP -->
+    <div style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+        <div style="text-align: center; margin-bottom: 8px;">
+            <h2 style="font-size: 18px; font-weight: 900; color: #6D4C41; text-transform: uppercase;">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP)</h2>
         </div>
-        <div class="grid lg:grid-cols-[280px_1fr] gap-5">
-            <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div></div></aside>
-            <main>
-                <div class="glass-card p-4 mb-4 border border-amber-200"><div class="flex justify-between items-center"><h3 class="font-black uppercase text-amber-800 text-sm">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ 🔍</h3><button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full">✕ Quitar filtro</button></div><div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3 my-3"></div></div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
-                    <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
+
+        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px;">
+            <aside>
+                <div class="glass-card" style="padding: 20px; border: 2px solid #A1887F;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">🎯 FILTROS VCP</h3>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">MES VCP</label>
+                        <select id="vcpMonthFilter" style="width: 100%; padding: 8px; border-radius: 8px; border: 2px solid #e2e8f0;">
+                            <option value="todo">📅 Todo 2026</option>
+                            <option value="enero">📅 Enero</option>
+                            <option value="febrero">📅 Febrero</option>
+                            <option value="marzo">📅 Marzo</option>
+                            <option value="abril">📅 Abril</option>
+                        </select>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">SECTOR VCP</label>
+                        <div id="vcpSectorButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setVCPSector('general', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">🏭 GENERAL</button>
+                            <button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button>
+                            <button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button>
+                            <button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button>
+                        </div>
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="font-size: 10px; font-weight: 700; color: #64748b; display: block; margin-bottom: 6px;">ESTADO VCP</label>
+                        <div id="vcpStatusButtons" style="display: flex; flex-direction: column; gap: 8px;">
+                            <button onclick="setStatusVCP('todos', this)" class="btn-filter active" style="background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border-color: #795548;">📊 TODOS</button>
+                            <button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button>
+                            <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠ ABIERTOS</button>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
+            </aside>
+
+            <main style="display: grid; grid-template-columns: 1fr; gap: 24px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                    <div class="glass-card" style="padding: 24px; border-left: 5px solid #A1887F;">
+                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+                            <h3 style="font-weight: 900; text-transform: uppercase; color: #5D4037;">👥 Personas con VCP</h3>
+                            <span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span>
+                        </div>
+                        <div style="background: linear-gradient(135deg, #EFEBE9 0%, #FFCCBC 100%); padding: 16px; border-radius: 12px; margin-bottom: 16px; border: 2px solid #D7CCC8;">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <span style="font-size: 13px; font-weight: 800; color: #4E342E;">OBJETIVO: 30</span>
+                                <span style="font-size: 28px; font-weight: 900; color: #6D4C41;" id="vcpCurrent">0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 10px; color: #8D6E63; margin: 8px 0;">
+                                <span>Progreso</span>
+                                <span id="vcpPctLabel" style="font-weight: 800;">0%</span>
+                            </div>
+                            <div style="background: #D7CCC8; height: 8px; border-radius: 4px; overflow: hidden;">
+                                <div id="vcpBar" style="height: 100%; width: 0%; transition: width 0.3s; background: linear-gradient(90deg, #8D6E63 0%, #FFAB91 100%);"></div>
+                            </div>
+                        </div>
+                        <div id="vcpPeopleList" style="max-height: 180px; overflow-y: auto; font-size: 11px;"></div>
+                    </div>
+
+                    <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
+                        <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📊 DISTRIBUCIÓN VCP POR PERSONA</h3>
+                        <div class="chart-container" style="height: 350px;">
+                            <canvas id="vcpChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="padding: 24px; border: 2px solid #A1887F;">
+                    <h3 style="font-weight: 900; margin-bottom: 16px; color: #5D4037; text-transform: uppercase;">📋 DETALLE DE VCP</h3>
+                    <div class="table-scroll">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr style="border-bottom: 2px solid #e2e8f0;">
+                                    <th style="padding: 12px;">Fecha</th>
+                                    <th style="padding: 12px;">Observador</th>
+                                    <th style="padding: 12px;">Sector</th>
+                                    <th style="padding: 12px;">Descripción</th>
+                                    <th style="padding: 12px;">Comentarios</th>
+                                    <th style="padding: 12px;">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vcpTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
-</div>
 </div>
 
 <!-- MODALES -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 class="font-black text-2xl text-amber-700">📋 Detalle del Reporte 🛡️</h2><button onclick="closeReportModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
-        <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-3 text-sm"></div>
-        <div class="flex justify-between gap-3 mt-6"><button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold">⬅ Anterior</button><span id="modalCounter" class="font-bold text-amber-600 text-sm self-center">1/1</span><button id="btnNext" onclick="goToNextModal()" class="bg-amber-500 hover:bg-amber-600 text-white px-5 py-2 rounded-full text-sm font-bold">Siguiente ➡</button></div>
-        <button onclick="closeReportModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+<div id="personVCPModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 900; color: #5D4037;">👤 Detalle de VCP</h2>
+            <button onclick="closePersonVCPModal()" style="background: #FFCCBC; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
+        </div>
+        <div id="personVCPHeader" style="background: linear-gradient(135deg, #D7CCC8 0%, #FFCCBC 100%); padding: 16px; border-radius: 12px; margin-bottom: 20px; border-left: 4px solid #8D6E63;">
+            <h3 id="personVCPName" style="font-size: 18px; font-weight: 900; color: #4E342E; margin: 0;"></h3>
+            <p id="personVCPCount" style="font-size: 12px; color: #64748b; margin: 4px 0 0 0;"></p>
+        </div>
+        <div id="personVCPList" style="max-height: 300px; overflow-y: auto;"></div>
+        <button onclick="closePersonVCPModal()" style="width: 100%; margin-top: 20px; background: linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%); color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
     </div>
 </div>
-<div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalSupervisorTitle" class="font-black text-2xl text-amber-700">📋 Detalle del Supervisor</h2><button onclick="closeSupervisorModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
-        <div id="supervisorModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <button onclick="closeSupervisorModal()" class="w-full mt-5 bg-amber-600 hover:bg-amber-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
-    </div>
-</div>
-<div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl shadow-2xl border border-amber-200">
-        <div class="flex justify-between items-center mb-4"><h2 id="modalPersonaVCPTitle" class="font-black text-2xl text-purple-700">📋 Detalle de VCP por Persona</h2><button onclick="closePersonaVCPModal()" class="text-2xl text-slate-400 hover:text-slate-600">&times;</button></div>
-        <div id="personaVCPModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[60vh] overflow-y-auto"></div>
-        <button onclick="closePersonaVCPModal()" class="w-full mt-5 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold">Cerrar</button>
+
+<div id="reportDetailModal" class="hidden-section" style="position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 9999;">
+    <div class="modal-bounce" style="background: white; padding: 32px; border-radius: 24px; max-width: 500px; width: 90%;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2 style="font-size: 20px; font-weight: 900; color: #1e293b;">📋 Detalle del Reporte</h2>
+            <button onclick="closeReportModal()" style="background: #fee2e2; border: none; width: 32px; height: 32px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
+        </div>
+        <div id="reportModalContent" style="font-size: 14px; line-height: 1.8;"></div>
+        <button onclick="closeReportModal()" style="width: 100%; margin-top: 20px; background: #3b82f6; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 800; cursor: pointer;">Cerrar</button>
     </div>
 </div>
 
 <script>
-// ==================== CONFIGURACIÓN DE CONTRASEÑA ====================
-const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
-let isUnlocked = false;
-let refreshIntervals = [], autoCountdownTimer = null, progressInterval = null;
-let alertCountdownInterval = null;
-let soundEnabled = true;
-let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null;
-let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
-const SUCURSALES_CONFIG = {
-    MALAGUENO: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv', mapping:{fecha:3,tipo:1,sector:2,observador:5,descripcion:6,cerrado:23,causa:null}, objetivos:{actos:66,cond:44}, showVCP:true },
-    BARKER: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ2r4qjkNaf963qsk0BRCZDI5OocDmF9gmTIGbXKpsf7cpEoN8Ws64d0b2Tnkpb9qTLFq8Vjk-2Kd9X/pub?output=csv', vcpUrl:null, mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:12}, objetivos:{actos:6,cond:4}, showVCP:false },
-    LAPAMPITA: { actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vRmDDSxhETc8kBosCRHqK-WGBMT6VOR4_PVG5uNwYIB6it5H8bXcHJlQe4RHBN5UEZlHoIwlzVbV5yL/pub?output=csv', vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQOklQkbsjbnEh3ubfYZBrrD1MYCytzjBvN6XFTo-NE5rnVnhBELUQZ8HVVRF3YT7gW81pGeKzIMa3G/pub?output=csv', mapping:{fecha:3,tipo:2,sector:6,observador:5,descripcion:10,cerrado:14,causa:18}, vcpMapping:{fecha:2,persona:4,sector:5,descripcion:6,comentarios:15}, objetivos:{actos:66,cond:44}, showVCP:true }
+const ACTOS_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv';
+const VCP_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv';
+
+const OBJETIVO_ACTOS = 66;
+const OBJETIVO_CONDICIONES = 44;
+const OBJETIVO_VCP = 30;
+
+let ACTOS_COND_DATA = [];
+let VCP_DATA = [];
+let trendChart = null;
+let categoryChart = null;
+let vcpChart = null;
+let state = { 
+    mes: 'todo', sector: 'general', estado: 'todos', causaRaiz: 'todas', 
+    vcpMes: 'todo', vcpSector: 'general', vcpEstado: 'todos',
+    supervisor: 'todos', supervisorMes: 'todo' 
 };
-const OBJ_VCP = 30;
-let ACTOS_COND_DATA = [], VCP_DATA = [];
-let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
-let state = {mes:'todo',sector:'general',estado:'todos',causaRaiz:'todas',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos',vcpCausa:'todas',supervisor:'todos',supervisorMes:'todo'};
-let currentModalIndex = 0, currentModalData = [];
-let actosNovedades = 0, vcpNovedades = 0;
-let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
-let lastKnownActosRows = 0, lastKnownVcpRows = 0;
-let currentDateKey = new Date().toDateString();
-let todayAlerts = [];
 
-// 👁️ Mostrar/Ocultar contraseña
-function togglePasswordVisibility() {
-    const input = document.getElementById('passwordInput');
-    const btn = document.getElementById('togglePasswordBtn');
-    if (input.type === 'password') { input.type = 'text'; btn.textContent = '👁️️'; }
-    else { input.type = 'password'; btn.textContent = '👁️'; }
-    input.focus();
-}
-
-// 🔊 Sonidos (Sintaxis robusta)
-function playAlarmSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        for (let cycle = 0; cycle < 3; cycle++) {
-            [880, 1046, 1175].forEach((f, i) => {
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.frequency.value = f;
-                osc.type = 'square';
-                gain.gain.setValueAtTime(0.4, audioCtx.currentTime + (cycle * 0.45) + (i * 0.15));
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + (cycle * 0.45) + (i * 0.15) + 0.12);
-                osc.start(audioCtx.currentTime + (cycle * 0.45) + (i * 0.15));
-                osc.stop(audioCtx.currentTime + (cycle * 0.45) + (i * 0.15) + 0.12);
-            });
-        }
-    } catch(e) { console.log("Audio error:", e); }
-}
-
-function playUnlockSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const frequencies = [523.25, 659.25, 783.99, 1046.50];
-        frequencies.forEach((freq, index) => {
-            const osc = audioCtx.createOscillator();
-            const gainNode = audioCtx.createGain();
-            osc.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
-            osc.frequency.value = freq;
-            osc.type = 'sine';
-            gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime + index * 0.1);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + index * 0.1 + 0.2);
-            osc.start(audioCtx.currentTime + index * 0.1);
-            osc.stop(audioCtx.currentTime + index * 0.1 + 0.2);
-        });
-    } catch(e) { console.log("Audio error:", e); }
-}
-
-function playErrorSound() {
-    try {
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.frequency.value = 200;
-        osc.type = 'sawtooth';
-        gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.3);
-    } catch(e) { console.log("Audio error:", e); }
-}
-
-function toggleSound() {
-    soundEnabled = !soundEnabled;
-    document.getElementById('soundIcon').innerHTML = soundEnabled ? '🔊' : '🔇';
-    document.getElementById('soundText').innerHTML = soundEnabled ? 'SONIDO ON' : 'SONIDO OFF';
-    if (soundEnabled) playAlarmSound();
-}
-
-// 🔑 Verificar Contraseña
-function verifyPassword() {
-    const input = document.getElementById('passwordInput');
-    const errorDiv = document.getElementById('passwordError');
-    const overlay = document.getElementById('passwordOverlay');
-    
-    if (input.value === PASSWORD_CORRECTA) {
-        playUnlockSound();
-        errorDiv.textContent = '';
-        overlay.innerHTML = '<div class="password-card"><div class="unlock-success">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>';
-        setTimeout(() => {
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.3s ease';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                showWelcomeScreen();
-            }, 300);
-        }, 1000);
-    } else {
-        playErrorSound();
-        errorDiv.textContent = '🔒 Contraseña incorrecta.';
-        input.value = '';
-        input.focus();
-        input.classList.add('border-red-400');
-        setTimeout(() => input.classList.remove('border-red-400'), 500);
-    }
-}
-
-// 🌊 Bienvenida (5 segundos)
-function showWelcomeScreen() {
-    const welcome = document.getElementById('welcomeOverlay');
-    welcome.classList.remove('hidden-section');
-    welcome.style.display = 'flex';
-    let seconds = 5;
-    const countdownEl = document.getElementById('autoCountdown');
-    const bar = document.getElementById('autoProgressBar');
-    bar.style.width = '0%';
-    progressInterval = setInterval(() => { bar.style.width = ((5 - seconds) / 5 * 100) + '%'; }, 100);
-    autoCountdownTimer = setInterval(() => {
-        seconds--;
-        countdownEl.textContent = seconds;
-        if (seconds <= 0) {
-            clearInterval(autoCountdownTimer);
-            clearInterval(progressInterval);
-            enterMainPanel();
-        }
-    }, 1000);
-}
-
-function enterMainPanel() {
-    clearInterval(autoCountdownTimer);
-    clearInterval(progressInterval);
-    const welcome = document.getElementById('welcomeOverlay');
-    welcome.style.opacity = '0';
-    welcome.style.transition = 'opacity 0.4s ease';
-    setTimeout(() => {
-        welcome.style.display = 'none';
-        welcome.classList.add('hidden-section');
-        document.getElementById('mainContent').classList.remove('hidden-section');
-        isUnlocked = true;
-        loadData().then(() => { updatePulseBadge(); });
-        setTimeout(() => checkNewReports(), 3000);
-        refreshIntervals.push(setInterval(() => checkNewReports(), 20000));
-    }, 400);
-}
-
-// 🚨 ALERTA DE NUEVO REPORTE
-function showNewReportAlert(persona, sector, desc, tipo, hora) {
-    const alertEl = document.getElementById('newReportAlert');
-    const contentEl = document.getElementById('alertContent');
-    contentEl.innerHTML = `
-        <div class="alert-person">👤 ${persona || 'No identificado'}</div>
-        <div class="alert-sector">🏭 ${sector || 'Sector no especificado'}</div>
-        <div class="alert-desc">${tipo === 'vcp' ? '🎯' : tipo?.toLowerCase().includes('acto') ? '⚠️' : '🏚️'} <strong>${tipo?.toUpperCase() || 'Reporte'}</strong><br>${desc || 'Sin descripción'}</div>
-        <div class="alert-time">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>
-    `;
-    alertEl.classList.add('show');
-    playAlarmSound();
-    let secs = 15;
-    document.getElementById('alertCountdown').textContent = secs;
-    alertCountdownInterval = setInterval(() => {
-        secs--;
-        document.getElementById('alertCountdown').textContent = secs;
-        if (secs <= 0) dismissAlert();
-    }, 1000);
-}
-
-function dismissAlert() {
-    clearInterval(alertCountdownInterval);
-    document.getElementById('newReportAlert').classList.remove('show');
-}
-
-function toggleDailyAlerts() {
-    alert(`📋 REPORTES DE HOY (${todayAlerts.length})\n\n` + todayAlerts.map((a, i) => `${i + 1}. 🕒 ${a.hora} - ${a.persona} - ${a.tipo}\n   🏭 ${a.sector}\n   📝 ${(a.desc || '').substring(0, 60)}`).join('\n\n') || '📭 Sin reportes hoy');
-}
-
-function addDailyAlert(persona, sector, desc, tipo, hora) {
-    todayAlerts.unshift({ persona, sector, desc, tipo, hora, timestamp: Date.now() });
-    updatePulseBadge();
-    updateRealTimeUI();
-}
-
-function updatePulseBadge() {
-    const badge = document.getElementById('dailyPulseBadge');
-    const total = todayAlerts.length;
-    if (total > 0) {
-        badge.textContent = total;
-        badge.classList.remove('hidden-section');
-    } else {
-        badge.classList.add('hidden-section');
-    }
-}
-
-function updateRealTimeUI() {
-    const actosContainer = document.getElementById('realTimeReportsActos');
-    const vcpContainer = document.getElementById('realTimeReportsVCP');
-    const actosLed = document.getElementById('actosLed');
-    const vcpLed = document.getElementById('vcpLed');
-    
-    if (!actosContainer || !vcpContainer) return;
-    
-    const actosToday = todayAlerts.filter(a => a.tipo && !a.tipo.toLowerCase().includes('vcp'));
-    const vcpToday = todayAlerts.filter(a => a.tipo && a.tipo.toLowerCase().includes('vcp'));
-    
-    if (actosToday.length > 0) actosLed.className = 'siren-green';
-    else actosLed.className = 'siren-red';
-    if (vcpToday.length > 0) vcpLed.className = 'siren-green';
-    else vcpLed.className = 'siren-red';
-    
-    if (actosToday.length > 0) {
-        actosContainer.innerHTML = actosToday.map(a => `
-            <div class="report-item" style="border-left-color:#10b981;">
-                <div class="flex justify-between items-start">
-                    <span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span>
-                    <span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto') ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span>
-                </div>
-                <div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div>
-                <div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div>
-                <div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc || '').substring(0, 60)}</div>
-            </div>
-        `).join('');
-    } else {
-        actosContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>';
-    }
-    
-    if (vcpToday.length > 0) {
-        vcpContainer.innerHTML = vcpToday.map(a => `
-            <div class="report-item" style="border-left-color:#f59e0b;">
-                <div class="flex justify-between items-start">
-                    <span class="text-[9px] font-bold text-amber-700">🕒 ${a.hora}</span>
-                    <span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span>
-                </div>
-                <div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona || 'N/A'}</div>
-                <div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector || 'N/A'}</div>
-                <div class="text-[9px] text-slate-500 mt-1 truncate">${(a.desc || '').substring(0, 60)}</div>
-            </div>
-        `).join('');
-    } else {
-        vcpContainer.innerHTML = '<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>';
-    }
-}
-
-// ==================== UTILIDADES ====================
-function getTodayKey() { return new Date().toDateString(); }
-
-function checkAndResetDailyCounters() {
-    const today = getTodayKey();
-    if (today !== currentDateKey) {
-        currentDateKey = today;
-        todayAlerts = [];
-        reportesNotificadosActos.clear();
-        reportesNotificadosVCP.clear();
-        lastKnownActosRows = 0;
-        lastKnownVcpRows = 0;
-        actosNovedades = 0;
-        vcpNovedades = 0;
-        updatePulseBadge();
-        updateRealTimeUI();
-    }
-}
-
-function parseFecha(f) {
-    if (!f) return { dia: '', mes: '', valido: false };
-    let s = f.toString().split(' ')[0].trim();
-    let p = s.split('/');
-    if (p.length >= 3) {
-        let d = p[0].padStart(2, '0'), m = parseInt(p[1]), a = parseInt(p[2]);
-        if (p[2].length === 2) a = 2000 + a;
-        if (m >= 1 && m <= 12 && a === 2026) {
-            const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-            return { dia: d, mes: meses[m - 1], valido: true };
-        }
-    }
-    p = s.split('-');
-    if (p.length >= 3) {
-        let a = parseInt(p[0]), m = parseInt(p[1]), d = p[2].padStart(2, '0');
-        if (m >= 1 && m <= 12 && a === 2026) {
-            const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-            return { dia: d, mes: meses[m - 1], valido: true };
-        }
-    }
-    return { dia: '', mes: '', valido: false };
-}
-
-function classifyData(desc, useVCP = false) {
-    const CATEGORIES_ACTOS = [
-        { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp', 'casco', 'guantes', 'lentes', 'arnés'] },
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#f59e0b', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'cond', name: 'Conducción', icon: '🚗', color: '#ef4444', keywords: ['celular', 'velocidad', 'conducción'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#ec4899', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    const CATEGORIES_VCP = [
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#22C55E', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#EAB308', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#F97316', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EF4444', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    if (!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5];
-    let d = desc.toLowerCase(), cats = useVCP ? CATEGORIES_VCP : CATEGORIES_ACTOS, best = cats[0], max = 0;
-    for (let c of cats) {
-        let s = c.keywords.filter(k => d.includes(k)).length;
-        if (s > max) { max = s; best = c; }
-    }
-    return best;
-}
+const CATEGORIES = [
+    { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3B82F6', keywords: ['sin lentes', 'sin guantes', 'sin casco', 'epp'] },
+    { id: 'orden', name: 'Orden', icon: '🧹', color: '#10B981', keywords: ['limpieza', 'orden', 'aceite'] },
+    { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#F59E0B', keywords: ['procedimiento', 'bloqueo'] },
+    { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8B5CF6', keywords: ['herramienta', 'equipo'] },
+    { id: 'cond', name: 'Conducción', icon: '🚗', color: '#EF4444', keywords: ['celular', 'velocidad'] },
+    { id: 'area', name: 'Área', icon: '🏗️', color: '#EC4899', keywords: ['berma', 'señalización'] }
+];
 
 function parseCSV(text) {
-    const lines = text.split('\n').filter(l => l.trim()), r = [];
+    const lines = text.split('\n').filter(l => l.trim());
+    const result = [];
     for (let i = 1; i < lines.length; i++) {
-        const line = lines[i], cols = [];
-        let cur = '', inq = false;
-        for (let ch of line) {
-            if (ch === '"') inq = !inq;
-            else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; }
-            else cur += ch;
+        const line = lines[i];
+        const cols = [];
+        let current = '';
+        let inQuotes = false;
+        for (let j = 0; j < line.length; j++) {
+            const c = line[j];
+            if (c === '"') inQuotes = !inQuotes;
+            else if (c === ',' && !inQuotes) { cols.push(current.trim()); current = ''; }
+            else current += c;
         }
-        cols.push(cur.trim());
-        if (cols.length >= 10) r.push(cols);
+        cols.push(current.trim());
+        if (cols.length >= 24) result.push(cols);
     }
-    return r;
+    return result;
 }
 
-// ==================== CARGA DE DATOS ====================
 async function loadData() {
-    if (!isUnlocked) return;
     try {
-        const ts = Date.now();
-        console.log(`🔄 Cargando ${currentSucursal}...`);
+        const timestamp = Date.now();
+        const res1 = await fetch(ACTOS_URL + '&t=' + timestamp);
+        const rows1 = parseCSV(await res1.text());
+        
+        ACTOS_COND_DATA = rows1.map(row => {
+            const fecha = row[3] || '';
+            const tipoRaw = row[1] || '';
+            const sector = row[2] || '';
+            const observador = row[5] || '';
+            const desc = row[6] || '';
+            const cerradoRaw = row[23] || '';
+            
+            let tipo = 'otro';
+            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
+            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
+            
+            let cerrado = false;
+            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
+            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
 
-        // ACTOS Y CONDICIONES
-        const config = SUCURSALES_CONFIG[currentSucursal];
-        ACTOS_URL = config.actosUrl;
-        VCP_URL = config.vcpUrl;
-        currentMapping = config.mapping;
-        currentVcpMapping = config.vcpMapping || null;
-        currentObjetivos = config.objetivos;
-        currentShowVCP = config.showVCP;
-
-        if (!ACTOS_URL) {
-            ACTOS_COND_DATA = [];
-            document.getElementById('totalActosCond').innerText = '0';
-        } else {
-            const r1 = await fetch(ACTOS_URL + '&t=' + ts);
-            const text = await r1.text();
-            const rows = parseCSV(text);
-            const newRowsCount = rows.length - lastKnownActosRows;
-            const hayNuevos = newRowsCount > 0 && lastKnownActosRows > 0;
-            ACTOS_COND_DATA = [];
-
-            for (let i = 0; i < rows.length; i++) {
-                const row = rows[i];
-                const esNueva = currentSucursal === 'MALAGUENO' && i >= 225;
-                let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
-                if (esNueva) {
-                    const u = row[20] || '';
-                    if (u.toUpperCase().startsWith('AI-')) { tipoRaw = 'Acto Inseguro'; desc = u.replace(/^AI-\s*/i, '').trim(); }
-                    else if (u.toUpperCase().startsWith('CI-')) { tipoRaw = 'Condición Insegura'; desc = u.replace(/^CI-\s*/i, '').trim(); }
-                    else { tipoRaw = ''; desc = u; }
-                    fecha = row[11] || '';
-                    observador = row[13] || '';
-                    sector = row[14] || '';
-                    cerradoRaw = row[23] || '';
-                } else {
-                    if (row.length < Math.max(currentMapping.fecha, currentMapping.tipo, currentMapping.sector, currentMapping.observador, currentMapping.descripcion) + 1) continue;
-                    fecha = row[currentMapping.fecha] || '';
-                    tipoRaw = row[currentMapping.tipo] || '';
-                    sector = row[currentMapping.sector] || '';
-                    observador = row[currentMapping.observador] || '';
-                    desc = row[currentMapping.descripcion] || '';
-                    cerradoRaw = row[currentMapping.cerrado] || '';
-                }
-                const fd = parseFecha(fecha);
-                if (!fd.valido) continue;
-                let tipo = 'otro';
-                if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
-                else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
-                let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
-                const cat = classifyData(desc, false);
-                ACTOS_COND_DATA.push({ fecha, tipo, sector: sector.toLowerCase().trim(), observador: observador.trim(), descripcion: desc.trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat });
-            }
-
-            // Procesar nuevos reportes
-            if (hayNuevos) {
-                console.log(`🆕 ${newRowsCount} nuevos reportes detectados!`);
-                const newItems = rows.slice(lastKnownActosRows);
-                for (let row of newItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-                    let partes = marcaTemp.split('/');
-                    if (partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
-                        if (fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[13] || row[5]}|${row[6]}|${row[0]}`;
-                            if (!reportesNotificadosActos.has(idUnico)) {
-                                reportesNotificadosActos.add(idUnico);
-                                let observador = (row[13] && row[13].trim() !== '') ? row[13] : (row[5] || 'No identificado');
-                                let sector = (row[2] && row[2].trim() !== '') ? row[2] : (row[14] || 'No especificado');
-                                let descripcion = row[6] || 'Sin descripción';
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                                let u = row[20] || '';
-                                let tipo = u.toUpperCase().startsWith('AI-') ? 'Acto Inseguro' : u.toUpperCase().startsWith('CI-') ? 'Condición Insegura' : 'Reporte';
-                                showNewReportAlert(observador, sector, descripcion, tipo, hora);
-                                addDailyAlert(observador, sector, descripcion, tipo, hora);
-                                actosNovedades++;
-                                actualizarLED('actos', true);
-                                console.log(`✅ Nuevo acto: ${observador} - ${descripcion}`);
-                            }
-                        }
-                    }
+            let cat = CATEGORIES[0];
+            let maxS = 0;
+            if (desc) {
+                for (const c of CATEGORIES) {
+                    let s = 0;
+                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
+                    if (s > maxS) { maxS = s; cat = c; }
                 }
             }
+            
+            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
+        }).filter(r => r.fecha && r.observador);
 
-            lastKnownActosRows = rows.length;
-            document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
-        }
+        const res2 = await fetch(VCP_URL + '&t=' + timestamp);
+        const rows2 = parseCSV(await res2.text());
+        
+        VCP_DATA = rows2.map(row => {
+            const fecha = row[2] || '';
+            const observador = row[1] || '';
+            const sector = row[3] || '';
+            const descripcion = row[32] || '';
+            const comentarios = row[34] || '';
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
+            
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+        }).filter(r => r.fecha && r.observador);
 
-        // VCP
-        if (currentShowVCP && VCP_URL) {
-            const r2 = await fetch(VCP_URL + '&t=' + ts);
-            const text2 = await r2.text();
-            const rows2 = parseCSV(text2);
-            const newVcpCount = rows2.length - lastKnownVcpRows;
-            const hayNuevosVCP = newVcpCount > 0 && lastKnownVcpRows > 0;
-            VCP_DATA = [];
-            const vm = currentVcpMapping;
-
-            for (let i = 0; i < rows2.length; i++) {
-                const row = rows2[i];
-                let fr, po, sec, des, com;
-                if (vm) {
-                    fr = row[vm.fecha] || '';
-                    po = (row[vm.persona] || '').trim();
-                    sec = row[vm.sector] || '';
-                    des = row[vm.descripcion] || '';
-                    com = row[vm.comentarios] || '';
-                } else {
-                    fr = row[2] || '';
-                    po = (row[1] || '').trim();
-                    sec = (row[3] || '').toLowerCase().trim() || 'general';
-                    des = row[32] || '';
-                    com = row[28] || '';
-                }
-                const fd = parseFecha(fr.split(' ')[0]);
-                if (!fd.valido || !po) continue;
-                const cat = classifyData(des, true);
-                VCP_DATA.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat });
-            }
-
-            if (hayNuevosVCP) {
-                console.log(`🆕 ${newVcpCount} nuevos VCP detectados!`);
-                const newVItems = rows2.slice(lastKnownVcpRows);
-                for (let row of newVItems) {
-                    let marcaTemp = row[0] || '';
-                    let hoy = new Date();
-                    let fechaFormatoISO = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
-                    let partes = marcaTemp.split('/');
-                    if (partes.length === 3) {
-                        let fechaISO = `${partes[2]}-${partes[1].padStart(2, '0')}-${partes[0].padStart(2, '0')}`;
-                        if (fechaISO === fechaFormatoISO) {
-                            let idUnico = `${row[1]}|${vm ? row[vm.descripcion] : row[32]}|${row[0]}`;
-                            if (!reportesNotificadosVCP.has(idUnico)) {
-                                reportesNotificadosVCP.add(idUnico);
-                                let persona = row[1] || 'No identificado';
-                                let sector = vm ? (row[vm.sector] || 'No especificado') : (row[3] || 'No especificado');
-                                let desc = vm ? (row[vm.descripcion] || 'Sin descripción') : (row[32] || 'Sin descripción');
-                                let hora = marcaTemp.split(' ')[1] || new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
-                                showNewReportAlert(persona, sector, desc, 'vcp', hora);
-                                addDailyAlert(persona, sector, desc, 'VCP', hora);
-                                vcpNovedades++;
-                                actualizarLED('vcp', true);
-                                console.log(`✅ Nuevo VCP: ${persona} - ${desc}`);
-                            }
-                        }
-                    }
-                }
-            }
-
-            lastKnownVcpRows = rows2.length;
-            document.getElementById('totalVCP').innerText = VCP_DATA.length;
-        } else {
-            VCP_DATA = [];
-            document.getElementById('totalVCP').innerText = '0';
-        }
-
+        document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
+        document.getElementById('totalVCP').textContent = VCP_DATA.length;
+        
         populateSupervisors();
-        populateVCPPeopleFilter();
         applyAllFilters();
-
-    } catch (e) {
-        console.error('Error cargando datos:', e);
+        console.log('✅ Datos cargados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
+    } catch(e) {
+        console.error('❌ Error:', e);
+        alert('Error: ' + e.message);
     }
 }
 
-function checkNewReports() {
-    if (!isUnlocked) return;
-    checkAndResetDailyCounters();
-    loadData();
-}
-
-function forceRefreshData() {
-    if (isUnlocked) loadData();
-}
-
-// ==================== APLICAR FILTROS ====================
-function applyAllFilters() {
-    applyGeneralFilters();
-    if (currentShowVCP) applyVCPFilters();
+function applyAllFilters() { 
+    applyGeneralFilters(); 
+    applyVCPFilters();
     updateSupervisorCard();
 }
 
 function applyGeneralFilters() {
-    let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz));
-    let a = f.filter(e => e.tipo === 'acto'), c = f.filter(e => e.tipo === 'condicion');
-    document.getElementById('kpiActos').innerText = a.length;
-    document.getElementById('kpiCondiciones').innerText = c.length;
-    let pA = Math.min(a.length / currentObjetivos.actos * 100, 100), pC = Math.min(c.length / currentObjetivos.cond * 100, 100);
-    document.getElementById('actosBar').style.width = pA + '%';
-    document.getElementById('condBar').style.width = pC + '%';
-    document.getElementById('actosPctLabel').innerText = Math.round(pA) + '%';
-    document.getElementById('condPctLabel').innerText = Math.round(pC) + '%';
-    let up = (id, p) => {
-        let el = document.getElementById(id);
-        if (p >= 100) { el.innerText = '✅ Cumplido'; el.className = 'status-badge status-ok'; }
-        else if (p > 0) { el.innerText = '⚠ En Progreso'; el.className = 'status-badge status-warn'; }
-        else { el.innerText = '⚠ Pendiente'; el.className = 'status-badge status-low'; }
+    const filtered = ACTOS_COND_DATA.filter(e => {
+        const matchMes = (state.mes === 'todo' || e.mes === state.mes);
+        const matchSector = (state.sector === 'general' || e.sector.includes(state.sector));
+        let matchStatus = true;
+        if (state.estado === 'cerrados') matchStatus = e.cerrado === true;
+        else if (state.estado === 'abiertos') matchStatus = e.cerrado === false;
+        const matchCausa = (state.causaRaiz === 'todas' || e.categoria.id === state.causaRaiz);
+        return matchMes && matchSector && matchStatus && matchCausa;
+    });
+    
+    const actos = filtered.filter(e => e.tipo === 'acto');
+    const cond = filtered.filter(e => e.tipo === 'condicion');
+    
+    document.getElementById('kpiActos').textContent = actos.length;
+    document.getElementById('kpiCondiciones').textContent = cond.length;
+    
+    const actosPct = Math.min((actos.length / OBJETIVO_ACTOS) * 100, 100);
+    const condPct = Math.min((cond.length / OBJETIVO_CONDICIONES) * 100, 100);
+    
+    document.getElementById('actosBar').style.width = actosPct + '%';
+    document.getElementById('condBar').style.width = condPct + '%';
+    document.getElementById('actosPctLabel').textContent = Math.round(actosPct) + '%';
+    document.getElementById('condPctLabel').textContent = Math.round(condPct) + '%';
+    
+    const updateStatus = (id, pct) => {
+        const el = document.getElementById(id);
+        if (pct >= 100) { el.textContent = '✅ Cumplido'; el.className = 'status-badge status-ok'; }
+        else if (pct > 0) { el.textContent = '⚠ En Progreso'; el.className = 'status-badge status-warn'; }
+        else { el.textContent = '⚠ Pendiente'; el.className = 'status-badge status-low'; }
     };
-    up('actosStatus', pA);
-    up('condStatus', pC);
-    updateCategoryCards(f, 'actos');
-    updateChartsDona(f, 'actos');
-    updateTrendChart();
-    renderGeneralTable(f);
+    updateStatus('actosStatus', actosPct);
+    updateStatus('condStatus', condPct);
+    
+    updateCategoryCards(filtered);
+    updateCharts(filtered);
+    renderGeneralTable(filtered);
 }
 
-function updateCategoryCards(data, type) {
-    const CATEGORIES_ACTOS = [
-        { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp', 'casco', 'guantes', 'lentes', 'arnés'] },
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#f59e0b', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'cond', name: 'Conducción', icon: '🚗', color: '#ef4444', keywords: ['celular', 'velocidad', 'conducción'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#ec4899', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    const CATEGORIES_VCP = [
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#22C55E', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#EAB308', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#F97316', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EF4444', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    const cats = type === 'actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP;
-    const contId = type === 'actos' ? 'categoryCards' : 'vcpCategoryCards';
-    const clearBtnId = type === 'actos' ? 'clearCausaBtn' : 'clearVCPCauseBtn';
-    const stateKey = type === 'actos' ? 'causaRaiz' : 'vcpCausa';
-    const stateVal = type === 'actos' ? state.causaRaiz : state.vcpCausa;
+function applyVCPFilters() {
+    const vcpData = VCP_DATA.filter(e => {
+        const matchMes = (state.vcpMes === 'todo' || e.mes === state.vcpMes);
+        const matchSector = (state.vcpSector === 'general' || e.sector.includes(state.vcpSector));
+        const matchYear = e.fecha && (e.fecha.includes('2026') || e.fecha.endsWith('2026'));
+        let matchStatus = true;
+        if (state.vcpEstado === 'cerrados') matchStatus = e.cerrado === true;
+        else if (state.vcpEstado === 'abiertos') matchStatus = e.cerrado === false;
+        return matchMes && matchSector && matchStatus && matchYear;
+    });
+    
+    const vcpPct = Math.min((vcpData.length / OBJETIVO_VCP) * 100, 100);
+    document.getElementById('vcpStatus').textContent = vcpPct >= 100 ? '✅ Cumplido' : vcpPct >= 70 ? '⚠ Casi' : '⚠ Pendiente';
+    document.getElementById('vcpBar').style.width = vcpPct + '%';
+    document.getElementById('vcpCurrent').textContent = vcpData.length;
+    document.getElementById('vcpPctLabel').textContent = Math.round(vcpPct) + '%';
+    
+    const vcpPeople = {};
+    vcpData.forEach(v => { vcpPeople[v.personaObservada] = (vcpPeople[v.personaObservada] || 0) + 1; });
+    
+    const vcpHtml = Object.entries(vcpPeople).sort((a, b) => b[1] - a[1])
+        .map(([name, count]) => `
+            <div class="person-item" onclick="showPersonVCPModal('${name}')" 
+                 style="display: flex; justify-content: space-between; align-items: center; padding: 8px; background: #EFEBE9; border-radius: 8px; margin-bottom: 4px; border-left: 4px solid #A1887F;">
+                <span style="font-weight: 700; color: #5D4037;">${name}</span>
+                <span style="font-weight: 900; color: #8D6E63; background: #FFCCBC; padding: 2px 8px; border-radius: 12px; font-size: 10px;">${count} VCP</span>
+            </div>
+        `).join('');
+    
+    document.getElementById('vcpPeopleList').innerHTML = vcpHtml || '<p style="text-align: center; color: #94a3b8; padding: 20px;">Sin VCP</p>';
+    
+    updateVCPChart(vcpData, vcpPeople);
+    renderVCPTable(vcpData);
+}
 
-    let counts = {};
-    cats.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let total = data.length || 1, cont = document.getElementById(contId);
-    if (!cont) return;
-    cont.innerHTML = '';
-    cats.forEach(c => {
-        let val = counts[c.id] || 0, pct = Math.round(val / total * 100);
-        let div = document.createElement('div');
-        let isActive = stateVal === c.id;
-        div.className = `category-card p-3 text-center relative ${isActive ? 'active' : ''}`;
-        if (selectedCausa === c.id) div.classList.add('causa-seleccionada');
-        div.setAttribute('data-causa-id', c.id);
+function toggleCausaRaiz(id) {
+    state.causaRaiz = state.causaRaiz === id ? 'todas' : id;
+    const clearBtn = document.getElementById('clearCausaBtn');
+    if (state.causaRaiz !== 'todas') clearBtn.classList.remove('hidden-section');
+    else clearBtn.classList.add('hidden-section');
+    applyGeneralFilters();
+}
+
+function clearCausaFilter() {
+    state.causaRaiz = 'todas';
+    document.getElementById('clearCausaBtn').classList.add('hidden-section');
+    applyGeneralFilters();
+}
+
+function setSector(s, btn) { state.sector = s; updateButtons('sectorButtons', btn, '#2563eb'); applyGeneralFilters(); }
+function setStatus(s, btn) { state.estado = s; updateButtons('statusButtons', btn, '#2563eb'); applyGeneralFilters(); }
+function setVCPSector(s, btn) { state.vcpSector = s; updateButtons('vcpSectorButtons', btn, '#8D6E63'); applyVCPFilters(); }
+
+function setStatusVCP(estado, btn) {
+    state.vcpEstado = estado;
+    document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => { 
+        b.style.background = 'white'; 
+        b.style.color = '#475569'; 
+        b.classList.remove('active'); 
+    });
+    btn.style.background = 'linear-gradient(135deg, #8D6E63 0%, #BCAAA4 100%)'; 
+    btn.style.color = 'white'; 
+    btn.classList.add('active');
+    applyVCPFilters();
+}
+
+function updateButtons(containerId, activeBtn, activeColor) {
+    document.querySelectorAll('#' + containerId + ' .btn-filter').forEach(b => { b.style.background = 'white'; b.style.color = '#475569'; b.classList.remove('active'); });
+    activeBtn.style.background = activeColor; activeBtn.style.color = 'white'; activeBtn.classList.add('active');
+}
+
+function updateCategoryCards(data) {
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    const total = data.length || 1;
+    
+    const container = document.getElementById('categoryCards');
+    container.innerHTML = '';
+    
+    CATEGORIES.forEach(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val / total) * 100);
+        const isActive = state.causaRaiz === c.id;
+        const div = document.createElement('div');
+        div.className = 'category-card' + (isActive ? ' active' : '');
         div.style.borderColor = c.color;
-        div.onclick = () => {
-            if (stateKey === 'vcpCausa') {
-                if (state.vcpCausa === c.id) { state.vcpCausa = 'todas'; document.getElementById(clearBtnId)?.classList.add('hidden-section'); }
-                else { state.vcpCausa = c.id; document.getElementById(clearBtnId)?.classList.remove('hidden-section'); }
-                applyVCPFilters();
-            } else {
-                if (selectedCausa === c.id) limpiarFiltroCausa();
-                else {
-                    selectedCausa = c.id;
-                    state.causaRaiz = c.id;
-                    document.getElementById(clearBtnId)?.classList.remove('hidden-section');
-                }
-                document.querySelectorAll('.category-card').forEach(cd => cd.classList.remove('causa-seleccionada'));
-                div.classList.add('causa-seleccionada');
-                updateTrendChart();
-                applyGeneralFilters();
-            }
-        };
-        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`;
-        cont.appendChild(div);
+        div.onclick = () => toggleCausaRaiz(c.id);
+        div.innerHTML = `<div style="font-size: 2rem;">${c.icon}</div><div style="font-size: 10px; font-weight: 800; margin: 8px 0; color: #475569;">${c.name}</div><div style="font-size: 1.5rem; font-weight: 900; color: ${c.color};">${val}</div><div style="font-size: 10px; color: #94a3b8;">${pct}%</div>`;
+        container.appendChild(div);
     });
 }
 
-function updateChartsDona(data, type) {
-    const CATEGORIES_ACTOS = [
-        { id: 'epp', name: 'Falta EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp', 'casco', 'guantes', 'lentes', 'arnés'] },
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#f59e0b', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'cond', name: 'Conducción', icon: '🚗', color: '#ef4444', keywords: ['celular', 'velocidad', 'conducción'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#ec4899', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    const CATEGORIES_VCP = [
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#22C55E', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#EAB308', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#F97316', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EF4444', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    const cats = type === 'actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP;
-    const canvasId = type === 'actos' ? 'categoryChart' : 'vcpCategoryChart';
-
-    let counts = {};
-    cats.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let ctx = document.getElementById(canvasId)?.getContext('2d');
-    if (!ctx) return;
-    if (type === 'actos' && categoryChart) categoryChart.destroy();
-    if (type !== 'actos' && vcpCategoryChart) vcpCategoryChart.destroy();
-    let chart = new Chart(ctx, {
+function updateCharts(data) {
+    const counts = {};
+    CATEGORIES.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    
+    if (categoryChart) {
+        categoryChart.destroy();
+    }
+    
+    const total = data.length || 1;
+    const labels = CATEGORIES.map(c => {
+        const val = counts[c.id] || 0;
+        const pct = Math.round((val / total) * 100);
+        return c.name + ' (' + pct + '%)';
+    });
+    
+    const ctx = document.getElementById('categoryChart').getContext('2d');
+    categoryChart = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: cats.map(c => `${c.icon} ${c.name}`), datasets: [{ data: cats.map(c => counts[c.id] || 0), backgroundColor: cats.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
-        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let total = ctx.dataset.data.reduce((a, b) => a + b, 0); let pct = Math.round((ctx.parsed / total) * 100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } }, animation: { animateRotate: true } }
-    });
-    if (type === 'actos') categoryChart = chart;
-    else vcpCategoryChart = chart;
-}
-
-function updateTrendChart() {
-    const meses = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    let df = ACTOS_COND_DATA;
-    if (selectedCausa && selectedCausa !== 'todas') df = ACTOS_COND_DATA.filter(e => e.categoria.id === selectedCausa);
-    let aPM = meses.map(m => df.filter(e => e.mes === m && e.tipo === 'acto').length), cPM = meses.map(m => df.filter(e => e.mes === m && e.tipo === 'condicion').length);
-    const ctx = document.getElementById('trendChart')?.getContext('2d');
-    if (!ctx) return;
-    if (trendChart) trendChart.destroy();
-    trendChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
-            datasets: [
-                { label: selectedCausa ? `⚠️ ACTOS (Filtrado)` : '⚠️ ACTOS', data: aPM, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const i = ctx.dataIndex; const ms = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return i === ms ? '#f59e0b' : '#06b6d4'; }, pointBorderColor: 'white', pointBorderWidth: 2 },
-                { label: selectedCausa ? `🏚️ CONDICIONES (Filtrado)` : '🏚️ CONDICIONES', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 6, pointHoverRadius: 10, pointBackgroundColor: (ctx) => { const i = ctx.dataIndex; const ms = selectedChartMonth ? meses.indexOf(selectedChartMonth) : -1; return i === ms ? '#f59e0b' : '#f59e0b'; }, pointBorderColor: 'white', pointBorderWidth: 2 }
-            ]
+         {
+            labels: labels,
+            datasets: [{
+                 CATEGORIES.map(c => counts[c.id] || 0),
+                backgroundColor: CATEGORIES.map(c => c.color),
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
         },
         options: {
-            responsive: true, maintainAspectRatio: true,
-            onClick: (ev, ae) => {
-                if (ae.length > 0) {
-                    const di = ae[0].index;
-                    const ms = meses[di];
-                    selectedChartMonth = ms;
-                    const m = document.getElementById('monthFilter');
-                    if (m) { m.value = ms; state.mes = ms; }
-                    updateTrendChart();
-                    applyGeneralFilters();
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        boxWidth: 12,
+                        font: { size: 10 },
+                        padding: 10
+                    }
                 }
-            },
-            plugins: { legend: { position: 'top', labels: { font: { size: 9, weight: 'bold' }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y}` } } },
-            scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 10 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } }
+            }
         }
     });
 }
 
-function applyVCPFilters() {
-    let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)) && (state.vcpCausa === 'todas' || e.categoria.id === state.vcpCausa));
-    let pct = Math.min(f.length / OBJ_VCP * 100, 100);
-    let vs = document.getElementById('vcpStatus');
-    if (pct >= 100) vs.innerText = '✅ Cumplido';
-    else if (pct >= 70) vs.innerText = '⚠ Casi';
-    else vs.innerText = '⚠ Pendiente';
-    document.getElementById('vcpBar').style.width = pct + '%';
-    document.getElementById('vcpCurrent').innerText = f.length;
-    document.getElementById('vcpPctLabel').innerText = Math.round(pct) + '%';
-    updateCategoryCards(f, 'vcp');
-    updateVCPCharts(f);
-    renderVCPTable(f);
-}
-
-function updateVCPCharts(data) {
-    const CATEGORIES_VCP = [
-        { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#22C55E', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-        { id: 'proc', name: 'Procedimientos', icon: '⚡', color: '#EAB308', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-        { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#F97316', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-        { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#EF4444', keywords: ['berma', 'talud', 'camino', 'señal'] }
-    ];
-    let counts = {};
-    CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria && counts[e.categoria.id] !== undefined) counts[e.categoria.id]++; });
-    let ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d');
-    if (!ctxD) return;
-    if (vcpCategoryChart) vcpCategoryChart.destroy();
-    vcpCategoryChart = new Chart(ctxD, {
+function updateVCPChart(vcpData, vcpPeople) {
+    const labels = Object.keys(vcpPeople);
+    const vcpValues = Object.values(vcpPeople);
+    const colors = ['#8D6E63', '#A1887F', '#BCAAA4', '#D7CCC8', '#FFAB91', '#FFCCBC', '#EFEBE9', '#BDBDBD', '#795548', '#6D4C41'];
+    
+    if (vcpChart) {
+        vcpChart.destroy();
+    }
+    
+    if (labels.length === 0) return;
+    
+    const total = vcpValues.reduce((a, b) => a + b, 0) || 1;
+    const chartLabels = labels.map((name, i) => {
+        const pct = Math.round((vcpValues[i] / total) * 100);
+        return name + ' (' + pct + '%)';
+    });
+    
+    const ctx = document.getElementById('vcpChart').getContext('2d');
+    vcpChart = new Chart(ctx, {
         type: 'doughnut',
-        data: { labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATEGORIES_VCP.map(c => counts[c.id] || 0), backgroundColor: CATEGORIES_VCP.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
-        options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, pointStyle: 'circle' } }, tooltip: { callbacks: { label: (ctx) => { let t = ctx.dataset.data.reduce((a, b) => a + b, 0); let p = Math.round((ctx.parsed / t) * 100); return `${ctx.label}: ${ctx.parsed} (${p}%)`; } } } }, animation: { animateRotate: true } }
-    });
-    const m = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
-    let vPM = m.map(mes => data.filter(e => e.mes === mes).length);
-    let ctxT = document.getElementById('vcpTrendChart')?.getContext('2d');
-    if (!ctxT) return;
-    if (vcpTrendChart) vcpTrendChart.destroy();
-    vcpTrendChart = new Chart(ctxT, {
-        type: 'line',
-        data: { labels: m.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white', pointBorderWidth: 2 }] },
-        options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } }
+         {
+            labels: chartLabels,
+            datasets: [{
+                data: vcpValues,
+                backgroundColor: colors.slice(0, labels.length),
+                borderWidth: 2,
+                borderColor: '#ffffff'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: {
+                    position: 'right',
+                    align: 'start',
+                    labels: {
+                        boxWidth: 10,
+                        font: { size: 9 },
+                        padding: 8,
+                        usePointStyle: true,
+                        pointStyle: 'rectRounded'
+                    }
+                }
+            }
+        }
     });
 }
 
-function clearVCPCauseFilter() { state.vcpCausa = 'todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
-function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort(); let sel = document.getElementById('supervisorSelect'); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x => sel.innerHTML += `<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
-function updateSupervisorCard() { let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value; let f = ACTOS_COND_DATA.filter(e => (s === 'todos' || e.observador === s) && (m === 'todo' || e.mes === m)); document.getElementById('supActosCount').innerText = f.filter(e => e.tipo === 'acto').length; document.getElementById('supCondCount').innerText = f.filter(e => e.tipo === 'condicion').length; }
-function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v => { if (v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); }); let sel = document.getElementById('vcpPersonFilter'); sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}">🧑‍🏭 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
-function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value; let f = VCP_DATA.filter(v => (p === 'todos' || v.personaObservada === p) && (m === 'todo' || v.mes === m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a, b) => new Date(b.fecha) - new Date(a.fecha))[0].dia + '/' + f[0].mes : '-'; }
-function setSector(s, b) { state.sector = s; updateButtons('sectorButtons', b, '#2563eb'); applyGeneralFilters(); }
-function setStatus(s, b) { state.estado = s; updateButtons('statusButtons', b, '#2563eb'); applyGeneralFilters(); }
-function setVCPSector(s, b) { state.vcpSector = s; updateButtons('vcpSectorButtons', b, '#d97706'); applyVCPFilters(); }
-function setStatusVCP(s, b) { state.vcpEstado = s; updateButtons('vcpStatusButtons', b, '#d97706'); applyVCPFilters(); }
-function updateButtons(cid, act, col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b => { b.classList.remove('active'); b.style.background = 'white'; b.style.color = '#475569'; }); act.classList.add('active'); act.style.background = col; act.style.color = 'white'; }
-function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); tb.innerHTML = ''; data.slice(0, 50).forEach((e, i) => { let tr = document.createElement('tr'); tr.className = 'border-b hover:bg-slate-50 cursor-pointer'; tr.onclick = () => openModal(e, i, data); tr.innerHTML = `<td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'}">${e.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND'}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0, 55)}${e.descripcion.length > 55 ? '...' : ''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${e.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
-function renderVCPTable(data) { let tb = document.getElementById('vcpTableBody'); tb.innerHTML = ''; data.slice(0, 50).forEach((e, i) => { let tr = document.createElement('tr'); tr.className = 'border-b hover:bg-slate-50 cursor-pointer'; tr.onclick = () => openModal(e, i, data); tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}</td><td class="p-2 font-semibold text-amber-700">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria.icon} ${e.categoria.name}</span><br>${e.descripcion.substring(0, 50) || '-'}${e.descripcion.length > 50 ? '...' : ''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0, 30) || '-'}${e.comentarios?.length > 30 ? '...' : ''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
-
-function limpiarFiltroGrafico() { selectedChartMonth = null; const m = document.getElementById('monthFilter'); if (m) { m.value = 'todo'; state.mes = 'todo'; } updateTrendChart(); applyGeneralFilters(); }
-function limpiarFiltroCausa() { selectedCausa = null; state.causaRaiz = 'todas'; const c = document.getElementById('clearCausaBtn'); if (c) c.classList.add('hidden-section'); document.querySelectorAll('.category-card').forEach(card => card.classList.remove('causa-seleccionada')); updateTrendChart(); applyGeneralFilters(); }
-function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
-function actualizarLED(tipo, hay) { const l = document.getElementById(`${tipo}Led`); if (!l) return; if (hay) { l.className = 'siren-green'; setTimeout(() => { const o = document.getElementById(`${tipo}Led`); if (o) o.className = 'siren-red'; }, 5000); } }
-function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos + currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML = `🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos + currentObjetivos.cond} Total`; }
-function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if (v) show ? v.classList.remove('hidden-section') : v.classList.add('hidden-section'); }
-
-// ✅ CAMBIO DE SUCURSAL CON CORRECCIÓN DE ERROR (classList null)
-function cambiarSucursal(suc) {
-    currentSucursal = suc;
-    // Uso de ?.classList para evitar error si el elemento no existe
-    ['btnMalagueno', 'btnBarker', 'btnLaPampita'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-    selectedCausa = null;
-    selectedChartMonth = null;
-    state.causaRaiz = 'todas';
-    state.mes = 'todo';
-    const m = document.getElementById('monthFilter');
-    if (m) m.value = 'todo';
-    document.querySelectorAll('.category-card').forEach(c => c.classList.remove('causa-seleccionada'));
-    const cb = document.getElementById('clearCausaBtn');
-    if (cb) cb.classList.add('hidden-section');
-    const c = SUCURSALES_CONFIG[suc];
-    if (c) {
-        ACTOS_URL = c.actosUrl;
-        VCP_URL = c.vcpUrl;
-        currentMapping = c.mapping;
-        currentVcpMapping = c.vcpMapping || null;
-        currentObjetivos = c.objetivos;
-        currentShowVCP = c.showVCP;
-        actualizarObjetivosUI();
-        toggleVCPVisibility(currentShowVCP);
-    }
-    // Uso de ?.classList para evitar error si el elemento no existe
-    document.getElementById(suc === 'MALAGUENO' ? 'btnMalagueno' : suc === 'BARKER' ? 'btnBarker' : 'btnLaPampita')?.classList.add('active');
-    if (isUnlocked) loadData();
+function renderGeneralTable(data) {
+    const tbody = document.getElementById('generalTableBody');
+    tbody.innerHTML = '';
+    data.slice(0, 50).forEach(e => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9;';
+        tr.onclick = () => openReportModal(e);
+        const statusText = e.cerrado ? 'CERRADO' : 'ABIERTO';
+        const statusColor = e.cerrado ? '#16a34a' : '#dc2626';
+        const statusBg = e.cerrado ? '#dcfce7' : '#fee2e2';
+        const tipoBg = e.tipo === 'acto' ? '#dbeafe' : e.tipo === 'vcp' ? '#EFEBE9' : '#ffedd5';
+        const tipoColor = e.tipo === 'acto' ? '#2563eb' : e.tipo === 'vcp' ? '#6D4C41' : '#ea580c';
+        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${tipoBg}; color: ${tipoColor};">${e.tipo.toUpperCase()}</span></td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.descripcion}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: ${statusBg}; color: ${statusColor};">${e.cerrado ? '✅' : '⚠️'} ${statusText}</span></td>`;
+        tbody.appendChild(tr);
+    });
 }
 
-// ==================== MODALES (INTACTOS) ====================
-function openModal(r, idx, data) {
-    if (!isUnlocked) return;
-    currentModalData = data;
-    currentModalIndex = idx;
-    let modal = document.getElementById('reportDetailModal'), content = document.getElementById('reportModalContent');
-    modal.querySelector('.modal-bounce').style.animation = 'none';
-    modal.querySelector('.modal-bounce').offsetHeight;
-    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-    if (r.tipo === 'vcp') {
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑‍🏭 Persona:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-purple-600">📝 Descripción:</strong> ${r.descripcion || '-'}</p><p><strong class="text-purple-600">💬 Comentarios:</strong> ${r.comentarios || '-'}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> 🔒 CERRADO</p></div>`;
-    } else {
-        content.innerHTML = `<div class="space-y-2"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador:</strong> ${r.observador}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo.toUpperCase()}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria.icon} ${r.categoria.name}</p><p><strong class="text-cyan-600">📝 Descripción:</strong> ${r.descripcion}</p><p><strong class="text-cyan-600">⚙️ Estado:</strong> ${r.cerrado ? '🔒 CERRADO' : '⚠️ ABIERTO'}</p></div>`;
-    }
+function renderVCPTable(data) {
+    const tbody = document.getElementById('vcpTableBody');
+    tbody.innerHTML = '';
+    data.slice(0, 50).forEach(e => {
+        const tr = document.createElement('tr');
+        tr.style.cssText = 'border-bottom: 1px solid #f1f5f9; cursor: pointer;';
+        tr.onclick = () => showPersonVCPModal(e.personaObservada);
+        tr.innerHTML = `<td style="padding: 12px; font-weight: 700;">${e.dia}/${e.mes}</td><td style="padding: 12px; font-weight: 800;">${e.observador}</td><td style="padding: 12px;">${e.sector}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.descripcion || '-'}</td><td style="padding: 12px; font-size: 10px; max-width: 200px;">${e.comentarios || '-'}</td><td style="padding: 12px;"><span style="padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span></td>`;
+        tbody.appendChild(tr);
+    });
+}
+
+function openReportModal(report) {
+    const modal = document.getElementById('reportDetailModal');
+    const content = document.getElementById('reportModalContent');
+    const statusText = report.cerrado ? '✅ CERRADO' : '⚠️ ABIERTO';
+    const statusColor = report.cerrado ? '#16a34a' : '#dc2626';
+    
+    content.innerHTML = `
+        <p><strong>📅 Fecha:</strong> ${report.fecha}</p>
+        <p><strong>👤 Observador:</strong> ${report.observador}</p>
+        <p><strong>📋 Tipo:</strong> ${report.tipo.toUpperCase()}</p>
+        <p><strong>🏭 Sector:</strong> ${report.sector.toUpperCase()}</p>
+        <p><strong>📝 Descripción:</strong> ${report.descripcion}</p>
+        <hr style="margin: 10px 0;">
+        <p style="font-size: 16px;"><strong>Estado:</strong> <span style="color: ${statusColor}; font-weight: 900;">${statusText}</span></p>
+    `;
     modal.classList.remove('hidden-section');
     modal.style.display = 'flex';
-    updateNavButtons();
 }
-function closeReportModal() { let m = document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
-function updateNavButtons() { let p = document.getElementById('btnPrev'), n = document.getElementById('btnNext'), c = document.getElementById('modalCounter'), hp = currentModalIndex > 0, hn = currentModalIndex < currentModalData.length - 1; p.disabled = !hp; n.disabled = !hn; c.innerText = `${currentModalIndex + 1} / ${currentModalData.length}`; }
-function goToNextModal() { if (currentModalIndex < currentModalData.length - 1) { currentModalIndex++; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } }
-function goToPreviousModal() { if (currentModalIndex > 0) { currentModalIndex--; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } }
 
-function abrirModalSupervisor(tipo) {
-    if (!isUnlocked) return;
-    let s = document.getElementById('supervisorSelect').value, m = document.getElementById('supervisorMonthSelect').value;
-    if (s === 'todos') { alert("⚠️ Seleccione un supervisor"); return; }
-    let nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1), f = ACTOS_COND_DATA.filter(e => e.observador === s && (m === 'todo' || e.mes === m)), dt = f.filter(e => e.tipo === tipo);
-    if (!dt.length) { alert(`No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s} en ${nm}.`); return; }
-    let t = tipo === 'acto' ? `⚠️ ACTOS de ${s}` : `🏚️ CONDICIONES de ${s}`, ct = tipo === 'acto' ? '#0891b2' : '#d97706', html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
-    dt.forEach(e => { let be = e.cerrado ? '<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>' : '<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${e.descripcion.substring(0, 60)}${e.descripcion.length > 60 ? '...' : ''}</td><td class="p-2">${be}</td></tr>`; });
-    html += `</tbody></table></div>`;
-    document.getElementById('modalSupervisorTitle').innerHTML = t;
-    document.getElementById('modalSupervisorTitle').style.color = ct;
-    document.getElementById('supervisorModalContent').innerHTML = html;
-    const mod = document.getElementById('supervisorDetailModal');
-    mod.querySelector('.modal-bounce').style.animation = 'none';
-    mod.querySelector('.modal-bounce').offsetHeight;
-    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-    mod.classList.remove('hidden-section');
-    mod.style.display = 'flex';
+function closeReportModal() {
+    document.getElementById('reportDetailModal').classList.add('hidden-section');
+    document.getElementById('reportDetailModal').style.display = 'none';
 }
-function closeSupervisorModal() { let m = document.getElementById('supervisorDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
-function abrirModalPersonaVCP() {
-    if (!isUnlocked) return;
-    let p = document.getElementById('vcpPersonFilter').value, m = document.getElementById('vcpPersonMonthFilter').value;
-    if (p === 'todos') { alert("⚠️ Seleccione una persona"); return; }
-    let nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1), f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m));
-    if (!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
-    let html = `<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
-    f.forEach(e => { let dc = e.descripcion.length > 50 ? e.descripcion.substring(0, 50) + '...' : e.descripcion, cc = e.comentarios && e.comentarios.length > 30 ? e.comentarios.substring(0, 30) + '...' : (e.comentarios || '-'); html += `<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria.color}">${e.categoria.icon} ${e.categoria.name}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
-    html += `</tbody></table></div>`;
-    document.getElementById('modalPersonaVCPTitle').innerHTML = `📋 VCPs de ${p}`;
-    document.getElementById('personaVCPModalContent').innerHTML = html;
-    const mod = document.getElementById('personaVCPModal');
-    mod.querySelector('.modal-bounce').style.animation = 'none';
-    mod.querySelector('.modal-bounce').offsetHeight;
-    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-    mod.classList.remove('hidden-section');
-    mod.style.display = 'flex';
+
+function showPersonVCPModal(personName) {
+    const modal = document.getElementById('personVCPModal');
+    const nameEl = document.getElementById('personVCPName');
+    const countEl = document.getElementById('personVCPCount');
+    const listEl = document.getElementById('personVCPList');
+    
+    const personVCPs = VCP_DATA.filter(v => v.personaObservada === personName);
+    
+    nameEl.textContent = personName;
+    countEl.textContent = personVCPs.length + ' VCP realizados en 2026';
+    
+    const listHtml = personVCPs.map(v => `
+        <div style="padding: 12px; background: #EFEBE9; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #8D6E63;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 700; color: #1e293b;">📅 ${v.dia}/${v.mes}/2026</span>
+                <span style="padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 900; background: #FFCCBC; color: #5D4037;">✅ CERRADO</span>
+            </div>
+            <div style="margin-top: 4px; font-size: 11px; color: #64748b;">
+                🏭 Sector: ${v.sector.toUpperCase()}
+            </div>
+            <div style="margin-top: 4px; font-size: 11px; color: #5D4037; font-weight: 600;">
+                📝 Detalle: ${v.descripcion || 'Sin descripción'}
+            </div>
+            ${v.comentarios ? `<div style="margin-top: 4px; font-size: 10px; color: #8D6E63; font-style: italic;">💬 ${v.comentarios}</div>` : ''}
+        </div>
+    `).join('');
+    
+    listEl.innerHTML = listHtml || '<p style="text-align: center; color: #94a3b8;">Sin registros</p>';
+    
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
 }
-function closePersonaVCPModal() { let m = document.getElementById('personaVCPModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
-// Event listeners
-document.getElementById('monthFilter')?.addEventListener('change', e => { if (isUnlocked) { state.mes = e.target.value; selectedChartMonth = null; applyGeneralFilters(); updateTrendChart(); } });
-document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if (isUnlocked) { state.vcpMes = e.target.value; applyVCPFilters(); } });
-document.getElementById('supervisorSelect')?.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
-document.getElementById('supervisorMonthSelect')?.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
-document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-document.getElementById('actosCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('acto'));
-document.getElementById('condCardSupervisor')?.addEventListener('click', () => abrirModalSupervisor('condicion'));
-document.getElementById('vcpCardPersona')?.addEventListener('click', () => abrirModalPersonaVCP());
-document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
-document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
-document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
-document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
-document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel);
+function closePersonVCPModal() {
+    document.getElementById('personVCPModal').classList.add('hidden-section');
+    document.getElementById('personVCPModal').style.display = 'none';
+}
 
-window.addEventListener('load', () => { document.getElementById('passwordInput')?.focus(); });
+function populateSupervisors() {
+    const supervisors = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort();
+    const select = document.getElementById('supervisorSelect');
+    select.innerHTML = '<option value="todos">Todos</option>';
+    supervisors.forEach(s => {
+        select.innerHTML += `<option value="${s}">${s}</option>`;
+    });
+}
+
+function updateSupervisorCard() {
+    const filtered = ACTOS_COND_DATA.filter(e => {
+        const matchSup = (state.supervisor === 'todos' || e.observador === state.supervisor);
+        const matchMes = (state.supervisorMes === 'todo' || e.mes === state.supervisorMes);
+        return matchSup && matchMes;
+    });
+    const actos = filtered.filter(e => e.tipo === 'acto').length;
+    const cond = filtered.filter(e => e.tipo === 'condicion').length;
+    document.getElementById('supActosCount').textContent = actos;
+    document.getElementById('supCondCount').textContent = cond;
+}
+
+async function forceRefreshData() {
+    try {
+        const timestamp = Date.now();
+        const actosUrl = ACTOS_URL + '&t=' + timestamp;
+        const vcpUrl = VCP_URL + '&t=' + timestamp;
+        
+        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '⏳ Actualizando...';
+        btn.disabled = true;
+        
+        const res1 = await fetch(actosUrl);
+        const rows1 = parseCSV(await res1.text());
+        
+        const res2 = await fetch(vcpUrl);
+        const rows2 = parseCSV(await res2.text());
+        
+        ACTOS_COND_DATA = rows1.map(row => {
+            const fecha = row[3] || '';
+            const tipoRaw = row[1] || '';
+            const sector = row[2] || '';
+            const observador = row[5] || '';
+            const desc = row[6] || '';
+            const cerradoRaw = row[23] || '';
+            
+            let tipo = 'otro';
+            if (tipoRaw.toLowerCase().includes('acto inseguro') || tipoRaw.toLowerCase().includes('comportamiento')) tipo = 'acto';
+            else if (tipoRaw.toLowerCase().includes('condición insegura') || tipoRaw.toLowerCase().includes('situacion')) tipo = 'condicion';
+            
+            let cerrado = false;
+            if (cerradoRaw.toLowerCase().includes('si')) cerrado = true;
+            else if (cerradoRaw.toLowerCase().includes('no')) cerrado = false;
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
+
+            let cat = CATEGORIES[0];
+            let maxS = 0;
+            if (desc) {
+                for (const c of CATEGORIES) {
+                    let s = 0;
+                    for (const k of c.keywords) { if (desc.toLowerCase().includes(k)) s++; }
+                    if (s > maxS) { maxS = s; cat = c; }
+                }
+            }
+            
+            return { fecha, tipo, sector: sector.toLowerCase(), observador: observador.trim(), descripcion: desc, cerrado, mes: meses[mesIdx], dia: partes[0], categoria: cat };
+        }).filter(r => r.fecha && r.observador);
+
+        VCP_DATA = rows2.map(row => {
+            const fecha = row[2] || '';
+            const observador = row[1] || '';
+            const sector = row[3] || '';
+            const descripcion = row[32] || '';
+            const comentarios = row[34] || '';
+            
+            const partes = fecha.split('/');
+            const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+            let mesIdx = parseInt(partes[1]) - 1;
+            if (isNaN(mesIdx)) mesIdx = 0;
+            
+            return { fecha, tipo: 'vcp', sector: sector.toLowerCase(), observador: observador.trim(), descripcion: descripcion, comentarios: comentarios, cerrado: true, mes: meses[mesIdx], dia: partes[0], personaObservada: observador };
+        }).filter(r => r.fecha && r.observador);
+
+        document.getElementById('totalActosCond').textContent = ACTOS_COND_DATA.length;
+        document.getElementById('totalVCP').textContent = VCP_DATA.length;
+        
+        populateSupervisors();
+        applyAllFilters();
+        
+        console.log('✅ Datos actualizados:', ACTOS_COND_DATA.length, 'Actos/Cond.', VCP_DATA.length, 'VCP');
+        alert('✅ Datos actualizados correctamente');
+        
+    } catch(e) {
+        console.error('❌ Error al actualizar:', e);
+        alert('Error al actualizar: ' + e.message);
+    } finally {
+        const btn = document.querySelector('button[onclick="forceRefreshData()"]');
+        btn.innerHTML = '🔄 Actualizar';
+        btn.disabled = false;
+    }
+}
+
+document.getElementById('monthFilter').addEventListener('change', (e) => { state.mes = e.target.value; applyGeneralFilters(); });
+document.getElementById('vcpMonthFilter').addEventListener('change', (e) => { state.vcpMes = e.target.value; applyVCPFilters(); });
+
+document.getElementById('supervisorSelect').addEventListener('change', (e) => { 
+    state.supervisor = e.target.value; 
+    updateSupervisorCard(); 
+});
+document.getElementById('supervisorMonthSelect').addEventListener('change', (e) => { 
+    state.supervisorMes = e.target.value; 
+    updateSupervisorCard(); 
+});
+
+window.onload = loadData;
 </script>
 </body>
 </html>
