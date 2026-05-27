@@ -126,6 +126,7 @@
             background: #fef2f2; border: 1px solid #fecaca;
             border-radius: 10px; padding: 10px; margin-bottom: 8px;
         }
+        .corona { font-size: 16px; position: absolute; top: -8px; right: -8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
         
         @media (max-width: 768px) { 
             .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } 
@@ -170,7 +171,7 @@
     </div>
 </div>
 
-<!-- 🚨 ALERTA -->
+<!-- 🚨 ALERTA EMERGENTE -->
 <div id="newReportAlert">
     <div class="alert-card">
         <div class="alert-icon">🚨</div>
@@ -258,7 +259,7 @@
         <div class="text-center mb-4"><h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧️</h2></div>
         <div class="grid md:grid-cols-2 gap-4 my-5">
             <div class="glass-card p-4 border-l-4 border-amber-600"><div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) 🎯</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div><div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div><div class="flex justify-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div><div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div></div>
-            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑‍🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
+            <div class="glass-card p-4"><p class="font-bold text-indigo-800">👥 FILTRO POR PERSONA VCP 🧑🏭</p><div class="grid grid-cols-2 gap-2 my-2"><select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs"><option value="todos">👥 Todas las personas</option></select><select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select></div><div class="grid grid-cols-2 gap-3"><div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 sup-card-hover cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()"><span class="text-[10px] text-emerald-700">📋 VCPs</span><div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div></div><div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200"><span class="text-[10px] text-amber-700">🕒 Último</span><div id="personLastVCP" class="text-sm font-black">-</div></div></div></div>
         </div>
         <div class="grid lg:grid-cols-[280px_1fr] gap-5">
             <aside><div class="glass-card p-4 border border-amber-200"><h3 class="font-black text-amber-800 mb-2">🎯 FILTROS VCP ⚙️</h3><label class="text-xs font-bold">📅 MES VCP</label><select id="vcpMonthFilter" class="w-full border rounded-lg p-2 text-xs mb-3"><option value="todo">📅 Todos los meses</option><option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option><option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option><option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option><option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option></select><label class="text-xs font-bold">🏭 SECTOR VCP</label><div id="vcpSectorButtons" class="flex flex-col gap-2 mb-3"><button onclick="setVCPSector('general', this)" class="btn-filter active">🏭 GENERAL</button><button onclick="setVCPSector('cantera', this)" class="btn-filter">⛏️ CANTERA</button><button onclick="setVCPSector('taller', this)" class="btn-filter">🔧 TALLER</button><button onclick="setVCPSector('obrador', this)" class="btn-filter">🏢 OBRADOR</button></div><label class="text-xs font-bold">⚡ ESTADO VCP</label><div id="vcpStatusButtons" class="flex flex-col gap-2"><button onclick="setStatusVCP('todos', this)" class="btn-filter active">📊 TODOS</button><button onclick="setStatusVCP('cerrados', this)" class="btn-filter">✅ CERRADOS</button><button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button></div>
@@ -343,28 +344,27 @@
             <button onclick="cerrarResumenGeneralModal()" class="text-white text-3xl hover:text-yellow-300 cursor-pointer">&times;</button>
         </div>
         <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-            <!-- FILTROS -->
+            <!-- FILTROS AUTOMÁTICOS -->
             <div class="flex gap-4 flex-wrap mb-6">
-                <select id="resumenSucursalFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm">
+                <select id="resumenSucursalFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
                     <option value="todas">🌍 TODAS LAS SUCURSALES</option>
                     <option value="MALAGUENO">🏔️ MALAGUEÑO</option>
                     <option value="BARKER">🌲 BARKER</option>
                     <option value="LAPAMPITA">🌾 LA PAMPITA</option>
                 </select>
-                <select id="resumenMesFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm">
+                <select id="resumenMesFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
                     <option value="todo">📅 TODOS LOS MESES</option>
                     <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
                     <option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option>
                     <option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option>
                     <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
                 </select>
-                <select id="resumenSectorFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm">
+                <select id="resumenSectorFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
                     <option value="todos">🏭 TODOS LOS SECTORES</option>
                     <option value="cantera">⛏️ Cantera</option>
                     <option value="taller">🔧 Taller</option>
                     <option value="obrador">🏢 Obrador</option>
                 </select>
-                <button onclick="actualizarResumenGeneral()" class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-purple-700">🔍 APLICAR FILTROS</button>
                 <button onclick="exportarResumenExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700">📎 EXPORTAR EXCEL</button>
             </div>
 
@@ -388,7 +388,7 @@
                 </div>
             </div>
 
-            <!-- RANKINGS -->
+            <!-- RANKINGS CON CORONITAS -->
             <div class="grid md:grid-cols-2 gap-6 mb-6">
                 <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-4 border-l-4 border-red-600">
                     <h3 class="text-xl font-black text-red-800 mb-4">⚠️ TOP 10 ACTOS INSEGUROS</h3>
@@ -621,10 +621,12 @@ function parseCSV(text) {
 // ==================== CARGA DE DATOS ====================
 async function cargarDatosSucursal(sucursal) {
     const config = SUCURSALES_CONFIG[sucursal], ts = Date.now();
-    let actosData = [], vcpData = [];
+    let actosData = [], vcpData = [], nuevosActos = 0, nuevosVCP = 0;
+    const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
+    
     if(config.actosUrl) {
         try {
-            const r1 = await fetch(config.actosUrl + '&t=' + ts), text = await r1.text(), rows = parseCSV(text), hoy = new Date();
+            const r1 = await fetch(config.actosUrl + '&t=' + ts), text = await r1.text(), rows = parseCSV(text);
             for(let i=0; i<rows.length; i++) {
                 const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
                 if(sucursal === 'MALAGUENO' && i >= 225) {
@@ -642,9 +644,28 @@ async function cargarDatosSucursal(sucursal) {
                 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
                 const cat = classifyData(desc, false);
                 actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
+                
+                // DETECTAR NUEVOS REPORTES DE HOY
+                if(fd.dia === diaHoy && fd.mes === mesHoy) {
+                    const idUnico = `${observador}|${desc}|${fecha}`;
+                    if(!reportesNotificadosActos.has(idUnico)) {
+                        reportesNotificadosActos.add(idUnico);
+                        const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+                        const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal};
+                        todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte);
+                        nuevosActos++;
+                        // Mostrar alerta emergente
+                        if(nuevosActos === 1) {
+                            setTimeout(() => {
+                                showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora);
+                            }, 1000);
+                        }
+                    }
+                }
             }
         } catch(e) { console.error(`❌ Error cargando actos de ${sucursal}:`, e); }
     }
+    
     if(config.showVCP && config.vcpUrl) {
         try {
             const r2 = await fetch(config.vcpUrl + '&t=' + ts), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
@@ -655,9 +676,28 @@ async function cargarDatosSucursal(sucursal) {
                 const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue;
                 const cat = classifyData(des, true);
                 vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
+                
+                // DETECTAR NUEVOS VCP DE HOY
+                if(fd.dia === diaHoy && fd.mes === mesHoy) {
+                    const idUnico = `${po}|${des}|${fr}`;
+                    if(!reportesNotificadosVCP.has(idUnico)) {
+                        reportesNotificadosVCP.add(idUnico);
+                        const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+                        const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal};
+                        todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP);
+                        nuevosVCP++;
+                        // Mostrar alerta emergente
+                        if(nuevosVCP === 1) {
+                            setTimeout(() => {
+                                showNewReportAlert(po, sec, des, 'VCP', hora);
+                            }, 1000);
+                        }
+                    }
+                }
             }
         } catch(e) { console.error(`❌ Error cargando VCP de ${sucursal}:`, e); }
     }
+    
     return { actos: actosData, vcp: vcpData };
 }
 
@@ -807,7 +847,18 @@ function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico()
 function clearVCPCauseFilter() { selectedVCPCausa=null; state.vcpCausa='todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 
 // ==================== ALERTAS ====================
-function showNewReportAlert(persona, sector, desc, tipo, hora) { if(!soundEnabled) return; const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); contentEl.innerHTML=`<div class="alert-person">👤 ${persona||'No identificado'}</div><div class="alert-sector">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc">${iconoTipo} <strong>${tituloTipo}</strong><br>${desc||'Sin descripción'}</div><div class="alert-time">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; alertEl.classList.add('show'); window.playAlarmSound(); let secs=15; document.getElementById('alertCountdown').textContent=secs; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); }
+function showNewReportAlert(persona, sector, desc, tipo, hora) { 
+    if(!soundEnabled) return; 
+    const alertEl=document.getElementById('newReportAlert'), contentEl=document.getElementById('alertContent'); 
+    if(!alertEl||!contentEl||alertEl.classList.contains('show')) return; 
+    const iconoTipo=tipo==='vcp'?'🎯':(tipo.toLowerCase().includes('acto')?'⚠️':'🏚️'), tituloTipo=tipo==='vcp'?'VCP':tipo.toUpperCase(); 
+    contentEl.innerHTML=`<div class="alert-person text-lg font-bold text-slate-800 mb-2">👤 ${persona||'No identificado'}</div><div class="alert-sector text-sm text-indigo-600 mb-3">🏭 ${sector||'Sector no especificado'}</div><div class="alert-desc bg-slate-50 p-3 rounded-lg mb-3">${iconoTipo} <strong>${tituloTipo}</strong><br><span class="text-slate-700">${desc||'Sin descripción'}</span></div><div class="alert-time text-xs text-slate-500">🕒 ${hora||new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'})}</div>`; 
+    alertEl.classList.add('show'); 
+    window.playAlarmSound(); 
+    let secs=15; document.getElementById('alertCountdown').textContent=secs; 
+    if(alertCountdownInterval) clearInterval(alertCountdownInterval); 
+    alertCountdownInterval=setInterval(()=>{ secs--; const el=document.getElementById('alertCountdown'); if(el) el.textContent=secs; if(secs<=0) dismissAlert(); },1000); 
+}
 function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval=null; } const alertEl=document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
 function toggleActosAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].actos; showDailyReportsModal('actos',alerts); }
 function toggleVCPAlerts() { const alerts=todayAlertsBySucursal[currentSucursal].vcp; showDailyReportsModal('vcp',alerts); }
@@ -816,7 +867,7 @@ function showDailyReportsModal(type, alerts) {
     const title=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY', colorClass=type==='actos'?'text-cyan-700':'text-purple-700';
     titleEl.textContent=title; titleEl.className=`font-black text-2xl ${colorClass}`;
     if(alerts.length===0) { contentEl.innerHTML='<div class="text-center py-8 text-slate-400"><p class="text-4xl mb-2">📭</p><p>Sin reportes hoy para esta sucursal</p></div>'; }
-    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
+    else { contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 ${type==='actos'?'border-cyan-500 bg-cyan-50':'border-purple-500 bg-purple-50'} p-4 rounded-lg mb-3"><div class="flex justify-between items-start mb-2"><span class="text-xs font-bold ${type==='actos'?'text-cyan-700':'text-purple-700'}">#${i+1}</span><span class="text-xs text-slate-500">🕒 ${a.hora}</span><span class="text-[10px] bg-slate-200 px-2 py-0.5 rounded">${a.sucursal}</span></div><div class="font-bold text-slate-800 mb-1">👤 ${a.persona||'No identificado'}</div><div class="text-sm text-indigo-600 font-semibold mb-2">🏭 ${a.sector||'No especificado'}</div><div class="text-sm text-slate-600 bg-white/50 p-2 rounded">${a.descripcion||'Sin descripción'}</div>${a.causas?`<div class="text-sm text-amber-700 bg-amber-100 p-2 rounded mt-1"><strong>🔍 Causas:</strong> ${a.causas}</div>`:''}<div class="text-xs text-slate-400 mt-2">${a.tipo||'Reporte'}</div></div>`).join(''); }
     modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
 }
 function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
@@ -993,16 +1044,18 @@ function renderTopRankings(datos) {
     const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 10);
     const containerActos = document.getElementById('topActosRanking');
     if(containerActos) {
-        containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => `
-            <div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}">
+        containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => {
+            const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
-                <div class="flex-1">
+                <div class="flex-1 relative">
                     <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
+                    ${corona}
                 </div>
                 <div class="text-lg font-black text-red-600">${count}</div>
-            </div>
-        `).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
+            </div>`;
+        }).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
     }
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
@@ -1010,16 +1063,18 @@ function renderTopRankings(datos) {
     const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 10);
     const containerConds = document.getElementById('topCondRanking');
     if(containerConds) {
-        containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => `
-            <div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706">
+        containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => {
+            const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
-                <div class="flex-1">
+                <div class="flex-1 relative">
                     <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
+                    ${corona}
                 </div>
                 <div class="text-lg font-black text-amber-600">${count}</div>
-            </div>
-        `).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
+            </div>`;
+        }).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
     }
 }
 function renderReincidencias(datos) {
