@@ -44,8 +44,10 @@
         <div style="font-size:64px;margin-bottom:16px;">🔐</div>
         <h2 class="text-xl font-black mb-2">ACCESO RESTRINGIDO</h2>
         <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
-        <input type="password" id="passwordInput" placeholder="Ingrese contraseña..." style="width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:16px;text-align:center;">
-        <button onclick="verifyPassword()" style="width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔓 DESBLOQUEAR PANEL</button>
+        <form onsubmit="event.preventDefault(); verifyPassword();">
+            <input type="password" id="passwordInput" placeholder="Ingrese contraseña..." style="width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:16px;text-align:center;" autocomplete="off">
+            <button type="submit" style="width:100%;padding:14px;background:linear-gradient(135deg,#f59e0b,#d97706);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔓 DESBLOQUEAR PANEL</button>
+        </form>
         <div id="passwordError" style="color:#ef4444;margin-top:12px;"></div>
     </div>
 </div>
@@ -80,9 +82,9 @@
 
     <div class="text-center mb-6">
         <div class="flex justify-center gap-3 mb-4">
-            <button onclick="cambiarSucursal('MALAGUENO')" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:#fef3c7;border-color:#f59e0b;">🏔️ MALAGUEÑO</button>
-            <button onclick="cambiarSucursal('BARKER')" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:white;border-color:#e2e8f0;">🌲 BARKER</button>
-            <button onclick="cambiarSucursal('LAPAMPITA')" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:white;border-color:#e2e8f0;">🌾 LA PAMPITA</button>
+            <button onclick="cambiarSucursal('MALAGUENO')" id="btnMalagueno" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:#fef3c7;border-color:#f59e0b;">🏔️ MALAGUEÑO</button>
+            <button onclick="cambiarSucursal('BARKER')" id="btnBarker" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:white;border-color:#e2e8f0;">🌲 BARKER</button>
+            <button onclick="cambiarSucursal('LAPAMPITA')" id="btnLaPampita" class="sucursal-btn px-6 py-2 rounded-full font-bold border-2" style="background:white;border-color:#e2e8f0;">🌾 LA PAMPITA</button>
         </div>
     </div>
 
@@ -90,12 +92,12 @@
         <div class="glass-card p-4 border-l-4" style="border-color:#06b6d4;">
             <div class="font-bold text-cyan-800">⚠️ ACTOS</div>
             <div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div>
-            <div class="text-xs">🎯 Objetivo: 66</div>
+            <div class="text-xs mt-1">🎯 Objetivo: 66</div>
         </div>
         <div class="glass-card p-4 border-l-4" style="border-color:#f59e0b;">
             <div class="font-bold text-amber-800">🏚️ CONDICIONES</div>
             <div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div>
-            <div class="text-xs">🎯 Objetivo: 44</div>
+            <div class="text-xs mt-1">🎯 Objetivo: 44</div>
         </div>
         <div class="glass-card p-4 border-l-4" style="border-color:#6366f1;">
             <div class="font-bold text-indigo-800">👔 SUPERVISOR</div>
@@ -125,10 +127,12 @@
         <div style="font-size:64px;margin-bottom:16px;">🔐</div>
         <h3 class="text-xl font-black text-purple-800 mb-2">PANEL EJECUTIVO</h3>
         <p class="text-sm text-slate-500 mb-4">Contraseña de administrador</p>
-        <input type="password" id="panelPasswordInput" placeholder="Contraseña..." style="width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:16px;text-align:center;">
-        <button onclick="verificarPanelPassword()" style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔓 ACCEDER</button>
+        <form onsubmit="event.preventDefault(); verificarPanelPassword();">
+            <input type="password" id="panelPasswordInput" placeholder="Contraseña..." style="width:100%;padding:14px;border:2px solid #e2e8f0;border-radius:12px;font-size:16px;margin-bottom:16px;text-align:center;" autocomplete="off">
+            <button type="submit" style="width:100%;padding:14px;background:linear-gradient(135deg,#7c3aed,#6d28d9);color:white;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;">🔓 ACCEDER</button>
+        </form>
         <div id="panelPasswordError" style="color:#ef4444;margin-top:12px;"></div>
-        <button onclick="cerrarPanelPasswordModal()" class="mt-3 text-xs text-slate-400">✕ Cancelar</button>
+        <button onclick="cerrarPanelPasswordModal()" class="mt-3 text-xs text-slate-400 hover:text-slate-600">✕ Cancelar</button>
     </div>
 </div>
 
@@ -372,12 +376,18 @@ function forceRefreshData() { if(isUnlocked) loadData(); }
 
 function cambiarSucursal(suc) {
     currentSucursal = suc;
-    document.querySelectorAll('.sucursal-btn').forEach(btn => {
-        btn.style.background = 'white';
-        btn.style.borderColor = '#e2e8f0';
+    ['btnMalagueno', 'btnBarker', 'btnLaPampita'].forEach(id => {
+        const btn = document.getElementById(id);
+        if(btn) {
+            btn.style.background = 'white';
+            btn.style.borderColor = '#e2e8f0';
+        }
     });
-    event.target.style.background = '#fef3c7';
-    event.target.style.borderColor = '#f59e0b';
+    const activeBtn = document.getElementById('btn' + suc.charAt(0).toUpperCase() + suc.slice(1).toLowerCase());
+    if(activeBtn) {
+        activeBtn.style.background = '#fef3c7';
+        activeBtn.style.borderColor = '#f59e0b';
+    }
     if(isUnlocked) loadData();
 }
 
@@ -386,11 +396,14 @@ function abrirPanelEjecutivo() {
     if(!isUnlocked) return;
     document.getElementById('panelPasswordModal').classList.remove('hidden-section');
     document.getElementById('panelPasswordModal').style.display = 'flex';
+    setTimeout(() => document.getElementById('panelPasswordInput').focus(), 100);
 }
 
 function cerrarPanelPasswordModal() {
     document.getElementById('panelPasswordModal').classList.add('hidden-section');
     document.getElementById('panelPasswordModal').style.display = 'none';
+    document.getElementById('panelPasswordError').textContent = '';
+    document.getElementById('panelPasswordInput').value = '';
 }
 
 function verificarPanelPassword() {
@@ -636,10 +649,6 @@ document.addEventListener('keydown', (e) => {
         cerrarPanelPasswordModal();
         cerrarPanelEjecutivo();
     }
-});
-
-document.getElementById('panelPasswordInput')?.addEventListener('keypress', (e) => {
-    if(e.key === 'Enter') verificarPanelPassword();
 });
 
 window.addEventListener('load', () => {
