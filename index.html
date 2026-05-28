@@ -544,7 +544,7 @@ function playErrorSound() {
 }
 function toggleSound() { 
     soundEnabled=!soundEnabled; 
-    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; 
+    document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; 
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
@@ -575,7 +575,7 @@ function showWelcomeScreen() {
 function enterMainPanel() { 
     clearInterval(autoCountdownTimer); clearInterval(progressInterval); 
     const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; 
-    setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); 
+    setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();}, 60000); },400); // ✅ Cambiado de 15000 a 60000 ms (1 minuto)
 }
 function logout() { localStorage.clear(); location.reload(); }
 
@@ -724,7 +724,7 @@ async function cargarTodosDatosParaResumen() {
     }
 }
 
-function checkNewReports() { if(!isUnlocked || isModalOpen) return; loadData(); checkAndResetDailyCounters(); }
+function checkNewReports() { if(!isUnlocked || isModalOpen) loadData(); checkAndResetDailyCounters(); }
 function forceRefreshData() { if(isUnlocked) loadData(); }
 
 function checkAndResetDailyCounters() { 
@@ -931,7 +931,7 @@ function abrirModalPersonaVCP() {
     if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
     let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
-    html+=`</tbody></table></div>`;
+    html+=`</tbody></tr></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html;
     const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
 }
@@ -1124,7 +1124,7 @@ function renderTablaResumen(datos) {
             <td class="p-2">🏭 ${d.sector || '-'}</td>
             <td class="p-2">${d.observador ? '👔' : '👤'} ${d.observador || d.personaObservada || '-'}</td>
             <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>
-        </tr>`;
+        </table>`;
     }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
 }
 function abrirModalDesdeResumen(dataJson) {
