@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minerar 2026 - Panel de Seguridad | Modo Claro</title>
+    <title>Minerar 2026 - Panel de Seguridad | Resumen Ejecutivo</title>
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,9 +14,6 @@
         .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
         .glass-card:hover { transform: translateY(-3px); border-color: #fbbf24; box-shadow: 0 8px 25px rgba(251, 191, 36, 0.15); background: rgba(255, 255, 255, 0.98); }
         .header-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
-        .kpi-cyan { border-left: 5px solid #06b6d4; background: linear-gradient(135deg, #f0fdfa, #ecfdf5); }
-        .kpi-amber { border-left: 5px solid #f59e0b; background: linear-gradient(135deg, #fffbeb, #fef3c7); }
-        .kpi-supervisor { border-left: 5px solid #6366f1; background: linear-gradient(135deg, #eef2ff, #e0e7ff); }
         .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left; border: 1px solid #e2e8f0; background: white; color: #475569; }
         .btn-filter.active { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border-color: #2563eb; }
         .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
@@ -30,15 +27,20 @@
         .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
         .status-warn { background: #fef3c7; color: #d97706; border: 1px solid #fed7aa; }
         .status-low { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-        .table-scroll { max-height: 280px; overflow-y: auto; border-radius: 12px; }
+        .table-scroll { max-height: 400px; overflow-y: auto; border-radius: 12px; }
         table thead th { position: sticky; top: 0; background: #f8fafc; z-index: 10; color: #1e293b; font-weight: 700; }
         tr { cursor: pointer; transition: background 0.2s; }
         tr:hover { background-color: #f1f5f9; }
         tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f59e0b; }
         tr.row-hoy:hover { background-color: #fde68a !important; }
-        @keyframes modalBounce { 0% { transform: scale(0.7) translateY(50px); opacity: 0; } 40% { transform: scale(1.02) translateY(-10px); opacity: 1; } 70% { transform: scale(0.98) translateY(5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
+        @keyframes modalBounce { 
+            0% { transform: scale(0.3) translateY(-100px); opacity: 0; }
+            50% { transform: scale(1.05) translateY(10px); opacity: 1; }
+            70% { transform: scale(0.95) translateY(-5px); }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
         .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .chart-container { position: relative; height: 300px; width: 100%; margin-top: 16px; }
+        .chart-container { position: relative; height: 350px; width: 100%; margin-top: 16px; }
         @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
         @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #22c55e; } 50% { opacity: 0.5; box-shadow: 0 0 15px #22c55e; } }
         .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; box-shadow: 0 0 8px #ef4444; display: inline-block; }
@@ -74,7 +76,7 @@
         @keyframes sirenPulse { 0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px #f59e0b); } 50% { transform: scale(1.15); filter: drop-shadow(0 0 20px #ef4444); } }
         .alert-dismiss { margin-top: 16px; padding: 12px 24px; background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; }
         
-        /* ==================== RESUMEN GENERAL ==================== */
+        /* ==================== RESUMEN EJECUTIVO ==================== */
         .resumen-btn {
             background: linear-gradient(135deg, #7c3aed, #6d28d9);
             color: white;
@@ -95,7 +97,9 @@
             box-shadow: 0 6px 20px rgba(124,58,237,0.5);
         }
         .badge-sucursal {
-            display: inline-block;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             padding: 2px 8px;
             border-radius: 20px;
             font-size: 9px;
@@ -109,7 +113,9 @@
         .zr-ranking-item {
             display: flex; align-items: center; gap: 10px; padding: 8px 12px;
             background: white; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid;
+            transition: all 0.2s ease; cursor: pointer;
         }
+        .zr-ranking-item:hover { transform: translateX(8px); background: #fffbeb; }
         .zr-ranking-1 { border-color: #fbbf24; background: #fffbeb; }
         .zr-ranking-2 { border-color: #e5e7eb; background: #f9fafb; }
         .zr-ranking-3 { border-color: #fcd34d; background: #fffbeb; }
@@ -125,15 +131,45 @@
         .zr-reincidencia {
             background: #fef2f2; border: 1px solid #fecaca;
             border-radius: 10px; padding: 10px; margin-bottom: 8px;
+            transition: all 0.2s ease; cursor: pointer;
         }
-        .corona { font-size: 16px; position: absolute; top: -8px; right: -8px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2)); }
+        .zr-reincidencia:hover { transform: translateX(5px); background: #fee2e2; }
+        @keyframes crownFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); filter: drop-shadow(0 0 5px #fbbf24); }
+            50% { transform: translateY(-5px) rotate(5deg); filter: drop-shadow(0 0 15px #f59e0b); }
+        }
+        .crown-animated {
+            display: inline-block;
+            animation: crownFloat 1.5s ease-in-out infinite;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        .logo-sucursal-sm {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+            border-radius: 2px;
+        }
+        .kpi-card-clickable {
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        .kpi-card-clickable.active {
+            transform: scale(1.02);
+            box-shadow: 0 0 0 3px #fbbf24, 0 10px 25px -5px rgba(0,0,0,0.1);
+            border-color: #fbbf24;
+        }
+        .kpi-card-clickable:hover { transform: translateY(-5px); }
+        .chart-clickable {
+            cursor: pointer;
+        }
         
         @media (max-width: 768px) { 
             .header-container { flex-direction: column; gap: 12px; text-align: center; padding: 14px 16px; } 
             .header-container h1 { font-size: 18px; } 
             .glass-card { padding: 16px 14px; } 
             .table-scroll { max-height: 300px; } 
-            .chart-container { height: 220px; } 
+            .chart-container { height: 250px; } 
             body { padding: 10px; font-size: 13px; }
         }
     </style>
@@ -182,7 +218,7 @@
     </div>
 </div>
 
-<!-- CONTENIDO PRINCIPAL -->
+<!-- CONTENIDO PRINCIPAL (PANEL PRINCIPAL) -->
 <div id="mainContent" class="hidden-section">
 <div class="max-w-7xl mx-auto">
     <div class="header-container flex flex-wrap justify-between items-center">
@@ -203,8 +239,7 @@
             </div>
             <button onclick="forceRefreshData()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-5 py-2 rounded-xl text-sm font-bold shadow-md transition-all">⟳ ACTUALIZAR 🔄</button>
             <button id="soundToggleBtn" onclick="toggleSound()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2"><span id="soundIcon">🔊</span> <span id="soundText">SONIDO ON</span></button>
-            <!-- 🔴 BOTÓN RESUMEN GENERAL -->
-            <button onclick="abrirResumenGeneral()" class="resumen-btn">📊 RESUMEN GENERAL</button>
+            <button onclick="abrirResumenEjecutivo()" class="resumen-btn">📊 RESUMEN EJECUTIVO</button>
             <button onclick="logout()" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
                 <span>🚪</span> <span class="hidden md:inline">SALIR</span>
             </button>
@@ -281,6 +316,158 @@
 </div>
 </div>
 
+<!-- ==================== 📊 RESUMEN EJECUTIVO (PÁGINA INDEPENDIENTE) ==================== -->
+<div id="resumenEjecutivoPage" class="hidden-section fixed inset-0 bg-gradient-to-br from-purple-50 to-indigo-100 z-[20000] overflow-y-auto" style="display:none;">
+    <div class="max-w-7xl mx-auto p-6">
+        <!-- Header -->
+        <div class="flex justify-between items-center mb-6 bg-white rounded-2xl shadow-lg p-4">
+            <div class="flex items-center gap-3">
+                <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" class="w-12 h-12 object-contain">
+                <div>
+                    <h1 class="text-2xl font-black bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent">RESUMEN EJECUTIVO</h1>
+                    <p class="text-xs text-slate-500">Dashboard gerencial · Datos consolidados 2026 · Haz clic en cualquier elemento para ver detalles</p>
+                </div>
+            </div>
+            <button onclick="cerrarResumenEjecutivo()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 shadow-md">
+                ← VOLVER AL PANEL PRINCIPAL
+            </button>
+        </div>
+
+        <!-- FILTROS -->
+        <div class="bg-white rounded-2xl shadow-md p-4 mb-6">
+            <div class="flex flex-wrap gap-4 items-end">
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">🏢 SUCURSAL</label>
+                    <select id="ejecutivoSucursal" class="border-2 border-purple-200 rounded-lg p-2 text-sm bg-white" onchange="actualizarResumenEjecutivo()">
+                        <option value="todas">TODAS LAS SUCURSALES</option>
+                        <option value="MALAGUENO">MALAGUEÑO</option>
+                        <option value="BARKER">BARKER</option>
+                        <option value="LAPAMPITA">LA PAMPITA</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">📅 MES</label>
+                    <select id="ejecutivoMes" class="border-2 border-purple-200 rounded-lg p-2 text-sm bg-white" onchange="actualizarResumenEjecutivo()">
+                        <option value="todo">TODOS LOS MESES</option>
+                        <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
+                        <option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option>
+                        <option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option>
+                        <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-500 block mb-1">🏭 SECTOR</label>
+                    <select id="ejecutivoSector" class="border-2 border-purple-200 rounded-lg p-2 text-sm bg-white" onchange="actualizarResumenEjecutivo()">
+                        <option value="todos">TODOS LOS SECTORES</option>
+                        <option value="cantera">Cantera</option>
+                        <option value="taller">Taller</option>
+                        <option value="obrador">Obrador</option>
+                    </select>
+                </div>
+                <button onclick="exportarResumenEjecutivoExcel()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-md transition-all">📎 EXPORTAR EXCEL</button>
+            </div>
+        </div>
+
+        <!-- KPIs INTERACTIVOS -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+            <div id="kpiActosCard" class="glass-card p-5 text-center border-l-4 border-cyan-500 kpi-card-clickable" onclick="abrirModalPorTipo('acto')">
+                <div class="text-4xl font-black text-cyan-700" id="ejecTotalActos">0</div>
+                <div class="text-sm font-bold text-slate-600 mt-1">⚠️ ACTOS INSEGUROS</div>
+                <div class="text-[10px] text-cyan-500 mt-1">👆 Haz clic para ver detalles</div>
+            </div>
+            <div id="kpiCondCard" class="glass-card p-5 text-center border-l-4 border-amber-500 kpi-card-clickable" onclick="abrirModalPorTipo('condicion')">
+                <div class="text-4xl font-black text-amber-700" id="ejecTotalCondiciones">0</div>
+                <div class="text-sm font-bold text-slate-600 mt-1">🏚️ CONDICIONES</div>
+                <div class="text-[10px] text-amber-500 mt-1">👆 Haz clic para ver detalles</div>
+            </div>
+            <div id="kpiVCPCard" class="glass-card p-5 text-center border-l-4 border-emerald-500 kpi-card-clickable" onclick="abrirModalPorTipo('vcp')">
+                <div class="text-4xl font-black text-emerald-700" id="ejecTotalVCP">0</div>
+                <div class="text-sm font-bold text-slate-600 mt-1">🎯 VCP</div>
+                <div class="text-[10px] text-emerald-500 mt-1">👆 Haz clic para ver detalles</div>
+            </div>
+            <div id="kpiTotalCard" class="glass-card p-5 text-center border-l-4 border-purple-500 bg-gradient-to-r from-purple-50 to-indigo-50 kpi-card-clickable" onclick="abrirModalPorTipo('todos')">
+                <div class="text-4xl font-black text-purple-700" id="ejecTotalGeneral">0</div>
+                <div class="text-sm font-bold text-slate-600 mt-1">📊 TOTAL GENERAL</div>
+                <div class="text-[10px] text-purple-500 mt-1">👆 Haz clic para ver todo</div>
+            </div>
+        </div>
+
+        <!-- GRÁFICOS DE EVOLUCIÓN (AÑO COMPLETO) -->
+        <div class="grid md:grid-cols-2 gap-6 mb-6">
+            <div class="glass-card p-5">
+                <h3 class="text-lg font-black text-purple-800 mb-3">📈 EVOLUCIÓN MENSUAL · TODAS LAS SUCURSALES</h3>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="ejecutivoEvolucionSucursalesChart" class="chart-clickable"></canvas>
+                </div>
+                <p class="text-[10px] text-slate-400 text-center mt-2">⬅️ ➡️ Haz clic en cualquier punto del gráfico para ver los detalles de ese mes/sucursal</p>
+            </div>
+            <div class="glass-card p-5">
+                <h3 class="text-lg font-black text-purple-800 mb-3">📈 EVOLUCIÓN MENSUAL · VCP POR SUCURSAL</h3>
+                <div class="chart-container" style="height: 350px;">
+                    <canvas id="ejecutivoVCPSucursalesChart" class="chart-clickable"></canvas>
+                </div>
+                <p class="text-[10px] text-slate-400 text-center mt-2">⬅️ ➡️ Haz clic en cualquier punto del gráfico para ver los detalles de ese mes/sucursal</p>
+            </div>
+        </div>
+
+        <!-- RANKINGS INTERACTIVOS -->
+        <div class="grid lg:grid-cols-3 gap-6 mb-6">
+            <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 shadow-lg border-l-4 border-red-600">
+                <h3 class="text-xl font-black text-red-800 mb-4 flex items-center gap-2">⚠️ TOP 5 ACTOS INSEGUROS <span class="text-xs bg-red-200 px-2 py-1 rounded-full">Haz clic para ver detalles</span></h3>
+                <div id="ejecTopActos" class="space-y-2"></div>
+            </div>
+            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-4 shadow-lg border-l-4 border-amber-600">
+                <h3 class="text-xl font-black text-amber-800 mb-4 flex items-center gap-2">🏚️ TOP 5 CONDICIONES <span class="text-xs bg-amber-200 px-2 py-1 rounded-full">Haz clic para ver detalles</span></h3>
+                <div id="ejecTopCond" class="space-y-2"></div>
+            </div>
+            <div class="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl p-4 shadow-lg border-l-4 border-purple-600">
+                <h3 class="text-xl font-black text-purple-800 mb-4 flex items-center gap-2">👑 TOP 10 RESPONSABLES <span class="text-xs bg-purple-200 px-2 py-1 rounded-full">Haz clic para ver detalles</span></h3>
+                <div id="ejecTopResponsables" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
+                <p class="text-[10px] text-purple-500 text-center mt-2">👑 Corona animada = #1 en reportes</p>
+            </div>
+        </div>
+
+        <!-- REINCIDENCIAS INTERACTIVAS -->
+        <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-5 shadow-lg border-l-4 border-yellow-600 mb-6">
+            <h3 class="text-xl font-black text-yellow-800 mb-4">🔄 REINCIDENCIAS DETECTADAS <span class="text-xs bg-yellow-200 px-2 py-1 rounded-full ml-2">Haz clic para ver detalles</span></h3>
+            <div id="ejecReincidencias" class="grid md:grid-cols-2 gap-3 max-h-64 overflow-y-auto"></div>
+        </div>
+
+        <!-- TABLA DE DETALLE COMPLETO (DEBAJO DE LOS GRÁFICOS) -->
+        <div class="glass-card p-5">
+            <div class="flex justify-between items-center mb-4 flex-wrap gap-2">
+                <h3 class="text-xl font-black text-purple-800">📋 DETALLE COMPLETO DE REPORTES</h3>
+                <div class="flex gap-2">
+                    <span id="filtroActivoBadge" class="hidden text-xs bg-purple-100 text-purple-700 px-3 py-1 rounded-full">Filtro activo: <span id="filtroActivoTexto"></span> <button onclick="limpiarFiltrosEjecutivo()" class="ml-2 hover:text-purple-900">✕</button></span>
+                    <button onclick="limpiarFiltrosEjecutivo()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all">🗑️ Limpiar filtros</button>
+                </div>
+            </div>
+            <div class="table-scroll max-h-96">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-purple-100 sticky top-0">
+                        <tr><th class="p-3">🏢 Sucursal</th><th>📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th>🔒 Estado</th></tr>
+                    </thead>
+                    <tbody id="ejecTablaBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE DETALLE CON EFECTO REBOTE -->
+<div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000]" style="display:none;">
+    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-4xl max-h-[85vh] overflow-hidden shadow-2xl border-4 border-purple-500">
+        <div class="flex justify-between items-center mb-4 pb-3 border-b border-purple-200">
+            <h2 id="detailModalTitle" class="text-2xl font-black text-purple-700">📋 Detalle</h2>
+            <button onclick="cerrarDetailModal()" class="text-3xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button>
+        </div>
+        <div id="detailModalContent" class="overflow-y-auto max-h-[calc(85vh-120px)]"></div>
+        <div class="mt-5 flex justify-end">
+            <button onclick="cerrarDetailModal()" class="bg-purple-600 hover:bg-purple-700 text-white px-6 py-2 rounded-xl font-bold transition-all">Cerrar</button>
+        </div>
+    </div>
+</div>
+
 <!-- MODALES EXISTENTES -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50" style="display:none;">
     <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border border-amber-200">
@@ -318,143 +505,27 @@
     </div>
 </div>
 
-<!-- 🔐 MODAL CONTRASEÑA RESUMEN GENERAL -->
-<div id="resumenPasswordModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10001]" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-2xl border-4 border-purple-600">
-        <div class="text-center">
-            <div class="text-5xl mb-4">🔐</div>
-            <h3 class="text-xl font-black text-purple-800 mb-2">ACCESO RESUMEN GENERAL</h3>
-            <p class="text-sm text-slate-500 mb-4">Ingrese la contraseña de administrador</p>
-            <div class="relative">
-                <input type="password" id="resumenPasswordInput" class="password-input" placeholder="Contraseña..." autocomplete="off">
-                <button type="button" onclick="toggleResumenPasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2" style="font-size:20px;">👁️</button>
-            </div>
-            <button onclick="verificarResumenPassword()" class="password-btn w-full mt-3 bg-purple-600 hover:bg-purple-700">🔓 ACCEDER</button>
-            <div id="resumenPasswordError" class="password-error"></div>
-            <button onclick="cerrarResumenPasswordModal()" class="mt-3 text-xs text-slate-400 hover:text-slate-600">✕ Cancelar</button>
-        </div>
-    </div>
-</div>
-
-<!-- 📊 MODAL RESUMEN GENERAL -->
-<div id="resumenGeneralModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[10000]" style="display:none;">
-    <div class="modal-bounce bg-white rounded-2xl w-[95%] max-w-6xl max-h-[90vh] overflow-hidden shadow-2xl border-4 border-purple-600">
-        <div class="bg-gradient-to-r from-purple-700 to-indigo-800 p-4 flex justify-between items-center">
-            <h2 class="text-2xl font-black text-white">📊 RESUMEN GENERAL 📈 <span class="text-sm bg-yellow-400 text-purple-900 px-3 py-1 rounded-full ml-2">VISTA EJECUTIVA</span></h2>
-            <button onclick="cerrarResumenGeneralModal()" class="text-white text-3xl hover:text-yellow-300 cursor-pointer">&times;</button>
-        </div>
-        <div class="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
-            <!-- FILTROS AUTOMÁTICOS -->
-            <div class="flex gap-4 flex-wrap mb-6">
-                <select id="resumenSucursalFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
-                    <option value="todas">🌍 TODAS LAS SUCURSALES</option>
-                    <option value="MALAGUENO">🏔️ MALAGUEÑO</option>
-                    <option value="BARKER">🌲 BARKER</option>
-                    <option value="LAPAMPITA">🌾 LA PAMPITA</option>
-                </select>
-                <select id="resumenMesFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
-                    <option value="todo">📅 TODOS LOS MESES</option>
-                    <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
-                    <option value="abril">Abril</option><option value="mayo">Mayo</option><option value="junio">Junio</option>
-                    <option value="julio">Julio</option><option value="agosto">Agosto</option><option value="septiembre">Septiembre</option>
-                    <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
-                </select>
-                <select id="resumenSectorFiltro" class="border-2 border-purple-200 rounded-lg p-2 text-sm" onchange="actualizarResumenGeneral()">
-                    <option value="todos">🏭 TODOS LOS SECTORES</option>
-                    <option value="cantera">⛏️ Cantera</option>
-                    <option value="taller">🔧 Taller</option>
-                    <option value="obrador">🏢 Obrador</option>
-                </select>
-                <button onclick="exportarResumenExcel()" class="bg-emerald-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700">📎 EXPORTAR EXCEL</button>
-            </div>
-
-            <!-- KPIs RESUMEN -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="glass-card p-4 text-center border-l-4 border-cyan-500">
-                    <div class="text-3xl font-black text-cyan-700" id="resumenTotalActos">0</div>
-                    <div class="text-xs text-slate-500">⚠️ Total Actos</div>
-                </div>
-                <div class="glass-card p-4 text-center border-l-4 border-amber-500">
-                    <div class="text-3xl font-black text-amber-700" id="resumenTotalCondiciones">0</div>
-                    <div class="text-xs text-slate-500">🏚️ Total Condiciones</div>
-                </div>
-                <div class="glass-card p-4 text-center border-l-4 border-emerald-500">
-                    <div class="text-3xl font-black text-emerald-700" id="resumenTotalVCP">0</div>
-                    <div class="text-xs text-slate-500">🎯 Total VCP</div>
-                </div>
-                <div class="glass-card p-4 text-center border-l-4 border-purple-500">
-                    <div class="text-3xl font-black text-purple-700" id="resumenTotalGeneral">0</div>
-                    <div class="text-xs text-slate-500">📊 Total General</div>
-                </div>
-            </div>
-
-            <!-- RANKINGS CON CORONITAS -->
-            <div class="grid md:grid-cols-2 gap-6 mb-6">
-                <div class="bg-gradient-to-r from-red-50 to-red-100 rounded-xl p-4 border-l-4 border-red-600">
-                    <h3 class="text-xl font-black text-red-800 mb-4">⚠️ TOP 10 ACTOS INSEGUROS</h3>
-                    <div id="topActosRanking" class="space-y-2"></div>
-                </div>
-                <div class="bg-gradient-to-r from-amber-50 to-amber-100 rounded-xl p-4 border-l-4 border-amber-600">
-                    <h3 class="text-xl font-black text-amber-800 mb-4">🏚️ TOP 10 CONDICIONES INSEGURAS</h3>
-                    <div id="topCondRanking" class="space-y-2"></div>
-                </div>
-            </div>
-
-            <!-- REINCIDENCIAS -->
-            <div class="bg-gradient-to-r from-yellow-50 to-yellow-100 rounded-xl p-4 border-l-4 border-yellow-600 mb-6">
-                <h3 class="text-xl font-black text-yellow-800 mb-4">🔄 REINCIDENCIAS (misma persona + misma categoría)</h3>
-                <div id="reincidenciasList" class="space-y-2 max-h-64 overflow-y-auto"></div>
-            </div>
-
-            <!-- GRÁFICO TOP RESPONSABLES -->
-            <div class="glass-card p-4 mb-6">
-                <h3 class="text-lg font-black text-purple-800 mb-4">📊 TOP 10 RESPONSABLES</h3>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="topResponsablesChart"></canvas>
-                </div>
-            </div>
-
-            <!-- GRÁFICO EVOLUCIÓN POR SUCURSAL -->
-            <div class="glass-card p-4 mb-6">
-                <h3 class="text-lg font-black text-purple-800 mb-4">📈 EVOLUCIÓN MENSUAL POR SUCURSAL</h3>
-                <div class="chart-container" style="height: 350px;">
-                    <canvas id="evolucionSucursalChart"></canvas>
-                </div>
-            </div>
-
-            <!-- TABLA DETALLE -->
-            <div class="glass-card p-4">
-                <h3 class="text-lg font-black text-purple-800 mb-4">📋 DETALLE COMPLETO</h3>
-                <div class="table-scroll max-h-96">
-                    <table class="w-full text-left text-xs">
-                        <thead class="bg-purple-100 sticky top-0">
-                            <tr><th class="p-2">🏭 Sucursal</th><th>📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th>👔 Observador</th><th>🔒 Estado</th></tr>
-                        </thead>
-                        <tbody id="resumenTablaBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
 // ==================== CONFIGURACIÓN ====================
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
-const PASSWORD_RESUMEN = "ADMINABC";
 let isUnlocked = false, currentUser = null, soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedChartMonth = null, selectedCausa = null, selectedVCPCausa = null;
 let ACTOS_URL, VCP_URL, currentMapping, currentVcpMapping, currentObjetivos, currentShowVCP;
 
-// Datos multi-sucursal para Resumen General
 let ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
 let ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+let ejecutivoChartSucursales = null, ejecutivoChartVCPSucursales = null;
+let currentFiltroTipo = 'todos';
+let currentSucursalFiltro = 'todas';
+let currentMesFiltro = 'todo';
+let currentSectorFiltro = 'todos';
 
 const SUCURSALES_CONFIG = {
     MALAGUENO: { 
         actosUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vQ9x9FZ7NxlrKptpjawzkC37qWl28IF1qtLg7dm9S53LdQFpFpbUcFSQ4piFx1FebXHFirdp95krudB/pub?gid=942251352&single=true&output=csv', 
         vcpUrl:'https://docs.google.com/spreadsheets/d/e/2PACX-1vTP-Wwwf1uA1YixCmwQ4ioFPjhXcerUmTkRyKkrTVeztiUN530sI1zYZ6KGM8eNHWjD0Ht6fRZvBrUl/pub?gid=1211117740&single=true&output=csv', 
         mapping:{fecha:3,tipo:1,sector:2,observador:5,descripcion:6,cerrado:23,causa:null}, 
+        vcpMapping:{fecha:2,persona:1,sector:4,descripcion:32,comentarios:28},
         objetivos:{actos:66,cond:44}, 
         showVCP:true 
     },
@@ -478,7 +549,6 @@ const SUCURSALES_CONFIG = {
 const OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
-let resumenChart1 = null, resumenChart2 = null;
 let state = {mes:'todo',sector:'general',estado:'todos',causaRaiz:'todas',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos',vcpCausa:'todas',supervisor:'todos',supervisorMes:'todo'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
 let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
@@ -486,7 +556,7 @@ let currentDateKey = new Date().toDateString();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let alertCountdownInterval = null, autoCountdownTimer = null, progressInterval = null;
 
-// ==================== FUNCIONES GLOBALES NECESARIAS ====================
+// ==================== FUNCIONES GLOBALES ====================
 window.getTodayKey = function() { return new Date().toDateString(); };
 window.getTodayISO = function() { 
     const hoy = new Date(); 
@@ -548,7 +618,7 @@ function toggleSound() {
     document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; 
 }
 
-// ==================== LOGIN PRINCIPAL ====================
+// ==================== LOGIN ====================
 function togglePasswordVisibility() { 
     window.initAudioContext(); 
     const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); 
@@ -575,11 +645,11 @@ function showWelcomeScreen() {
 function enterMainPanel() { 
     clearInterval(autoCountdownTimer); clearInterval(progressInterval); 
     const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; 
-    setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();}, 60000); },400); // ✅ Cambiado de 15000 a 60000 ms (1 minuto)
+    setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); setInterval(()=>{if(!isModalOpen) checkNewReports();},15000); },400); 
 }
 function logout() { localStorage.clear(); location.reload(); }
 
-// ==================== FUNCIONES UTILITARIAS ====================
+// ==================== UTILITARIAS ====================
 function parseFecha(f) {
     if(!f) return {dia:'',mes:'',valido:false};
     let s = f.toString().split(' ')[0].trim(), p = s.split('/');
@@ -645,7 +715,6 @@ async function cargarDatosSucursal(sucursal) {
                 const cat = classifyData(desc, false);
                 actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
                 
-                // DETECTAR NUEVOS REPORTES DE HOY
                 if(fd.dia === diaHoy && fd.mes === mesHoy) {
                     const idUnico = `${observador}|${desc}|${fecha}`;
                     if(!reportesNotificadosActos.has(idUnico)) {
@@ -654,11 +723,8 @@ async function cargarDatosSucursal(sucursal) {
                         const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal};
                         todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte);
                         nuevosActos++;
-                        // Mostrar alerta emergente
                         if(nuevosActos === 1) {
-                            setTimeout(() => {
-                                showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora);
-                            }, 1000);
+                            setTimeout(() => { showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora); }, 1000);
                         }
                     }
                 }
@@ -671,13 +737,23 @@ async function cargarDatosSucursal(sucursal) {
             const r2 = await fetch(config.vcpUrl + '&t=' + ts), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
             for(let i=0; i<rows2.length; i++) {
                 const row = rows2[i]; let fr, po, sec, des, com;
-                if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; }
-                else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; }
+                if(vm) { 
+                    fr = row[vm.fecha] || ''; 
+                    po = (row[vm.persona] || '').trim(); 
+                    sec = row[vm.sector] || ''; 
+                    des = row[vm.descripcion] || ''; 
+                    com = row[vm.comentarios] || ''; 
+                } else { 
+                    fr = row[2] || ''; 
+                    po = (row[1] || '').trim(); 
+                    sec = (row[3] || '').toLowerCase().trim() || 'general'; 
+                    des = row[32] || ''; 
+                    com = row[28] || ''; 
+                }
                 const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue;
                 const cat = classifyData(des, true);
                 vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal });
                 
-                // DETECTAR NUEVOS VCP DE HOY
                 if(fd.dia === diaHoy && fd.mes === mesHoy) {
                     const idUnico = `${po}|${des}|${fr}`;
                     if(!reportesNotificadosVCP.has(idUnico)) {
@@ -686,11 +762,8 @@ async function cargarDatosSucursal(sucursal) {
                         const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal};
                         todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP);
                         nuevosVCP++;
-                        // Mostrar alerta emergente
                         if(nuevosVCP === 1) {
-                            setTimeout(() => {
-                                showNewReportAlert(po, sec, des, 'VCP', hora);
-                            }, 1000);
+                            setTimeout(() => { showNewReportAlert(po, sec, des, 'VCP', hora); }, 1000);
                         }
                     }
                 }
@@ -724,7 +797,7 @@ async function cargarTodosDatosParaResumen() {
     }
 }
 
-function checkNewReports() { if(!isUnlocked || isModalOpen) loadData(); checkAndResetDailyCounters(); }
+function checkNewReports() { if(!isUnlocked || isModalOpen) return; loadData(); checkAndResetDailyCounters(); }
 function forceRefreshData() { if(isUnlocked) loadData(); }
 
 function checkAndResetDailyCounters() { 
@@ -737,7 +810,7 @@ function checkAndResetDailyCounters() {
     } 
 }
 
-// ==================== FILTROS ====================
+// ==================== FILTROS PANEL PRINCIPAL ====================
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
 function applyGeneralFilters() {
     let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa));
@@ -751,7 +824,6 @@ function applyGeneralFilters() {
     up('actosStatus',pA); up('condStatus',pC);
     updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f);
 }
-
 function updateCategoryCards(data,type) {
     const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}];
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
@@ -769,7 +841,6 @@ function updateCategoryCards(data,type) {
         div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; cont.appendChild(div); 
     });
 }
-
 function updateChartsDona(data,type) {
     const cats = type==='actos' ? [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}] : [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}];
     const canvasId = type==='actos' ? 'categoryChart' : 'vcpCategoryChart', ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return;
@@ -778,7 +849,6 @@ function updateChartsDona(data,type) {
     const chart = new Chart(ctx, { type: 'doughnut', data: { labels: cats.map(c => `${c.icon} ${c.name}`), datasets: [{ data: cats.map(c => counts[c.id] || 0), backgroundColor: cats.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] }, options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); const pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } } } });
     if(type==='actos') categoryChart = chart; else vcpCategoryChart = chart;
 }
-
 function updateTrendChart(data) {
     const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx = document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return;
     let sourceData = data || ACTOS_COND_DATA;
@@ -786,7 +856,6 @@ function updateTrendChart(data) {
     if(trendChart) trendChart.destroy();
     trendChart = new Chart(ctx, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '⚠️ Actos', data: aPM, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true }, { label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 10 } }, x: { ticks: { font: { size: 9 } } } } } });
 }
-
 function applyVCPFilters() {
     let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && (state.vcpCausa==='todas'||selectedVCPCausa==='todas'||e.categoria?.id===selectedVCPCausa));
     if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa);
@@ -795,7 +864,6 @@ function applyVCPFilters() {
     document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%';
     updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f);
 }
-
 function updateVCPCharts(data) {
     const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
     let counts = {}; CATEGORIES_VCP.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
@@ -805,7 +873,6 @@ function updateVCPCharts(data) {
     const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart) vcpTrendChart.destroy();
     vcpTrendChart = new Chart(ctxT, { type: 'line', data: { labels: m.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white', pointBorderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' }, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } }, grid: { display: false } } } } });
 }
-
 function renderGeneralTable(data) {
     let tb = document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML = '';
     const sortedData = [...data].sort((a,b) => { const dateA = new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`); const dateB = new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`); return dateB - dateA; });
@@ -819,7 +886,6 @@ function renderGeneralTable(data) {
         tb.appendChild(tr);
     });
 }
-
 function renderVCPTable(data) {
     let tb = document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML = '';
     const sorted = [...data].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)), hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
@@ -831,7 +897,6 @@ function renderVCPTable(data) {
         tb.appendChild(tr);
     });
 }
-
 function updatePersonVCPStatsOnly() { let p = document.getElementById('vcpPersonFilter')?.value || 'todos', m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo', f = VCP_DATA.filter(v => (p==='todos' || v.personaObservada===p) && (m==='todo' || v.mes===m)); document.getElementById('personVCPCount').innerText = f.length; document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b) => new Date(b.fecha) - new Date(a.fecha))[0].dia + '/' + f[0].mes : '-'; }
 function populateVCPPeopleFilter() { let counts = new Map(); VCP_DATA.forEach(v => { if(v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada)||0) + 1); }); let sel = document.getElementById('vcpPersonFilter'); if(!sel) return; sel.innerHTML = '<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 function populateSupervisors() { let s = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort(), sel = document.getElementById('supervisorSelect'); if(!sel) return; sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x => sel.innerHTML += `<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
@@ -871,13 +936,6 @@ function showDailyReportsModal(type, alerts) {
     modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; modal.classList.remove('hidden-section'); modal.style.display='flex';
 }
 function closeDailyReportsModal() { const modal=document.getElementById('dailyReportsModal'); modal.classList.add('hidden-section'); modal.style.display='none'; }
-function acknowledgeBadge(type) { const badge=document.getElementById(type==='actos'?'actosNovedadBadge':'vcpNovedadBadge'); if(badge) badge.classList.add('hidden'); }
-function addDailyAlert(persona, sector, desc, tipo, hora, causas) {
-    const alertData={persona, sector, desc, tipo, hora, causas, timestamp:Date.now()};
-    if(tipo&&tipo.toLowerCase().includes('vcp')) { todayAlertsBySucursal[currentSucursal].vcp.unshift(alertData); }
-    else { todayAlertsBySucursal[currentSucursal].actos.unshift(alertData); }
-    updatePulseBadges(); updateRealTimeUI();
-}
 function updatePulseBadges() {
     const badgeActosCard=document.getElementById('actosNovedadBadge'), badgeVCPCard=document.getElementById('vcpNovedadBadge'), currentAlerts=todayAlertsBySucursal[currentSucursal];
     if(badgeActosCard) { if(currentAlerts.actos.length>0) { badgeActosCard.textContent=Math.min(currentAlerts.actos.length,9); badgeActosCard.classList.remove('hidden'); } else { badgeActosCard.classList.add('hidden'); } }
@@ -918,7 +976,7 @@ function abrirModalSupervisor(tipo) {
     if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; }
     const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706';
     let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
-    dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; });
+    dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td><tr>`; });
     html+=`</tbody></table></div>`;
     document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html;
     const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
@@ -931,7 +989,7 @@ function abrirModalPersonaVCP() {
     if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; }
     let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`;
     f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; });
-    html+=`</tbody></tr></div>`;
+    html+=`</tbody></table></div>`;
     document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html;
     const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex';
 }
@@ -949,109 +1007,243 @@ function cambiarSucursal(suc) {
     document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active');
     if(isUnlocked) loadData();
 }
-function actualizarLED(tipo,hay) { const l=document.getElementById(`${tipo}Led`); if(!l) return; if(hay){l.className='siren-green'; setTimeout(()=>{const o=document.getElementById(`${tipo}Led`);if(o)o.className='siren-red';},5000);} }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 
-// ==================== RESUMEN GENERAL - FUNCIONES ====================
-function toggleResumenPasswordVisibility() {
-    const input = document.getElementById('resumenPasswordInput');
-    input.type = input.type === 'password' ? 'text' : 'password';
-}
-function abrirResumenGeneral() {
-    if(!isUnlocked) return;
-    const modal = document.getElementById('resumenPasswordModal');
-    if(!modal) return;
-    document.getElementById('resumenPasswordInput').value = '';
-    document.getElementById('resumenPasswordError').textContent = '';
-    modal.querySelector('.modal-bounce').style.animation = 'none';
-    modal.querySelector('.modal-bounce').offsetHeight;
-    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    setTimeout(() => document.getElementById('resumenPasswordInput')?.focus(), 100);
-}
-function cerrarResumenPasswordModal() {
-    const modal = document.getElementById('resumenPasswordModal');
-    if(modal) { modal.classList.add('hidden-section'); modal.style.display = 'none'; }
-}
-function verificarResumenPassword() {
-    const input = document.getElementById('resumenPasswordInput'), errorDiv = document.getElementById('resumenPasswordError'), modal = document.getElementById('resumenPasswordModal');
-    if(input.value === PASSWORD_RESUMEN) {
-        errorDiv.textContent = '';
-        cerrarResumenPasswordModal();
-        cargarTodosDatosParaResumen().then(() => { mostrarResumenGeneralModal(); });
-    } else {
-        playErrorSound();
-        errorDiv.textContent = '🔒 Contraseña incorrecta';
-        input.value = '';
-        input.focus();
-        input.classList.add('border-red-400');
-        setTimeout(() => input.classList.remove('border-red-400'), 500);
+// ==================== RESUMEN EJECUTIVO (INTERACTIVO TOTAL) ====================
+function abrirModalConDatos(titulo, datos, tipo) {
+    if(!datos || datos.length === 0) {
+        alert("No hay datos para mostrar");
+        return;
     }
-}
-function mostrarResumenGeneralModal() {
-    const modal = document.getElementById('resumenGeneralModal');
-    if(!modal) return;
-    document.getElementById('resumenSucursalFiltro').value = 'todas';
-    document.getElementById('resumenMesFiltro').value = 'todo';
-    document.getElementById('resumenSectorFiltro').value = 'todos';
+    const modal = document.getElementById('detailModal');
+    const title = document.getElementById('detailModalTitle');
+    const content = document.getElementById('detailModalContent');
+    
+    title.innerHTML = `📋 ${titulo} (${datos.length} registros)`;
+    
+    // Generar tabla con los datos
+    let html = `<div class="overflow-x-auto"><table class="w-full text-left text-sm">`;
+    html += `<thead class="bg-purple-100 sticky top-0"><tr>`;
+    html += `<th class="p-2">📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th>🔒 Estado</th>`;
+    html += `</tr></thead><tbody>`;
+    
+    datos.slice(0, 100).forEach(d => {
+        const tipoDisplay = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
+        const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700');
+        html += `<tr class="border-b hover:bg-slate-50 cursor-pointer" onclick="cerrarDetailModal(); openModal(${JSON.stringify(d).replace(/"/g, '&quot;')}, 0, ${JSON.stringify(datos).replace(/"/g, '&quot;')})">`;
+        html += `<td class="p-2">${d.dia || '?'}/${d.mes || '?'}</td>`;
+        html += `<td class="p-2 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>`;
+        html += `<td class="p-2"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipoDisplay}</span></td>`;
+        html += `<td class="p-2 max-w-xs">${(d.descripcion || '-').substring(0, 60)}${(d.descripcion || '').length > 60 ? '...' : ''}</td>`;
+        html += `<td class="p-2">🏭 ${d.sector || '-'}</td>`;
+        html += `<td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>`;
+        html += `</tr>`;
+    });
+    html += `</tbody></table></div>`;
+    if(datos.length > 100) html += `<p class="text-xs text-slate-400 mt-2">Mostrando 100 de ${datos.length} registros</p>`;
+    
+    content.innerHTML = html;
+    
     modal.querySelector('.modal-bounce').style.animation = 'none';
     modal.querySelector('.modal-bounce').offsetHeight;
-    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+    modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)';
     modal.classList.remove('hidden-section');
     modal.style.display = 'flex';
-    actualizarResumenGeneral();
 }
-function cerrarResumenGeneralModal() {
-    const modal = document.getElementById('resumenGeneralModal');
-    if(!modal) return;
+function cerrarDetailModal() {
+    const modal = document.getElementById('detailModal');
     modal.classList.add('hidden-section');
     modal.style.display = 'none';
-    if(resumenChart1) { resumenChart1.destroy(); resumenChart1 = null; }
-    if(resumenChart2) { resumenChart2.destroy(); resumenChart2 = null; }
 }
-function actualizarResumenGeneral() {
-    const sucursal = document.getElementById('resumenSucursalFiltro').value;
-    const mes = document.getElementById('resumenMesFiltro').value;
-    const sector = document.getElementById('resumenSectorFiltro').value;
+function abrirModalPorTipo(tipo) {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(tipo === 'acto' && d.tipo !== 'acto') return false;
+            if(tipo === 'condicion' && d.tipo !== 'condicion') return false;
+            return true;
+        });
+        datos = datos.concat(filtrados);
+        if(tipo === 'vcp' || tipo === 'todos') {
+            const vcpFiltrados = (ALL_VCP_DATA[suc] || []).filter(d => {
+                if(mes !== 'todo' && d.mes !== mes) return false;
+                if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+                return true;
+            });
+            if(tipo === 'vcp') datos = vcpFiltrados;
+            else if(tipo === 'todos') datos = datos.concat(vcpFiltrados);
+        }
+    });
+    let titulo = '';
+    if(tipo === 'acto') titulo = 'ACTOS INSEGUROS';
+    else if(tipo === 'condicion') titulo = 'CONDICIONES INSEGURAS';
+    else if(tipo === 'vcp') titulo = 'VERIFICACIONES DE CONTROL PREVENTIVO (VCP)';
+    else titulo = 'TODOS LOS REPORTES';
+    abrirModalConDatos(titulo, datos, tipo);
+}
+function abrirModalPorDescripcion(desc, tipo) {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if((tipo === 'acto' && d.tipo !== 'acto') || (tipo === 'condicion' && d.tipo !== 'condicion')) return false;
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(d.descripcion !== desc) return false;
+            return true;
+        });
+        datos = datos.concat(filtrados);
+    });
+    abrirModalConDatos(`Reportes con descripción: "${desc.substring(0, 50)}..."`, datos, tipo);
+}
+function abrirModalPorResponsable(nombre) {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(d.observador !== nombre) return false;
+            return true;
+        });
+        datos = datos.concat(filtrados);
+    });
+    abrirModalConDatos(`Reportes de: ${nombre}`, datos, 'responsable');
+}
+function abrirModalPorReincidencia(persona, categoria) {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(d.observador !== persona) return false;
+            if(d.categoria?.id !== categoria) return false;
+            return true;
+        });
+        datos = datos.concat(filtrados);
+    });
+    abrirModalConDatos(`Reincidencias - ${persona} (${datos[0]?.categoria?.name || categoria})`, datos, 'reincidencia');
+}
+function abrirModalPorPuntoGrafico(mes, sucursal, esVCP) {
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    if(esVCP) {
+        if(ALL_VCP_DATA[sucursal]) {
+            datos = ALL_VCP_DATA[sucursal].filter(d => {
+                if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+                if(d.mes !== mes) return false;
+                if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return false;
+                return true;
+            });
+        }
+    } else {
+        datos = ALL_ACTOS_DATA[sucursal].filter(d => {
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(d.mes !== mes) return false;
+            if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false;
+            return true;
+        });
+    }
+    const nombreSucursal = sucursal === 'MALAGUENO' ? 'Malagueño' : (sucursal === 'BARKER' ? 'Barker' : 'La Pampita');
+    const titulo = `${nombreSucursal} - ${mes.charAt(0).toUpperCase() + mes.slice(1)} ${esVCP ? '(VCP)' : '(Actos y Condiciones)'}`;
+    abrirModalConDatos(titulo, datos, esVCP ? 'vcp' : 'actos');
+}
+function abrirResumenEjecutivo() {
+    if(!isUnlocked) return;
+    document.getElementById('mainContent').classList.add('hidden-section');
+    cargarTodosDatosParaResumen().then(() => {
+        document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section');
+        document.getElementById('resumenEjecutivoPage').style.display = 'block';
+        currentFiltroTipo = 'todos';
+        actualizarResumenEjecutivo();
+    });
+}
+function cerrarResumenEjecutivo() {
+    document.getElementById('resumenEjecutivoPage').classList.add('hidden-section');
+    document.getElementById('resumenEjecutivoPage').style.display = 'none';
+    document.getElementById('mainContent').classList.remove('hidden-section');
+    if(ejecutivoChartSucursales) { ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales = null; }
+    if(ejecutivoChartVCPSucursales) { ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales = null; }
+    currentFiltroTipo = 'todos';
+}
+function limpiarFiltrosEjecutivo() {
+    currentFiltroTipo = 'todos';
+    document.getElementById('filtroActivoBadge').classList.add('hidden');
+    actualizarResumenEjecutivo();
+}
+function actualizarResumenEjecutivo() {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    currentSucursalFiltro = sucursal;
+    currentMesFiltro = mes;
+    currentSectorFiltro = sector;
     let datosActos = [], datosVCP = [];
     Object.keys(ALL_ACTOS_DATA).forEach(suc => {
         if(sucursal !== 'todas' && suc !== sucursal) return;
-        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { 
+            if(mes !== 'todo' && d.mes !== mes) return false; 
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false; 
+            return true; 
+        });
         datosActos = datosActos.concat(actosFiltrados);
         if(ALL_VCP_DATA[suc]) {
-            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { 
+                if(mes !== 'todo' && d.mes !== mes) return false; 
+                if(sector !== 'todos' && !d.sector.includes(sector)) return false; 
+                return true; 
+            });
             datosVCP = datosVCP.concat(vcpFiltrados);
         }
     });
+    if(currentFiltroTipo !== 'todos') {
+        if(currentFiltroTipo === 'acto') datosVCP = [];
+        else if(currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; }
+        else if(currentFiltroTipo === 'vcp') datosActos = [];
+    }
     const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
     const totalCondiciones = datosActos.filter(d => d.tipo === 'condicion').length;
     const totalVCP = datosVCP.length;
-    document.getElementById('resumenTotalActos').innerText = totalActos;
-    document.getElementById('resumenTotalCondiciones').innerText = totalCondiciones;
-    document.getElementById('resumenTotalVCP').innerText = totalVCP;
-    document.getElementById('resumenTotalGeneral').innerText = totalActos + totalCondiciones + totalVCP;
-    renderTopRankings(datosActos);
-    renderReincidencias(datosActos);
-    renderTablaResumen([...datosActos, ...datosVCP]);
-    renderChartsResumen(datosActos, datosVCP);
+    document.getElementById('ejecTotalActos').innerText = totalActos;
+    document.getElementById('ejecTotalCondiciones').innerText = totalCondiciones;
+    document.getElementById('ejecTotalVCP').innerText = totalVCP;
+    document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCondiciones + totalVCP;
+    // Rankings
+    renderEjecutivoRankings(datosActos);
+    renderEjecutivoReincidencias(datosActos);
+    renderEjecutivoTabla([...datosActos, ...datosVCP], mes, sector, sucursal);
+    renderEjecutivoChartsSucursales(sector, sucursal);
 }
-function renderTopRankings(datos) {
+function renderEjecutivoRankings(datos) {
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
-    actos.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countActos[key] = (countActos[key] || 0) + 1; });
-    const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 10);
-    const containerActos = document.getElementById('topActosRanking');
+    actos.forEach(d => { const key = d.descripcion || 'Sin descripción'; countActos[key] = (countActos[key] || 0) + 1; });
+    const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    const containerActos = document.getElementById('ejecTopActos');
     if(containerActos) {
         containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => {
-            const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
-            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}">
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" onclick="abrirModalPorDescripcion('${desc.replace(/'/g, "\\'")}', 'acto')">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
-                <div class="flex-1 relative">
-                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                <div class="flex-1">
+                    <div class="font-bold text-sm text-slate-800">${desc.length > 40 ? desc.substring(0,40)+'...' : desc}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
-                    ${corona}
                 </div>
                 <div class="text-lg font-black text-red-600">${count}</div>
             </div>`;
@@ -1059,25 +1251,39 @@ function renderTopRankings(datos) {
     }
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
-    conds.forEach(d => { const key = d.descripcion?.substring(0, 50) || 'Sin descripción'; countConds[key] = (countConds[key] || 0) + 1; });
-    const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 10);
-    const containerConds = document.getElementById('topCondRanking');
+    conds.forEach(d => { const key = d.descripcion || 'Sin descripción'; countConds[key] = (countConds[key] || 0) + 1; });
+    const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 5);
+    const containerConds = document.getElementById('ejecTopCond');
     if(containerConds) {
         containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => {
-            const corona = i === 0 ? '<span class="corona">👑</span>' : i === 1 ? '<span class="corona">🥈</span>' : i === 2 ? '<span class="corona">🥉</span>' : '';
-            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706">
+            return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706" onclick="abrirModalPorDescripcion('${desc.replace(/'/g, "\\'")}', 'condicion')">
                 <div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div>
-                <div class="flex-1 relative">
-                    <div class="font-bold text-sm text-slate-800">${desc}${desc.length > 45 ? '...' : ''}</div>
+                <div class="flex-1">
+                    <div class="font-bold text-sm text-slate-800">${desc.length > 40 ? desc.substring(0,40)+'...' : desc}</div>
                     <div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div>
-                    ${corona}
                 </div>
                 <div class="text-lg font-black text-amber-600">${count}</div>
             </div>`;
         }).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>';
     }
+    const countResp = {};
+    [...datos].forEach(d => { const resp = d.observador || 'Sin identificar'; countResp[resp] = (countResp[resp] || 0) + 1; });
+    const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 10);
+    const containerResp = document.getElementById('ejecTopResponsables');
+    if(containerResp) {
+        containerResp.innerHTML = topResp.map(([nombre, count], i) => {
+            const corona = i === 0 ? '<span class="crown-animated ml-1">👑</span>' : '';
+            return `<div class="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm mb-2 cursor-pointer hover:bg-purple-50 transition-all" onclick="abrirModalPorResponsable('${nombre.replace(/'/g, "\\'")}')">
+                <div class="flex items-center gap-3">
+                    <span class="font-bold text-lg text-purple-600 w-8">${i+1}</span>
+                    <span class="font-semibold text-slate-700">${nombre}</span>${corona}
+                </div>
+                <div class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-bold">${count} reportes</div>
+            </div>`;
+        }).join('');
+    }
 }
-function renderReincidencias(datos) {
+function renderEjecutivoReincidencias(datos) {
     const reincMap = new Map();
     datos.forEach(d => {
         if(!d.observador || !d.categoria?.id) return;
@@ -1085,11 +1291,11 @@ function renderReincidencias(datos) {
         if(!reincMap.has(key)) { reincMap.set(key, {persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set()}); }
         const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal);
     });
-    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 15);
-    const container = document.getElementById('reincidenciasList');
+    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 10);
+    const container = document.getElementById('ejecReincidencias');
     if(container) {
         container.innerHTML = reincList.length ? reincList.map(r => `
-            <div class="zr-reincidencia">
+            <div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-yellow-500 cursor-pointer hover:shadow-md transition-all" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g, "\\'")}', '${r.categoria.id}')">
                 <div class="flex justify-between items-start">
                     <div>
                         <span class="font-bold text-sm text-slate-800">👤 ${r.persona}</span>
@@ -1099,13 +1305,22 @@ function renderReincidencias(datos) {
                 </div>
                 <div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div>
             </div>
-        `).join('') : '<p class="text-slate-400 text-center py-4">✅ Sin reincidencias detectadas</p>';
+        `).join('') : '<p class="text-slate-400 text-center py-4 col-span-2">✅ Sin reincidencias detectadas</p>';
     }
 }
-function renderTablaResumen(datos) {
-    const tbody = document.getElementById('resumenTablaBody');
+function renderEjecutivoTabla(datos, mesFiltro, sectorFiltro, sucursalFiltro) {
+    const tbody = document.getElementById('ejecTablaBody');
     if(!tbody) return;
-    const sorted = [...datos].sort((a,b) => {
+    let datosFiltrados = datos;
+    if(mesFiltro !== 'todo') datosFiltrados = datosFiltrados.filter(d => d.mes === mesFiltro);
+    if(sectorFiltro !== 'todos') datosFiltrados = datosFiltrados.filter(d => d.sector.includes(sectorFiltro));
+    if(sucursalFiltro !== 'todas') datosFiltrados = datosFiltrados.filter(d => d.sucursal === sucursalFiltro);
+    if(currentFiltroTipo !== 'todos') {
+        if(currentFiltroTipo === 'acto') datosFiltrados = datosFiltrados.filter(d => d.tipo === 'acto');
+        else if(currentFiltroTipo === 'condicion') datosFiltrados = datosFiltrados.filter(d => d.tipo === 'condicion');
+        else if(currentFiltroTipo === 'vcp') datosFiltrados = datosFiltrados.filter(d => d.tipo === 'vcp');
+    }
+    const sorted = [...datosFiltrados].sort((a,b) => {
         const dateA = new Date(`${a.fecha?.split('/')[2] || 2026}-${a.fecha?.split('/')[1] || 1}-${a.fecha?.split('/')[0] || 1}`);
         const dateB = new Date(`${b.fecha?.split('/')[2] || 2026}-${b.fecha?.split('/')[1] || 1}-${b.fecha?.split('/')[0] || 1}`);
         return dateB - dateA;
@@ -1114,75 +1329,132 @@ function renderTablaResumen(datos) {
         const badgeSuc = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
         const tipoDisplay = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
         const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700');
-        const safeData = JSON.stringify({ fecha: d.fecha || '', tipo: d.tipo || '', sector: d.sector || '', observador: d.observador || d.personaObservada || '', descripcion: d.descripcion || '', cerrado: d.cerrado !== undefined ? d.cerrado : true, categoria: d.categoria || {}, sucursal: d.sucursal || '', personaObservada: d.personaObservada || '', comentarios: d.comentarios || '' }).replace(/"/g, '&quot;');
+        const safeData = JSON.stringify(d).replace(/"/g, '&quot;');
         return `<tr class="border-b hover:bg-slate-50 cursor-pointer zr-item" onclick="abrirModalDesdeResumen('${safeData}')">
-            <td class="p-2"><span class="badge-sucursal ${badgeSuc}">${d.sucursal}</span></td>
-            <td class="p-2 font-medium">${d.dia || '?'}/${d.mes || '?'}</td>
-            <td class="p-2 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>
-            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoDisplay}</span></td>
-            <td class="p-2 max-w-xs">${(d.descripcion || '-').substring(0, 40)}${(d.descripcion || '').length > 40 ? '...' : ''}</td>
-            <td class="p-2">🏭 ${d.sector || '-'}</td>
-            <td class="p-2">${d.observador ? '👔' : '👤'} ${d.observador || d.personaObservada || '-'}</td>
-            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>
+            <td class="p-3"><span class="badge-sucursal ${badgeSuc}"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="logo-sucursal-sm inline mr-1"> ${d.sucursal}</span></td>
+            <td class="p-3 font-medium">${d.dia || '?'}/${d.mes || '?'}</td>
+            <td class="p-3 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipoDisplay}</span></td>
+            <td class="p-3 max-w-xs">${(d.descripcion || '-').substring(0, 50)}${(d.descripcion || '').length > 50 ? '...' : ''}</td>
+            <td class="p-3">🏭 ${d.sector || '-'}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td>
         </table>`;
-    }).join('') || '<tr><td colspan="8" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
+    }).join('') || '<tr><td colspan="7" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
+}
+function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro) {
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
+    const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' };
+    const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
+    
+    const datasets = [];
+    sucursales.forEach(suc => {
+        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+        const dataPorMes = meses.map(mes => {
+            let total = 0;
+            if(ALL_ACTOS_DATA[suc]) {
+                const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+                    if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+                    if(d.mes !== mes) return false;
+                    if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false;
+                    return true;
+                });
+                total = filtrados.length;
+            }
+            return total;
+        });
+        datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 });
+    });
+    const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d');
+    if(ctx1) {
+        if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy();
+        ejecutivoChartSucursales = new Chart(ctx1, {
+            type: 'line',
+            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                onClick: (e, activeEls) => { 
+                    if(activeEls.length) { 
+                        const datasetIndex = activeEls[0].datasetIndex;
+                        const dataIndex = activeEls[0].index;
+                        const mesSeleccionado = meses[dataIndex];
+                        const sucursalSeleccionada = sucursales[datasetIndex];
+                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false);
+                    } 
+                },
+                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }
+            }
+        });
+    }
+    const datasetsVCP = [];
+    sucursales.forEach(suc => {
+        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+        if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return;
+        const dataPorMes = meses.map(mes => {
+            const filtrados = ALL_VCP_DATA[suc].filter(d => {
+                if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+                if(d.mes !== mes) return false;
+                if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0;
+                return true;
+            });
+            return filtrados.length;
+        });
+        datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 });
+    });
+    const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d');
+    if(ctx2) {
+        if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy();
+        ejecutivoChartVCPSucursales = new Chart(ctx2, {
+            type: 'line',
+            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                onClick: (e, activeEls) => { 
+                    if(activeEls.length) { 
+                        const datasetIndex = activeEls[0].datasetIndex;
+                        const dataIndex = activeEls[0].index;
+                        const mesSeleccionado = meses[dataIndex];
+                        const sucursalSeleccionada = sucursales[datasetIndex];
+                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true);
+                    } 
+                },
+                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }
+            }
+        });
+    }
+}
+function exportarResumenEjecutivoExcel() {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    let datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+        datos = datos.concat(actosFiltrados);
+        if(ALL_VCP_DATA[suc]) {
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
+            datos = datos.concat(vcpFiltrados);
+        }
+    });
+    if(currentFiltroTipo !== 'todos') {
+        if(currentFiltroTipo === 'acto') datos = datos.filter(d => d.tipo === 'acto');
+        else if(currentFiltroTipo === 'condicion') datos = datos.filter(d => d.tipo === 'condicion');
+        else if(currentFiltroTipo === 'vcp') datos = datos.filter(d => d.tipo === 'vcp');
+    }
+    const headers = ['Sucursal','Fecha','Responsable','Tipo','Descripcion','Sector','Estado','Categoria'];
+    const rows = datos.map(d => [ d.sucursal || '', `${d.dia || '?'}/${d.mes || '?'}/2026`, d.observador || d.personaObservada || '', d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'Acto Inseguro' : 'Condicion Insegura'), `"${(d.descripcion || '').replace(/"/g, '""')}"`, d.sector || '', d.cerrado !== false ? 'Cerrado' : 'Abierto', d.categoria?.name || '' ]);
+    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ResumenEjecutivo_${new Date().toISOString().split('T')[0]}.csv`; link.click();
 }
 function abrirModalDesdeResumen(dataJson) {
     try { const data = JSON.parse(dataJson.replace(/&quot;/g, '"')); openModal(data, 0, [data]); } catch(e) { console.error('Error abriendo modal:', e); }
 }
-function renderChartsResumen(actosData, vcpData) {
-    const ctx1 = document.getElementById('topResponsablesChart')?.getContext('2d'); if(!ctx1) return;
-    const countResp = {}; [...actosData, ...vcpData].forEach(d => { const resp = d.observador || d.personaObservada || 'Sin identificar'; countResp[resp] = (countResp[resp] || 0) + 1; });
-    const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 10);
-    if(resumenChart1) resumenChart1.destroy();
-    resumenChart1 = new Chart(ctx1, { type: 'bar', data: { labels: topResp.map(([n]) => n.length > 15 ? n.substring(0,15)+'...' : n), datasets: [{ label: 'Reportes', data: topResp.map(([,c]) => c), backgroundColor: 'rgba(124, 58, 237, 0.7)', borderColor: '#7c3aed', borderWidth: 2, borderRadius: 6 }] }, options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, ticks: { font: { size: 9 } } }, y: { ticks: { font: { size: 9 } } } } } });
-    const ctx2 = document.getElementById('evolucionSucursalChart')?.getContext('2d'); if(!ctx2) return;
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const dataBySuc = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
-    const allData = [...actosData, ...vcpData];
-    meses.forEach(mes => { Object.keys(dataBySuc).forEach(suc => { dataBySuc[suc].push(allData.filter(d => d.mes === mes && d.sucursal === suc).length); }); });
-    if(resumenChart2) resumenChart2.destroy();
-    resumenChart2 = new Chart(ctx2, { type: 'line', data: { labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [ { label: '🏔️ Malagueño', data: dataBySuc.MALAGUENO, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true }, { label: '🌲 Barker', data: dataBySuc.BARKER, borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true }, { label: '🌾 La Pampita', data: dataBySuc.LAPAMPITA, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } ] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 5, font: { size: 9 } } }, x: { ticks: { font: { size: 9 } } } } } });
-}
-function exportarResumenExcel() {
-    const sucursal = document.getElementById('resumenSucursalFiltro').value;
-    const mes = document.getElementById('resumenMesFiltro').value;
-    const sector = document.getElementById('resumenSectorFiltro').value;
-    let datos = [];
-    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
-        if(sucursal !== 'todas' && suc !== sucursal) return;
-        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { d.sucursal = suc; if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
-        datos = datos.concat(actosFiltrados);
-        if(ALL_VCP_DATA[suc]) {
-            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { d.sucursal = suc; if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; return true; });
-            datos = datos.concat(vcpFiltrados);
-        }
-    });
-    const headers = ['Sucursal','Fecha','Responsable','Tipo','Descripcion','Sector','Observador','Estado','Categoria'];
-    const rows = datos.map(d => [ d.sucursal || '', `${d.dia || '?'}/${d.mes || '?'}/2026`, d.observador || d.personaObservada || '', d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'Acto Inseguro' : 'Condicion Insegura'), `"${(d.descripcion || '').replace(/"/g, '""')}"`, d.sector || '', d.observador || d.personaObservada || '', d.cerrado !== false ? 'Cerrado' : 'Abierto', d.categoria?.name || '' ]);
-    const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ResumenGeneral_${new Date().toISOString().split('T')[0]}.csv`; link.click();
-    const btn = event?.target; if(btn) { const original = btn.innerHTML; btn.innerHTML = '✅ Exportado!'; setTimeout(() => btn.innerHTML = original, 2000); }
-}
 
 // ==================== EVENT LISTENERS ====================
-document.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape') {
-        const modales = ['resumenGeneralModal', 'resumenPasswordModal'];
-        modales.forEach(id => {
-            const modal = document.getElementById(id);
-            if(modal && !modal.classList.contains('hidden-section')) {
-                if(id === 'resumenGeneralModal') cerrarResumenGeneralModal(); else cerrarResumenPasswordModal();
-            }
-        });
-    }
-});
-['resumenGeneralModal', 'resumenPasswordModal'].forEach(id => {
-    document.getElementById(id)?.addEventListener('click', (e) => { if(e.target.id === id) { if(id === 'resumenGeneralModal') cerrarResumenGeneralModal(); else cerrarResumenPasswordModal(); } });
-});
-document.getElementById('resumenPasswordInput')?.addEventListener('keypress', (e) => { if(e.key === 'Enter') verificarResumenPassword(); });
-
 window.addEventListener('load', () => {
     if(localStorage.getItem('isLoggedIn') === 'true') { currentUser = localStorage.getItem('currentUser'); isUnlocked = true; document.getElementById('passwordOverlay').style.display = 'none'; showWelcomeScreen(); }
     else { document.getElementById('passwordInput')?.focus(); }
