@@ -7,6 +7,7 @@
     <link rel="icon" type="image/x-icon" href="/favicon.ico">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
@@ -583,13 +584,121 @@ function goToNextModal() { if(currentModalIndex<currentModalData.length-1) { cur
 function goToPreviousModal() { if(currentModalIndex>0) { currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { if(!isUnlocked) return; const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos') { alert("⚠️ Seleccione un supervisor"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; } const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706'; let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; }); html+=`</tbody></table></div>`; document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html; const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
 function closeSupervisorModal() { const m=document.getElementById('supervisorDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
-function abrirModalPersonaVCP() { if(!isUnlocked) return; const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos') { alert("⚠️ Seleccione una persona"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; } let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; }); html+=`</tbody></table></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
+function abrirModalPersonaVCP() { if(!isUnlocked) return; const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos') { alert("⚠️ Seleccione una persona"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; } let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; }); html+=`</tbody></tr></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
 function closePersonaVCPModal() { const m=document.getElementById('personaVCPModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 
 // ==================== UTILS ====================
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo'; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section'); const cb2=document.getElementById('clearVCPCauseBtn'); if(cb2) cb2.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${currentObjetivos.actos+currentObjetivos.cond}) 👷`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
+
+// ==================== EXPORTAR EXCEL PROFESIONAL ====================
+function exportarResumenEjecutivoExcel() {
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    const estado = document.getElementById('ejecutivoEstadoFiltro').value;
+    const tipoFiltroGlobal = document.getElementById('ejecutivoTipoFiltro').value;
+    
+    let datosActos = [], datosVCP = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            if(estado !== 'todos') {
+                if(estado === 'abiertos' && d.cerrado === true) return false;
+                if(estado === 'cerrados' && d.cerrado === false) return false;
+            }
+            if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp' && d.tipo !== tipoFiltroGlobal) return false;
+            return true;
+        });
+        datosActos = datosActos.concat(actosFiltrados);
+        if(ALL_VCP_DATA[suc]) {
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => {
+                if(mes !== 'todo' && d.mes !== mes) return false;
+                if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+                if(estado !== 'todos') {
+                    if(estado === 'abiertos' && d.cerrado === true) return false;
+                    if(estado === 'cerrados' && d.cerrado === false) return false;
+                }
+                if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp') return false;
+                return true;
+            });
+            datosVCP = datosVCP.concat(vcpFiltrados);
+        }
+    });
+    
+    if(currentFiltroTipo !== 'todos') {
+        if(currentFiltroTipo === 'acto') datosVCP = [];
+        else if(currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; }
+        else if(currentFiltroTipo === 'vcp') datosActos = [];
+    }
+    
+    const workbook = XLSX.utils.book_new();
+    
+    // Hoja 1: Resumen General
+    const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
+    const totalCondiciones = datosActos.filter(d => d.tipo === 'condicion').length;
+    const totalVCP = datosVCP.length;
+    
+    const resumenData = [
+        ['RESUMEN GENERAL MINERAR 2026'],
+        ['Fecha de exportación:', new Date().toLocaleString()],
+        ['Filtros aplicados:', ''],
+        ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal],
+        ['Mes:', mes === 'todo' ? 'TODOS' : mes],
+        ['Sector:', sector === 'todos' ? 'TODOS' : sector],
+        ['Tipo:', tipoFiltroGlobal === 'todos' ? 'TODOS' : tipoFiltroGlobal],
+        ['Estado:', estado === 'todos' ? 'TODOS' : estado],
+        [''],
+        ['INDICADOR', 'CANTIDAD'],
+        ['⚠️ ACTOS INSEGUROS', totalActos],
+        ['🏚️ CONDICIONES', totalCondiciones],
+        ['🎯 VCP', totalVCP],
+        ['📊 TOTAL GENERAL', totalActos + totalCondiciones + totalVCP]
+    ];
+    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+    wsResumen['!cols'] = [{wch:35},{wch:15}];
+    XLSX.utils.book_append_sheet(workbook, wsResumen, 'Resumen General');
+    
+    // Hoja 2: Actos y Condiciones
+    const actosCondData = datosActos.map(d => [
+        d.sucursal || '',
+        `${d.dia || '?'}/${d.mes || '?'}/2026`,
+        d.observador || '',
+        d.tipo === 'acto' ? 'ACTO INSEGURO' : 'CONDICIÓN INSEGURA',
+        d.descripcion || '',
+        d.sector || '',
+        d.categoria?.name || '',
+        d.cerrado !== false ? 'CERRADO' : 'ABIERTO',
+        d.causas || ''
+    ]);
+    actosCondData.unshift(['Sucursal', 'Fecha', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Categoría', 'Estado', 'Causas']);
+    const wsActosCond = XLSX.utils.aoa_to_sheet(actosCondData);
+    wsActosCond['!cols'] = [{wch:12},{wch:12},{wch:20},{wch:18},{wch:50},{wch:15},{wch:20},{wch:10},{wch:30}];
+    XLSX.utils.book_append_sheet(workbook, wsActosCond, 'Actos y Condiciones');
+    
+    // Hoja 3: VCP
+    const vcpDataExcel = datosVCP.map(d => [
+        d.sucursal || '',
+        `${d.dia || '?'}/${d.mes || '?'}/2026`,
+        d.personaObservada || '',
+        d.observador || '',
+        d.descripcion || '',
+        d.sector || '',
+        d.categoria?.name || '',
+        d.comentarios || '',
+        'CERRADO'
+    ]);
+    vcpDataExcel.unshift(['Sucursal', 'Fecha', 'Persona Observada', 'Observador', 'Descripción', 'Sector', 'Categoría', 'Comentarios', 'Estado']);
+    const wsVCP = XLSX.utils.aoa_to_sheet(vcpDataExcel);
+    wsVCP['!cols'] = [{wch:12},{wch:12},{wch:20},{wch:20},{wch:50},{wch:15},{wch:20},{wch:30},{wch:10}];
+    XLSX.utils.book_append_sheet(workbook, wsVCP, 'VCP');
+    
+    // Descargar
+    XLSX.writeFile(workbook, `Resumen_Ejecutivo_Minerar_${new Date().toISOString().slice(0,19).replace(/:/g, '-')}.xlsx`);
+}
 
 // ==================== RESUMEN EJECUTIVO ====================
 function toggleResumenPasswordVisibility() { const input=document.getElementById('resumenPasswordInput'); input.type = input.type === 'password' ? 'text' : 'password'; }
@@ -604,7 +713,6 @@ function cerrarDetailModal() { const modal = document.getElementById('detailModa
 function abrirModalConDatos(titulo, datos) { if(!datos || datos.length === 0) { alert("No hay datos para mostrar"); return; } currentModalDataList = datos; currentModalDataIndex = 0; mostrarDetalleEnModal(datos[0]); }
 function aplicarFiltroPorTipo(tipo) { 
     currentFiltroTipo = tipo; 
-    // Actualizar el select de tipo filtro también
     const tipoSelect = document.getElementById('ejecutivoTipoFiltro');
     if(tipoSelect) tipoSelect.value = tipo;
     document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(card => card.classList.remove('active')); 
@@ -685,7 +793,6 @@ function renderEjecutivoRankings(datos) { const actos = datos.filter(d => d.tipo
 function renderEjecutivoReincidencias(datos) { const reincMap = new Map(); datos.forEach(d => { if(!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) { reincMap.set(key, {persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set()}); } const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 10); const container = document.getElementById('ejecReincidencias'); if(container) { container.innerHTML = reincList.length ? reincList.map(r => `<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-yellow-500 cursor-pointer hover:shadow-md transition-all" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g, "\\'")}', '${r.categoria.id}')"><div class="flex justify-between items-start"><div><span class="font-bold text-sm text-slate-800">👤 ${r.persona}</span><span class="text-xs text-slate-500 ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold">${r.count}x</span></div><div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join('') : '<p class="text-slate-400 text-center py-4 col-span-2">✅ Sin reincidencias detectadas</p>'; } }
 function renderEjecutivoTabla(todosLosDatos) { const tbody = document.getElementById('ejecTablaBody'); if(!tbody) return; const sorted = [...todosLosDatos].sort((a,b) => { const dateA = new Date(`${a.fecha?.split('/')[2] || 2026}-${a.fecha?.split('/')[1] || 1}-${a.fecha?.split('/')[0] || 1}`); const dateB = new Date(`${b.fecha?.split('/')[2] || 2026}-${b.fecha?.split('/')[1] || 1}-${b.fecha?.split('/')[0] || 1}`); return dateB - dateA; }).slice(0, 100); tbody.innerHTML = sorted.map((d, index) => { const badgeSuc = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita'; const tipoDisplay = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND'); const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-cyan-100 text-cyan-700' : 'bg-amber-100 text-amber-700'); return `<tr class="border-b hover:bg-slate-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', ${JSON.stringify(todosLosDatos).replace(/'/g, "&#39;")})"><td class="p-3"><span class="badge-sucursal ${badgeSuc}"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" class="logo-sucursal-sm inline mr-1"> ${d.sucursal}</span></td><td class="p-3 font-medium">${d.dia || '?'}/${d.mes || '?'}</td><td class="p-3 font-semibold">👤 ${d.observador || d.personaObservada || '-'}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipoDisplay}</span></td><td class="p-3 max-w-xs">${(d.descripcion || '-').substring(0, 50)}${(d.descripcion || '').length > 50 ? '...' : ''}</td><td class="p-3">🏭 ${d.sector || '-'}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado !== false ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'}">${d.cerrado !== false ? '🔒' : '⚠️'}</span></td></tr>`; }).join('') || '<tr><td colspan="7" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro) { const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' }; const datasets = []; sucursales.forEach(suc => { if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; const dataPorMes = meses.map(mes => { let total = 0; if(ALL_ACTOS_DATA[suc]) { const filtrados = ALL_ACTOS_DATA[suc].filter(d => { if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; if(d.mes !== mes) return false; if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false; return true; }); total = filtrados.length; } return total; }); datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); }); const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1) { if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales = new Chart(ctx1, { type: 'line', data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, onClick: (e, activeEls) => { if(activeEls.length) { const datasetIndex = activeEls[0].datasetIndex; const dataIndex = activeEls[0].index; const mesSeleccionado = meses[dataIndex]; const sucursalSeleccionada = sucursales[datasetIndex]; abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false); } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } } }); } const datasetsVCP = []; sucursales.forEach(suc => { if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return; const dataPorMes = meses.map(mes => { const filtrados = ALL_VCP_DATA[suc].filter(d => { if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; if(d.mes !== mes) return false; if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0; return true; }); return filtrados.length; }); datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); }); const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2) { if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales = new Chart(ctx2, { type: 'line', data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP }, options: { responsive: true, maintainAspectRatio: false, onClick: (e, activeEls) => { if(activeEls.length) { const datasetIndex = activeEls[0].datasetIndex; const dataIndex = activeEls[0].index; const mesSeleccionado = meses[dataIndex]; const sucursalSeleccionada = sucursales[datasetIndex]; abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true); } }, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } } }); } }
-function exportarResumenEjecutivoExcel() { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estado = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltroGlobal = document.getElementById('ejecutivoTipoFiltro').value; let datos = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if(sucursal !== 'todas' && suc !== sucursal) return; const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; if(estado !== 'todos') { if(estado === 'abiertos' && d.cerrado === true) return false; if(estado === 'cerrados' && d.cerrado === false) return false; } if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp' && d.tipo !== tipoFiltroGlobal) return false; return true; }); datos = datos.concat(actosFiltrados); if(ALL_VCP_DATA[suc]) { const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; if(estado !== 'todos') { if(estado === 'abiertos' && d.cerrado === true) return false; if(estado === 'cerrados' && d.cerrado === false) return false; } if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp') return false; return true; }); datos = datos.concat(vcpFiltrados); } }); if(currentFiltroTipo !== 'todos') { if(currentFiltroTipo === 'acto') datos = datos.filter(d => d.tipo === 'acto'); else if(currentFiltroTipo === 'condicion') datos = datos.filter(d => d.tipo === 'condicion'); else if(currentFiltroTipo === 'vcp') datos = datos.filter(d => d.tipo === 'vcp'); } const headers = ['Sucursal','Fecha','Responsable','Tipo','Descripcion','Sector','Estado','Categoria']; const rows = datos.map(d => [ d.sucursal || '', `${d.dia || '?'}/${d.mes || '?'}/2026`, d.observador || d.personaObservada || '', d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'Acto Inseguro' : 'Condicion Insegura'), `"${(d.descripcion || '').replace(/"/g, '""')}"`, d.sector || '', d.cerrado !== false ? 'Cerrado' : 'Abierto', d.categoria?.name || '' ]); const csv = [headers.join(','), ...rows.map(r => r.join(','))].join('\n'); const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `ResumenEjecutivo_${new Date().toISOString().split('T')[0]}.csv`; link.click(); }
 
 // ==================== EVENT LISTENERS ====================
 window.addEventListener('load', () => { if(localStorage.getItem('isLoggedIn') === 'true') { currentUser = localStorage.getItem('currentUser'); isUnlocked = true; document.getElementById('passwordOverlay').style.display = 'none'; showWelcomeScreen(); } else { document.getElementById('passwordInput')?.focus(); } document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); }); document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel); document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO')); document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER')); document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA')); document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true }); });
