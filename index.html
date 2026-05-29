@@ -808,55 +808,64 @@ function abrirModalPorResponsable(nombre) { const sucursal = document.getElement
 function abrirModalPorReincidencia(persona, categoria) { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estado = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datos = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if(sucursal !== 'todas' && suc !== sucursal) return; const filtrados = ALL_ACTOS_DATA[suc].filter(d => { if(mes !== 'todo' && d.mes !== mes) return false; if(sector !== 'todos' && !d.sector.includes(sector)) return false; if(estado !== 'todos') { if(estado === 'abiertos' && d.cerrado === true) return false; if(estado === 'cerrados' && d.cerrado === false) return false; } if(tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return false; if(d.observador !== persona) return false; if(d.categoria?.id !== categoria) return false; return true; }); datos = datos.concat(filtrados); }); abrirModalConDatos(`Reincidencias - ${persona} (${datos[0]?.categoria?.name || categoria})`, datos); }
 function abrirModalPorPuntoGrafico(mes, sucursal, esVCP) { const sectorFiltro = document.getElementById('ejecutivoSector').value; const estado = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datos = []; if(esVCP) { if(ALL_VCP_DATA[sucursal]) { datos = ALL_VCP_DATA[sucursal].filter(d => { if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; if(d.mes !== mes) return false; if(estado !== 'todos') { if(estado === 'abiertos' && d.cerrado === true) return false; if(estado === 'cerrados' && d.cerrado === false) return false; } if(tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return false; if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return false; return true; }); } } else { datos = ALL_ACTOS_DATA[sucursal].filter(d => { if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; if(d.mes !== mes) return false; if(estado !== 'todos') { if(estado === 'abiertos' && d.cerrado === true) return false; if(estado === 'cerrados' && d.cerrado === false) return false; } if(tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return false; if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false; return true; }); } const nombreSucursal = sucursal === 'MALAGUENO' ? 'Malagueño' : (sucursal === 'BARKER' ? 'Barker' : 'La Pampita'); const titulo = `${nombreSucursal} - ${mes.charAt(0).toUpperCase() + mes.slice(1)} ${esVCP ? '(VCP)' : '(Actos y Condiciones)'}`; abrirModalConDatos(titulo, datos); }
 function actualizarResumenEjecutivo() {
-const sucursal = document.getElementById('ejecutivoSucursal').value;
-const mes = document.getElementById('ejecutivoMes').value;
-const sector = document.getElementById('ejecutivoSector').value;
-const estado = document.getElementById('ejecutivoEstadoFiltro').value;
-const tipoFiltroGlobal = document.getElementById('ejecutivoTipoFiltro').value;
-let datosActos = [], datosVCP = [];
-Object.keys(ALL_ACTOS_DATA).forEach(suc => {
-if(sucursal !== 'todas' && suc !== sucursal) return;
-const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => {
-if(mes !== 'todo' && d.mes !== mes) return false;
-if(sector !== 'todos' && !d.sector.includes(sector)) return false;
-if(estado !== 'todos') {
-if(estado === 'abiertos' && d.cerrado === true) return false;
-if(estado === 'cerrados' && d.cerrado === false) return false;
-}
-if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp' && d.tipo !== tipoFiltroGlobal) return false;
-return true;
-});
-datosActos = datosActos.concat(actosFiltrados);
-if(ALL_VCP_DATA[suc]) {
-const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => {
-if(mes !== 'todo' && d.mes !== mes) return false;
-if(sector !== 'todos' && !d.sector.includes(sector)) return false;
-if(estado !== 'todos') {
-if(estado === 'abiertos' && d.cerrado === true) return false;
-if(estado === 'cerrados' && d.cerrado === false) return false;
-}
-if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp') return false;
-return true;
-});
-datosVCP = datosVCP.concat(vcpFiltrados);
-}
-});
-if(currentFiltroTipo !== 'todos') {
-if(currentFiltroTipo === 'acto') datosVCP = [];
-else if(currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; }
-else if(currentFiltroTipo === 'vcp') datosActos = [];
-}
-const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
-const totalCondiciones = datosActos.filter(d => d.tipo === 'condicion').length;
-const totalVCP = datosVCP.length;
-document.getElementById('ejecTotalActos').innerText = totalActos;
-document.getElementById('ejecTotalCondiciones').innerText = totalCondiciones;
-document.getElementById('ejecTotalVCP').innerText = totalVCP;
-document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCondiciones + totalVCP;
-renderEjecutivoRankings(datosActos);
-renderEjecutivoReincidencias(datosActos);
-renderEjecutivoTabla([...datosActos, ...datosVCP]);
-renderEjecutivoChartsSucursales(sector, sucursal, estado); // <-- AHORA PASA EL ESTADO
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    const estado = document.getElementById('ejecutivoEstadoFiltro').value;  // ✅ Obtener estado
+    const tipoFiltroGlobal = document.getElementById('ejecutivoTipoFiltro').value;
+    
+    let datosActos = [], datosVCP = [];
+    
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if(sucursal !== 'todas' && suc !== sucursal) return;
+        
+        const actosFiltrados = ALL_ACTOS_DATA[suc].filter(d => {
+            if(mes !== 'todo' && d.mes !== mes) return false;
+            if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+            
+            // ✅ FILTRO DE ESTADO SOLO PARA ACTOS/CONDICIONES
+            if(estado !== 'todos' && d.tipo !== 'vcp') {
+                if(estado === 'abiertos' && d.cerrado === true) return false;
+                if(estado === 'cerrados' && d.cerrado === false) return false;
+            }
+            
+            if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp' && d.tipo !== tipoFiltroGlobal) return false;
+            return true;
+        });
+        datosActos = datosActos.concat(actosFiltrados);
+        
+        if(ALL_VCP_DATA[suc]) {
+            const vcpFiltrados = ALL_VCP_DATA[suc].filter(d => {
+                if(mes !== 'todo' && d.mes !== mes) return false;
+                if(sector !== 'todos' && !d.sector.includes(sector)) return false;
+                if(tipoFiltroGlobal !== 'todos' && tipoFiltroGlobal !== 'vcp') return false;
+                return true;
+            });
+            datosVCP = datosVCP.concat(vcpFiltrados);
+        }
+    });
+    
+    if(currentFiltroTipo !== 'todos') {
+        if(currentFiltroTipo === 'acto') datosVCP = [];
+        else if(currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; }
+        else if(currentFiltroTipo === 'vcp') datosActos = [];
+    }
+    
+    const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
+    const totalCondiciones = datosActos.filter(d => d.tipo === 'condicion').length;
+    const totalVCP = datosVCP.length;
+    
+    document.getElementById('ejecTotalActos').innerText = totalActos;
+    document.getElementById('ejecTotalCondiciones').innerText = totalCondiciones;
+    document.getElementById('ejecTotalVCP').innerText = totalVCP;
+    document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCondiciones + totalVCP;
+    
+    renderEjecutivoRankings(datosActos);
+    renderEjecutivoReincidencias(datosActos);
+    renderEjecutivoTabla([...datosActos, ...datosVCP]);
+    
+    // ✅ PASAR EL PARÁMETRO ESTADO AHORA
+    renderEjecutivoChartsSucursales(sector, sucursal, estado);
 }
 function renderEjecutivoRankings(datos) { const actos = datos.filter(d => d.tipo === 'acto'); const countActos = {}; actos.forEach(d => { const key = d.descripcion || 'Sin descripción'; countActos[key] = (countActos[key] || 0) + 1; }); const topActos = Object.entries(countActos).sort((a,b) => b[1] - a[1]).slice(0, 5); const containerActos = document.getElementById('ejecTopActos'); if(containerActos) { containerActos.innerHTML = topActos.length ? topActos.map(([desc, count], i) => { return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" onclick="abrirModalPorDescripcion('${desc.replace(/'/g, "\\'")}', 'acto')"><div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div><div class="flex-1"><div class="font-bold text-sm text-slate-800">${desc.length > 40 ? desc.substring(0,40)+'...' : desc}</div><div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${count}</div></div>`; }).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>'; } const conds = datos.filter(d => d.tipo === 'condicion'); const countConds = {}; conds.forEach(d => { const key = d.descripcion || 'Sin descripción'; countConds[key] = (countConds[key] || 0) + 1; }); const topConds = Object.entries(countConds).sort((a,b) => b[1] - a[1]).slice(0, 5); const containerConds = document.getElementById('ejecTopCond'); if(containerConds) { containerConds.innerHTML = topConds.length ? topConds.map(([desc, count], i) => { return `<div class="zr-ranking-item zr-ranking-${i+1 <= 3 ? i+1 : 'default'}" style="border-left-color:#d97706" onclick="abrirModalPorDescripcion('${desc.replace(/'/g, "\\'")}', 'condicion')"><div class="zr-rank-num zr-rank-${i+1 <= 3 ? i+1 : 'default'}">${i+1}</div><div class="flex-1"><div class="font-bold text-sm text-slate-800">${desc.length > 40 ? desc.substring(0,40)+'...' : desc}</div><div class="text-xs text-slate-500">${count} registro${count > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${count}</div></div>`; }).join('') : '<p class="text-slate-400 text-center py-4">Sin datos</p>'; } const countResp = {}; [...datos].forEach(d => { const resp = d.observador || 'Sin identificar'; countResp[resp] = (countResp[resp] || 0) + 1; }); const topResp = Object.entries(countResp).sort((a,b) => b[1] - a[1]).slice(0, 10); const containerResp = document.getElementById('ejecTopResponsables'); if(containerResp) { containerResp.innerHTML = topResp.map(([nombre, count], i) => { const corona = i === 0 ? '<span class="crown-animated ml-1"></span>' : ''; return `<div class="flex items-center justify-between p-2 bg-white rounded-lg shadow-sm mb-2 cursor-pointer hover:bg-purple-50 transition-all" onclick="abrirModalPorResponsable('${nombre.replace(/'/g, "\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-purple-600 w-8">${i+1}</span><span class="font-semibold text-slate-700">${nombre}</span>${corona}</div><div class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-sm font-bold">${count} reportes</div></div>`; }).join(''); } }
 function renderEjecutivoReincidencias(datos) { const reincMap = new Map(); datos.forEach(d => { if(!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) { reincMap.set(key, {persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set()}); } const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a,b) => b.count - a.count).slice(0, 10); const container = document.getElementById('ejecReincidencias'); if(container) { container.innerHTML = reincList.length ? reincList.map(r => `<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-yellow-500 cursor-pointer hover:shadow-md transition-all" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g, "\\'")}', '${r.categoria.id}')"><div class="flex justify-between items-start"><div><span class="font-bold text-sm text-slate-800">👤 ${r.persona}</span><span class="text-xs text-slate-500 ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-xs font-bold">${r.count}x</span></div><div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join('') : '<p class="text-slate-400 text-center py-4 col-span-2">✅ Sin reincidencias detectadas</p>'; } }
@@ -885,107 +894,131 @@ return `<tr class="border-b hover:bg-slate-50 cursor-pointer" onclick="abrirModa
 </tr>`;
 }).join('') || '<tr><td colspan="7" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
 }
-function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) { 
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; 
-    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; 
-    const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; 
-    const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' }; 
-    const datasets = []; 
-    sucursales.forEach(suc => { 
-        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; 
-        const dataPorMes = meses.map(mes => { 
-            let total = 0; 
-            if(ALL_ACTOS_DATA[suc]) { 
-                const filtrados = ALL_ACTOS_DATA[suc].filter(d => { 
-                    if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; 
-                    if(d.mes !== mes) return false; 
-                    if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false; 
-                    // ✅ FILTRO DE ESTADO AGREGADO PARA ACTOS
+function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) {  // ✅ Recibir estado
+    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
+    const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' };
+    const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
+    
+    const datasets = [];
+    sucursales.forEach(suc => {
+        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+        const dataPorMes = meses.map(mes => {
+            let total = 0;
+            if(ALL_ACTOS_DATA[suc]) {
+                const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+                    if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+                    if(d.mes !== mes) return false;
+                    if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false;
+                    
+                    // ✅ APLICAR FILTRO DE ESTADO
                     if(estadoFiltro !== 'todos') {
                         if(estadoFiltro === 'abiertos' && d.cerrado === true) return false;
                         if(estadoFiltro === 'cerrados' && d.cerrado === false) return false;
                     }
-                    return true; 
-                }); 
-                total = filtrados.length; 
-            } 
-            return total; 
-        }); 
-        datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); 
-    }); 
-    const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); 
-    if(ctx1) { 
-        if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); 
-        ejecutivoChartSucursales = new Chart(ctx1, { 
-            type: 'line', 
-            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets }, 
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                onClick: (e, activeEls) => { 
-                    if(activeEls.length) { 
-                        const datasetIndex = activeEls[0].datasetIndex; 
-                        const dataIndex = activeEls[0].index; 
-                        const mesSeleccionado = meses[dataIndex]; 
-                        const sucursalSeleccionada = sucursales[datasetIndex]; 
-                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false); 
-                    } 
-                }, 
-                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } 
-            } 
-        }); 
-    } 
-    const datasetsVCP = []; 
-    sucursales.forEach(suc => { 
-        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; 
-        if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return; 
-        const dataPorMes = meses.map(mes => { 
-            const filtrados = ALL_VCP_DATA[suc].filter(d => { 
-                if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; 
-                if(d.mes !== mes) return false; 
-                if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0; 
-                // ✅ FILTRO DE ESTADO AGREGADO PARA VCP
-                if(estadoFiltro !== 'todos') {
-                    if(estadoFiltro === 'abiertos' && d.cerrado === true) return false;
-                    if(estadoFiltro === 'cerrados' && d.cerrado === false) return false;
-                }
-                return true; 
-            }); 
-            return filtrados.length; 
-        }); 
-        datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); 
-    }); 
-    const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); 
-    if(ctx2) { 
-        if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); 
-        ejecutivoChartVCPSucursales = new Chart(ctx2, { 
-            type: 'line', 
-            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP }, 
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                onClick: (e, activeEls) => { 
-                    if(activeEls.length) { 
-                        const datasetIndex = activeEls[0].datasetIndex; 
-                        const dataIndex = activeEls[0].index; 
-                        const mesSeleccionado = meses[dataIndex]; 
-                        const sucursalSeleccionada = sucursales[datasetIndex]; 
-                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true); 
-                    } 
-                }, 
+                    return true;
+                });
+                total = filtrados.length;
+            }
+            return total;
+        });
+        datasets.push({
+            label: nombres[suc],
+            data: dataPorMes,
+            borderColor: colores[suc],
+            backgroundColor: colores[suc]+'20',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 5,
+            pointBackgroundColor: colores[suc],
+            pointBorderColor: 'white',
+            pointBorderWidth: 2
+        });
+    });
+    
+    const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d');
+    if(ctx1) {
+        if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy();
+        ejecutivoChartSucursales = new Chart(ctx1, {
+            type: 'line',
+            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (e, activeEls) => {
+                    if(activeEls.length) {
+                        const datasetIndex = activeEls[0].datasetIndex;
+                        const dataIndex = activeEls[0].index;
+                        const mesSeleccionado = meses[dataIndex];
+                        const sucursalSeleccionada = sucursales[datasetIndex];
+                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false);
+                    }
+                },
+                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }
+            }
+        });
+    }
+    
+    const datasetsVCP = [];
+    sucursales.forEach(suc => {
+        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+        if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return;
+        const dataPorMes = meses.map(mes => {
+            const filtrados = ALL_VCP_DATA[suc].filter(d => {
+                if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+                if(d.mes !== mes) return false;
+                if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0;
+                return true;
+            });
+            return filtrados.length;
+        });
+        datasetsVCP.push({
+            label: nombres[suc],
+            data: dataPorMes,
+            borderColor: colores[suc],
+            backgroundColor: colores[suc]+'20',
+            borderWidth: 2,
+            fill: false,
+            tension: 0.3,
+            pointRadius: 5,
+            pointBackgroundColor: colores[suc],
+            pointBorderColor: 'white',
+            pointBorderWidth: 2
+        });
+    });
+    
+    const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d');
+    if(ctx2) {
+        if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy();
+        ejecutivoChartVCPSucursales = new Chart(ctx2, {
+            type: 'line',
+            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                onClick: (e, activeEls) => {
+                    if(activeEls.length) {
+                        const datasetIndex = activeEls[0].datasetIndex;
+                        const dataIndex = activeEls[0].index;
+                        const mesSeleccionado = meses[dataIndex];
+                        const sucursalSeleccionada = sucursales[datasetIndex];
+                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true);
+                    }
+                },
                 plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } },
-                scales: { 
-                    y: { 
-                        beginAtZero: true, 
-                        max: 60, // ✅ ESCALA FIJA EN 60 PARA VCP EN RESUMEN EJECUTIVO
-                        grid: { color: 'rgba(0,0,0,0.05)' }, 
-                        ticks: { stepSize: 5 } 
-                    }, 
-                    x: { ticks: { font: { size: 9 } }, grid: { display: false } } 
-                } 
-            } 
-        }); 
-    } 
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { stepSize: 5 }
+                    },
+                    x: { ticks: { font: { size: 9 } }, grid: { display: false } }
+                }
+            }
+        });
+    }
 }
 // ==================== EVENT LISTENERS ====================
 window.addEventListener('load', () => { if(localStorage.getItem('isLoggedIn') === 'true') { currentUser = localStorage.getItem('currentUser'); isUnlocked = true; document.getElementById('passwordOverlay').style.display = 'none'; showWelcomeScreen(); } else { document.getElementById('passwordInput')?.focus(); } document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); }); document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel); document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO')); document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER')); document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA')); document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true }); });
