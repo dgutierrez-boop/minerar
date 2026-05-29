@@ -664,7 +664,104 @@ function goToNextModal() { if(currentModalIndex<currentModalData.length-1) { cur
 function goToPreviousModal() { if(currentModalIndex>0) { currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { if(!isUnlocked) return; const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos') { alert("⚠️ Seleccione un supervisor"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; } const t=tipo==='acto'?`️ ACTOS de ${s}`:`️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706'; let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2"> Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full"> CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; }); html+=`</tbody></table></div>`; document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html; const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
 function closeSupervisorModal() { const m=document.getElementById('supervisorDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
-function abrirModalPersonaVCP() { if(!isUnlocked) return; const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos') { alert("️ Seleccione una persona"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length) { alert(`No hay VCPs para ${p} en ${nm}.`); return; } let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-purple-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Persona: <span class="font-bold text-purple-600">${p}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-purple-600">${f.length}</span> VCPs</p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2"> Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">🏷️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">💬 Comentarios</th><th class="p-2">🔒 Estado</th></table></thead><tbody>`; f.forEach(e=>{ const dc=e.descripcion?.length>50?e.descripcion.substring(0,50)+'...':e.descripcion, cc=e.comentarios&&e.comentarios.length>30?e.comentarios.substring(0,30)+'...':(e.comentarios||'-'); html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-purple-700">📅 ${e.dia}/${e.mes}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${dc}</td><td class="p-2 max-w-xs">${cc}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">🔒 CERRADO</span></td></tr>`; }); html+=`</tbody></table></div>`; document.getElementById('modalPersonaVCPTitle').innerHTML=`📋 VCPs de ${p}`; document.getElementById('personaVCPModalContent').innerHTML=html; const mod=document.getElementById('personaVCPModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
+function abrirModalPersonaVCP() { 
+    if(!isUnlocked) return; 
+    const p = document.getElementById('vcpPersonFilter').value; 
+    const m = document.getElementById('vcpPersonMonthFilter').value; 
+    
+    if(p === 'todos') { 
+        alert("⚠️ Seleccione una persona"); 
+        return; 
+    } 
+    
+    const nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1);
+    const f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m)); 
+    
+    if(!f.length) { 
+        alert(`No hay VCPs para ${p} en ${nm}.`); 
+        return; 
+    } 
+    
+    // Encabezado mejorado
+    let html = `
+    <div class="mb-4 bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
+        <div class="flex items-center justify-between mb-2">
+            <h3 class="text-lg font-bold text-purple-800">📋 VCPs de ${p}</h3>
+            <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">${f.length} VCPs</span>
+        </div>
+        <div class="grid grid-cols-2 gap-2 text-sm">
+            <div class="flex items-center gap-2 text-slate-600">
+                <span class="font-bold">📅 Período:</span>
+                <span class="font-semibold text-purple-700">${nm}</span>
+            </div>
+            <div class="flex items-center gap-2 text-slate-600">
+                <span class="font-bold">👤 Persona:</span>
+                <span class="font-semibold text-purple-700">${p}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="overflow-x-auto rounded-lg border border-slate-200">
+        <table class="w-full text-xs">
+            <thead class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+                <tr>
+                    <th class="p-3 text-left">📅 Fecha</th>
+                    <th class="p-3 text-left">🏭 Sector</th>
+                    <th class="p-3 text-left">🏷️ Categoría</th>
+                    <th class="p-3 text-left">📝 Descripción</th>
+                    <th class="p-3 text-left">💬 Comentarios</th>
+                    <th class="p-3 text-center">🔒 Estado</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white">
+    `; 
+    
+    f.forEach((e, index) => { 
+        const dc = e.descripcion?.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion || '-';
+        const cc = e.comentarios?.length > 40 ? e.comentarios.substring(0,40)+'...' : e.comentarios || '-';
+        const rowColor = index % 2 === 0 ? 'bg-slate-50' : 'bg-white';
+        
+        html += `
+            <tr class="${rowColor} hover:bg-purple-50 transition-colors border-b border-slate-100">
+                <td class="p-3 font-semibold text-purple-700">📅 ${e.dia}/${e.mes}/2026</td>
+                <td class="p-3 text-slate-700">🏭 ${e.sector || 'No especificado'}</td>
+                <td class="p-3">
+                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
+                        ${e.categoria?.icon || '🏷️'} ${e.categoria?.name || 'Sin categoría'}
+                    </span>
+                </td>
+                <td class="p-3 text-slate-700 max-w-xs" title="${e.descripcion || ''}">${dc}</td>
+                <td class="p-3 text-slate-600 max-w-xs" title="${e.comentarios || ''}">${cc}</td>
+                <td class="p-3 text-center">
+                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+                        🔒 CERRADO
+                    </span>
+                </td>
+            </tr>
+        `; 
+    }); 
+    
+    html += `
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="mt-4 flex justify-between items-center text-sm text-slate-500">
+        <span>📊 Total: <strong class="text-purple-700">${f.length}</strong> VCPs registrados</span>
+        <span class="text-xs">Última actualización: ${new Date().toLocaleDateString()}</span>
+    </div>
+    `;
+    
+    document.getElementById('modalPersonaVCPTitle').innerHTML = '📋 Detalle de VCPs'; 
+    document.getElementById('personaVCPModalContent').innerHTML = html; 
+    
+    const mod = document.getElementById('personaVCPModal'); 
+    mod.querySelector('.modal-bounce').style.animation = 'none'; 
+    mod.querySelector('.modal-bounce').offsetHeight; 
+    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
+    mod.classList.remove('hidden-section'); 
+    mod.style.display = 'flex'; 
+}
 function closePersonaVCPModal() { const m=document.getElementById('personaVCPModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 // ==================== UTILS ====================
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo'; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section'); const cb2=document.getElementById('clearVCPCauseBtn'); if(cb2) cb2.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
