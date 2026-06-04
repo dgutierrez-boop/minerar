@@ -176,6 +176,90 @@ background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%);
 z-index: 20000;
 overflow-y: auto;
 }
+
+/* ==================== ESTILOS PARA IMÁGENES EN MODALES ==================== */
+.imagen-reporte-container {
+    margin: 12px 0;
+    padding: 12px;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    border: 2px solid #e2e8f0;
+}
+.imagen-reporte-title {
+    font-size: 11px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.imagen-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+}
+.imagen-item {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    background: white;
+}
+.imagen-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+}
+.imagen-item img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    display: block;
+}
+.imagen-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+    padding: 8px;
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+}
+.imagen-error {
+    width: 100%;
+    height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #fef2f2;
+    color: #dc2626;
+    font-size: 11px;
+    padding: 12px;
+    text-align: center;
+}
+.imagen-link-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.2s;
+    margin-top: 8px;
+}
+.imagen-link-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; }
 .header-left { justify-content: center; width: 100%; }
@@ -185,6 +269,8 @@ overflow-y: auto;
 .table-scroll { max-height: 300px; }
 .chart-container { height: 250px; }
 body { padding: 10px; font-size: 13px; }
+.imagen-grid { grid-template-columns: 1fr; }
+.imagen-item img { height: 200px; }
 }
 </style>
 </head>
@@ -208,7 +294,7 @@ body { padding: 10px; font-size: 13px; }
 <!-- 🌊 BIENVENIDA -->
 <div id="welcomeOverlay" class="hidden-section">
 <div class="welcome-card">
-<div class="welcome-icon">👷‍️️️</div>
+<div class="welcome-icon">👷‍️️️️</div>
 <h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
 <div class="welcome-divider"></div>
 <p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
@@ -475,6 +561,57 @@ let currentDateKey = new Date().toDateString();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let alertCountdownInterval = null, autoCountdownTimer = null, progressInterval = null;
 let refreshInterval = null;
+
+// ==================== FUNCIONES PARA IMÁGENES ====================
+function convertirEnlacesImagenes(urlString) {
+    if (!urlString || urlString.trim() === '') return [];
+    const urls = urlString.split(',').map(u => u.trim()).filter(u => u);
+    const imagenes = [];
+    urls.forEach(url => {
+        if (url.includes('drive.google.com')) {
+            const match = url.match(/[?&]id=([^&]+)/);
+            if (match && match[1]) {
+                const fileId = match[1];
+                imagenes.push({
+                    thumbnail: `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`,
+                    full: `https://drive.google.com/file/d/${fileId}/view`,
+                    original: url
+                });
+            }
+        } else if (url.startsWith('http')) {
+            imagenes.push({
+                thumbnail: url,
+                full: url,
+                original: url
+            });
+        }
+    });
+    return imagenes;
+}
+
+function renderizarImagenesModal(imagenesString, titulo = "📸 REGISTRO FOTOGRÁFICO") {
+    const imagenes = convertirEnlacesImagenes(imagenesString);
+    if (!imagenes || imagenes.length === 0) return '';
+    
+    let html = `<div class="imagen-reporte-container">`;
+    html += `<div class="imagen-reporte-title">${titulo}</div>`;
+    html += `<div class="imagen-grid">`;
+    
+    imagenes.forEach((img, index) => {
+        html += `
+        <div class="imagen-item" onclick="window.open('${img.full}', '_blank')">
+            <img src="${img.thumbnail}" alt="Imagen ${index + 1}" 
+                 onerror="this.parentElement.innerHTML='<div class=\\'imagen-error\\'>❌ No se pudo cargar la imagen<br><a href=\\'${img.full}\\' target=\\'_blank\\' class=\\'imagen-link-btn\\'>🔗 Ver en Drive</a></div>'"
+                 onload="this.style.opacity='1'" style="opacity:0; transition: opacity 0.3s;">
+            <div class="imagen-overlay">📷 Imagen ${index + 1} · Click para ampliar</div>
+        </div>`;
+    });
+    
+    html += `</div>`;
+    html += `</div>`;
+    return html;
+}
+
 // Función auxiliar para escapar HTML
 function escapeHtml(str) {
 if(!str) return '';
@@ -506,7 +643,35 @@ function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.t
 function classifyData(desc,useVCP=false) { const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899',keywords:['berma','talud','camino','señal']}]; const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444',keywords:['berma','talud','camino','señal']}]; if(!desc) return useVCP ? CATEGORIES_VCP[0] : CATEGORIES_ACTOS[5]; let d=desc.toLowerCase(), cats=useVCP?CATEGORIES_VCP:CATEGORIES_ACTOS, best=cats[0], max=0; for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best; }
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 // ==================== CARGA DE DATOS ====================
-async function cargarDatosSucursal(sucursal) { const config = SUCURSALES_CONFIG[sucursal], ts = Date.now(); let actosData = [], vcpData = [], nuevosActos = 0, nuevosVCP = 0; const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; if(config.actosUrl) { try { const r1 = await fetch(config.actosUrl + '&t=' + ts), text = await r1.text(), rows = parseCSV(text); for(let i=0; i<rows.length; i++) { const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = ''; if(sucursal === 'MALAGUENO' && i >= 225) { const u = row[20] || ''; if(u.toUpperCase().startsWith('AI-')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI-\s*/i,'').trim(); } else if(u.toUpperCase().startsWith('CI-')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI-\s*/i,'').trim(); } else { tipoRaw=''; desc=u; } fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || ''; } else { if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue; fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || ''; } const fd = parseFecha(fecha); if(!fd.valido) continue; let tipo = 'otro'; if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); const cat = classifyData(desc, false); actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${observador}|${desc}|${fecha}`; if(!reportesNotificadosActos.has(idUnico)) { reportesNotificadosActos.add(idUnico); const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte); nuevosActos++; if(nuevosActos === 1) { setTimeout(() => { showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora); }, 1000); } } } } } catch(e) { console.error(`❌ Error cargando actos de ${sucursal}:`, e); } } if(config.showVCP && config.vcpUrl) { try { const r2 = await fetch(config.vcpUrl + '&t=' + ts), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping; for(let i=0; i<rows2.length; i++) { const row = rows2[i]; let fr, po, sec, des, com; if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; } else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; } const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue; const cat = classifyData(des, true); vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${po}|${des}|${fr}`; if(!reportesNotificadosVCP.has(idUnico)) { reportesNotificadosVCP.add(idUnico); const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP); nuevosVCP++; if(nuevosVCP === 1) { setTimeout(() => { showNewReportAlert(po, sec, des, 'VCP', hora); }, 1000); } } } } } catch(e) { console.error(`❌ Error cargando VCP de ${sucursal}:`, e); } } return { actos: actosData, vcp: vcpData }; }
+async function cargarDatosSucursal(sucursal) { const config = SUCURSALES_CONFIG[sucursal], ts = Date.now(); let actosData = [], vcpData = [], nuevosActos = 0, nuevosVCP = 0; const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; if(config.actosUrl) { try { const r1 = await fetch(config.actosUrl + '&t=' + ts), text = await r1.text(), rows = parseCSV(text); for(let i=0; i<rows.length; i++) { const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = ''; if(sucursal === 'MALAGUENO' && i >= 225) { const u = row[20] || ''; if(u.toUpperCase().startsWith('AI-')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI-\s*/i,'').trim(); } else if(u.toUpperCase().startsWith('CI-')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI-\s*/i,'').trim(); } else { tipoRaw=''; desc=u; } fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || ''; } else { if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue; fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || ''; } 
+
+// 🔍 DETECTOR INTELIGENTE DE IMÁGENES (Busca cualquier link de Drive/HTTP en la fila)
+let imagenUrls = [];
+for(let j=0; j<row.length; j++) {
+    const cell = row[j] ? row[j].trim() : '';
+    if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) {
+        if(!cell.includes('/spreadsheets/d/')) { // Ignora el link de la propia hoja
+            imagenUrls.push(cell);
+        }
+    }
+}
+let imagenUrl = imagenUrls.join(',');
+
+const fd = parseFecha(fecha); if(!fd.valido) continue; let tipo = 'otro'; if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion'; let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); const cat = classifyData(desc, false); actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${observador}|${desc}|${fecha}`; if(!reportesNotificadosActos.has(idUnico)) { reportesNotificadosActos.add(idUnico); const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte); nuevosActos++; if(nuevosActos === 1) { setTimeout(() => { showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora); }, 1000); } } } } } catch(e) { console.error(`❌ Error cargando actos de ${sucursal}:`, e); } } if(config.showVCP && config.vcpUrl) { try { const r2 = await fetch(config.vcpUrl + '&t=' + ts), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping; for(let i=0; i<rows2.length; i++) { const row = rows2[i]; let fr, po, sec, des, com; if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; } else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; } 
+
+// 🔍 DETECTOR INTELIGENTE DE IMÁGENES PARA VCP
+let imagenUrlsVCP = [];
+for(let j=0; j<row.length; j++) {
+    const cell = row[j] ? row[j].trim() : '';
+    if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) {
+        if(!cell.includes('/spreadsheets/d/')) {
+            imagenUrlsVCP.push(cell);
+        }
+    }
+}
+let imagenUrlVCP = imagenUrlsVCP.join(',');
+
+const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue; const cat = classifyData(des, true); vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${po}|${des}|${fr}`; if(!reportesNotificadosVCP.has(idUnico)) { reportesNotificadosVCP.add(idUnico); const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP); nuevosVCP++; if(nuevosVCP === 1) { setTimeout(() => { showNewReportAlert(po, sec, des, 'VCP', hora); }, 1000); } } } } } catch(e) { console.error(`❌ Error cargando VCP de ${sucursal}:`, e); } } return { actos: actosData, vcp: vcpData }; }
 async function loadData() { if(!isUnlocked || isUpdating) return; isUpdating = true; try { const config = SUCURSALES_CONFIG[currentSucursal]; ACTOS_URL = config.actosUrl; VCP_URL = config.vcpUrl; currentMapping = config.mapping; currentVcpMapping = config.vcpMapping || null; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP; const result = await cargarDatosSucursal(currentSucursal); ACTOS_COND_DATA = result.actos; VCP_DATA = result.vcp; ALL_ACTOS_DATA[currentSucursal] = result.actos; ALL_VCP_DATA[currentSucursal] = result.vcp; document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0'; await populateSupervisorsPreserveSelection(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); } catch(e) { console.error('❌ Error cargando datos:', e); } finally { isUpdating = false; } }
 async function populateSupervisorsPreserveSelection() { const sel = document.getElementById('supervisorSelect'); if(!sel) return; const previousValue = sel.value; const s = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n).sort(); sel.innerHTML = '<option value="todos">🔘 Todos</option>'; s.forEach(x => sel.innerHTML += `<option value="${x}">👤 ${x}</option>`); if(previousValue && previousValue !== 'todos' && s.includes(previousValue)) sel.value = previousValue; else if(previousValue === 'todos') sel.value = 'todos'; updateSupervisorCard(); }
 async function cargarTodosDatosParaResumen() { for(const suc of ['MALAGUENO', 'BARKER', 'LAPAMPITA']) { if(!ALL_ACTOS_DATA[suc] || ALL_ACTOS_DATA[suc].length === 0) { const result = await cargarDatosSucursal(suc); ALL_ACTOS_DATA[suc] = result.actos; ALL_VCP_DATA[suc] = result.vcp; } } }
@@ -518,119 +683,115 @@ function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPF
 function applyGeneralFilters() { let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)) && (state.causaRaiz==='todas'||selectedCausa==='todas'||e.categoria?.id===selectedCausa)); if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa); let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion'); document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length; let pA = Math.min(a.length/currentObjetivos.actos*100, 100), pC = Math.min(c.length/currentObjetivos.cond*100, 100); document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%'; document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%'; let up = (id,p) => { let el = document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText=' Pendiente';el.className='status-badge status-low';} }; up('actosStatus',pA); up('condStatus',pC); updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f); }
 function updateCategoryCards(data,type) { const CATEGORIES_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ec4899'}]; const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}]; const cats = type==='actos' ? CATEGORIES_ACTOS : CATEGORIES_VCP, contId = type==='actos' ? 'categoryCards' : 'vcpCategoryCards'; let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; }); let total = data.length || 1, cont = document.getElementById(contId); if(!cont) return; cont.innerHTML = ''; cats.forEach(c => { let val = counts[c.id] || 0, pct = Math.round(val/total*100); let div = document.createElement('div'); let isActive = (type==='actos' ? selectedCausa === c.id : selectedVCPCausa === c.id); div.className = `category-card p-3 text-center relative cursor-pointer ${isActive ? 'selected' : ''}`; div.style.borderColor = isActive ? '#d97706' : c.color; div.onclick = () => { if (type==='actos') { if (isActive) { selectedCausa = 'todas'; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); } else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); } applyGeneralFilters(); } else { if (isActive) { selectedVCPCausa = 'todas'; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); } else { selectedVCPCausa = c.id; document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section'); } applyVCPFilters(); } }; div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive ? '#d97706' : c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; cont.appendChild(div); }); }
 function updateChartsDona(data,type) { const cats = type==='actos' ? [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ec4899'}] : [{id:'orden',name:'Orden',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Proced.',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos',icon:'🔧',color:'#F97316'},{id:'area',name:'Área',icon:'🏗️',color:'#EF4444'}]; const canvasId = type==='actos' ? 'categoryChart' : 'vcpCategoryChart', ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return; let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; }); if(type==='actos'&&categoryChart) categoryChart.destroy(); if(type!=='actos'&&vcpCategoryChart) vcpCategoryChart.destroy(); const chart = new Chart(ctx, { type: 'doughnut', data: { labels: cats.map(c => `${c.icon} ${c.name}`), datasets: [{ data: cats.map(c => counts[c.id] || 0), backgroundColor: cats.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] }, options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); const pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } } } }); if(type==='actos') categoryChart = chart; else vcpCategoryChart = chart; }
-function updateTrendChart(data) { 
-const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], 
-ctx = document.getElementById('trendChart')?.getContext('2d'); 
-if(!ctx) return; 
-let sourceData = data || ACTOS_COND_DATA; 
-let aPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='acto').length), 
-cPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='condicion').length); 
-if(trendChart) trendChart.destroy(); 
-
+function updateTrendChart(data) {
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
+ctx = document.getElementById('trendChart')?.getContext('2d');
+if(!ctx) return;
+let sourceData = data || ACTOS_COND_DATA;
+let aPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='acto').length),
+cPM = meses.map(m => sourceData.filter(e => e.mes===m && e.tipo==='condicion').length);
+if(trendChart) trendChart.destroy();
 // ESCALAS DINÁMICAS POR SUCURSAL
 let maxYScale = 110; // Default MALAGUEÑO
 if(currentSucursal === 'LAPAMPITA') maxYScale = 150;
 else if(currentSucursal === 'BARKER') maxYScale = 15;
-
-trendChart = new Chart(ctx, { 
-type: 'line', 
-data: { 
-labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)), 
-datasets: [ 
-{ label: '️ Actos', data: aPM, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true }, 
-{ label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true } 
-] 
-}, 
-options: { 
-responsive: true, 
-maintainAspectRatio: false, 
-plugins: { 
-legend: { position: 'top', labels: { font: { size: 9 } } } 
-}, 
-scales: { 
-y: { 
-beginAtZero: true, 
+trendChart = new Chart(ctx, {
+type: 'line',
+data: {
+labels: meses.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+datasets: [
+{ label: '️ Actos', data: aPM, borderColor: '#06b6d4', backgroundColor: 'rgba(6,182,212,0.1)', tension: 0.3, fill: true },
+{ label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true }
+]
+},
+options: {
+responsive: true,
+maintainAspectRatio: false,
+plugins: {
+legend: { position: 'top', labels: { font: { size: 9 } } }
+},
+scales: {
+y: {
+beginAtZero: true,
 max: maxYScale,
-ticks: { stepSize: 10 } 
-}, 
-x: { ticks: { font: { size: 9 } } } 
-} 
-} 
-}); 
+ticks: { stepSize: 10 }
+},
+x: { ticks: { font: { size: 9 } } }
+}
+}
+});
 }
 function applyVCPFilters() { let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado)) && (state.vcpCausa==='todas'||selectedVCPCausa==='todas'||e.categoria?.id===selectedVCPCausa)); if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa); let pct = Math.min(f.length/OBJ_VCP*100, 100), vs = document.getElementById('vcpStatus'); if(vs) { if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; } document.getElementById('vcpBar').style.width = pct+'%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct)+'%'; updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f); }
-function updateVCPCharts(data) { 
-const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}]; 
-let counts = {}; 
-CATEGORIES_VCP.forEach(c => counts[c.id] = 0); 
-data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; }); 
-const ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d'); 
-if(vcpCategoryChart) vcpCategoryChart.destroy(); 
-vcpCategoryChart = new Chart(ctxD, { 
-type: 'doughnut', 
-data: { 
-labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`), 
-datasets: [{ 
-data: CATEGORIES_VCP.map(c => counts[c.id] || 0), 
-backgroundColor: CATEGORIES_VCP.map(c => c.color), 
-borderWidth: 2, 
-borderColor: 'white', 
-hoverOffset: 15 
-}] 
-}, 
-options: { 
-cutout: '55%', 
-plugins: { 
-legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, pointStyle: 'circle' } }, 
-tooltip: { callbacks: { label: (ctx) => { let t = ctx.dataset.data.reduce((a,b) => a+b, 0); let p = Math.round((ctx.parsed/t)*100); return `${ctx.label}: ${ctx.parsed} (${p}%)`; } } } 
-}, 
-animation: { animateRotate: true } 
-} 
-}); 
-const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], 
-vPM = m.map(mes => data.filter(e => e.mes === mes).length); 
-const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d'); 
-if(vcpTrendChart) vcpTrendChart.destroy(); 
-
+function updateVCPCharts(data) {
+const CATEGORIES_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#22C55E'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#EAB308'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#F97316'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#EF4444'}];
+let counts = {};
+CATEGORIES_VCP.forEach(c => counts[c.id] = 0);
+data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; });
+const ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d');
+if(vcpCategoryChart) vcpCategoryChart.destroy();
+vcpCategoryChart = new Chart(ctxD, {
+type: 'doughnut',
+data: {
+labels: CATEGORIES_VCP.map(c => `${c.icon} ${c.name}`),
+datasets: [{
+data: CATEGORIES_VCP.map(c => counts[c.id] || 0),
+backgroundColor: CATEGORIES_VCP.map(c => c.color),
+borderWidth: 2,
+borderColor: 'white',
+hoverOffset: 15
+}]
+},
+options: {
+cutout: '55%',
+plugins: {
+legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, pointStyle: 'circle' } },
+tooltip: { callbacks: { label: (ctx) => { let t = ctx.dataset.data.reduce((a,b) => a+b, 0); let p = Math.round((ctx.parsed/t)*100); return `${ctx.label}: ${ctx.parsed} (${p}%)`; } } }
+},
+animation: { animateRotate: true }
+}
+});
+const m = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'],
+vPM = m.map(mes => data.filter(e => e.mes === mes).length);
+const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d');
+if(vcpTrendChart) vcpTrendChart.destroy();
 // ESCALA DINÁMICA PARA VCP POR SUCURSAL
 let maxVCPYScale = 35; // Default MALAGUENO
 if(currentSucursal === 'LAPAMPITA') maxVCPYScale = 60;
-
-vcpTrendChart = new Chart(ctxT, { 
-type: 'line', 
-data: { 
-labels: m.map(m => m.charAt(0).toUpperCase() + m.slice(1)), 
-datasets: [{ 
-label: '🎯 VCP', 
-data: vPM, 
-borderColor: '#f59e0b', 
-backgroundColor: 'rgba(245,158,11,0.1)', 
-borderWidth: 3, 
-fill: true, 
-tension: 0.3, 
-pointRadius: 4, 
-pointBackgroundColor: '#f59e0b', 
-pointBorderColor: 'white', 
-pointBorderWidth: 2 
-}] 
-}, 
-options: { 
-responsive: true, 
-maintainAspectRatio: true, 
-plugins: { 
-legend: { position: 'top', labels: { font: { size: 9 } } } 
-}, 
-scales: { 
-y: { 
-beginAtZero: true, 
+vcpTrendChart = new Chart(ctxT, {
+type: 'line',
+data: {
+labels: m.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+datasets: [{
+label: '🎯 VCP',
+data: vPM,
+borderColor: '#f59e0b',
+backgroundColor: 'rgba(245,158,11,0.1)',
+borderWidth: 3,
+fill: true,
+tension: 0.3,
+pointRadius: 4,
+pointBackgroundColor: '#f59e0b',
+pointBorderColor: 'white',
+pointBorderWidth: 2
+}]
+},
+options: {
+responsive: true,
+maintainAspectRatio: true,
+plugins: {
+legend: { position: 'top', labels: { font: { size: 9 } } }
+},
+scales: {
+y: {
+beginAtZero: true,
 max: maxVCPYScale,
-grid: { color: 'rgba(0,0,0,0.05)' }, 
-ticks: { stepSize: 5 } 
-}, 
-x: { ticks: { font: { size: 9 } }, grid: { display: false } } 
-} 
-} 
-}); 
+grid: { color: 'rgba(0,0,0,0.05)' },
+ticks: { stepSize: 5 }
+},
+x: { ticks: { font: { size: 9 } }, grid: { display: false } }
+}
+}
+});
 }
 function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML = ''; const sortedData = [...data].sort((a,b) => { const dateA = new Date(`${a.fecha.split('/')[2]}-${a.fecha.split('/')[1]}-${a.fecha.split('/')[0]}`); const dateB = new Date(`${b.fecha.split('/')[2]}-${b.fecha.split('/')[1]}-${b.fecha.split('/')[0]}`); return dateB - dateA; }); const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sortedData.slice(0,50).forEach((e,i) => { let tr = document.createElement('tr'), esDeHoy = (e.dia === diaHoy && e.mes === mesHoy); tr.className = esDeHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer'; tr.onclick = () => openModal(e, i, sortedData); let iconoFecha = esDeHoy ? '🔥' : '', etiqueta = esDeHoy ? '<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1 animate-pulse">HOY</span>' : ''; tr.innerHTML = `<td class="p-2 text-cyan-700">${iconoFecha} ${e.dia}/${e.mes} ${etiqueta}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${e.tipo==='acto'?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold"> ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${e.descripcion?.substring(0,55)||''}${e.descripcion?.length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
 function renderVCPTable(data) { let tb = document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML = ''; const sorted = [...data].sort((a,b) => new Date(b.fecha) - new Date(a.fecha)), hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i) => { let tr = document.createElement('tr'), esHoy = (e.dia === diaHoy && e.mes === mesHoy); tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-slate-50 cursor-pointer'; tr.onclick = () => openModal(e, i, sorted); tr.innerHTML = `<td class="p-2 text-amber-700">📅 ${e.dia}/${e.mes}${esHoy?'<span class="text-[8px] bg-red-500 text-white px-1 rounded ml-1">HOY</span>':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${e.descripcion?.substring(0,40)||'-'}${e.descripcion?.length>40?'...':''}</td><td class="p-2 text-[10px]">💬 ${e.comentarios?.substring(0,20)||'-'}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
@@ -657,114 +818,101 @@ function closeDailyReportsModal() { const modal=document.getElementById('dailyRe
 function updatePulseBadges() { const badgeActosCard=document.getElementById('actosNovedadBadge'), badgeVCPCard=document.getElementById('vcpNovedadBadge'), currentAlerts=todayAlertsBySucursal[currentSucursal]; if(badgeActosCard) { if(currentAlerts.actos.length>0) { badgeActosCard.textContent=Math.min(currentAlerts.actos.length,9); badgeActosCard.classList.remove('hidden'); } else { badgeActosCard.classList.add('hidden'); } } if(badgeVCPCard) { if(currentAlerts.vcp.length>0) { badgeVCPCard.textContent=Math.min(currentAlerts.vcp.length,9); badgeVCPCard.classList.remove('hidden'); } else { badgeVCPCard.classList.add('hidden'); } } }
 function updateRealTimeUI() { const actosContainer=document.getElementById('realTimeReportsActos'), vcpContainer=document.getElementById('realTimeReportsVCP'), actosLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), currentAlerts=todayAlertsBySucursal[currentSucursal]; if(!actosContainer||!vcpContainer) return; if(actosLed) actosLed.className=currentAlerts.actos.length>0?'siren-green':'siren-red'; if(vcpLed) vcpLed.className=currentAlerts.vcp.length>0?'siren-green':'siren-red'; if(currentAlerts.actos.length>0) { actosContainer.innerHTML=currentAlerts.actos.map(a=>`<div class="report-item feed-item" style="border-left-color:#10b981;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-emerald-700">🕒 ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full ${a.tipo?.toLowerCase().includes('acto')?'bg-cyan-100 text-cyan-700':'bg-amber-100 text-amber-700'}">${a.tipo?.toUpperCase()}</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); } else { actosContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin reportes hoy</p>'; } if(currentAlerts.vcp.length>0) { vcpContainer.innerHTML=currentAlerts.vcp.map(a=>`<div class="report-item feed-item" style="border-left-color:#f59e0b;"><div class="flex justify-between items-start"><span class="text-[9px] font-bold text-amber-700"> ${a.hora}</span><span class="text-[8px] px-1.5 py-0.5 rounded-full bg-purple-100 text-purple-700">VCP</span></div><div class="text-xs font-bold text-slate-800 mt-1">👤 ${a.persona||'N/A'}</div><div class="text-[9px] text-indigo-600 font-semibold">🏭 ${a.sector||'N/A'}</div><div class="text-[9px] text-slate-500 mt-1 truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); } else { vcpContainer.innerHTML='<p class="text-slate-400 text-center py-2 text-[9px]">📭 Sin VCP hoy</p>'; } }
 // ==================== MODALES PRINCIPALES ====================
-function openModal(r,idx,data) { if(!isUnlocked) return; isModalOpen=true; currentModalData=data; currentModalIndex=idx; const modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent'); if(!modal||!content) return; modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; if(r.tipo==='vcp') { content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑 Persona Observada:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${r.observador || 'No especificado'}</p><p><strong class="text-purple-600">🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p><div class="bg-purple-50 p-3 rounded-lg border border-purple-100"><p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion||'-'}</p></div>${r.comentarios?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p><div class="bg-slate-50 p-3 rounded-lg border border-slate-200"><p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p></div>`:''}<div class="mt-3 pt-2 border-t"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado !== false ? '<span class="text-emerald-600 font-bold">🔒 CERRADO</span>' : '<span class="text-red-500 font-bold">⚠️ ABIERTO</span>'}</p></div></div>`; } else { content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador/Responsable:</strong> ${r.observador}</p><p><strong class="text-cyan-600">🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo?.toUpperCase()||''}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider"> LO SUCEDIDO (Descripción):</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-500 shadow-sm"><p class="text-[15px] text-slate-800 font-medium leading-relaxed break-words whitespace-pre-wrap">${r.descripcion||'Sin descripción detallada.'}</p></div>${r.causas?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg border border-amber-200"><p class="text-sm text-amber-900 font-medium">${r.causas}</p></div>`:''}<div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600 font-bold"> CERRADO</span>':'<span class="text-red-500 font-bold">️ ABIERTO</span>'}</p></div></div>`; } modal.classList.remove('hidden-section'); modal.style.display='flex'; document.getElementById('modalCounter').innerText = `${idx+1} / ${data.length}`; }
+function openModal(r,idx,data) { if(!isUnlocked) return; isModalOpen=true; currentModalData=data; currentModalIndex=idx; const modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent'); if(!modal||!content) return; modal.querySelector('.modal-bounce').style.animation='none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; if(r.tipo==='vcp') { content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-purple-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-purple-600">🧑 Persona Observada:</strong> ${r.personaObservada}</p><p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${r.observador || 'No especificado'}</p><p><strong class="text-purple-600">🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong class="text-purple-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider">📝 Lo Verificado:</p><div class="bg-purple-50 p-3 rounded-lg border border-purple-100"><p class="text-sm text-purple-900 font-medium break-words whitespace-pre-wrap">${r.descripcion||'-'}</p></div>${r.comentarios?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">💬 Observaciones:</p><div class="bg-slate-50 p-3 rounded-lg border border-slate-200"><p class="text-sm text-slate-700 font-medium break-words whitespace-pre-wrap">${r.comentarios}</p></div>`:''}${r.imagen ? renderizarImagenesModal(r.imagen, '📸 REGISTRO FOTOGRÁFICO VCP') : ''}<div class="mt-3 pt-2 border-t"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado !== false ? '<span class="text-emerald-600 font-bold">🔒 CERRADO</span>' : '<span class="text-red-500 font-bold">⚠️ ABIERTO</span>'}</p></div></div>`; } else { content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong class="text-cyan-600">📅 Fecha:</strong> ${r.fecha}</p><p><strong class="text-cyan-600">👤 Observador/Responsable:</strong> ${r.observador}</p><p><strong class="text-cyan-600">🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong class="text-cyan-600">🏭 Sector:</strong> ${r.sector}</p><p><strong class="text-cyan-600">📋 Tipo:</strong> ${r.tipo?.toUpperCase()||''}</p><p><strong class="text-cyan-600">🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr class="border-slate-200 my-2"><p class="text-xs font-bold text-slate-500 uppercase tracking-wider"> LO SUCEDIDO (Descripción):</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-amber-500 shadow-sm"><p class="text-[15px] text-slate-800 font-medium leading-relaxed break-words whitespace-pre-wrap">${r.descripcion||'Sin descripción detallada.'}</p></div>${r.causas?`<p class="text-xs font-bold text-slate-500 uppercase tracking-wider mt-3">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg border border-amber-200"><p class="text-sm text-amber-900 font-medium">${r.causas}</p></div>`:''}${r.imagen ? renderizarImagenesModal(r.imagen, '📸 REGISTRO FOTOGRÁFICO') : ''}<div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-100"><p><strong class="text-slate-600">⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600 font-bold"> CERRADO</span>':'<span class="text-red-500 font-bold">️ ABIERTO</span>'}</p></div></div>`; } modal.classList.remove('hidden-section'); modal.style.display='flex'; document.getElementById('modalCounter').innerText = `${idx+1} / ${data.length}`; }
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function updateNavButtons() { const p=document.getElementById('btnPrev'), n=document.getElementById('btnNext'), c=document.getElementById('modalCounter'); const hp=currentModalIndex>0, hn=currentModalIndex<currentModalData.length-1; p.disabled=!hp; n.disabled=!hn; c.innerText=`${currentModalIndex+1} / ${currentModalData.length}`; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1) { currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0) { currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { if(!isUnlocked) return; const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos') { alert("⚠️ Seleccione un supervisor"); return; } const nm=m==='todo'?'Todos los meses':m.charAt(0).toUpperCase()+m.slice(1), f=ACTOS_COND_DATA.filter(e=>e.observador===s&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length) { alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s} en ${nm}.`); return; } const t=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`, ct=tipo==='acto'?'#0891b2':'#d97706'; let html=`<div class="mb-3 pb-2 border-b border-slate-200"><p class="text-sm text-slate-500">📅 Período: <span class="font-bold text-cyan-600">${nm}</span></p><p class="text-sm text-slate-500">👤 Supervisor: <span class="font-bold text-cyan-600">${s}</span></p><p class="text-sm text-slate-500">📊 Total: <span class="font-bold text-cyan-600">${dt.length}</span></p></div><div class="overflow-x-auto"><table class="w-full text-left text-xs"><thead class="sticky top-0 bg-slate-100"><tr><th class="p-2">📅 Fecha</th><th class="p-2">🏭 Sector</th><th class="p-2">️ Categoría</th><th class="p-2">📝 Descripción</th><th class="p-2">🔒 Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const be=e.cerrado?'<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full"> CERRADO</span>':'<span class="bg-rose-100 text-rose-700 px-2 py-0.5 rounded-full">⚠️ ABIERTO</span>'; html+=`<tr class="border-b border-slate-100 hover:bg-slate-50"><td class="p-2 font-bold text-cyan-700">📅 ${e.dia}/${e.mes}</td><td class="p-2"> ${e.sector}</td><td class="p-2"><span style="color:${e.categoria?.color||''}">${e.categoria?.icon||''} ${e.categoria?.name||''}</span></td><td class="p-2 max-w-xs">${e.descripcion?.substring(0,60)||''}${e.descripcion?.length>60?'...':''}</td><td class="p-2">${be}</td></tr>`; }); html+=`</tbody></table></div>`; document.getElementById('modalSupervisorTitle').innerHTML=t; document.getElementById('modalSupervisorTitle').style.color=ct; document.getElementById('supervisorModalContent').innerHTML=html; const mod=document.getElementById('supervisorDetailModal'); mod.querySelector('.modal-bounce').style.animation='none'; mod.querySelector('.modal-bounce').offsetHeight; mod.querySelector('.modal-bounce').style.animation='modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; mod.classList.remove('hidden-section'); mod.style.display='flex'; }
 function closeSupervisorModal() { const m=document.getElementById('supervisorDetailModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
-
 // ✅ VERSIÓN NUEVA Y CORREGIDA DEL MODAL DE VCP POR PERSONA
-function abrirModalPersonaVCP() { 
-    if(!isUnlocked) return; 
-    const p = document.getElementById('vcpPersonFilter').value; 
-    const m = document.getElementById('vcpPersonMonthFilter').value; 
-    
-    if(p === 'todos') { 
-        alert("⚠️ Seleccione una persona"); 
-        return; 
-    } 
-    
-    const nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1);
-    const f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m)); 
-    
-    if(!f.length) { 
-        alert(`No hay VCPs para ${p} en ${nm}.`); 
-        return; 
-    } 
-    
-    // Encabezado mejorado
-    let html = `
-    <div class="mb-4 bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
-        <div class="flex items-center justify-between mb-2">
-            <h3 class="text-lg font-bold text-purple-800">📋 VCPs de ${p}</h3>
-            <span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">${f.length} VCPs</span>
-        </div>
-        <div class="grid grid-cols-2 gap-2 text-sm">
-            <div class="flex items-center gap-2 text-slate-600">
-                <span class="font-bold"> Período:</span>
-                <span class="font-semibold text-purple-700">${nm}</span>
-            </div>
-            <div class="flex items-center gap-2 text-slate-600">
-                <span class="font-bold">👤 Persona:</span>
-                <span class="font-semibold text-purple-700">${p}</span>
-            </div>
-        </div>
-    </div>
-    
-    <div class="overflow-x-auto rounded-lg border border-slate-200">
-        <table class="w-full text-xs">
-            <thead class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
-                <tr>
-                    <th class="p-3 text-left"> Fecha</th>
-                    <th class="p-3 text-left">🏭 Sector</th>
-                    <th class="p-3 text-left">🏷️ Categoría</th>
-                    <th class="p-3 text-left">📝 Descripción</th>
-                    <th class="p-3 text-left">💬 Comentarios</th>
-                    <th class="p-3 text-center">🔒 Estado</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white">
-    `; 
-    
-    f.forEach((e, index) => { 
-        const dc = e.descripcion?.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion || '-';
-        const cc = e.comentarios?.length > 40 ? e.comentarios.substring(0,40)+'...' : e.comentarios || '-';
-        const rowColor = index % 2 === 0 ? 'bg-slate-50' : 'bg-white';
-        
-        html += `
-            <tr class="${rowColor} hover:bg-purple-50 transition-colors border-b border-slate-100">
-                <td class="p-3 font-semibold text-purple-700">📅 ${e.dia}/${e.mes}/2026</td>
-                <td class="p-3 text-slate-700">🏭 ${e.sector || 'No especificado'}</td>
-                <td class="p-3">
-                    <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
-                        ${e.categoria?.icon || '🏷️'} ${e.categoria?.name || 'Sin categoría'}
-                    </span>
-                </td>
-                <td class="p-3 text-slate-700 max-w-xs" title="${e.descripcion || ''}">${dc}</td>
-                <td class="p-3 text-slate-600 max-w-xs" title="${e.comentarios || ''}">${cc}</td>
-                <td class="p-3 text-center">
-                    <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
-                         CERRADO
-                    </span>
-                </td>
-            </tr>
-        `; 
-    }); 
-    
-    html += `
-            </tbody>
-        </table>
-    </div>
-    
-    <div class="mt-4 flex justify-between items-center text-sm text-slate-500">
-        <span>📊 Total: <strong class="text-purple-700">${f.length}</strong> VCPs registrados</span>
-        <span class="text-xs">Última actualización: ${new Date().toLocaleDateString()}</span>
-    </div>
-    `;
-    
-    document.getElementById('modalPersonaVCPTitle').innerHTML = '📋 Detalle de VCPs'; 
-    document.getElementById('personaVCPModalContent').innerHTML = html; 
-    
-    const mod = document.getElementById('personaVCPModal'); 
-    mod.querySelector('.modal-bounce').style.animation = 'none'; 
-    mod.querySelector('.modal-bounce').offsetHeight; 
-    mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)'; 
-    mod.classList.remove('hidden-section'); 
-    mod.style.display = 'flex'; 
+function abrirModalPersonaVCP() {
+if(!isUnlocked) return;
+const p = document.getElementById('vcpPersonFilter').value;
+const m = document.getElementById('vcpPersonMonthFilter').value;
+if(p === 'todos') {
+alert("⚠️ Seleccione una persona");
+return;
 }
-
+const nm = m === 'todo' ? 'Todos los meses' : m.charAt(0).toUpperCase() + m.slice(1);
+const f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m));
+if(!f.length) {
+alert(`No hay VCPs para ${p} en ${nm}.`);
+return;
+}
+// Encabezado mejorado
+let html = `
+<div class="mb-4 bg-gradient-to-r from-purple-50 to-indigo-50 p-4 rounded-xl border border-purple-200">
+<div class="flex items-center justify-between mb-2">
+<h3 class="text-lg font-bold text-purple-800">📋 VCPs de ${p}</h3>
+<span class="bg-purple-600 text-white px-3 py-1 rounded-full text-sm font-bold">${f.length} VCPs</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-sm">
+<div class="flex items-center gap-2 text-slate-600">
+<span class="font-bold"> Período:</span>
+<span class="font-semibold text-purple-700">${nm}</span>
+</div>
+<div class="flex items-center gap-2 text-slate-600">
+<span class="font-bold">👤 Persona:</span>
+<span class="font-semibold text-purple-700">${p}</span>
+</div>
+</div>
+</div>
+<div class="overflow-x-auto rounded-lg border border-slate-200">
+<table class="w-full text-xs">
+<thead class="bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+<tr>
+<th class="p-3 text-left"> Fecha</th>
+<th class="p-3 text-left">🏭 Sector</th>
+<th class="p-3 text-left">🏷️ Categoría</th>
+<th class="p-3 text-left">📝 Descripción</th>
+<th class="p-3 text-left">💬 Comentarios</th>
+<th class="p-3 text-center">🔒 Estado</th>
+</tr>
+</thead>
+<tbody class="bg-white">
+`;
+f.forEach((e, index) => {
+const dc = e.descripcion?.length > 60 ? e.descripcion.substring(0,60)+'...' : e.descripcion || '-';
+const cc = e.comentarios?.length > 40 ? e.comentarios.substring(0,40)+'...' : e.comentarios || '-';
+const rowColor = index % 2 === 0 ? 'bg-slate-50' : 'bg-white';
+html += `
+<tr class="${rowColor} hover:bg-purple-50 transition-colors border-b border-slate-100">
+<td class="p-3 font-semibold text-purple-700">📅 ${e.dia}/${e.mes}/2026</td>
+<td class="p-3 text-slate-700">🏭 ${e.sector || 'No especificado'}</td>
+<td class="p-3">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">
+${e.categoria?.icon || '🏷️'} ${e.categoria?.name || 'Sin categoría'}
+</span>
+</td>
+<td class="p-3 text-slate-700 max-w-xs" title="${e.descripcion || ''}">${dc}</td>
+<td class="p-3 text-slate-600 max-w-xs" title="${e.comentarios || ''}">${cc}</td>
+<td class="p-3 text-center">
+<span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-200">
+CERRADO
+</span>
+</td>
+</tr>
+`;
+});
+html += `
+</tbody>
+</table>
+</div>
+<div class="mt-4 flex justify-between items-center text-sm text-slate-500">
+<span>📊 Total: <strong class="text-purple-700">${f.length}</strong> VCPs registrados</span>
+<span class="text-xs">Última actualización: ${new Date().toLocaleDateString()}</span>
+</div>
+`;
+document.getElementById('modalPersonaVCPTitle').innerHTML = '📋 Detalle de VCPs';
+document.getElementById('personaVCPModalContent').innerHTML = html;
+const mod = document.getElementById('personaVCPModal');
+mod.querySelector('.modal-bounce').style.animation = 'none';
+mod.querySelector('.modal-bounce').offsetHeight;
+mod.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34,1.56,0.64,1)';
+mod.classList.remove('hidden-section');
+mod.style.display = 'flex';
+}
 function closePersonaVCPModal() { const m=document.getElementById('personaVCPModal'); if(!m) return; m.classList.add('hidden-section'); m.style.display='none'; }
 // ==================== UTILS ====================
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; selectedChartMonth=null; state.causaRaiz='todas'; state.mes='todo'; const m=document.getElementById('monthFilter'); if(m) m.value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); const cb=document.getElementById('clearCausaBtn'); if(cb) cb.classList.add('hidden-section'); const cb2=document.getElementById('clearVCPCauseBtn'); if(cb2) cb2.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c) { ACTOS_URL=c.actosUrl; VCP_URL=c.vcpUrl; currentMapping=c.mapping; currentVcpMapping=c.vcpMapping||null; currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
@@ -877,7 +1025,7 @@ function verificarPasswordResumen() { const input=document.getElementById('resum
 function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display = 'none'; if(ejecutivoChartSucursales) { ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales = null; } if(ejecutivoChartVCPSucursales) { ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales = null; } currentFiltroTipo = 'todos'; }
 function detailModalPrev() { if(currentModalDataIndex > 0) { currentModalDataIndex--; mostrarDetalleEnModal(currentModalDataList[currentModalDataIndex]); } }
 function detailModalNext() { if(currentModalDataIndex < currentModalDataList.length - 1) { currentModalDataIndex++; mostrarDetalleEnModal(currentModalDataList[currentModalDataIndex]); } }
-function mostrarDetalleEnModal(item) { const isVCP = item.tipo === 'vcp'; const estado = item.cerrado !== false ? 'CERRADO' : 'ABIERTO'; const estadoColor = item.cerrado !== false ? 'text-emerald-600' : 'text-red-500'; const estadoBg = item.cerrado !== false ? 'bg-emerald-100' : 'bg-red-100'; let html = `<div class="space-y-4"><div class="grid grid-cols-2 gap-3 text-sm border-b pb-3"><p><strong class="text-purple-600">📅 Fecha:</strong> ${item.dia}/${item.mes}/2026</p><p><strong class="text-purple-600">🏭 Sucursal:</strong> <span class="font-semibold">${item.sucursal || 'No especificada'}</span></p>`; if(isVCP) { html += `<p><strong class="text-purple-600">👤 Persona Observada:</strong> ${item.personaObservada || 'No especificada'}</p><p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${item.observador || 'No especificado'}</p>`; } else { html += `<p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${item.observador || 'No especificado'}</p>`; } html += `<p><strong class="text-purple-600">🏭 Sector:</strong> ${item.sector || 'No especificado'}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${item.categoria?.icon || ''} ${item.categoria?.name || 'Sin categoría'}</p><p><strong class="text-purple-600">📋 Tipo:</strong> ${isVCP ? '🎯 VCP' : (item.tipo === 'acto' ? '⚠️ ACTO INSEGURO' : '🏚️ CONDICIÓN INSEGURA')}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> <span class="${estadoColor} font-bold px-2 py-0.5 rounded-full ${estadoBg} inline-block">${estado}</span></p></div><div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">📝 DESCRIPCIÓN:</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-purple-500"><p class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">${item.descripcion || 'Sin descripción'}</p></div></div>`; if(isVCP && item.comentarios) { html += `<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"> COMENTARIOS:</p><div class="bg-purple-50 p-3 rounded-lg"><p class="text-sm text-purple-800">${item.comentarios}</p></div></div>`; } if(!isVCP && item.causas) { html += `<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg"><p class="text-sm text-amber-800">${item.causas}</p></div></div>`; } html += `</div>`; document.getElementById('detailModalContent').innerHTML = html; document.getElementById('detailModalCounter').innerText = `${currentModalDataIndex + 1} / ${currentModalDataList.length}`; document.getElementById('detailModalTitle').innerHTML = `📋 ${isVCP ? 'VCP' : (item.tipo === 'acto' ? 'ACTO INSEGURO' : 'CONDICIÓN INSEGURA')} - ${item.observador || item.personaObservada || 'Reporte'}`; const modal = document.getElementById('detailModal'); modal.querySelector('.modal-bounce').style.animation = 'none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'; modal.classList.remove('hidden-section'); modal.style.display = 'flex'; }
+function mostrarDetalleEnModal(item) { const isVCP = item.tipo === 'vcp'; const estado = item.cerrado !== false ? 'CERRADO' : 'ABIERTO'; const estadoColor = item.cerrado !== false ? 'text-emerald-600' : 'text-red-500'; const estadoBg = item.cerrado !== false ? 'bg-emerald-100' : 'bg-red-100'; let html = `<div class="space-y-4"><div class="grid grid-cols-2 gap-3 text-sm border-b pb-3"><p><strong class="text-purple-600">📅 Fecha:</strong> ${item.dia}/${item.mes}/2026</p><p><strong class="text-purple-600">🏭 Sucursal:</strong> <span class="font-semibold">${item.sucursal || 'No especificada'}</span></p>`; if(isVCP) { html += `<p><strong class="text-purple-600">👤 Persona Observada:</strong> ${item.personaObservada || 'No especificada'}</p><p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${item.observador || 'No especificado'}</p>`; } else { html += `<p><strong class="text-purple-600">👤 Observador/Responsable:</strong> ${item.observador || 'No especificado'}</p>`; } html += `<p><strong class="text-purple-600">🏭 Sector:</strong> ${item.sector || 'No especificado'}</p><p><strong class="text-purple-600">🏷️ Categoría:</strong> ${item.categoria?.icon || ''} ${item.categoria?.name || 'Sin categoría'}</p><p><strong class="text-purple-600">📋 Tipo:</strong> ${isVCP ? '🎯 VCP' : (item.tipo === 'acto' ? '⚠️ ACTO INSEGURO' : '🏚️ CONDICIÓN INSEGURA')}</p><p><strong class="text-purple-600">⚙️ Estado:</strong> <span class="${estadoColor} font-bold px-2 py-0.5 rounded-full ${estadoBg} inline-block">${estado}</span></p></div><div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">📝 DESCRIPCIÓN:</p><div class="bg-slate-50 p-4 rounded-xl border-l-4 border-purple-500"><p class="text-sm text-slate-800 leading-relaxed whitespace-pre-wrap">${item.descripcion || 'Sin descripción'}</p></div></div>`; if(isVCP && item.comentarios) { html += `<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2"> COMENTARIOS:</p><div class="bg-purple-50 p-3 rounded-lg"><p class="text-sm text-purple-800">${item.comentarios}</p></div></div>`; } if(!isVCP && item.causas) { html += `<div><p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">🔍 CAUSAS:</p><div class="bg-amber-50 p-3 rounded-lg"><p class="text-sm text-amber-800">${item.causas}</p></div></div>`; } html += item.imagen ? renderizarImagenesModal(item.imagen, '📸 REGISTRO FOTOGRÁFICO') : ''; html += `</div>`; document.getElementById('detailModalContent').innerHTML = html; document.getElementById('detailModalCounter').innerText = `${currentModalDataIndex + 1} / ${currentModalDataList.length}`; document.getElementById('detailModalTitle').innerHTML = `📋 ${isVCP ? 'VCP' : (item.tipo === 'acto' ? 'ACTO INSEGURO' : 'CONDICIÓN INSEGURA')} - ${item.observador || item.personaObservada || 'Reporte'}`; const modal = document.getElementById('detailModal'); modal.querySelector('.modal-bounce').style.animation = 'none'; modal.querySelector('.modal-bounce').offsetHeight; modal.querySelector('.modal-bounce').style.animation = 'modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1)'; modal.classList.remove('hidden-section'); modal.style.display = 'flex'; }
 function cerrarDetailModal() { const modal = document.getElementById('detailModal'); modal.classList.add('hidden-section'); modal.style.display = 'none'; currentModalDataList = []; currentModalDataIndex = 0; }
 function abrirModalConDatos(titulo, datos) { if(!datos || datos.length === 0) { alert("No hay datos para mostrar"); return; } currentModalDataList = datos; currentModalDataIndex = 0; mostrarDetalleEnModal(datos[0]); }
 function aplicarFiltroPorTipo(tipo) {
@@ -981,102 +1129,102 @@ return `<tr class="border-b hover:bg-slate-50 cursor-pointer" onclick="abrirModa
 </tr>`;
 }).join('') || '<tr><td colspan="7" class="p-4 text-center text-slate-400">Sin datos para mostrar</td></tr>';
 }
-function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) { 
-    const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; 
-    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; 
-    const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; 
-    const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' }; 
-    const datasets = []; 
-    sucursales.forEach(suc => { 
-        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; 
-        const dataPorMes = meses.map(mes => { 
-            let total = 0; 
-            if(ALL_ACTOS_DATA[suc]) { 
-                const filtrados = ALL_ACTOS_DATA[suc].filter(d => { 
-                    if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; 
-                    if(d.mes !== mes) return false; 
-                    if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false; 
-                    // ✅ FILTRO DE ESTADO AGREGADO PARA ACTOS
-                    if(estadoFiltro !== 'todos') {
-                        if(estadoFiltro === 'abiertos' && d.cerrado === true) return false;
-                        if(estadoFiltro === 'cerrados' && d.cerrado === false) return false;
-                    }
-                    return true; 
-                }); 
-                total = filtrados.length; 
-            } 
-            return total; 
-        }); 
-        datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); 
-    }); 
-    const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); 
-    if(ctx1) { 
-        if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); 
-        ejecutivoChartSucursales = new Chart(ctx1, { 
-            type: 'line', 
-            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets }, 
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                onClick: (e, activeEls) => { 
-                    if(activeEls.length) { 
-                        const datasetIndex = activeEls[0].datasetIndex; 
-                        const dataIndex = activeEls[0].index; 
-                        const mesSeleccionado = meses[dataIndex]; 
-                        const sucursalSeleccionada = sucursales[datasetIndex]; 
-                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false); 
-                    } 
-                }, 
-                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } 
-            } 
-        }); 
-    } 
-    const datasetsVCP = []; 
-    sucursales.forEach(suc => { 
-        if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; 
-        if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return; 
-        const dataPorMes = meses.map(mes => { 
-            const filtrados = ALL_VCP_DATA[suc].filter(d => { 
-                if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false; 
-                if(d.mes !== mes) return false; 
-                if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0; 
-                return true; 
-            }); 
-            return filtrados.length; 
-        }); 
-        datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 }); 
-    }); 
-    const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); 
-    if(ctx2) { 
-        if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); 
-        ejecutivoChartVCPSucursales = new Chart(ctx2, { 
-            type: 'line', 
-            data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP }, 
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                onClick: (e, activeEls) => { 
-                    if(activeEls.length) { 
-                        const datasetIndex = activeEls[0].datasetIndex; 
-                        const dataIndex = activeEls[0].index; 
-                        const mesSeleccionado = meses[dataIndex]; 
-                        const sucursalSeleccionada = sucursales[datasetIndex]; 
-                        abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true); 
-                    } 
-                }, 
-                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } },
-                scales: { 
-                    y: { 
-                        beginAtZero: true, 
-                        max: 60, // ✅ ESCALA FIJA EN 60 PARA VCP EN RESUMEN EJECUTIVO
-                        grid: { color: 'rgba(0,0,0,0.05)' }, 
-                        ticks: { stepSize: 5 } 
-                    }, 
-                    x: { ticks: { font: { size: 9 } }, grid: { display: false } } 
-                } 
-            } 
-        }); 
-    } 
+function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) {
+const meses = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
+const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' };
+const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
+const datasets = [];
+sucursales.forEach(suc => {
+if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+const dataPorMes = meses.map(mes => {
+let total = 0;
+if(ALL_ACTOS_DATA[suc]) {
+const filtrados = ALL_ACTOS_DATA[suc].filter(d => {
+if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+if(d.mes !== mes) return false;
+if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp' && d.tipo !== currentFiltroTipo) return false;
+// ✅ FILTRO DE ESTADO AGREGADO PARA ACTOS
+if(estadoFiltro !== 'todos') {
+if(estadoFiltro === 'abiertos' && d.cerrado === true) return false;
+if(estadoFiltro === 'cerrados' && d.cerrado === false) return false;
+}
+return true;
+});
+total = filtrados.length;
+}
+return total;
+});
+datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 });
+});
+const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d');
+if(ctx1) {
+if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy();
+ejecutivoChartSucursales = new Chart(ctx1, {
+type: 'line',
+data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasets },
+options: {
+responsive: true,
+maintainAspectRatio: false,
+onClick: (e, activeEls) => {
+if(activeEls.length) {
+const datasetIndex = activeEls[0].datasetIndex;
+const dataIndex = activeEls[0].index;
+const mesSeleccionado = meses[dataIndex];
+const sucursalSeleccionada = sucursales[datasetIndex];
+abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, false);
+}
+},
+plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }
+}
+});
+}
+const datasetsVCP = [];
+sucursales.forEach(suc => {
+if(sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
+if(!ALL_VCP_DATA[suc] || ALL_VCP_DATA[suc].length === 0) return;
+const dataPorMes = meses.map(mes => {
+const filtrados = ALL_VCP_DATA[suc].filter(d => {
+if(sectorFiltro !== 'todos' && !d.sector.includes(sectorFiltro)) return false;
+if(d.mes !== mes) return false;
+if(currentFiltroTipo !== 'todos' && currentFiltroTipo !== 'vcp') return 0;
+return true;
+});
+return filtrados.length;
+});
+datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc]+'20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white', pointBorderWidth: 2 });
+});
+const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d');
+if(ctx2) {
+if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy();
+ejecutivoChartVCPSucursales = new Chart(ctx2, {
+type: 'line',
+data: { labels: meses.map(m => m.substring(0,3).toUpperCase()), datasets: datasetsVCP },
+options: {
+responsive: true,
+maintainAspectRatio: false,
+onClick: (e, activeEls) => {
+if(activeEls.length) {
+const datasetIndex = activeEls[0].datasetIndex;
+const dataIndex = activeEls[0].index;
+const mesSeleccionado = meses[dataIndex];
+const sucursalSeleccionada = sucursales[datasetIndex];
+abrirModalPorPuntoGrafico(mesSeleccionado, sucursalSeleccionada, true);
+}
+},
+plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.raw} reportes` } } },
+scales: {
+y: {
+beginAtZero: true,
+max: 60, // ✅ ESCALA FIJA EN 60 PARA VCP EN RESUMEN EJECUTIVO
+grid: { color: 'rgba(0,0,0,0.05)' },
+ticks: { stepSize: 5 }
+},
+x: { ticks: { font: { size: 9 } }, grid: { display: false } }
+}
+}
+});
+}
 }
 // ==================== EVENT LISTENERS ====================
 window.addEventListener('load', () => { if(localStorage.getItem('isLoggedIn') === 'true') { currentUser = localStorage.getItem('currentUser'); isUnlocked = true; document.getElementById('passwordOverlay').style.display = 'none'; showWelcomeScreen(); } else { document.getElementById('passwordInput')?.focus(); } document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); }); document.getElementById('enterPanelBtn')?.addEventListener('click', enterMainPanel); document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO')); document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER')); document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA')); document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true }); });
