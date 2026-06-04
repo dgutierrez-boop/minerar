@@ -291,18 +291,6 @@ body { padding: 10px; font-size: 13px; }
 <p class="password-hint">💡 Contraseña requerida para acceder al sistema</p>
 </div>
 </div>
-<!-- 🌊 BIENVENIDA -->
-<div id="welcomeOverlay" class="hidden-section">
-<div class="welcome-card">
-<div class="welcome-icon">👷‍️️️</div>
-<h2 class="welcome-title">¡BIENVENIDO AL PANEL!</h2>
-<div class="welcome-divider"></div>
-<p class="welcome-slogan">🚨 LA SEGURIDAD NO SE NEGOCIA, SE CONSTRUYE</p>
-<p class="welcome-text">"Cada acto preventivo es una vida protegida. En Minerar, tu compromiso diario hace que todos vuelvan a casa sanos y salvos."</p>
-<button id="enterPanelBtn" class="welcome-btn">ACCEDER AL PANEL DE CONTROL ▶️</button>
-<div class="auto-progress"><div class="auto-progress-bar" id="autoProgressBar"></div></div>
-<p class="text-[10px] text-slate-400 mt-2">Avance automático en <span id="autoCountdown">5</span>s...</p>
-</div>
 </div>
 <!-- 🚨 ALERTA EMERGENTE -->
 <div id="newReportAlert">
@@ -635,7 +623,30 @@ function playErrorSound() { if(!soundEnabled) return; window.initAudioContext();
 function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 // ==================== LOGIN ====================
 function togglePasswordVisibility() { window.initAudioContext(); const input=document.getElementById('passwordInput'), btn=document.getElementById('togglePasswordBtn'); if(input.type==='password') { input.type='text'; btn.textContent=''; } else { input.type='password'; btn.textContent='👁️'; } input.focus(); }
-function verifyPassword() { window.initAudioContext(); const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); if(input.value===PASSWORD_CORRECTA) { playUnlockSound(); errorDiv.textContent=''; overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; setTimeout(()=>{ overlay.style.opacity='0'; overlay.style.transition='opacity 0.3s ease'; setTimeout(()=>{ overlay.style.display='none'; showWelcomeScreen(); },300); },1000); } else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); } }
+function verifyPassword() { 
+    window.initAudioContext(); 
+    const input=document.getElementById('passwordInput'), 
+          errorDiv=document.getElementById('passwordError'), 
+          overlay=document.getElementById('passwordOverlay'); 
+    
+    if(input.value===PASSWORD_CORRECTA) { 
+        playUnlockSound(); 
+        errorDiv.textContent=''; 
+        overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; 
+        
+        setTimeout(()=>{ 
+            overlay.style.opacity='0'; 
+            overlay.style.transition='opacity 0.3s ease'; 
+            
+            setTimeout(()=>{ 
+                overlay.style.display='none'; 
+                // showWelcomeScreen();  // ← COMENTADA
+                enterMainPanel();       // ← DIRECTO AL PANEL
+            },300); 
+        },1000); 
+    } 
+    // ... resto del código
+} else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); input.classList.add('border-red-400'); setTimeout(()=>input.classList.remove('border-red-400'),500); } }
 function showWelcomeScreen() { const welcome=document.getElementById('welcomeOverlay'); welcome.classList.remove('hidden-section'); welcome.style.display='flex'; let seconds=5; const countdownEl=document.getElementById('autoCountdown'), bar=document.getElementById('autoProgressBar'); bar.style.width='0%'; progressInterval=setInterval(()=>{ bar.style.width=((5-seconds)/5*100)+'%'; },100); autoCountdownTimer=setInterval(()=>{ seconds--; countdownEl.textContent=seconds; if(seconds<=0){clearInterval(autoCountdownTimer);clearInterval(progressInterval);enterMainPanel();} },1000); }
 function enterMainPanel() { clearInterval(autoCountdownTimer); clearInterval(progressInterval); const welcome=document.getElementById('welcomeOverlay'); welcome.style.opacity='0'; welcome.style.transition='opacity 0.4s ease'; setTimeout(()=>{ welcome.style.display='none'; welcome.classList.add('hidden-section'); document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData().then(()=>{updatePulseBadges();}); if(refreshInterval) clearInterval(refreshInterval); refreshInterval = setInterval(()=>{ if(!isModalOpen && !isUpdating) { checkNewReports(); } }, 30000); },400); }
 function logout() { if(refreshInterval) clearInterval(refreshInterval); localStorage.clear(); location.reload(); }
