@@ -212,7 +212,7 @@ body { padding: 10px; }
 <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2"> DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
 <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></tr></div></div>
 </main>
 </div>
 </div>
@@ -340,23 +340,23 @@ body { padding: 10px; }
 </div>
 <div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000]" style="display:none;"><div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl border-4 border-purple-500"><div class="flex justify-between items-center mb-4 pb-3 border-b border-purple-200"><h2 id="detailModalTitle" class="text-2xl font-black text-purple-700">📋 Detalle del Reporte</h2><button onclick="cerrarDetailModal()" class="text-3xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div><div id="detailModalContent" class="overflow-y-auto max-h-[calc(85vh-140px)]"></div><div class="flex justify-between gap-3 mt-5 pt-3 border-t border-purple-200"><button id="detailModalPrevBtn" onclick="detailModalPrev()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button><span id="detailModalCounter" class="font-bold text-purple-600 text-sm self-center">1/1</span><button id="detailModalNextBtn" onclick="detailModalNext()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button></div><button onclick="cerrarDetailModal()" class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
 
-<!-- MODAL PRINCIPAL DE REPORTES - VERSIÓN MÁS ANGOSTA -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="display:none;">
-<div class="modal-bounce bg-white rounded-2xl w-full max-w-sm shadow-2xl border border-gray-100 overflow-hidden">
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-2.5 flex justify-between items-center">
-        <h2 class="font-black text-white text-md flex items-center gap-1.5">
+<!-- MODAL PRINCIPAL - VERSIÓN MÁS ANGOSTA (max-w-xs) -->
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-xl w-full max-w-xs shadow-xl border border-gray-200 overflow-hidden">
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-3 py-2 flex justify-between items-center">
+        <h2 class="font-black text-white text-sm flex items-center gap-1">
             <span>📋</span> Detalle
         </h2>
-        <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-xl leading-none transition-all cursor-pointer">&times;</button>
+        <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-lg leading-none transition-all cursor-pointer">&times;</button>
     </div>
-    <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-2 p-4 max-h-[70vh] overflow-y-auto text-xs"></div>
-    <div class="border-t border-gray-100 px-4 py-2.5 bg-gray-50/50">
+    <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-2 p-3 max-h-[60vh] overflow-y-auto text-xs"></div>
+    <div class="border-t border-gray-100 px-3 py-2 bg-gray-50/50">
         <div class="flex justify-between items-center gap-2">
-            <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all">⬅ Ant</button>
-            <span id="modalCounter" class="font-bold text-orange-600 text-xs bg-orange-50 px-2 py-1 rounded-full">1/1</span>
-            <button id="btnNext" onclick="goToNextModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all">Sig ➡</button>
+            <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all">⬅ Ant</button>
+            <span id="modalCounter" class="font-bold text-orange-600 text-xs bg-orange-50 px-2 py-0.5 rounded-full">1/1</span>
+            <button id="btnNext" onclick="goToNextModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-2.5 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all">Sig ➡</button>
         </div>
-        <button onclick="closeReportModal()" class="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-all">Cerrar ✕</button>
+        <button onclick="closeReportModal()" class="w-full mt-2 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 rounded-lg text-xs font-bold cursor-pointer transition-all">Cerrar ✕</button>
     </div>
 </div>
 </div>
@@ -513,80 +513,98 @@ function enterMainPanel() {
     isUnlocked = true; 
     loadData(); 
     
+    // REFRESCO AUTOMÁTICO DESACTIVADO - solo manual
     if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = null;
     
-    // REFRESCO CADA 2 MINUTOS (120000 ms) - NUNCA PIERDE DATOS
-    refreshInterval = setInterval(() => { 
-        if (!isModalOpen && !isUpdating && !isRefreshing && document.visibilityState === 'visible') { 
-            console.log('🔄 Refresco automático (2min) - Preservando filtros...');
-            safeRefresh();
-        } 
-    }, 120000);
+    console.log('✅ Panel cargado - Actualización solo manual. Usa el botón ACTUALIZAR');
 }
 
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
 
-// ==================== CLASIFICACIÓN MEJORADA CON CATEGORÍA OTROS ====================
+// ==================== CLASIFICACIÓN MEJORADA ====================
 function classifyData(desc, useVCP = false) {
+    if (!desc) return { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' };
+    
+    const d = desc.toLowerCase();
+    
     if (useVCP) {
-        const CATS_VCP = [
-            { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
-            { id: 'proc', name: 'Procedimientos', icon: '📋', color: '#f59e0b', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
-            { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria'] },
-            { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#ea580c', keywords: ['berma', 'talud', 'camino', 'señal', 'visibilidad', 'derrame', 'contención'] }
-        ];
-        if (!desc) return CATS_VCP[0];
-        let d = desc.toLowerCase();
-        let best = null;
-        let max = 0;
-        for (let c of CATS_VCP) { 
-            let s = c.keywords.filter(k => d.includes(k)).length; 
-            if (s > max) { max = s; best = c; } 
+        if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame')) {
+            return { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' };
         }
-        if (!best || max === 0) {
-            return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
+        if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso')) {
+            return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
         }
-        return best;
+        if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) {
+            return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+        }
+        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
     }
     
-    const CATS_EXPANDIDAS = [
-        { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6', keywords: ['epp', 'casco', 'guantes', 'lentes', 'arnés', 'protección personal', 'falta de uso de epp', 'uso inapropiado'] },
-        { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame', 'desorden', 'suelo resbaladizo'] },
-        { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b', keywords: ['procedimiento', 'incumplimiento', 'bloqueo', 'permiso', 'ats', 'rutina', 'mecánica', 'evaluación de riesgos', 'planificación'] },
-        { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria', 'mantenimiento', 'fuera de estándar', 'mal estado'] },
-        { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444', keywords: ['celular', 'velocidad', 'conducción', 'manejo', 'vehículo', 'camión', 'retroexcavadora'] },
-        { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316', keywords: ['berma', 'bema', 'talud', 'contención perimetral', 'borde de seguridad'] },
-        { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4', keywords: ['señalización', 'cartel', 'señal', 'advertencia', 'falta señal'] },
-        { id: 'capacitacion', name: 'CAPACITACIÓN', icon: '🎓', color: '#a855f7', keywords: ['capacitación', 'entrenamiento', 'formación', 'conocimiento', 'instrucción'] },
-        { id: 'residuos', name: 'RESIDUOS', icon: '🗑️', color: '#059669', keywords: ['residuos', 'basura', 'desechos', 'almacenamiento inadecuado', 'disposición', 'reciclaje'] },
-        { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c', keywords: ['visibilidad', 'polvo', 'niebla', 'lluvia', 'granizo', 'deslumbramiento', 'ambiente', 'sector', 'derrame', 'contención', 'efluente', 'emisión'] }
-    ];
-    
-    if (!desc) return CATS_EXPANDIDAS[0];
-    
-    let d = desc.toLowerCase();
-    let best = null;
-    let max = 0;
-    
-    for (let c of CATS_EXPANDIDAS) {
-        let score = 0;
-        for (let kw of c.keywords) { 
-            if (d.includes(kw)) { 
-                if (d.startsWith(kw)) score += 3; 
-                else if (d.includes(' ' + kw + ' ')) score += 2; 
-                else score += 1; 
-            } 
-        }
-        if (score > max) { 
-            max = score; 
-            best = c; 
-        }
+    // BERMA (prioridad máxima)
+    if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde')) {
+        return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
     }
     
-    if (!best || max === 0) {
-        return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
+    // SEÑALIZACIÓN
+    if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) {
+        return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
     }
-    return best;
+    
+    // EQUIPOS Y HERRAMIENTAS
+    if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') ||
+        d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) {
+        return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+    }
+    
+    // PROCEDIMIENTOS
+    if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') ||
+        d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') ||
+        d.includes('planificación') || d.includes('tarea')) {
+        return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+    }
+    
+    // FALTA EPP
+    if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || 
+        d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones')) {
+        return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
+    }
+    
+    // CAPACITACIÓN
+    if (d.includes('capacitación') || d.includes('entrenamiento') || d.includes('formación') || d.includes('conocimiento')) {
+        return { id: 'capacitacion', name: 'CAPACITACIÓN', icon: '🎓', color: '#a855f7' };
+    }
+    
+    // RESIDUOS
+    if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') ||
+        d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor')) {
+        return { id: 'residuos', name: 'RESIDUOS', icon: '🗑️', color: '#059669' };
+    }
+    
+    // CONDUCCIÓN
+    if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') ||
+        d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora')) {
+        return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
+    }
+    
+    // ORDEN Y LIMPIEZA
+    if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') ||
+        d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || 
+        d.includes('sanitario') || d.includes('levantada') || d.includes('suelto')) {
+        return { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' };
+    }
+    
+    // ÁREA Y ENTORNO
+    if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || 
+        d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || 
+        d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || 
+        d.includes('acceso') || d.includes('camino') || d.includes('área')) {
+        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+    }
+    
+    // Si no coincide, mostrar en consola
+    console.log(`📌 Sin clasificar: "${desc.substring(0, 80)}"`);
+    return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
 
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
@@ -609,7 +627,17 @@ async function loadData() {
         VCP_DATA = result.vcp; 
         ALL_ACTOS_DATA[currentSucursal] = result.actos; 
         ALL_VCP_DATA[currentSucursal] = result.vcp; 
-        lastSuccessfulData = JSON.parse(JSON.stringify(result.actos));
+        
+        // GUARDAR COPIA DE SEGURIDAD
+        if (ACTOS_COND_DATA.length > 0) {
+            lastSuccessfulData = JSON.parse(JSON.stringify(ACTOS_COND_DATA));
+            console.log(`✅ Copia de seguridad guardada: ${ACTOS_COND_DATA.length} registros`);
+        } else if (lastSuccessfulData) {
+            console.warn('⚠️ La carga devolvió 0 registros, restaurando copia de seguridad');
+            ACTOS_COND_DATA = lastSuccessfulData;
+            ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData;
+        }
+        
         updateTotalCounters(); 
         actualizarObjetivosUI(); 
         toggleVCPVisibility(currentShowVCP); 
@@ -620,181 +648,26 @@ async function loadData() {
         updateRealTimeUI(); 
         updateSupervisorCard();
         updateLastUpdateIndicator();
-        console.log(`✅ Carga inicial completada: ${ACTOS_COND_DATA.length} registros`);
+        console.log(`✅ Carga completada: ${ACTOS_COND_DATA.length} registros`);
     } catch(e) { console.error("Error en loadData:", e); } 
     finally { isUpdating = false; }
 }
 
-// ==================== REFRESCO SEGURO ====================
-async function safeRefresh() {
-    if (isRefreshing || isModalOpen) {
-        console.log('⏸️ Refresco omitido');
-        return;
-    }
-    
-    isRefreshing = true;
-    console.log('🔄 Actualizando en segundo plano...');
-    
-    if (ACTOS_COND_DATA.length > 0 && !lastSuccessfulData) {
-        lastSuccessfulData = JSON.parse(JSON.stringify(ACTOS_COND_DATA));
-    }
-    
-    const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
-    const originalHTML = refreshBtn?.innerHTML;
-    if (refreshBtn) refreshBtn.innerHTML = '⟳ 🔄';
-    
-    try {
-        const config = SUCURSALES_CONFIG[currentSucursal];
-        
-        const filtrosGuardados = {
-            mes: state.mes, sector: state.sector, estado: state.estado,
-            causa: selectedCausa, vcpMes: state.vcpMes, vcpSector: state.vcpSector,
-            vcpEstado: state.vcpEstado, vcpCausa: selectedVCPCausa,
-            supervisor: document.getElementById('supervisorSelect')?.value || 'todos',
-            supervisorMes: document.getElementById('supervisorMonthSelect')?.value || 'todo'
-        };
-        
-        const urlActos = config.actosUrl + '?_=' + Date.now();
-        const response = await fetch(urlActos, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-        const text = await response.text();
-        const rows = parseCSV(text);
-        
-        const nuevosActos = [];
-        const hoy = new Date();
-        const diaHoy = hoy.getDate().toString().padStart(2,'0');
-        const mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
-        
-        for (let i = 0; i < rows.length; i++) {
-            const row = rows[i];
-            let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
-            
-            if (currentSucursal === 'MALAGUENO' && i >= 225) {
-                const u = row[20] || '';
-                if (u.toUpperCase().startsWith('AI-')) {
-                    tipoRaw = 'Acto Inseguro';
-                    desc = u.replace(/^AI-\s*/i, '').trim();
-                } else if (u.toUpperCase().startsWith('CI-')) {
-                    tipoRaw = 'Condición Insegura';
-                    desc = u.replace(/^CI-\s*/i, '').trim();
-                } else {
-                    tipoRaw = '';
-                    desc = u;
-                }
-                fecha = row[11] || '';
-                observador = row[13] || '';
-                sector = row[14] || '';
-                cerradoRaw = row[23] || '';
-                causas = row[19] || '';
-            } else {
-                if (row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
-                fecha = row[config.mapping.fecha] || '';
-                tipoRaw = row[config.mapping.tipo] || '';
-                sector = row[config.mapping.sector] || '';
-                observador = row[config.mapping.observador] || '';
-                desc = row[config.mapping.descripcion] || '';
-                cerradoRaw = row[config.mapping.cerrado] || '';
-            }
-            
-            const fd = parseFecha(fecha);
-            if (!fd.valido) continue;
-            
-            let tipo = 'otro';
-            if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
-            else if (tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
-            
-            let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
-            const cat = classifyData(desc, false);
-            
-            nuevosActos.push({
-                fecha, tipo, sector: (sector || '').toLowerCase().trim(),
-                observador: (observador || '').trim(),
-                descripcion: (desc || '').trim(),
-                causas: (causas || '').trim(),
-                cerrado, mes: fd.mes, dia: fd.dia,
-                categoria: cat, sucursal: currentSucursal,
-                imagen: ''
-            });
-        }
-        
-        if (nuevosActos.length > 0) {
-            ACTOS_COND_DATA = nuevosActos;
-            ALL_ACTOS_DATA[currentSucursal] = nuevosActos;
-            lastSuccessfulData = JSON.parse(JSON.stringify(nuevosActos));
-            console.log(`✅ Datos actualizados: ${nuevosActos.length} registros`);
-        } else if (lastSuccessfulData) {
-            console.warn('⚠️ Nueva carga devolvió 0 registros, restaurando copia de seguridad');
-            ACTOS_COND_DATA = lastSuccessfulData;
-            ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData;
-        }
-        
-        if (config.showVCP && config.vcpUrl) {
-            const urlVCP = config.vcpUrl + '?_=' + Date.now();
-            const r2 = await fetch(urlVCP, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } });
-            const text2 = await r2.text();
-            const rows2 = parseCSV(text2);
-            const nuevosVCP = [];
-            for (const row of rows2) {
-                let fr, po, sec, des, com;
-                if (config.vcpMapping) {
-                    fr = row[config.vcpMapping.fecha] || '';
-                    po = (row[config.vcpMapping.persona] || '').trim();
-                    sec = row[config.vcpMapping.sector] || '';
-                    des = row[config.vcpMapping.descripcion] || '';
-                    com = row[config.vcpMapping.comentarios] || '';
-                } else {
-                    fr = row[2] || '';
-                    po = (row[1] || '').trim();
-                    sec = (row[3] || '').toLowerCase().trim() || 'general';
-                    des = row[32] || '';
-                    com = row[28] || '';
-                }
-                const fd = parseFecha(fr.split(' ')[0]);
-                if (!fd.valido || !po) continue;
-                const cat = classifyData(des, true);
-                nuevosVCP.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: currentSucursal, imagen: '' });
-            }
-            if (nuevosVCP.length > 0) { VCP_DATA = nuevosVCP; ALL_VCP_DATA[currentSucursal] = nuevosVCP; }
-        }
-        
-        state.mes = filtrosGuardados.mes; state.sector = filtrosGuardados.sector; state.estado = filtrosGuardados.estado;
-        selectedCausa = filtrosGuardados.causa; state.vcpMes = filtrosGuardados.vcpMes; state.vcpSector = filtrosGuardados.vcpSector;
-        state.vcpEstado = filtrosGuardados.vcpEstado; selectedVCPCausa = filtrosGuardados.vcpCausa;
-        
-        const monthFilter = document.getElementById('monthFilter');
-        if (monthFilter && monthFilter.value !== filtrosGuardados.mes) monthFilter.value = filtrosGuardados.mes;
-        const vcpMonthFilter = document.getElementById('vcpMonthFilter');
-        if (vcpMonthFilter && vcpMonthFilter.value !== filtrosGuardados.vcpMes) vcpMonthFilter.value = filtrosGuardados.vcpMes;
-        
-        updateTotalCounters(); actualizarObjetivosUI(); await populateSupervisors(); populateVCPPeopleFilter();
-        applyGeneralFilters(); if (currentShowVCP) applyVCPFilters();
-        
-        const supSelect = document.getElementById('supervisorSelect');
-        if (supSelect && supSelect.value !== filtrosGuardados.supervisor) supSelect.value = filtrosGuardados.supervisor;
-        const supMonthSelect = document.getElementById('supervisorMonthSelect');
-        if (supMonthSelect && supMonthSelect.value !== filtrosGuardados.supervisorMes) supMonthSelect.value = filtrosGuardados.supervisorMes;
-        
-        updateSupervisorCard(); updatePulseBadges(); updateRealTimeUI(); updateLastUpdateIndicator();
-        console.log('✅ Refresco completado - Filtros preservados');
-        
-    } catch (e) {
-        console.error('❌ Error en refresco:', e);
-        if (lastSuccessfulData) {
-            console.log('🔄 Restaurando datos de copia de seguridad...');
-            ACTOS_COND_DATA = lastSuccessfulData;
-            ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData;
-            applyGeneralFilters();
-            if (currentShowVCP) applyVCPFilters();
-        }
-    } finally {
-        isRefreshing = false;
-        if (refreshBtn) refreshBtn.innerHTML = originalHTML || '⟳ ACTUALIZAR 🔄';
-    }
-}
-
 function forceRefreshData() { 
-    if (isUnlocked && !isUpdating && !isRefreshing) {
-        console.log('🔄 Refresco manual solicitado');
-        safeRefresh();
+    if (isUnlocked && !isUpdating) {
+        console.log('🔄 Refresco manual - Recargando datos...');
+        const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
+        const originalText = refreshBtn?.innerHTML;
+        if (refreshBtn) {
+            refreshBtn.innerHTML = '⟳ CARGANDO...';
+            refreshBtn.disabled = true;
+        }
+        loadData().finally(() => {
+            if (refreshBtn) {
+                refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄';
+                refreshBtn.disabled = false;
+            }
+        });
     }
 }
 
@@ -1004,7 +877,7 @@ function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ curr
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${e.cerrado?'CERRADO':'ABIERTO'}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
-function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}<tr><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th><tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
@@ -1026,7 +899,7 @@ function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElemen
 function actualizarResumenEjecutivo() { const sucursal=document.getElementById('ejecutivoSucursal').value, mes=document.getElementById('ejecutivoMes').value, sector=document.getElementById('ejecutivoSector').value, estado=document.getElementById('ejecutivoEstadoFiltro').value, tipoFiltro=document.getElementById('ejecutivoTipoFiltro').value; let datosActos=[], datosVCP=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ if(sucursal!=='todas' && suc!==sucursal) return; datosActos=datosActos.concat(ALL_ACTOS_DATA[suc].filter(d=>(mes==='todo'||d.mes===mes)&&(sector==='todos'||d.sector.includes(sector))&&(estado==='todos'||(estado==='abiertos'?!d.cerrado:d.cerrado))&&(tipoFiltro==='todos'||tipoFiltro==='vcp'||d.tipo===tipoFiltro))); if(ALL_VCP_DATA[suc]) datosVCP=datosVCP.concat(ALL_VCP_DATA[suc].filter(d=>(mes==='todo'||d.mes===mes)&&(sector==='todos'||d.sector.includes(sector))&&(tipoFiltro==='todos'||tipoFiltro==='vcp'))); }); if(currentFiltroTipo!=='todos'){ if(currentFiltroTipo==='acto') datosVCP=[]; else if(currentFiltroTipo==='condicion'){ datosActos=datosActos.filter(d=>d.tipo==='condicion'); datosVCP=[]; } else if(currentFiltroTipo==='vcp') datosActos=[]; } const totalActos=datosActos.filter(d=>d.tipo==='acto').length, totalCond=datosActos.filter(d=>d.tipo==='condicion').length, totalVCP=datosVCP.length; document.getElementById('ejecTotalActos').innerText=totalActos; document.getElementById('ejecTotalCondiciones').innerText=totalCond; document.getElementById('ejecTotalVCP').innerText=totalVCP; document.getElementById('ejecTotalGeneral').innerText=totalActos+totalCond+totalVCP; renderEjecutivoRankings(datosActos); renderEjecutivoReincidencias(datosActos); renderEjecutivoTabla([...datosActos,...datosVCP]); renderEjecutivoChartsSucursales(sector,sucursal,estado); }
 function renderEjecutivoRankings(datos) { const actos=datos.filter(d=>d.tipo==='acto'), countActos={}; actos.forEach(d=>{const k=d.descripcion||'Sin descripción'; countActos[k]=(countActos[k]||0)+1;}); const topActos=Object.entries(countActos).sort((a,b)=>b[1]-a[1]).slice(0,5); const contActos=document.getElementById('ejecTopActos'); if(contActos) contActos.innerHTML=topActos.length?topActos.map(([d,c],i)=>`<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g,"\\'")}','acto')"><div class="zr-rank-num zr-rank-${i+1<=3?i+1:'default'}">${i+1}</div><div class="flex-1"><div class="font-bold">${d.length>40?d.substring(0,40)+'...':d}</div><div class="text-xs">${c} registro${c>1?'s':''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join(''):'<p>Sin datos</p>'; const conds=datos.filter(d=>d.tipo==='condicion'), countConds={}; conds.forEach(d=>{const k=d.descripcion||'Sin descripción'; countConds[k]=(countConds[k]||0)+1;}); const topConds=Object.entries(countConds).sort((a,b)=>b[1]-a[1]).slice(0,5); const contConds=document.getElementById('ejecTopCond'); if(contConds) contConds.innerHTML=topConds.length?topConds.map(([d,c],i)=>`<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorDescripcion('${d.replace(/'/g,"\\'")}','condicion')"><div class="zr-rank-num zr-rank-${i+1<=3?i+1:'default'}">${i+1}</div><div class="flex-1"><div class="font-bold">${d.length>40?d.substring(0,40)+'...':d}</div><div class="text-xs">${c} registro${c>1?'s':''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join(''):'<p>Sin datos</p>'; const countResp={}; datos.forEach(d=>{const r=d.observador||'Sin identificar'; countResp[r]=(countResp[r]||0)+1;}); const topResp=Object.entries(countResp).sort((a,b)=>b[1]-a[1]).slice(0,10); const contResp=document.getElementById('ejecTopResponsables'); if(contResp) contResp.innerHTML=topResp.map(([n,c],i)=>`<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g,"\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i+1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join(''); }
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
-function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}<td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado!==false?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${d.cerrado!==false?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td></table>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></tr>'; }
+function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[9px] ${d.cerrado!==false?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${d.cerrado!==false?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td></tr>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></tr>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.descripcion===desc&&d.tipo===tipo)); }); abrirModalConDatos(`Reportes: "${desc.substring(0,50)}..."`,datos); }
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
@@ -1070,7 +943,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating && !isRefreshing) { safeRefresh(); } });
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating && !isRefreshing) { loadData(); } });
 </script>
 </body>
 </html>
