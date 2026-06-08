@@ -67,7 +67,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
         <div class="header-container">
             <div style="display:flex;align-items:center;gap:16px">
                 <img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" style="width:50px;height:50px;background:white;border-radius:12px;padding:5px">
-                <div><h1 class="text-2xl font-black">PANEL SEGURIDAD MINERAR 2026 🛡️</h1><p class="text-xs opacity-90">👷 SISTEMA ACTIVO</p></div>
+                <div><h1 class="text-2xl font-black">PANEL SEGURIDAD MINERAR 2026 🛡️</h1><p class="text-xs opacity-90"> SISTEMA ACTIVO</p></div>
             </div>
             <div style="display:flex;gap:12px;align-items:center">
                 <div class="glass-card px-5 py-2 text-center" style="background:rgba(255,255,255,0.2)">
@@ -90,19 +90,20 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                     <button id="btnBarker" class="sucursal-btn" onclick="cambiarSucursal('BARKER')">BARKER</button>
                     <button id="btnLaPampita" class="sucursal-btn" onclick="cambiarSucursal('LAPAMPITA')">LA PAMPITA</button>
                 </div>
-                <h2 class="text-xl font-black">📊 OBJETIVOS MENSUALES (110)</h2>
+                <h2 id="objetivosTitulo" class="text-xl font-black">📊 OBJETIVOS MENSUALES (110)</h2>
+                <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div class="glass-card p-4">
-                    <div style="display:flex;justify-content:between"><span class="font-bold text-cyan-700">⚠️ ACTOS</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
+                    <div style="display:flex;justify-content:space-between"><span class="font-bold text-cyan-700">️ ACTOS</span><span id="actosStatus" class="status-badge status-warn"> Pendiente</span></div>
                     <div id="kpiActos" class="text-4xl font-black text-cyan-700">0</div>
                     <div style="display:flex;justify-content:space-between"><span id="objetivoActosTexto">🎯 Objetivo: 66</span><span id="actosPctLabel">0%</span></div>
                     <div class="h-1.5 bg-cyan-200 rounded-full mt-1"><div id="actosBar" class="h-full w-0 bg-gradient-to-r from-cyan-500 to-cyan-700 rounded-full"></div></div>
                 </div>
                 
                 <div class="glass-card p-4">
-                    <div style="display:flex;justify-content:between"><span class="font-bold text-amber-700">🏚️ CONDICIONES</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
+                    <div style="display:flex;justify-content:space-between"><span class="font-bold text-amber-700">🏚️ CONDICIONES</span><span id="condStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
                     <div id="kpiCondiciones" class="text-4xl font-black text-amber-700">0</div>
                     <div style="display:flex;justify-content:space-between"><span id="objetivoCondicionesTexto">🎯 Objetivo: 44</span><span id="condPctLabel">0%</span></div>
                     <div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div>
@@ -111,7 +112,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                 <div class="glass-card p-4">
                     <p class="font-bold text-indigo-800 mb-3 text-sm">👔 CONTROL POR SUPERVISOR</p>
                     <div style="display:flex;gap:8px;margin-bottom:12px">
-                        <select id="supervisorSelect" class="border rounded-lg p-2 text-xs flex-1"><option value="todos">🔘 Todos</option></select>
+                        <select id="supervisorSelect" class="border rounded-lg p-2 text-xs flex-1"><option value="todos"> Todos</option></select>
                         <select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs flex-1">
                             <option value="todo">📅 Todo 2026</option>
                             <option value="enero">Enero</option><option value="febrero">Febrero</option><option value="marzo">Marzo</option>
@@ -122,7 +123,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                     </div>
                     <div class="grid grid-cols-2 gap-2">
                         <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 cursor-pointer" onclick="abrirModalSupervisor('acto')">
-                            <span class="text-[10px] text-cyan-700 block mb-1">⚠️ ACTOS</span>
+                            <span class="text-[10px] text-cyan-700 block mb-1">️ ACTOS</span>
                             <div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div>
                         </div>
                         <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200 cursor-pointer" onclick="abrirModalSupervisor('condicion')">
@@ -151,20 +152,26 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                         <button onclick="setSector('general',this)" class="btn-filter active"> GENERAL</button>
                         <button onclick="setSector('cantera',this)" class="btn-filter">⛏️ CANTERA</button>
                         <button onclick="setSector('taller',this)" class="btn-filter">🔧 TALLER</button>
-                        <button onclick="setSector('obrador',this)" class="btn-filter">🏢 OBRADOR</button>
+                        <button onclick="setSector('obrador',this)" class="btn-filter"> OBRADOR</button>
                     </div>
                     <label class="text-xs font-bold">⚡ ESTADO</label>
                     <div id="statusButtons" class="flex flex-col gap-2">
                         <button onclick="setStatus('todos',this)" class="btn-filter active">📊 TODOS</button>
                         <button onclick="setStatus('cerrados',this)" class="btn-filter">✅ CERRADOS</button>
-                        <button onclick="setStatus('abiertos',this)" class="btn-filter">⚠️ ABIERTOS</button>
+                        <button onclick="setStatus('abiertos',this)" class="btn-filter">️ ABIERTOS</button>
                     </div>
                 </div>
             </aside>
             
             <main>
                 <div class="glass-card p-4 mb-4">
-                    <h3 class="font-black uppercase mb-3">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                        <h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ</h3>
+                        <div style="display:flex;gap:8px">
+                            <button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer">✕ Quitar filtro</button>
+                            <button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full cursor-pointer">️ Limpiar todos</button>
+                        </div>
+                    </div>
                     <div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3"></div>
                 </div>
                 
@@ -174,16 +181,19 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                         <div class="chart-container"><canvas id="categoryChart"></canvas></div>
                     </div>
                     <div class="glass-card p-4">
-                        <h3 class="font-black text-sm mb-2">📈 EVOLUCIÓN MENSUAL</h3>
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+                            <h3 class="font-black text-sm">📈 EVOLUCIÓN MENSUAL</h3>
+                            <button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full cursor-pointer"> Limpiar mes</button>
+                        </div>
                         <div class="chart-container"><canvas id="trendChart"></canvas></div>
                     </div>
                 </div>
                 
                 <div class="glass-card p-5 mt-4">
-                    <h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES</h3>
+                    <h3 class="font-black uppercase mb-2"> DETALLE DE ACTOS Y CONDICIONES</h3>
                     <div class="table-scroll">
                         <table class="w-full text-left text-xs">
-                            <thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead>
+                            <thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th> Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead>
                             <tbody id="generalTableBody"></tbody>
                         </table>
                     </div>
@@ -201,7 +211,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-5">
             <div class="glass-card p-4 border-l-4 border-amber-600">
-                <div style="display:flex;justify-content:space-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30)</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
+                <div style="display:flex;justify-content:space-between"><span class="font-bold text-amber-800"> VCP TOTALES (Meta:30)</span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
                 <div id="vcpCurrent" class="text-4xl font-black text-amber-700">0</div>
                 <div style="display:flex;justify-content:space-between"><span>🎯 Progreso</span><span id="vcpPctLabel">0%</span></div>
                 <div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div>
@@ -225,7 +235,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                         <div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div>
                     </div>
                     <div class="bg-amber-50 rounded-xl p-2 text-center border border-amber-200">
-                        <span class="text-[10px] text-amber-700 block mb-1">🕒 Último</span>
+                        <span class="text-[10px] text-amber-700 block mb-1"> Último</span>
                         <div id="personLastVCP" class="text-sm font-black">-</div>
                     </div>
                 </div>
@@ -262,7 +272,10 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
             
             <main>
                 <div class="glass-card p-4 mb-4 border border-amber-200">
-                    <h3 class="font-black text-amber-800 text-sm mb-3">📊 CLASIFICACIÓN VCP POR CAUSA RAÍZ</h3>
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                        <h3 class="font-black text-amber-800 text-sm"> CLASIFICACIÓN VCP POR CAUSA RAÍZ</h3>
+                        <button id="clearVCPCauseBtn" onclick="clearVCPCauseFilter()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer">✕ Quitar filtro</button>
+                    </div>
                     <div id="vcpCategoryCards" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
                 </div>
                 
@@ -281,7 +294,7 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
                     <h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP</h3>
                     <div class="table-scroll">
                         <table class="w-full text-left text-xs">
-                            <thead><tr><th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead>
+                            <thead><tr><th class="p-2">📅 Fecha</th><th> Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th> Estado</th></tr></thead>
                             <tbody id="vcpTableBody"></tbody>
                         </table>
                     </div>
@@ -291,7 +304,6 @@ tr.row-hoy{background-color:#fef3c7!important;border-left:4px solid #f18b00}
     </div>
 </div>
 
-<!-- MODALES -->
 <div id="reportDetailModal" class="modal-overlay">
     <div class="bg-white rounded-2xl p-6 w-[90%] max-w-lg shadow-2xl border-2 border-orange-500 max-h-[85vh] overflow-y-auto">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
@@ -348,8 +360,6 @@ const SUCURSALES_CONFIG={
 };
 const OBJ_VCP=30;
 
-function escapeHtml(str){if(!str)return'';return str.replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-
 function parseFecha(f){
     if(!f)return{dia:'',mes:'',valido:false};
     let s=f.toString().split(' ')[0].trim(),p=s.split('/');
@@ -381,7 +391,6 @@ function detectarTipo(tipoRaw){
 async function cargarDatosSucursal(sucursal){
     const config=SUCURSALES_CONFIG[sucursal],ts=Date.now();
     let actosData=[],vcpData=[];
-    const hoy=new Date(),diaHoy=hoy.getDate().toString().padStart(2,'0'),mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
     
     if(config.actosUrl){
         try{
@@ -477,7 +486,7 @@ async function populateSupervisors(){
     ACTOS_COND_DATA.forEach(d=>{if(d.observador&&d.observador.trim())supervisorsSet.add(d.observador.trim())});
     const s=Array.from(supervisorsSet).sort();
     sel.innerHTML='<option value="todos">🔘 Todos</option>';
-    s.forEach(x=>{let count=ACTOS_COND_DATA.filter(d=>d.observador===x).length;sel.innerHTML+=`<option value="${x}">👤 ${x} (${count})</option>`});
+    s.forEach(x=>{let count=ACTOS_COND_DATA.filter(d=>d.observador===x).length;sel.innerHTML+=`<option value="${x}"> ${x} (${count})</option>`});
     updateSupervisorCard()
 }
 
@@ -486,7 +495,7 @@ async function populateVCPPeopleFilter(){
     VCP_DATA.forEach(v=>{if(v.personaObservada)counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1)});
     let sel=document.getElementById('vcpPersonFilter');
     if(!sel)return;
-    sel.innerHTML='<option value="todos">👥 Todas las personas</option>';
+    sel.innerHTML='<option value="todos"> Todas las personas</option>';
     [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`);
     updatePersonVCPStatsOnly()
 }
@@ -540,7 +549,7 @@ function applyGeneralFilters(){
     document.getElementById('actosPctLabel').innerText=Math.round(pA)+'%';
     document.getElementById('condPctLabel').innerText=Math.round(pC)+'%';
     
-    let up=(id,p)=>{let el=document.getElementById(id);if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok'}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn'}else{el.innerText='⚠ Pendiente';el.className='status-badge status-low'}};
+    let up=(id,p)=>{let el=document.getElementById(id);if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok'}else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn'}else{el.innerText=' Pendiente';el.className='status-badge status-low'}};
     up('actosStatus',pA);up('condStatus',pC);
     
     updateCategoryCards(f,'actos');
@@ -550,8 +559,8 @@ function applyGeneralFilters(){
 }
 
 function updateCategoryCards(data,type){
-    const CATS_ACTOS=[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}];
-    const CATS_VCP=[{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}];
+    const CATS_ACTOS=[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}];
+    const CATS_VCP=[{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}];
     const cats=type==='actos'?CATS_ACTOS:CATS_VCP,contId=type==='actos'?'categoryCards':'vcpCategoryCards';
     
     let counts={};cats.forEach(c=>counts[c.id]=0);
@@ -584,7 +593,7 @@ function updateCategoryCards(data,type){
 }
 
 function updateChartsDona(data,type){
-    const cats=type==='actos'?[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}]:[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}];
+    const cats=type==='actos'?[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'',color:'#ef4444'},{id:'area',name:'Área',icon:'️',color:'#ea580c'}]:[{id:'orden',name:'Orden',icon:'',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}];
     const canvasId=type==='actos'?'categoryChart':'vcpCategoryChart',ctx=document.getElementById(canvasId)?.getContext('2d');
     if(!ctx)return;
     
@@ -675,7 +684,7 @@ function renderGeneralTable(data){
         let tr=document.createElement('tr'),esHoy=(e.dia===diaHoy&&e.mes===mesHoy);
         tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer';
         tr.onclick=()=>openModal(e,i,sorted);
-        tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${(e.descripcion||'').substring(0,55)}${(e.descripcion||'').length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`;
+        tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${(e.descripcion||'').substring(0,55)}${(e.descripcion||'').length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`;
         tb.appendChild(tr)
     })
 }
@@ -707,9 +716,9 @@ function openModal(r,idx,data){
     if(!modal||!content){console.error('Modal no encontrado');return}
     
     if(r.tipo==='vcp'){
-        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Persona:</strong> ${r.personaObservada}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong>📝 Verificado:</strong></p><div class="bg-purple-50 p-3 rounded">${r.descripcion||'-'}</div>${r.comentarios?`<p><strong>💬 Observaciones:</strong></p><div class="bg-slate-50 p-3 rounded">${r.comentarios}</div>`:''}<p><strong>⚙️ Estado:</strong> <span class="text-emerald-600">CERRADO</span></p></div>`
+        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Persona:</strong> ${r.personaObservada}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong> Verificado:</strong></p><div class="bg-purple-50 p-3 rounded">${r.descripcion||'-'}</div>${r.comentarios?`<p><strong>💬 Observaciones:</strong></p><div class="bg-slate-50 p-3 rounded">${r.comentarios}</div>`:''}<p><strong>⚙️ Estado:</strong> <span class="text-emerald-600">CERRADO</span></p></div>`
     }else{
-        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>📋 Tipo:</strong> ${r.tipo?.toUpperCase()}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong>📝 Descripción:</strong></p><div class="bg-slate-50 p-3 rounded border-l-4 border-amber-500">${r.descripcion||'-'}</div><p><strong>⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600">CERRADO</span>':'<span class="text-red-500">ABIERTO</span>'}</p></div>`
+        content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong> Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong> Tipo:</strong> ${r.tipo?.toUpperCase()}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong>📝 Descripción:</strong></p><div class="bg-slate-50 p-3 rounded border-l-4 border-amber-500">${r.descripcion||'-'}</div><p><strong>⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600">CERRADO</span>':'<span class="text-red-500">ABIERTO</span>'}</p></div>`
     }
     
     modal.classList.add('active');
@@ -745,9 +754,9 @@ function abrirModalSupervisor(tipo){
     
     if(!dt.length){alert(`No hay ${tipo==='acto'?'ACTOS':'CONDICIONES'} para ${s}`);return}
     
-    let html=`<div class="mb-3 p-3 bg-orange-50 rounded-lg"><p class="font-bold">📅 ${m==='todo'?'Todo 2026':m}</p><p class="font-bold">👤 ${s}</p><p class="font-bold text-lg">📊 Total: ${dt.length}</p></div><div class="table-scroll max-h-96"><table class="w-full text-xs"><thead class="bg-slate-100 sticky top-0"><tr><th class="p-2">Fecha</th><th class="p-2">Sector</th><th class="p-2">Categoría</th><th class="p-2">Descripción</th><th class="p-2">Estado</th></tr></thead><tbody>`;
+    let html=`<div class="mb-3 p-3 bg-orange-50 rounded-lg"><p class="font-bold">📅 ${m==='todo'?'Todo 2026':m}</p><p class="font-bold">👤 ${s}</p><p class="font-bold text-lg"> Total: ${dt.length}</p></div><div class="table-scroll max-h-96"><table class="w-full text-xs"><thead class="bg-slate-100 sticky top-0"><tr><th class="p-2">Fecha</th><th class="p-2">Sector</th><th class="p-2">Categoría</th><th class="p-2">Descripción</th><th class="p-2">Estado</th></tr></thead><tbody>`;
     
-    dt.forEach(e=>{html+=`<tr class="border-b hover:bg-orange-50"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</td></tr>`});
+    dt.forEach(e=>{html+=`<tr class="border-b hover:bg-orange-50"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${e.cerrado?' CERRADO':'⚠️ ABIERTO'}</td></tr>`});
     
     html+=`</tbody></table></div>`;
     
@@ -818,9 +827,16 @@ function logout(){localStorage.clear();location.reload()}
 function forceRefreshData(){if(isUnlocked&&!isUpdating)loadData()}
 
 function actualizarObjetivosUI(){
-    document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`;
-    document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`;
-    document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`
+    if(!currentObjetivos)return;
+    const el1=document.getElementById('objetivoActosTexto');
+    const el2=document.getElementById('objetivoCondicionesTexto');
+    const el3=document.getElementById('objetivosTitulo');
+    const el4=document.getElementById('objetivosMeta');
+    
+    if(el1)el1.innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`;
+    if(el2)el2.innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`;
+    if(el3)el3.innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`;
+    if(el4)el4.innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`
 }
 
 function toggleVCPVisibility(show){
@@ -830,15 +846,16 @@ function toggleVCPVisibility(show){
 
 function cambiarSucursal(suc){
     currentSucursal=suc;
-    ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active'));
+    ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('active')});
     selectedCausa=null;selectedVCPCausa=null;state.mes='todo';
-    document.getElementById('monthFilter').value='todo';
+    const mf=document.getElementById('monthFilter');if(mf)mf.value='todo';
     document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected'));
-    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
-    document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
+    const cb=document.getElementById('clearCausaBtn');if(cb)cb.classList.add('hidden-section');
+    const vb=document.getElementById('clearVCPCauseBtn');if(vb)vb.classList.add('hidden-section');
     const c=SUCURSALES_CONFIG[suc];
     if(c){currentObjetivos=c.objetivos;currentShowVCP=c.showVCP;actualizarObjetivosUI();toggleVCPVisibility(currentShowVCP)}
-    document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active');
+    const btn=document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita');
+    if(btn)btn.classList.add('active');
     if(isUnlocked)loadData()
 }
 
