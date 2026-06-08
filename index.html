@@ -360,22 +360,86 @@ body { padding: 10px; }
 <div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000]" style="display:none;"><div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-2xl max-h-[85vh] overflow-hidden shadow-2xl border-4 border-purple-500"><div class="flex justify-between items-center mb-4 pb-3 border-b border-purple-200"><h2 id="detailModalTitle" class="text-2xl font-black text-purple-700">📋 Detalle del Reporte</h2><button onclick="cerrarDetailModal()" class="text-3xl text-slate-400 hover:text-slate-600 cursor-pointer">&times;</button></div><div id="detailModalContent" class="overflow-y-auto max-h-[calc(85vh-140px)]"></div><div class="flex justify-between gap-3 mt-5 pt-3 border-t border-purple-200"><button id="detailModalPrevBtn" onclick="detailModalPrev()" class="bg-slate-500 hover:bg-slate-600 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button><span id="detailModalCounter" class="font-bold text-purple-600 text-sm self-center">1/1</span><button id="detailModalNextBtn" onclick="detailModalNext()" class="bg-purple-600 hover:bg-purple-700 text-white px-5 py-2 rounded-full text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button></div><button onclick="cerrarDetailModal()" class="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white py-2 rounded-xl font-bold transition-all">Cerrar</button></div></div>
 
 <!-- MODAL PRINCIPAL - VERSIÓN MUY ANGOSTA (max-w-[280px]) -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-2" style="display:none;">
-<div class="modal-bounce bg-white rounded-xl w-full max-w-[280px] shadow-xl border border-gray-200 overflow-hidden">
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-2.5 py-1.5 flex justify-between items-center">
-        <h2 class="font-black text-white text-xs flex items-center gap-1">
-            <span>📋</span> Detalle
+<!-- MODAL PRINCIPAL - ANCHO NORMAL Y BALANCEADO -->
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-xl w-full max-w-2xl shadow-xl border border-gray-200 overflow-hidden">
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 flex justify-between items-center">
+        <h2 class="font-black text-white text-base flex items-center gap-2">
+            <span>📋</span> Detalle del Reporte
         </h2>
-        <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-base leading-none transition-all cursor-pointer">&times;</button>
+        <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-xl leading-none transition-all cursor-pointer">&times;</button>
     </div>
-    <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-1.5 p-2.5 max-h-[60vh] overflow-y-auto text-[11px]"></div>
-    <div class="border-t border-gray-100 px-2.5 py-1.5 bg-gray-50/50">
-        <div class="flex justify-between items-center gap-1">
-            <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-2 py-0.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all">⬅ Ant</button>
-            <span id="modalCounter" class="font-bold text-orange-600 text-[10px] bg-orange-50 px-1.5 py-0.5 rounded-full">1/1</span>
-            <button id="btnNext" onclick="goToNextModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-2 py-0.5 rounded-lg text-[10px] font-bold cursor-pointer transition-all">Sig ➡</button>
-        </div>
-        <button onclick="closeReportModal()" class="w-full mt-1.5 bg-gray-100 hover:bg-gray-200 text-gray-700 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-3 p-5 max-h-[65vh] overflow-y-auto text-sm"></div>
+    <div class="border-t border-gray-100 px-4 py-3 bg-gray-50/50 flex justify-between items-center gap-3">
+        <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button>
+        <span id="modalCounter" class="font-bold text-orange-600 text-sm bg-orange-50 px-3 py-1 rounded-full">1/1</span>
+        <button id="btnNext" onclick="goToNextModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button>
+    </div>
+    <div class="px-4 pb-4">
+        <button onclick="closeReportModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    </div>
+</div>
+</div>
+
+<!-- MODAL DETALLE - ANCHO NORMAL -->
+<div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000] p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-4 border-purple-500 overflow-hidden">
+    <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-5 py-4 flex justify-between items-center">
+        <h2 id="detailModalTitle" class="font-black text-white text-lg flex items-center gap-2">
+            <span>📋</span> Detalle del Reporte
+        </h2>
+        <button onclick="cerrarDetailModal()" class="text-white/80 hover:text-white text-2xl leading-none transition-all cursor-pointer">&times;</button>
+    </div>
+    <div id="detailModalContent" class="overflow-y-auto max-h-[70vh] p-6"></div>
+    <div class="border-t border-purple-100 px-5 py-4 bg-purple-50/30 flex justify-between items-center gap-3">
+        <button id="detailModalPrevBtn" onclick="detailModalPrev()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button>
+        <span id="detailModalCounter" class="font-bold text-purple-600 text-sm bg-purple-100 px-4 py-1.5 rounded-full">1/1</span>
+        <button id="detailModalNextBtn" onclick="detailModalNext()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button>
+    </div>
+</div>
+</div>
+
+<!-- MODAL REPORTES DIARIOS - ANCHO NORMAL -->
+<div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-2xl w-full max-w-2xl shadow-2xl border-2 border-orange-500 overflow-hidden">
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
+        <h2 id="dailyReportsTitle" class="font-black text-white text-lg flex items-center gap-2">📋 Reportes de Hoy</h2>
+        <button onclick="closeDailyReportsModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+    </div>
+    <div id="dailyReportsContent" class="detalle-texto text-slate-700 space-y-3 max-h-[65vh] overflow-y-auto p-5"></div>
+    <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30">
+        <button onclick="closeDailyReportsModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    </div>
+</div>
+</div>
+
+<!-- MODAL SUPERVISOR - ANCHO NORMAL -->
+<div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-orange-500 overflow-hidden">
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
+        <h2 id="modalSupervisorTitle" class="font-black text-white text-lg flex items-center gap-2">📋 Detalle del Supervisor</h2>
+        <button onclick="closeSupervisorModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+    </div>
+    <div id="supervisorModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[65vh] overflow-y-auto p-5"></div>
+    <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30">
+        <button onclick="closeSupervisorModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    </div>
+</div>
+</div>
+
+<!-- MODAL PERSONA VCP - ANCHO NORMAL -->
+<div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
+<div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-emerald-500 overflow-hidden">
+    <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex justify-between items-center">
+        <h2 id="modalPersonaVCPTitle" class="font-black text-white text-lg flex items-center gap-2">📋 Detalle VCP por Persona</h2>
+        <button onclick="closePersonaVCPModal()" class="text-white/80 hover:text-white text-2xl leading-none cursor-pointer">&times;</button>
+    </div>
+    <div id="personaVCPModalContent" class="detalle-texto text-slate-700 space-y-3 max-h-[65vh] overflow-y-auto p-5"></div>
+    <div class="border-t border-emerald-100 px-5 py-4 bg-emerald-50/30">
+        <button onclick="closePersonaVCPModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    </div>
+</div>
+</div>
     </div>
 </div>
 </div>
