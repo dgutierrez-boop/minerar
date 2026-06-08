@@ -361,22 +361,26 @@ body { padding: 10px; }
 
 <!-- MODAL PRINCIPAL - VERSIÓN MUY ANGOSTA (max-w-[280px]) -->
 <!-- MODAL PRINCIPAL - ANCHO NORMAL Y BALANCEADO -->
-<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-3" style="display:none;">
-<div class="modal-bounce bg-white rounded-xl w-full max-w-2xl shadow-xl border border-gray-200 overflow-hidden">
-    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-4 py-3 flex justify-between items-center">
-        <h2 class="font-black text-white text-base flex items-center gap-2">
+<!-- MODAL PRINCIPAL - COMPACTO Y LEGIBLE -->
+<div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4" style="display:none;">
+<div class="modal-bounce bg-white rounded-xl w-full max-w-md shadow-2xl border-2 border-orange-500 overflow-hidden">
+    <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 flex justify-between items-center">
+        <h2 class="font-black text-white text-lg flex items-center gap-2">
             <span>📋</span> Detalle del Reporte
         </h2>
-        <button onclick="closeReportModal()" class="text-white/80 hover:text-white text-xl leading-none transition-all cursor-pointer">&times;</button>
+        <button onclick="closeReportModal()" class="text-white hover:text-orange-200 text-2xl font-bold transition-all cursor-pointer leading-none">&times;</button>
     </div>
-    <div id="reportModalContent" class="detalle-texto text-slate-700 space-y-3 p-5 max-h-[65vh] overflow-y-auto text-sm"></div>
-    <div class="border-t border-gray-100 px-4 py-3 bg-gray-50/50 flex justify-between items-center gap-3">
-        <button id="btnPrev" onclick="goToPreviousModal()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button>
-        <span id="modalCounter" class="font-bold text-orange-600 text-sm bg-orange-50 px-3 py-1 rounded-full">1/1</span>
-        <button id="btnNext" onclick="goToNextModal()" class="bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button>
+    <div id="reportModalContent" class="p-5 max-h-[60vh] overflow-y-auto space-y-3"></div>
+    <div class="border-t border-gray-200 px-5 py-4 bg-gray-50 flex justify-between items-center gap-3">
+        <button id="btnPrev" onclick="goToPreviousModal()" class="flex-1 bg-slate-500 hover:bg-slate-600 text-white px-4 py-2.5 rounded-lg text-base font-bold cursor-pointer transition-all shadow-md">⬅ Anterior</button>
+        <span id="modalCounter" class="font-black text-orange-600 text-base bg-orange-100 px-4 py-2 rounded-lg border-2 border-orange-300">1/1</span>
+        <button id="btnNext" onclick="goToNextModal()" class="flex-1 bg-orange-600 hover:bg-orange-700 text-white px-4 py-2.5 rounded-lg text-base font-bold cursor-pointer transition-all shadow-md">Siguiente ➡</button>
     </div>
-    <div class="px-4 pb-4">
-        <button onclick="closeReportModal()" class="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Cerrar ✕</button>
+    <div class="px-5 pb-5">
+        <button onclick="closeReportModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-lg text-base font-bold cursor-pointer transition-all border-2 border-gray-300">Cerrar ✕</button>
+    </div>
+</div>
+</div>
     </div>
 </div>
 </div>
@@ -966,16 +970,110 @@ function openModal(r, idx, data) {
     const categoriaColor = r.categoria?.color || '#6b7280';
     const categoriaIcon = r.categoria?.icon || '📋';
     const categoriaName = r.categoria?.name || 'Sin clasificar';
-    const estadoHTML = r.cerrado ? '<span class="inline-block bg-emerald-100 text-emerald-700 px-1.5 py-0.5 rounded-full text-[9px] font-bold">✅ CERRADO</span>' : '<span class="inline-block bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full text-[9px] font-bold">🔴 ABIERTO</span>';
+    const estadoHTML = getEstadoBadgeHTML(r.cerrado);
+    
     if (r.tipo === 'vcp') { 
-        content.innerHTML = `<div class="space-y-1.5"><div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-50 p-1.5 rounded-lg"><div><span class="text-gray-400">📅</span> ${r.fecha || '-'}</div><div><span class="text-gray-400">🏭</span> ${r.sucursal || '-'}</div><div class="col-span-2"><span class="text-gray-400">👤</span> ${r.personaObservada || '-'}</div><div class="col-span-2"><span class="text-gray-400">🏭</span> ${r.sector || '-'}</div><div><span class="text-gray-400">📋</span> <span class="bg-purple-100 text-purple-700 px-1 py-0.5 rounded text-[9px]">VCP</span></div><div><span class="text-gray-400">🏷️</span> <span style="background:${categoriaColor}20; color:${categoriaColor}" class="px-1 py-0.5 rounded-full text-[9px]">${categoriaIcon} ${categoriaName}</span></div></div><div class="bg-amber-50/50 rounded-lg p-1.5 border-l-2 border-amber-400"><p class="text-[9px] text-amber-600 font-bold">📝 Verificado</p><p class="text-[10px] leading-tight">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-slate-50 rounded-lg p-1.5"><p class="text-[9px] text-slate-500 font-bold">💬 Obs</p><p class="text-[10px]">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center pt-1"><span class="text-[9px] text-gray-400">⚙️</span>${estadoHTML}</div></div>`; 
+        content.innerHTML = `
+            <div class="space-y-3 text-base">
+                <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200">
+                    <div>
+                        <div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div>
+                        <div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div>
+                        <div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div>
+                        <div class="font-bold text-slate-800 text-lg">${r.personaObservada || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div>
+                        <div class="font-semibold text-slate-700">${r.sector || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div>
+                        <span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300">
+                    <div class="text-xs text-amber-700 font-bold uppercase mb-2 flex items-center gap-2">
+                        <span>📝</span> Verificado
+                    </div>
+                    <p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p>
+                </div>
+                
+                ${r.comentarios ? `
+                <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300">
+                    <div class="text-xs text-slate-600 font-bold uppercase mb-2 flex items-center gap-2">
+                        <span>💬</span> Observaciones
+                    </div>
+                    <p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p>
+                </div>` : ''}
+                
+                ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
+                
+                <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
+                    <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>
+                    ${estadoHTML}
+                </div>
+            </div>`; 
     } else { 
         const esActo = r.tipo === 'acto';
-        const tipoText = esActo ? '⚠️ ACTO' : '🏚️ COND';
-        const tipoBg = esActo ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700';
-        content.innerHTML = `<div class="space-y-1.5"><div class="grid grid-cols-2 gap-1 text-[10px] bg-gray-50 p-1.5 rounded-lg"><div><span class="text-gray-400">📅</span> ${r.fecha || '-'}</div><div><span class="text-gray-400">🏭</span> ${r.sucursal || '-'}</div><div class="col-span-2"><span class="text-gray-400">👤</span> ${r.observador || '-'}</div><div class="col-span-2"><span class="text-gray-400">🏭</span> ${r.sector || '-'}</div><div><span class="text-gray-400">📋</span> <span class="px-1 py-0.5 rounded text-[9px] font-bold ${tipoBg}">${tipoText}</span></div><div><span class="text-gray-400">🏷️</span> <span style="background:${categoriaColor}20; color:${categoriaColor}" class="px-1 py-0.5 rounded-full text-[9px]">${categoriaIcon} ${categoriaName}</span></div></div><div class="bg-slate-50 rounded-lg p-1.5 border-l-2 border-amber-400"><p class="text-[9px] text-amber-600 font-bold">📝 Descripción</p><p class="text-[10px] leading-tight">${r.descripcion || '-'}</p></div>${r.causas ? `<div class="bg-amber-50/50 rounded-lg p-1.5"><p class="text-[9px] text-orange-600 font-bold">🔍 Causas</p><p class="text-[10px]">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center pt-1"><span class="text-[9px] text-gray-400">⚙️</span>${estadoHTML}</div></div>`; 
+        const tipoText = esActo ? '⚠️ ACTO' : '🏚️ CONDICIÓN';
+        const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500';
+        content.innerHTML = `
+            <div class="space-y-3 text-base">
+                <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+                    <div>
+                        <div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div>
+                        <div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div>
+                        <div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div>
+                    </div>
+                    <div class="col-span-2">
+                        <div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div>
+                        <div class="font-bold text-slate-800 text-lg">${r.observador || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div>
+                        <div class="font-semibold text-slate-700">${r.sector || '-'}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs text-blue-600 font-bold uppercase mb-1">📋 Tipo</div>
+                        <span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span>
+                    </div>
+                </div>
+                
+                <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300">
+                    <div class="text-xs text-slate-600 font-bold uppercase mb-2 flex items-center gap-2">
+                        <span>📝</span> Descripción
+                    </div>
+                    <p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p>
+                </div>
+                
+                ${r.causas ? `
+                <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300">
+                    <div class="text-xs text-amber-700 font-bold uppercase mb-2 flex items-center gap-2">
+                        <span>🔍</span> Causas
+                    </div>
+                    <p class="text-slate-800 text-base leading-relaxed">${r.causas}</p>
+                </div>` : ''}
+                
+                ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
+                
+                <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
+                    <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>
+                    ${estadoHTML}
+                </div>
+            </div>`; 
     } 
-    modal.classList.remove('hidden-section'); modal.style.display = 'flex'; 
+    modal.classList.remove('hidden-section'); 
+    modal.style.display = 'flex'; 
     document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`; 
 }
 
