@@ -646,7 +646,7 @@ tr.row-hoy {
 </div>
 
 <div id="mainContent" class="hidden-section">
-    <div class="max-w-7xl mx-auto">
+    <div class="max-w-[1600px] mx-auto">
         <div class="header-container">
             <div class="header-left">
                 <div><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" style="width:50px;height:50px;object-fit:contain; background:white; border-radius:12px; padding:5px;"></div>
@@ -681,7 +681,7 @@ tr.row-hoy {
                 <p id="objetivosMeta" class="text-xs text-slate-500">🎯 Meta: 66 Actos + 44 Condiciones = 110 Total</p>
             </div>
             
-            <!-- CORRECCIÓN LAYOUT - GRID DE 3 COLUMNAS IGUALES -->
+            <!-- CORRECCIÓN: GRID DE 3 COLUMNAS IGUALES -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4 my-5">
                 <div class="glass-card p-4">
                     <div class="flex justify-between"><span class="font-bold text-cyan-700">⚠️ ACTOS (AI) 🛡️</span><span id="actosStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
@@ -696,10 +696,10 @@ tr.row-hoy {
                     <div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="condBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div>
                 </div>
                 
-                <!-- CORRECCIÓN: MISMO ANCHO QUE LOS DEMÁS -->
+                <!-- CORRECCIÓN: MISMO TAMAÑO QUE LOS DEMÁS -->
                 <div class="glass-card p-4">
-                    <p class="font-bold text-indigo-800 mb-3">👔 CONTROL POR SUPERVISOR 🦺</p>
-                    <div class="grid grid-cols-2 gap-2 mb-3">
+                    <p class="font-bold text-indigo-800 mb-3 text-sm">👔 CONTROL POR SUPERVISOR 🦺</p>
+                    <div class="space-y-2 mb-3">
                         <select id="supervisorSelect" class="border rounded-lg p-2 text-xs w-full"><option value="todos">🔘 Todos</option></select>
                         <select id="supervisorMonthSelect" class="border rounded-lg p-2 text-xs w-full">
                             <option value="todo">📅 Todo 2026</option>
@@ -709,7 +709,7 @@ tr.row-hoy {
                             <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
                         </select>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-2 gap-2">
                         <div class="bg-cyan-50 rounded-xl p-2 text-center border border-cyan-200 cursor-pointer" id="actosCardSupervisor" onclick="abrirModalSupervisor('acto')">
                             <span class="text-[10px] text-cyan-700 block mb-1">⚠️ ACTOS</span>
                             <div id="supActosCount" class="text-2xl font-black text-cyan-700">0</div>
@@ -796,12 +796,13 @@ tr.row-hoy {
 
     <hr class="my-4">
 
-    <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
+    <!-- CORRECCIÓN: MISMO ANCHO QUE EL CONTENEDOR PRINCIPAL -->
+    <div id="vcpSection" class="max-w-[1600px] mx-auto glass-card p-6 border-2 border-amber-200">
         <div class="text-center mb-4">
             <h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 🚧</h2>
         </div>
         
-        <!-- CORRECCIÓN LAYOUT VCP - GRID DE 2 COLUMNAS IGUALES -->
+        <!-- CORRECCIÓN: GRID DE 2 COLUMNAS IGUALES -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 my-5">
             <div class="glass-card p-4 border-l-4 border-amber-600">
                 <div class="flex justify-between"><span class="font-bold text-amber-800">📊 VCP TOTALES (Meta:30) </span><span id="vcpStatus" class="status-badge status-warn">⚠ Pendiente</span></div>
@@ -810,10 +811,9 @@ tr.row-hoy {
                 <div class="h-1.5 bg-amber-200 rounded-full mt-1"><div id="vcpBar" class="h-full w-0 bg-gradient-to-r from-amber-500 to-amber-700 rounded-full"></div></div>
             </div>
             
-            <!-- CORRECCIÓN: MISMO ANCHO QUE EL ANTERIOR -->
             <div class="glass-card p-4">
-                <p class="font-bold text-indigo-800 mb-3">👥 FILTRO POR PERSONA VCP 🧑🏭</p>
-                <div class="grid grid-cols-2 gap-2 mb-3">
+                <p class="font-bold text-indigo-800 mb-3 text-sm">👥 FILTRO POR PERSONA VCP 🧑🏭</p>
+                <div class="space-y-2 mb-3">
                     <select id="vcpPersonFilter" class="border rounded-lg p-2 text-xs w-full"><option value="todos">👥 Todas las personas</option></select>
                     <select id="vcpPersonMonthFilter" class="border rounded-lg p-2 text-xs w-full">
                         <option value="todo">📅 Todos los meses</option>
@@ -823,7 +823,7 @@ tr.row-hoy {
                         <option value="octubre">Octubre</option><option value="noviembre">Noviembre</option><option value="diciembre">Diciembre</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-2 gap-2">
                     <div class="bg-emerald-50 rounded-xl p-2 text-center border border-emerald-200 cursor-pointer" id="vcpCardPersona" onclick="abrirModalPersonaVCP()">
                         <span class="text-[10px] text-emerald-700 block mb-1">📋 VCPs</span>
                         <div id="personVCPCount" class="text-2xl font-black text-emerald-700">0</div>
@@ -901,8 +901,6 @@ tr.row-hoy {
         </div>
     </div>
 </div>
-
-<!-- Resto de modales igual que antes... -->
 
 <script>
 // ==================== CONFIGURACIÓN ====================
@@ -1006,7 +1004,7 @@ window.initAudioContext = function() { if(window.audioContextInitialized) return
 window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { window.initAudioContext(); } if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
 function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
 function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
-function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 
 function togglePasswordVisibility() { const i=document.getElementById('passwordInput'); i.type=i.type==='password'?'text':'password'; i.focus(); }
 function verifyPassword() { 
@@ -1085,13 +1083,15 @@ async function cargarDatosSucursal(sucursal) {
                 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si'); 
                 const cat = classifyData(desc, false); 
                 
-                // CORRECCIÓN: Normalización estricta de observador
-                let obsNormalizado = (observador || '').trim();
+                // CORRECCIÓN: Normalización estricta
+                let obsRaw = (observador || '').trim();
+                let obsNormalizado = obsRaw.replace(/\s+/g, ' ').trim();
                 
                 actosData.push({ 
                     fecha, tipo, 
                     sector: (sector || '').toLowerCase().trim(), 
-                    observador: obsNormalizado, 
+                    observador: obsNormalizado,
+                    observadorRaw: obsRaw, 
                     observadorLower: obsNormalizado.toLowerCase(),
                     descripcion: (desc || '').trim(), 
                     causas: (causas || '').trim(), 
@@ -1203,13 +1203,25 @@ async function loadData() {
         updatePulseBadges(); 
         updateRealTimeUI(); 
         
-        // DEBUG: Verificar datos de Arregui
-        console.log('=== DEBUG ARREGUI ===');
-        let arreguiData = ACTOS_COND_DATA.filter(d => d.observadorLower && d.observadorLower.includes('arregui'));
-        console.log('Registros de Arregui encontrados:', arreguiData.length);
-        arreguiData.forEach(d => {
-            console.log(`- ${d.dia}/${d.mes} - Tipo: ${d.tipo} - Obs: "${d.observador}"`);
-        });
+        // DEBUG COMPLETO
+        console.log('=== DEBUG COMPLETO ===');
+        console.log('Total registros:', ACTOS_COND_DATA.length);
+        
+        // Ver TODOS los observadores únicos
+        let todosObs = [...new Set(ACTOS_COND_DATA.map(d => d.observador))];
+        console.log('Todos los observadores:', todosObs);
+        
+        // Buscar Arregui de todas las formas posibles
+        let arregui1 = ACTOS_COND_DATA.filter(d => d.observadorLower && d.observadorLower.includes('arregui'));
+        let arregui2 = ACTOS_COND_DATA.filter(d => d.observador && d.observador.toLowerCase().includes('arregui'));
+        console.log('Arregui (observadorLower):', arregui1.length, arregui1.map(d => d.observador));
+        console.log('Arregui (observador):', arregui2.length, arregui2.map(d => d.observador));
+        
+        // Ver registros de junio
+        let junio = ACTOS_COND_DATA.filter(d => d.mes === 'junio');
+        console.log('Registros junio:', junio.length);
+        console.log('Observadores en junio:', [...new Set(junio.map(d => d.observador))]);
+        
         console.log('====================');
         
     } catch(e) { console.error("Error en loadData:", e); } 
@@ -1510,22 +1522,31 @@ function populateVCPPeopleFilter() {
     updatePersonVCPStatsOnly(); 
 }
 
-// CORRECCIÓN DEFINITIVA FILTRO SUPERVISOR
+// CORRECCIÓN DEFINITIVA - Búsqueda flexible
 function updateSupervisorCard() { 
     let s = document.getElementById('supervisorSelect')?.value || 'todos';
     let m = document.getElementById('supervisorMonthSelect')?.value || 'todo';
     
-    console.log(' FILTRO SUPERVISOR:', { supervisor: s, mes: m });
+    console.log('🔍 FILTRO SUPERVISOR:', { supervisor: s, mes: m });
     
     let f;
     if (s === 'todos') {
         f = ACTOS_COND_DATA.filter(e => (m === 'todo' || e.mes === m));
     } else {
-        // Búsqueda flexible que ignora mayúsculas/minúsculas y espacios
-        let supervisorBuscado = s.trim().toLowerCase();
+        // Normalizar búsqueda
+        let supervisorBuscado = s.trim().toLowerCase().replace(/\s+/g, ' ');
+        
         f = ACTOS_COND_DATA.filter(e => {
-            let obsLower = (e.observadorLower || e.observador || '').toLowerCase().trim();
-            let matchSup = obsLower === supervisorBuscado || obsLower.includes(supervisorBuscado);
+            // Múltiples formas de comparar
+            let obsLower = (e.observadorLower || '').trim();
+            let obsRaw = (e.observador || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            
+            // Coincidencia exacta o parcial
+            let matchSup = (obsLower === supervisorBuscado || 
+                           obsRaw === supervisorBuscado || 
+                           obsLower.includes(supervisorBuscado) ||
+                           supervisorBuscado.includes(obsLower));
+            
             let matchMes = (m === 'todo' || e.mes === m);
             return matchSup && matchMes;
         });
@@ -1535,6 +1556,7 @@ function updateSupervisorCard() {
     let condCount = f.filter(e => e.tipo === 'condicion').length;
     
     console.log('✅ RESULTADOS:', { total: f.length, actos: actosCount, condiciones: condCount });
+    console.log('   Observadores encontrados:', [...new Set(f.map(d => d.observador))]);
     
     document.getElementById('supActosCount').innerText = actosCount; 
     document.getElementById('supCondCount').innerText = condCount;
@@ -1590,12 +1612,18 @@ function abrirModalSupervisor(tipo) {
         return;
     } 
     
-    let supervisorBuscado = s.trim().toLowerCase();
+    let supervisorBuscado = s.trim().toLowerCase().replace(/\s+/g, ' ');
     let mesNormalizado = (m || 'todo').trim().toLowerCase();
     
     const f = ACTOS_COND_DATA.filter(e => {
-        let obsLower = (e.observadorLower || e.observador || '').toLowerCase().trim();
-        let matchSup = obsLower === supervisorBuscado || obsLower.includes(supervisorBuscado);
+        let obsLower = (e.observadorLower || '').trim();
+        let obsRaw = (e.observador || '').trim().toLowerCase().replace(/\s+/g, ' ');
+        
+        let matchSup = (obsLower === supervisorBuscado || 
+                       obsRaw === supervisorBuscado || 
+                       obsLower.includes(supervisorBuscado) ||
+                       supervisorBuscado.includes(obsLower));
+        
         let matchMes = mesNormalizado === 'todo' || e.mes === mesNormalizado;
         return matchSup && matchMes;
     });
@@ -1603,7 +1631,7 @@ function abrirModalSupervisor(tipo) {
     const dt = f.filter(e => e.tipo === tipo); 
     
     if(!dt.length){
-        alert(`📋 No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} registradas para ${s}${m !== 'todo' ? ' en ' + m : ''}\n\nTotal encontrados: ${f.length}`);
+        alert(`📋 No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} registradas para ${s}${m !== 'todo' ? ' en ' + m : ''}\n\nTotal encontrados: ${f.length}\nObservadores disponibles: ${[...new Set(ACTOS_COND_DATA.map(d => d.observador))].join(', ')}`);
         return;
     } 
     
@@ -1698,9 +1726,6 @@ function toggleVCPVisibility(show) {
     const v=document.getElementById('vcpSection'); 
     if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); 
 }
-
-// Resto de funciones del resumen ejecutivo y modales...
-// (Por limitaciones de espacio, asumo que están completas)
 
 window.addEventListener('load', () => { 
     document.getElementById('passwordInput')?.focus(); 
