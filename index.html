@@ -27,7 +27,6 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0
 .category-card:hover { transform: translateY(-4px); }
 .category-card.selected { box-shadow: 0 0 0 3px #f18b00, 0 8px 25px rgba(241, 139, 0, 0.25); transform: scale(1.02); border-color: #f18b00 !important; background: #fffbeb; z-index: 10; }
 .category-card.selected:hover { transform: scale(1.02) translateY(-2px); }
-.category-card.opacado { opacity: 0.5; filter: grayscale(0.2); }
 .category-card .text-xl { transition: color 0.2s ease, transform 0.2s ease; }
 .category-card.selected .text-xl { transform: scale(1.05); }
 .hidden-section { display: none !important; }
@@ -212,7 +211,7 @@ body { padding: 10px; }
 <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2"> DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
 <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></tr></div></div>
+<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
 </main>
 </div>
 </div>
@@ -373,7 +372,6 @@ let isUnlocked = false, soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedCausa = null, selectedVCPCausa = null;
 let currentObjetivos, currentShowVCP;
 let isUpdating = false;
-let isRefreshing = false;
 let ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
 let ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
 let ejecutivoChartSucursales = null, ejecutivoChartVCPSucursales = null;
@@ -513,7 +511,6 @@ function enterMainPanel() {
     isUnlocked = true; 
     loadData(); 
     
-    // REFRESCO AUTOMÁTICO DESACTIVADO - solo manual
     if (refreshInterval) clearInterval(refreshInterval);
     refreshInterval = null;
     
@@ -522,7 +519,7 @@ function enterMainPanel() {
 
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
 
-// ==================== CLASIFICACIÓN MEJORADA ====================
+// ==================== CLASIFICACIÓN ====================
 function classifyData(desc, useVCP = false) {
     if (!desc) return { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' };
     
@@ -541,7 +538,7 @@ function classifyData(desc, useVCP = false) {
         return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
     }
     
-    // BERMA (prioridad máxima)
+    // BERMA
     if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde')) {
         return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
     }
@@ -602,8 +599,6 @@ function classifyData(desc, useVCP = false) {
         return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
     }
     
-    // Si no coincide, mostrar en consola
-    console.log(`📌 Sin clasificar: "${desc.substring(0, 80)}"`);
     return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
 
@@ -623,19 +618,21 @@ async function loadData() {
         currentObjetivos = config.objetivos; 
         currentShowVCP = config.showVCP; 
         const result = await cargarDatosSucursal(currentSucursal); 
-        ACTOS_COND_DATA = result.actos; 
-        VCP_DATA = result.vcp; 
-        ALL_ACTOS_DATA[currentSucursal] = result.actos; 
-        ALL_VCP_DATA[currentSucursal] = result.vcp; 
         
-        // GUARDAR COPIA DE SEGURIDAD
-        if (ACTOS_COND_DATA.length > 0) {
-            lastSuccessfulData = JSON.parse(JSON.stringify(ACTOS_COND_DATA));
-            console.log(`✅ Copia de seguridad guardada: ${ACTOS_COND_DATA.length} registros`);
-        } else if (lastSuccessfulData) {
-            console.warn('⚠️ La carga devolvió 0 registros, restaurando copia de seguridad');
+        if (result.actos.length > 0) {
+            ACTOS_COND_DATA = result.actos;
+            ALL_ACTOS_DATA[currentSucursal] = result.actos;
+            lastSuccessfulData = JSON.parse(JSON.stringify(result.actos));
+            console.log(`✅ Datos cargados: ${ACTOS_COND_DATA.length} registros`);
+        } else if (lastSuccessfulData && lastSuccessfulData.length > 0) {
+            console.warn('⚠️ Carga devolvió 0 registros, usando copia de seguridad');
             ACTOS_COND_DATA = lastSuccessfulData;
             ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData;
+        }
+        
+        if (result.vcp.length > 0) {
+            VCP_DATA = result.vcp;
+            ALL_VCP_DATA[currentSucursal] = result.vcp;
         }
         
         updateTotalCounters(); 
@@ -648,7 +645,6 @@ async function loadData() {
         updateRealTimeUI(); 
         updateSupervisorCard();
         updateLastUpdateIndicator();
-        console.log(`✅ Carga completada: ${ACTOS_COND_DATA.length} registros`);
     } catch(e) { console.error("Error en loadData:", e); } 
     finally { isUpdating = false; }
 }
@@ -719,7 +715,7 @@ function checkAndResetDailyCounters() {
 
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
 
-// ==================== FUNCIÓN NORMALIZAR NOMBRES ====================
+// ==================== NORMALIZAR NOMBRES ====================
 function normalizarNombre(nombre) { if (!nombre) return ''; return nombre.toLowerCase().trim().replace(/,/g, ' ').replace(/\./g, '').replace(/\s+/g, ' ').split(' ').sort().join(' '); }
 function compararNombres(nombre1, nombre2) { const n1 = normalizarNombre(nombre1); const n2 = normalizarNombre(nombre2); if (n1 === n2) return true; if (n1.includes(n2) || n2.includes(n1)) return true; const palabras1 = n1.split(' '), palabras2 = n2.split(' '); let coincidencias = 0; for (const p1 of palabras1) { if (p1.length < 3) continue; for (const p2 of palabras2) { if (p2.length < 3) continue; if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) { coincidencias++; break; } } } const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.6)); return coincidencias >= minCoincidencias; }
 
@@ -749,7 +745,50 @@ function updateSupervisorCard() {
     document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
 }
 
+// ==================== CATEGORY CARDS (SOLO PARA ACTOS/CONDICIONES) ====================
 function updateCategoryCards(data, type) {
+    if (type === 'vcp') {
+        const CATS_VCP = [
+            { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' },
+            { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' },
+            { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' },
+            { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }
+        ];
+        const cats = CATS_VCP;
+        const contId = 'vcpCategoryCards';
+        let counts = {};
+        cats.forEach(c => counts[c.id] = 0);
+        data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+        let total = data.length || 1;
+        let cont = document.getElementById(contId);
+        if (!cont) return;
+        cont.innerHTML = '';
+        cont.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3 my-3';
+        const hayFiltroActivo = selectedVCPCausa !== null && selectedVCPCausa !== 'todas';
+        cats.forEach(c => {
+            let val = counts[c.id] || 0;
+            let pct = Math.round(val / total * 100);
+            let div = document.createElement('div');
+            let isActive = selectedVCPCausa === c.id;
+            let cardClasses = 'category-card p-3 text-center relative cursor-pointer transition-all duration-300 ';
+            if (isActive) { cardClasses += 'selected shadow-lg scale-102'; }
+            else if (hayFiltroActivo) { cardClasses += 'opacado'; }
+            else { cardClasses += 'hover:shadow-md hover:-translate-y-1'; }
+            div.className = cardClasses;
+            div.style.borderColor = isActive ? '#f18b00' : c.color;
+            const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
+            div.onclick = () => {
+                if (isActive) { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); }
+                else { selectedVCPCausa = c.id; document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section'); }
+                applyVCPFilters();
+            };
+            div.innerHTML = `<div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div><div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div><div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>`;
+            cont.appendChild(div);
+        });
+        return;
+    }
+    
+    // CATEGORÍAS PARA ACTOS Y CONDICIONES
     const CATS_EXPANDIDAS = [
         { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' },
         { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' },
@@ -877,7 +916,7 @@ function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ curr
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${e.cerrado?'CERRADO':'ABIERTO'}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
-function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th><tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
@@ -943,7 +982,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating && !isRefreshing) { loadData(); } });
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });
 </script>
 </body>
 </html>
