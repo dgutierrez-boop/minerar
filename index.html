@@ -23,9 +23,9 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0
 .btn-filter.active { background: linear-gradient(135deg, #f18b00, #ffa543); color: white; border-color: #f18b00; }
 .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
 .sucursal-btn.active { background: #f18b00; border-color: #f18b00; color: white; box-shadow: 0 0 0 3px rgba(241, 139, 0, 0.2); }
-.category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 14px; text-align: center; background: white; position: relative; }
-.category-card:hover { transform: scale(1.05); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.category-card.selected { box-shadow: 0 0 0 4px #f18b00; background: #fffbeb; border-color: #f18b00; transform: scale(1.02); }
+.category-card { transition: all 0.2s; cursor: pointer; border: 2px solid; border-radius: 14px; padding: 12px 8px; text-align: center; background: white; position: relative; }
+.category-card:hover { transform: translateY(-4px) scale(1.02); box-shadow: 0 8px 20px rgba(0,0,0,0.12); }
+.category-card.selected { box-shadow: 0 0 0 3px #f18b00, 0 4px 12px rgba(241,139,0,0.3); background: #fffbeb; border-color: #f18b00; transform: scale(1.02); }
 .hidden-section { display: none !important; }
 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
@@ -46,7 +46,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .chart-container { position: relative; height: 350px; width: 100%; margin-top: 16px; }
 @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
 @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #10b981; } 50% { opacity: 0.5; box-shadow: 0 0 15px #10b981; } }
-@keyframes pulse-red { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
 .siren-red { width: 14px; height: 14px; background: #ef4444; border-radius: 50%; animation: blink-red 1s infinite; display: inline-block; }
 .siren-green { width: 14px; height: 14px; background: #10b981; border-radius: 50%; animation: blink-green 0.5s infinite; display: inline-block; }
 .report-item { transition: all 0.3s ease; animation: slideIn 0.4s ease-out; background: #fff8f0; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid #f18b00; }
@@ -56,7 +55,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); border: 2px solid #f18b00; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .password-lock-icon { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; display: inline-block; }
 @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
-.password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; height: 52px; padding-right: 50px !important; }
+.password-input { width: 100%; padding: 14px 16px; border: 2px solid #e2e8f0; border-radius: 12px; font-size: 16px; font-weight: 600; margin: 16px 0; transition: all 0.2s; text-align: center; height: 52px; }
 .password-input:focus { outline: none; border-color: #f18b00; box-shadow: 0 0 0 4px rgba(241, 139, 0, 0.2); }
 .password-btn { width: 100%; padding: 14px; background: linear-gradient(135deg, #f18b00, #ffa543); color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.2s; margin-top: 8px; height: 52px; }
 .password-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(241, 139, 0, 0.4); }
@@ -82,7 +81,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .zr-rank-2 { background: #9ca3af; color: white; }
 .zr-rank-3 { background: #fcd34d; color: #78350f; }
 .zr-rank-default { background: #e2e8f0; color: #475569; }
-.logo-sucursal-sm { width: 16px; height: 16px; object-fit: contain; border-radius: 2px; }
 .kpi-card-clickable { transition: all 0.2s ease; cursor: pointer; }
 .kpi-card-clickable.active { transform: scale(1.02); box-shadow: 0 0 0 3px #f18b00, 0 10px 25px -5px rgba(0,0,0,0.1); border-color: #f18b00; }
 .kpi-card-clickable:hover { transform: translateY(-5px); }
@@ -137,6 +135,9 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 body { padding: 10px; }
 .imagen-grid { grid-template-columns: 1fr; }
 #reportDetailModal .modal-bounce { padding: 16px; }
+.category-card { padding: 8px 4px; }
+.category-card .text-2xl { font-size: 1.5rem; }
+.category-card .text-xl { font-size: 1.125rem; }
 }
 </style>
 </head>
@@ -148,8 +149,8 @@ body { padding: 10px; }
 <h2 class="text-xl font-black text-slate-800 mb-2">ACCESO RESTRINGIDO</h2>
 <p class="text-sm text-slate-500 mb-4">Panel de Seguridad Minerar 2026</p>
 <div class="relative w-full">
-<input type="password" id="passwordInput" class="password-input" placeholder="Ingrese contraseña..." autocomplete="off" onkeypress="if(event.key === 'Enter') verifyPassword()">
-<button type="button" onclick="togglePasswordVisibility()" class="absolute right-2 top-1/2 -translate-y-1/2 bg-transparent border-none cursor-pointer p-2 z-10" style="font-size: 22px;">👁️</button>
+    <input type="password" id="passwordInput" class="password-input pr-12" placeholder="Ingrese contraseña..." autocomplete="off" onkeypress="if(event.key === 'Enter') verifyPassword()">
+    <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer p-1" style="font-size: 18px;">👁️</button>
 </div>
 <button onclick="verifyPassword()" class="password-btn w-full mt-2">🚪 INGRESAR</button>
 <div id="passwordError" class="password-error"></div>
@@ -222,12 +223,12 @@ body { padding: 10px; }
 </div>
 </div></aside>
 <main>
-<div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all cursor-pointer">🗑️ Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 my-3"></div></div>
+<div class="glass-card p-4 mb-4"><div class="flex justify-between items-center flex-wrap"><h3 class="font-black uppercase">📊 CLASIFICACIÓN POR CAUSA RAÍZ 🛡️</h3><div class="flex gap-2"><button id="clearCausaBtn" onclick="limpiarFiltroCausa()" class="hidden-section text-xs bg-purple-100 px-2 py-1 rounded-full cursor-pointer">✕ Quitar filtro causa</button><button onclick="limpiarTodosLosFiltros()" class="text-xs bg-slate-200 hover:bg-slate-300 px-2 py-1 rounded-full transition-all cursor-pointer">🗑️ Limpiar todos los filtros</button></div></div><div id="categoryCards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 my-3"></div></div>
 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2"> DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
 <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><table><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
 </main>
 </div>
 </div>
@@ -451,16 +452,45 @@ function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext()
 function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
 function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 
-// ==================== LOGIN ====================
-function togglePasswordVisibility() { const i=document.getElementById('passwordInput'); i.type=i.type==='password'?'text':'password'; i.focus(); }
-function verifyPassword() { 
-    const input=document.getElementById('passwordInput'), errorDiv=document.getElementById('passwordError'), overlay=document.getElementById('passwordOverlay'); 
-    if(input.value===PASSWORD_CORRECTA) { 
-        playUnlockSound(); 
-        overlay.innerHTML='<div class="password-card"><div style="color:#22c55e;font-size:48px;">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; 
-        setTimeout(()=>{ overlay.style.opacity='0'; setTimeout(()=>{ overlay.style.display='none'; enterMainPanel(); },300); },1000); 
-    } else { playErrorSound(); errorDiv.textContent='🔒 Contraseña incorrecta.'; input.value=''; input.focus(); } 
+// ==================== FUNCIÓN TOGGLE PASSWORD VISIBILITY ====================
+function togglePasswordVisibility() { 
+    const input = document.getElementById('passwordInput'); 
+    if (input.type === 'password') { 
+        input.type = 'text'; 
+    } else { 
+        input.type = 'password'; 
+    } 
+    input.focus();
 }
+
+// ==================== FUNCIÓN VERIFY PASSWORD ====================
+function verifyPassword() { 
+    const input = document.getElementById('passwordInput'); 
+    const errorDiv = document.getElementById('passwordError'); 
+    const overlay = document.getElementById('passwordOverlay'); 
+    
+    if (input.value === PASSWORD_CORRECTA) { 
+        playUnlockSound(); 
+        errorDiv.textContent = ''; 
+        overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Preparando panel...</p></div>'; 
+        setTimeout(() => { 
+            overlay.style.opacity = '0'; 
+            overlay.style.transition = 'opacity 0.3s'; 
+            setTimeout(() => { 
+                overlay.style.display = 'none'; 
+                enterMainPanel(); 
+            }, 300); 
+        }, 1000); 
+    } else { 
+        playErrorSound(); 
+        errorDiv.textContent = '🔒 Contraseña incorrecta'; 
+        input.value = ''; 
+        input.focus(); 
+        input.classList.add('border-red-400'); 
+        setTimeout(() => input.classList.remove('border-red-400'), 500); 
+    } 
+}
+
 function enterMainPanel() { document.getElementById('mainContent').classList.remove('hidden-section'); isUnlocked=true; loadData(); if(refreshInterval) clearInterval(refreshInterval); refreshInterval = setInterval(()=>{ if(!isModalOpen && !isUpdating) { checkNewReports(); } }, 30000); }
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
 function forceRefreshData() { if(isUnlocked && !isUpdating) loadData(); }
@@ -561,7 +591,72 @@ function checkNewReports() { if(!isUnlocked || isModalOpen || isUpdating) return
 // ==================== CARGA DE DATOS ====================
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
 
-function classifyData(desc,useVCP=false) { const CATS_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6',keywords:['epp','casco','guantes','lentes','arnés']},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444',keywords:['celular','velocidad','conducción']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c',keywords:['berma','talud','camino','señal']}]; const CATS_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981',keywords:['limpieza','orden','aceite','derrame']},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b',keywords:['procedimiento','bloqueo','permiso','ats']},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6',keywords:['herramienta','equipo','maquinaria']},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c',keywords:['berma','talud','camino','señal']}]; if(!desc) return useVCP?CATS_VCP[0]:CATS_ACTOS[5]; let d=desc.toLowerCase(), cats=useVCP?CATS_VCP:CATS_ACTOS, best=cats[0], max=0; for(let c of cats){let s=c.keywords.filter(k=>d.includes(k)).length; if(s>max){max=s;best=c;}} return best; }
+// ==================== CLASIFICACIÓN DE 26 CATEGORÍAS A 10 TARJETAS ====================
+function classifyData(desc, useVCP = false) {
+    if (useVCP) {
+        const CATS_VCP = [
+            { id: 'orden', name: 'Orden y Limpieza', icon: '🧹', color: '#10b981', keywords: ['limpieza', 'orden', 'aceite', 'derrame'] },
+            { id: 'proc', name: 'Procedimientos', icon: '📋', color: '#f59e0b', keywords: ['procedimiento', 'bloqueo', 'permiso', 'ats'] },
+            { id: 'equip', name: 'Equipos y Herram.', icon: '🔧', color: '#8b5cf6', keywords: ['herramienta', 'equipo', 'maquinaria'] },
+            { id: 'area', name: 'Área y Entorno', icon: '🏗️', color: '#ea580c', keywords: ['berma', 'talud', 'camino', 'señal', 'visibilidad', 'derrame', 'contención'] }
+        ];
+        if (!desc) return CATS_VCP[0];
+        let d = desc.toLowerCase();
+        let best = CATS_VCP[0], max = 0;
+        for (let c of CATS_VCP) {
+            let s = c.keywords.filter(k => d.includes(k)).length;
+            if (s > max) { max = s; best = c; }
+        }
+        return best;
+    }
+
+    // 10 CATEGORÍAS EXPANDIDAS PARA ACTOS Y CONDICIONES
+    const CATS_EXPANDIDAS = [
+        { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6', 
+          keywords: ['epp', 'casco', 'guantes', 'lentes', 'arnés', 'protección personal', 'falta de uso de epp', 'uso inapropiado'] },
+        { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981', 
+          keywords: ['limpieza', 'orden', 'aceite', 'derrame', 'desorden', 'suelo resbaladizo'] },
+        { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b', 
+          keywords: ['procedimiento', 'incumplimiento', 'bloqueo', 'permiso', 'ats', 'rutina', 'mecánica', 'evaluación de riesgos', 'planificación'] },
+        { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6', 
+          keywords: ['herramienta', 'equipo', 'maquinaria', 'mantenimiento', 'fuera de estándar', 'mal estado'] },
+        { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444', 
+          keywords: ['celular', 'velocidad', 'conducción', 'manejo', 'vehículo', 'camión', 'retroexcavadora'] },
+        { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316', 
+          keywords: ['berma', 'bema', 'talud', 'contención perimetral', 'borde de seguridad'] },
+        { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4', 
+          keywords: ['señalización', 'cartel', 'señal', 'advertencia', 'falta señal'] },
+        { id: 'capacitacion', name: 'CAPACITACIÓN', icon: '🎓', color: '#a855f7', 
+          keywords: ['capacitación', 'entrenamiento', 'formación', 'conocimiento', 'instrucción'] },
+        { id: 'residuos', name: 'RESIDUOS', icon: '🗑️', color: '#059669', 
+          keywords: ['residuos', 'basura', 'desechos', 'almacenamiento inadecuado', 'disposición', 'reciclaje'] },
+        { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c', 
+          keywords: ['visibilidad', 'polvo', 'niebla', 'lluvia', 'granizo', 'deslumbramiento', 'ambiente', 'sector', 'derrame', 'contención', 'efluente', 'emisión'] }
+    ];
+
+    if (!desc) return CATS_EXPANDIDAS[0];
+    
+    let d = desc.toLowerCase();
+    let best = CATS_EXPANDIDAS[0];
+    let max = 0;
+    
+    for (let c of CATS_EXPANDIDAS) {
+        let score = 0;
+        for (let kw of c.keywords) {
+            if (d.includes(kw)) {
+                if (d.startsWith(kw)) score += 3;
+                else if (d.includes(' ' + kw + ' ')) score += 2;
+                else score += 1;
+            }
+        }
+        if (score > max) {
+            max = score;
+            best = c;
+        }
+    }
+    
+    return best;
+}
 
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 
@@ -575,37 +670,214 @@ for(let j=0; j<row.length; j++) { const cell = row[j] ? row[j].trim() : ''; if(c
 let imagenUrlVCP = imagenUrlsVCP.join(',');
 const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue; const cat = classifyData(des, true); vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${po}|${des}|${fr}`; if(!reportesNotificadosVCP.has(idUnico)) { reportesNotificadosVCP.add(idUnico); const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP); updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(po, sec, des, 'VCP', hora); } } } } catch(e) { console.error("Error cargando VCP:", e); } } return { actos: actosData, vcp: vcpData }; }
 
-async function loadData() { if(!isUnlocked || isUpdating) return; isUpdating = true; try { const config = SUCURSALES_CONFIG[currentSucursal]; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP; const result = await cargarDatosSucursal(currentSucursal); ACTOS_COND_DATA = result.actos; VCP_DATA = result.vcp; ALL_ACTOS_DATA[currentSucursal] = result.actos; ALL_VCP_DATA[currentSucursal] = result.vcp; updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); } catch(e) { console.error("Error en loadData:", e); } finally { isUpdating = false; } }
+async function loadData() { 
+    if(!isUnlocked || isUpdating) return; 
+    isUpdating = true; 
+    try { 
+        const config = SUCURSALES_CONFIG[currentSucursal]; 
+        currentObjetivos = config.objetivos; 
+        currentShowVCP = config.showVCP; 
+        const result = await cargarDatosSucursal(currentSucursal); 
+        ACTOS_COND_DATA = result.actos; 
+        VCP_DATA = result.vcp; 
+        ALL_ACTOS_DATA[currentSucursal] = result.actos; 
+        ALL_VCP_DATA[currentSucursal] = result.vcp; 
+        
+        updateTotalCounters(); 
+        actualizarObjetivosUI(); 
+        toggleVCPVisibility(currentShowVCP); 
+        await populateSupervisors(); 
+        populateVCPPeopleFilter(); 
+        applyAllFilters(); 
+        updatePulseBadges(); 
+        updateRealTimeUI(); 
+        updateSupervisorCard();
+    } catch(e) { 
+        console.error("Error en loadData:", e); 
+    } finally { 
+        isUpdating = false; 
+    } 
+}
 
-async function populateSupervisors() { const sel=document.getElementById('supervisorSelect'); if(!sel) return; const s=[...new Set(ACTOS_COND_DATA.map(d=>d.observador))].filter(n=>n).sort(); sel.innerHTML='<option value="todos">🔘 Todos</option>'; s.forEach(x=>sel.innerHTML+=`<option value="${x}">👤 ${x}</option>`); updateSupervisorCard(); }
+// ==================== FUNCIÓN NORMALIZAR NOMBRES ====================
+function normalizarNombre(nombre) {
+    if (!nombre) return '';
+    return nombre.toLowerCase()
+        .trim()
+        .replace(/,/g, ' ')
+        .replace(/\./g, '')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .sort()
+        .join(' ');
+}
 
-async function cargarTodosDatosParaResumen() { for(const suc of ['MALAGUENO','BARKER','LAPAMPITA']) { if(!ALL_ACTOS_DATA[suc] || ALL_ACTOS_DATA[suc].length===0) { const result=await cargarDatosSucursal(suc); ALL_ACTOS_DATA[suc]=result.actos; ALL_VCP_DATA[suc]=result.vcp; } } }
+function compararNombres(nombre1, nombre2) {
+    const n1 = normalizarNombre(nombre1);
+    const n2 = normalizarNombre(nombre2);
+    if (n1 === n2) return true;
+    if (n1.includes(n2) || n2.includes(n1)) return true;
+    const palabras1 = n1.split(' ');
+    const palabras2 = n2.split(' ');
+    let coincidencias = 0;
+    for (const p1 of palabras1) {
+        if (p1.length < 3) continue;
+        for (const p2 of palabras2) {
+            if (p2.length < 3) continue;
+            if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) {
+                coincidencias++;
+                break;
+            }
+        }
+    }
+    const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.6));
+    return coincidencias >= minCoincidencias;
+}
 
-// ==================== FILTROS Y UI ====================
+async function populateSupervisors() { 
+    const sel = document.getElementById('supervisorSelect'); 
+    if (!sel) return; 
+    const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
+    const nombreNormalizadoMap = new Map();
+    for (const obs of observadoresRaw) {
+        const normalizado = normalizarNombre(obs);
+        if (!nombreNormalizadoMap.has(normalizado)) {
+            nombreNormalizadoMap.set(normalizado, obs);
+        }
+    }
+    const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).sort();
+    console.log('👥 Supervisores encontrados:', supervisoresUnicos);
+    sel.innerHTML = '<option value="todos">🔘 Todos</option>'; 
+    supervisoresUnicos.forEach(x => {
+        const count = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x)).length;
+        sel.innerHTML += `<option value="${x.replace(/'/g, '&#39;')}">👤 ${x} (${count})</option>`;
+    });
+    updateSupervisorCard(); 
+}
+
+function updateSupervisorCard() { 
+    let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
+    let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
+    console.log('🔍 FILTRO SUPERVISOR:', { supervisor, mes: mesSeleccionado });
+    let dataFiltrada = ACTOS_COND_DATA;
+    if (mesSeleccionado !== 'todo') {
+        const mesNormalizado = mesSeleccionado.toLowerCase().trim();
+        dataFiltrada = dataFiltrada.filter(e => {
+            const mesRegistro = (e.mes || '').toLowerCase().trim();
+            return mesRegistro === mesNormalizado;
+        });
+    }
+    let resultados;
+    if (supervisor === 'todos') {
+        resultados = dataFiltrada;
+    } else {
+        resultados = dataFiltrada.filter(e => compararNombres(e.observador, supervisor));
+    }
+    let actosCount = resultados.filter(e => e.tipo === 'acto').length;
+    let condCount = resultados.filter(e => e.tipo === 'condicion').length;
+    document.getElementById('supActosCount').innerText = actosCount;
+    document.getElementById('supCondCount').innerText = condCount;
+}
+
+// ==================== FUNCIONES DE ACTUALIZACIÓN DE TARJETAS ====================
+function updateCategoryCards(data, type) {
+    const CATS_EXPANDIDAS = [
+        { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' },
+        { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' },
+        { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' },
+        { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' },
+        { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' },
+        { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' },
+        { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' },
+        { id: 'capacitacion', name: 'CAPACITACIÓN', icon: '🎓', color: '#a855f7' },
+        { id: 'residuos', name: 'RESIDUOS', icon: '🗑️', color: '#059669' },
+        { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }
+    ];
+    
+    const cats = CATS_EXPANDIDAS;
+    const contId = 'categoryCards';
+    let counts = {};
+    cats.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    let total = data.length || 1;
+    let cont = document.getElementById(contId);
+    if (!cont) return;
+    cont.innerHTML = '';
+    cont.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 my-3';
+    cats.forEach(c => {
+        let val = counts[c.id] || 0;
+        let pct = Math.round(val / total * 100);
+        let div = document.createElement('div');
+        let isActive = selectedCausa === c.id;
+        div.className = `category-card p-3 text-center relative cursor-pointer transition-all ${isActive ? 'selected' : ''}`;
+        div.style.borderColor = isActive ? '#f18b00' : c.color;
+        div.onclick = () => {
+            if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); }
+            else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); }
+            applyGeneralFilters();
+        };
+        div.innerHTML = `<div class="text-2xl">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight">${c.name}</div><div class="text-xl font-black" style="color: ${isActive ? '#f18b00' : c.color}">${val}</div><div class="text-[9px] text-slate-500">${pct}%</div>`;
+        cont.appendChild(div);
+    });
+}
+
+function updateChartsDona(data, type) {
+    if (type !== 'actos') return;
+    const CATS_EXPANDIDAS = [
+        { id: 'epp', name: 'EPP', icon: '🛡️', color: '#3b82f6' },
+        { id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' },
+        { id: 'procedimientos', name: 'Proced.', icon: '📋', color: '#f59e0b' },
+        { id: 'equipos', name: 'Equipos', icon: '🔧', color: '#8b5cf6' },
+        { id: 'conduccion', name: 'Conduc.', icon: '🚗', color: '#ef4444' },
+        { id: 'berma', name: 'Berma', icon: '🧱', color: '#f97316' },
+        { id: 'senalizacion', name: 'Señal.', icon: '🚸', color: '#06b6d4' },
+        { id: 'capacitacion', name: 'Capac.', icon: '🎓', color: '#a855f7' },
+        { id: 'residuos', name: 'Resid.', icon: '🗑️', color: '#059669' },
+        { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' }
+    ];
+    const ctx = document.getElementById('categoryChart')?.getContext('2d');
+    if (!ctx) return;
+    let counts = {};
+    CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0);
+    data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    if (categoryChart) categoryChart.destroy();
+    categoryChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: CATS_EXPANDIDAS.map(c => `${c.icon} ${c.name}`),
+            datasets: [{ data: CATS_EXPANDIDAS.map(c => counts[c.id] || 0), backgroundColor: CATS_EXPANDIDAS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }]
+        },
+        options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); const pct = Math.round((ctx.parsed / total) * 100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } } }
+    });
+}
+
+function updateVCPCharts(data) { 
+    const CATS=[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}]; 
+    let counts={}; 
+    CATS.forEach(c=>counts[c.id]=0); 
+    data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;}); 
+    const ctxD=document.getElementById('vcpCategoryChart')?.getContext('2d'); 
+    if(vcpCategoryChart) vcpCategoryChart.destroy(); 
+    vcpCategoryChart=new Chart(ctxD,{type:'doughnut',data:{labels:CATS.map(c=>`${c.icon} ${c.name}`),datasets:[{data:CATS.map(c=>counts[c.id]||0),backgroundColor:CATS.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:15}]},options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:9}}}}}}); 
+    const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM=meses.map(m=>data.filter(e=>e.mes===m).length); 
+    const ctxT=document.getElementById('vcpTrendChart')?.getContext('2d'); 
+    if(vcpTrendChart) vcpTrendChart.destroy(); 
+    let maxYScale = 60;
+    vcpTrendChart=new Chart(ctxT,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white'}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); 
+}
+
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
-
 function applyGeneralFilters() { let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa); let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion'); document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length; let pA = Math.min(a.length/currentObjetivos.actos*100,100), pC = Math.min(c.length/currentObjetivos.cond*100,100); document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%'; document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%'; let up=(id,p)=>{ let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} }; up('actosStatus',pA); up('condStatus',pC); updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f); }
-
-function updateCategoryCards(data,type) { const CATS_ACTOS = [{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}]; const CATS_VCP = [{id:'orden',name:'Orden y Limpieza',icon:'🧹',color:'#10b981'},{id:'proc',name:'Procedimientos',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos y Herram.',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área y Entorno',icon:'🏗️',color:'#ea580c'}]; const cats = type==='actos'?CATS_ACTOS:CATS_VCP, contId = type==='actos'?'categoryCards':'vcpCategoryCards'; let counts={}; cats.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;}); let total=data.length||1, cont=document.getElementById(contId); if(!cont) return; cont.innerHTML=''; cats.forEach(c=>{ let val=counts[c.id]||0, pct=Math.round(val/total*100); let div=document.createElement('div'); let isActive=(type==='actos'?selectedCausa===c.id:selectedVCPCausa===c.id); div.className=`category-card p-3 text-center relative cursor-pointer ${isActive?'selected':''}`; div.style.borderColor=isActive?'#f18b00':c.color; div.onclick=()=>{ if(type==='actos'){ if(isActive){selectedCausa='todas';document.getElementById('clearCausaBtn')?.classList.add('hidden-section');}else{selectedCausa=c.id;document.getElementById('clearCausaBtn')?.classList.remove('hidden-section');} applyGeneralFilters(); }else{ if(isActive){selectedVCPCausa='todas';document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');}else{selectedVCPCausa=c.id;document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section');} applyVCPFilters(); } }; div.innerHTML=`<div class="text-2xl">${c.icon}</div><div class="text-[11px] font-bold mt-1">${c.name}</div><div class="text-2xl font-black" style="color:${isActive?'#f18b00':c.color}">${val}</div><div class="text-[10px] text-slate-500">${pct}%</div>`; cont.appendChild(div); }); }
-
-function updateChartsDona(data,type) { const cats = type==='actos'?[{id:'epp',name:'Falta EPP',icon:'🛡️',color:'#3b82f6'},{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'cond',name:'Conducción',icon:'🚗',color:'#ef4444'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}]:[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}]; const canvasId = type==='actos'?'categoryChart':'vcpCategoryChart', ctx = document.getElementById(canvasId)?.getContext('2d'); if(!ctx) return; let counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if(e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id]||0) + 1; }); if(type==='actos'&&categoryChart) categoryChart.destroy(); if(type!=='actos'&&vcpCategoryChart) vcpCategoryChart.destroy(); const chart = new Chart(ctx, { type: 'doughnut', data: { labels: cats.map(c => `${c.icon} ${c.name}`), datasets: [{ data: cats.map(c => counts[c.id] || 0), backgroundColor: cats.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] }, options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a,b) => a+b, 0); const pct = Math.round((ctx.parsed/total)*100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } } } } }); if(type==='actos') categoryChart = chart; else vcpCategoryChart = chart; }
-
 function updateTrendChart(data) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx=document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return; let sourceData=data||ACTOS_COND_DATA; let aPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='acto').length), cPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='condicion').length); if(trendChart) trendChart.destroy(); let maxYScale=currentSucursal==='LAPAMPITA'?150:(currentSucursal==='BARKER'?15:110); trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'⚠️ Actos',data:aPM,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}}); }
-
 function applyVCPFilters() { let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa); let pct = Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus'); if(vs){ if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; } document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%'; updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f); }
-
-function updateVCPCharts(data) { const CATS=[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}]; let counts={}; CATS.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;}); const ctxD=document.getElementById('vcpCategoryChart')?.getContext('2d'); if(vcpCategoryChart) vcpCategoryChart.destroy(); vcpCategoryChart=new Chart(ctxD,{type:'doughnut',data:{labels:CATS.map(c=>`${c.icon} ${c.name}`),datasets:[{data:CATS.map(c=>counts[c.id]||0),backgroundColor:CATS.map(c=>c.color),borderWidth:2,borderColor:'white',hoverOffset:15}]},options:{cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:9}}}}}}); const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM=meses.map(m=>data.filter(e=>e.mes===m).length); const ctxT=document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart) vcpTrendChart.destroy(); let maxYScale=currentSucursal==='LAPAMPITA'?60:35; vcpTrendChart=new Chart(ctxT,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white'}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); }
-
 function renderGeneralTable(data) { let tb=document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=[...data].sort((a,b)=>new Date(b.fecha.split('/').reverse().join('-'))-new Date(a.fecha.split('/').reverse().join('-'))); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${(e.descripcion||'').substring(0,55)}${(e.descripcion||'').length>55?'...':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.cerrado?'bg-emerald-100 text-emerald-700':'bg-rose-100 text-rose-700'}">${e.cerrado?'🔒 CERRADO':'⚠️ ABIERTO'}</span></td>`; tb.appendChild(tr); }); }
-
 function renderVCPTable(data) { let tb=document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=[...data].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2">💬 ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2"><span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full text-[9px]">🔒 CERRADO</span></td>`; tb.appendChild(tr); }); }
-
 function updatePersonVCPStatsOnly() { let p=document.getElementById('vcpPersonFilter')?.value||'todos', m=document.getElementById('vcpPersonMonthFilter')?.value||'todo', f=VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText=f.length; document.getElementById('personLastVCP').innerText=f.length?f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes:'-'; }
-
 function populateVCPPeopleFilter() { let counts=new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel=document.getElementById('vcpPersonFilter'); if(!sel) return; sel.innerHTML='<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
 
-function updateSupervisorCard() { let s=document.getElementById('supervisorSelect')?.value||'todos', m=document.getElementById('supervisorMonthSelect')?.value||'todo', f=ACTOS_COND_DATA.filter(e=>(s==='todos'||e.observador===s)&&(m==='todo'||e.mes===m)); document.getElementById('supActosCount').innerText=f.filter(e=>e.tipo==='acto').length; document.getElementById('supCondCount').innerText=f.filter(e=>e.tipo==='condicion').length; }
+function openModal(r, idx, data) { if (!isUnlocked) return; isModalOpen = true; currentModalData = data; currentModalIndex = idx; const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent'); if (r.tipo === 'vcp') { content.innerHTML = `<div class="space-y-2 text-sm"><div class="grid grid-cols-2 gap-2"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Persona:</strong> ${r.personaObservada}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon || ''} ${r.categoria?.name || ''}</p></div><hr><p><strong> Verificado:</strong></p><div class="bg-purple-50 p-2 rounded text-xs">${r.descripcion || '-'}</div>${r.comentarios ? `<p><strong>💬 Observaciones:</strong></p><div class="bg-slate-50 p-2 rounded text-xs">${r.comentarios}</div>` : ''}<p><strong>⚙️ Estado:</strong> <span class="text-emerald-600">CERRADO</span></p></div>`; } else { content.innerHTML = `<div class="space-y-2 text-sm"><div class="grid grid-cols-2 gap-2"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>📋 Tipo:</strong> ${r.tipo?.toUpperCase()}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon || ''} ${r.categoria?.name || ''}</p></div><hr><p><strong> Descripción:</strong></p><div class="bg-slate-50 p-2 rounded border-l-4 border-amber-500 text-xs">${r.descripcion || '-'}</div>${r.causas ? `<p><strong>🔍 Causas:</strong></p><div class="bg-amber-50 p-2 rounded text-xs">${r.causas}</div>` : ''}<p><strong>⚙️ Estado:</strong> ${r.cerrado ? '<span class="text-emerald-600">CERRADO</span>' : '<span class="text-red-500">ABIERTO</span>'}</p></div>`; } modal.classList.remove('hidden-section'); modal.style.display = 'flex'; document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`; }
 
+// ==================== RESTO DE FUNCIONES ====================
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#f18b00'); applyVCPFilters(); }
@@ -615,16 +887,11 @@ function limpiarFiltroGrafico() { const m=document.getElementById('monthFilter')
 function limpiarFiltroCausa() { selectedCausa=null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
 function clearVCPCauseFilter() { selectedVCPCausa=null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
-
 function updateRealTimeUI() { const actCont=document.getElementById('realTimeReportsActos'), vcpCont=document.getElementById('realTimeReportsVCP'), actLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), alerts=todayAlertsBySucursal[currentSucursal]; if(actLed) actLed.className=alerts.actos.length>0?'siren-green':'siren-red'; if(vcpLed) vcpLed.className=alerts.vcp.length>0?'siren-green':'siren-red'; if(alerts.actos.length) actCont.innerHTML=alerts.actos.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else actCont.innerHTML='<p class="text-center py-2">📭 Sin reportes hoy</p>'; if(alerts.vcp.length) vcpCont.innerHTML=alerts.vcp.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else vcpCont.innerHTML='<p class="text-center py-2">📭 Sin VCP hoy</p>'; }
-
 function toggleActosAlerts() { showDailyReportsModal('actos', todayAlertsBySucursal[currentSucursal].actos); }
 function toggleVCPAlerts() { showDailyReportsModal('vcp', todayAlertsBySucursal[currentSucursal].vcp); }
 function showDailyReportsModal(type, alerts) { const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent'); titleEl.textContent=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY'; if(alerts.length===0) contentEl.innerHTML='<p class="text-center py-8">📭 Sin reportes hoy</p>'; else contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg mb-3"><div class="flex justify-between"><span>#${i+1}</span><span>${a.hora}</span></div><div class="font-bold">${a.persona}</div><div class="text-sm">🏭 ${a.sector}</div><div class="text-sm">${a.descripcion}</div></div>`).join(''); modal.classList.remove('hidden-section'); modal.style.display='flex'; }
 function closeDailyReportsModal() { const m=document.getElementById('dailyReportsModal'); m.classList.add('hidden-section'); m.style.display='none'; }
-
-// ==================== MODALES ====================
-function openModal(r,idx,data) { if(!isUnlocked) return; isModalOpen=true; currentModalData=data; currentModalIndex=idx; const modal=document.getElementById('reportDetailModal'), content=document.getElementById('reportModalContent'); if(r.tipo==='vcp'){ content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Persona:</strong> ${r.personaObservada}</p><p><strong>👤 Observador:</strong> ${r.observador||'-'}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong>📝 Verificado:</strong></p><div class="bg-purple-50 p-3 rounded">${r.descripcion||'-'}</div>${r.comentarios?`<p><strong>💬 Observaciones:</strong></p><div class="bg-slate-50 p-3 rounded">${r.comentarios}</div>`:''}${r.imagen?renderizarImagenesModal(r.imagen):''}<p><strong>⚙️ Estado:</strong> <span class="text-emerald-600">CERRADO</span></p></div>`; } else { content.innerHTML=`<div class="space-y-3"><div class="grid grid-cols-2 gap-2 text-sm"><p><strong>📅 Fecha:</strong> ${r.fecha}</p><p><strong>👤 Observador:</strong> ${r.observador}</p><p><strong>🏭 Sucursal:</strong> ${r.sucursal}</p><p><strong>🏭 Sector:</strong> ${r.sector}</p><p><strong>📋 Tipo:</strong> ${r.tipo?.toUpperCase()}</p><p><strong>🏷️ Categoría:</strong> ${r.categoria?.icon||''} ${r.categoria?.name||''}</p></div><hr><p><strong>📝 Descripción:</strong></p><div class="bg-slate-50 p-3 rounded border-l-4 border-amber-500">${r.descripcion||'-'}</div>${r.causas?`<p><strong>🔍 Causas:</strong></p><div class="bg-amber-50 p-3 rounded">${r.causas}</div>`:''}${r.imagen?renderizarImagenesModal(r.imagen):''}<p><strong>⚙️ Estado:</strong> ${r.cerrado?'<span class="text-emerald-600">CERRADO</span>':'<span class="text-red-500">ABIERTO</span>'}</p></div>`; } modal.classList.remove('hidden-section'); modal.style.display='flex'; document.getElementById('modalCounter').innerText=`${idx+1}/${data.length}`; }
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
@@ -632,8 +899,6 @@ function abrirModalSupervisor(tipo) { const s=document.getElementById('superviso
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
 function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr><td>${e.dia}/${e.mes}</td><td>${e.sector}</td><td>${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td>${(e.descripcion||'').substring(0,50)}</td><td>${(e.comentarios||'').substring(0,30)}</td></tr>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
-
-// ==================== SUCURSAL Y UTILS ====================
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
@@ -661,6 +926,8 @@ function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTO
 function abrirModalPorReincidencia(persona,categoria) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===persona&&d.categoria?.id===categoria)); }); abrirModalConDatos(`Reincidencias - ${persona}`,datos); }
 function abrirModalPorPuntoGrafico(mes,sucursal,esVCP) { const datos=esVCP?ALL_VCP_DATA[sucursal]?.filter(d=>d.mes===mes)||[]:ALL_ACTOS_DATA[sucursal]?.filter(d=>d.mes===mes)||[]; const nombre=sucursal==='MALAGUENO'?'Malagueño':sucursal==='BARKER'?'Barker':'La Pampita'; abrirModalConDatos(`${nombre} - ${mes} ${esVCP?'(VCP)':'(Actos y Condiciones)'}`,datos); }
 
+async function cargarTodosDatosParaResumen() { for(const suc of ['MALAGUENO','BARKER','LAPAMPITA']) { if(!ALL_ACTOS_DATA[suc] || ALL_ACTOS_DATA[suc].length===0) { const result=await cargarDatosSucursal(suc); ALL_ACTOS_DATA[suc]=result.actos; ALL_VCP_DATA[suc]=result.vcp; } } }
+
 // ==================== EVENTOS ====================
 window.addEventListener('load', () => { 
     document.getElementById('passwordInput')?.focus(); 
@@ -672,11 +939,13 @@ window.addEventListener('load', () => {
 });
 document.addEventListener('DOMContentLoaded', () => { 
     document.getElementById('monthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.mes = e.target.value; applyGeneralFilters(); }}); 
-    document.getElementById('supervisorSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); }); 
-    document.getElementById('supervisorMonthSelect')?.addEventListener('change', () => { if(isUnlocked) updateSupervisorCard(); }); 
     document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.vcpMes = e.target.value; applyVCPFilters(); }}); 
     document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly); 
     document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
+    const supervisorSelect = document.getElementById('supervisorSelect');
+    const supervisorMonthSelect = document.getElementById('supervisorMonthSelect');
+    if (supervisorSelect) { supervisorSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); }); }
+    if (supervisorMonthSelect) { supervisorMonthSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); }); }
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             const rm = document.getElementById('reportDetailModal');
