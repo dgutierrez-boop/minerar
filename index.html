@@ -1108,7 +1108,7 @@ function actualizarResumenEjecutivo() {
 function renderEjecutivoRankings(datos) { 
     console.log('📊 Renderizando rankings con', datos.length, 'registros');
     
-    // TOP 5 ACTOS
+    // TOP 5 ACTOS (sin cambios)
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
     actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
@@ -1116,44 +1116,67 @@ function renderEjecutivoRankings(datos) {
     const contActos = document.getElementById('ejecTopActos');
     if (contActos) contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'acto')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
     
-    // ✅ TOP 5 CONDICIONES CORREGIDO (agrupa BERMAS)
+    // ✅ TOP 5 CONDICIONES CORREGIDO (BERMAS se suma correctamente y modales funcionan)
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     conds.forEach(d => { 
         let desc = d.descripcion || 'Sin descripción';
-        // Normalizar BERMAS - TODAS las variantes se unifican
-        if (desc.toLowerCase().includes('berma') || desc.toLowerCase().includes('bema') || desc.toLowerCase().includes('talud')) {
+        let categoriaId = d.categoria?.id || 'otros';
+        
+        // Para BERMAS: usar el ID de categoría, no la descripción
+        if (categoriaId === 'berma') {
             desc = 'Berma de seguridad fuera de estándar';
         }
         // Normalizar otras categorías
-        else if (desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente')) {
+        else if (categoriaId === 'area' || desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente')) {
             desc = 'Sector o ambiente de trabajo en condición';
         }
-        else if (desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza')) {
+        else if (categoriaId === 'orden' || desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza')) {
             desc = 'Orden y limpieza deficiente';
         }
-        else if (desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) {
+        else if (categoriaId === 'senalizacion' || desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) {
             desc = 'Señalización deficiente o inadecuada';
         }
-        else if (desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) {
+        else if (categoriaId === 'equipos' || desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) {
             desc = 'Equipos o herramientas fuera de estándar';
         }
+        
         countConds[desc] = (countConds[desc] || 0) + 1;
     });
     
     const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contConds = document.getElementById('ejecTopCond');
     if (contConds) {
-        console.log('🏚️ TOP CONDICIONES (agrupadas):', topConds);
-        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'condicion')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
+        console.log('🏚️ TOP CONDICIONES (agrupadas por ID):', topConds);
+        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorCategoria('${d === 'Berma de seguridad fuera de estándar' ? 'berma' : d === 'Sector o ambiente de trabajo en condición' ? 'area' : d === 'Orden y limpieza deficiente' ? 'orden' : d === 'Señalización deficiente o inadecuada' ? 'senalizacion' : d === 'Equipos o herramientas fuera de estándar' ? 'equipos' : 'otros'}', 'condicion')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
     }
     
-    // TOP 10 RESPONSABLES
+    // TOP 10 RESPONSABLES (sin cambios)
     const countResp = {};
     datos.forEach(d => { const r = d.observador || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const contResp = document.getElementById('ejecTopResponsables');
     if (contResp) contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g, "\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join('');
+}
+
+// Agregar esta función NUEVA para que los modales de BERMAS funcionen
+function abrirModalPorCategoria(categoriaId, tipo) {
+    const datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        datos.push(...ALL_ACTOS_DATA[suc].filter(d => 
+            d.tipo === tipo && d.categoria?.id === categoriaId
+        ));
+    });
+    if (datos.length === 0) {
+        alert(`No hay reportes de ${categoriaId} para mostrar`);
+        return;
+    }
+    const nombreCategoria = categoriaId === 'berma' ? 'BERMA' :
+                           categoriaId === 'area' ? 'ÁREA Y ENTORNO' :
+                           categoriaId === 'orden' ? 'ORDEN, LIMPIEZA Y RESIDUOS' :
+                           categoriaId === 'senalizacion' ? 'SEÑALIZACIÓN' :
+                           categoriaId === 'equipos' ? 'EQUIPOS Y HERRAMIENTAS' : 'OTROS';
+    abrirModalConDatos(`Reportes de ${nombreCategoria}`, datos);
 }
 
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
