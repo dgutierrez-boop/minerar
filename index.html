@@ -285,7 +285,7 @@ body { padding: 10px; }
 <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL VCP</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
 <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead>大学<th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody><table></div></div>
+<div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead>大学<th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th><tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
 </main>
 </div>
 </div>
@@ -506,7 +506,7 @@ let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos
 let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
 
-// ✅ CONFIGURACIÓN CORREGIDA (URLs de exportación directa + categorías unificadas)
+// ✅ CONFIGURACIÓN CON URLs CORRECTAS
 const SUCURSALES_CONFIG = {
   MALAGUENO: { 
     actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv', 
@@ -657,7 +657,7 @@ console.log('✅ Panel cargado');
 
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
 
-// ✅ FUNCIÓN classifyData CORREGIDA (Residuos + Orden unificados, y eliminada Capacitación)
+// ✅ FUNCIÓN classifyData CORREGIDA (detección robusta de BERMAS y categorías unificadas)
 function classifyData(desc, useVCP = false) {
 if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
 const d = desc.toLowerCase();
@@ -667,7 +667,9 @@ if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso'
 if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
 return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
 }
-if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde')) return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
+// DETECCIÓN MEJORADA DE BERMAS
+if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar')) 
+    return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
 if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
 if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
 if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
@@ -867,7 +869,6 @@ document.getElementById('supActosCount').innerText = resultados.filter(e => e.ti
 document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
 }
 
-// ✅ updateCategoryCards CORREGIDO (unifica Orden+Limpieza+Residuos, elimina Capacitación)
 function updateCategoryCards(data, type) {
 if (type === 'vcp') {
 const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
@@ -904,7 +905,6 @@ cont.appendChild(div);
 });
 return;
 }
-// CATEGORÍAS CORREGIDAS (unificadas y sin Capacitación)
 const CATS_EXPANDIDAS = [
 { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' }, 
 { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, 
@@ -949,7 +949,6 @@ cont.appendChild(div);
 });
 }
 
-// ✅ updateChartsDona CORREGIDO (mismas categorías unificadas)
 function updateChartsDona(data, type) {
 if (type !== 'actos') return;
 const CATS_EXPANDIDAS = [
@@ -1113,7 +1112,58 @@ function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_A
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
 function abrirModalPorReincidencia(persona,categoria) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===persona&&d.categoria?.id===categoria)); }); abrirModalConDatos(`Reincidencias - ${persona}`,datos); }
 function abrirModalPorPuntoGrafico(mes,sucursal,esVCP) { const datos=esVCP?ALL_VCP_DATA[sucursal]?.filter(d=>d.mes===mes)||[]:ALL_ACTOS_DATA[sucursal]?.filter(d=>d.mes===mes)||[]; const nombre=sucursal==='MALAGUENO'?'Malagueño':sucursal==='BARKER'?'Barker':'La Pampita'; abrirModalConDatos(`${nombre} - ${mes} ${esVCP?'(VCP)':'(Actos y Condiciones)'}`,datos); }
-async function cargarTodosDatosParaResumen() { for(const suc of ['MALAGUENO','BARKER','LAPAMPITA']) { if(!ALL_ACTOS_DATA[suc] || ALL_ACTOS_DATA[suc].length===0) { const result=await cargarDatosSucursal(suc); ALL_ACTOS_DATA[suc]=result.actos; ALL_VCP_DATA[suc]=result.vcp; } } }
+
+// ✅ FUNCIÓN CORREGIDA: espera a que carguen TODAS las sucursales
+async function cargarTodosDatosParaResumen() {
+    const resumenBtn = document.querySelector('.resumen-btn');
+    const originalText = resumenBtn?.innerHTML;
+    if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS (esto puede tomar unos segundos)...';
+    
+    try {
+        // Limpiar datos previos para evitar acumulación errónea
+        ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+        ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+        
+        // Cargar UNA POR UNA cada sucursal y esperar a que termine
+        console.log('📥 Cargando Malagueño...');
+        const malagueno = await cargarDatosSucursal('MALAGUENO');
+        ALL_ACTOS_DATA.MALAGUENO = malagueno.actos;
+        ALL_VCP_DATA.MALAGUENO = malagueno.vcp;
+        console.log(`✅ Malagueño: ${malagueno.actos.length} actos/cond, ${malagueno.vcp.length} VCP`);
+        
+        console.log('📥 Cargando Barker...');
+        const barker = await cargarDatosSucursal('BARKER');
+        ALL_ACTOS_DATA.BARKER = barker.actos;
+        ALL_VCP_DATA.BARKER = barker.vcp;
+        console.log(`✅ Barker: ${barker.actos.length} actos/cond, ${barker.vcp.length} VCP`);
+        
+        console.log('📥 Cargando La Pampita...');
+        const lapampita = await cargarDatosSucursal('LAPAMPITA');
+        ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos;
+        ALL_VCP_DATA.LAPAMPITA = lapampita.vcp;
+        console.log(`✅ La Pampita: ${lapampita.actos.length} actos/cond, ${lapampita.vcp.length} VCP`);
+        
+        // Verificar que los datos de Bermas se cargaron correctamente
+        const bermasMalagueno = ALL_ACTOS_DATA.MALAGUENO.filter(d => d.categoria?.id === 'berma').length;
+        const bermasBarker = ALL_ACTOS_DATA.BARKER.filter(d => d.categoria?.id === 'berma').length;
+        const bermasLapampita = ALL_ACTOS_DATA.LAPAMPITA.filter(d => d.categoria?.id === 'berma').length;
+        const totalBermas = bermasMalagueno + bermasBarker + bermasLapampita;
+        
+        console.log(`📊 VERIFICACIÓN BERMAS: Malagueño=${bermasMalagueno}, Barker=${bermasBarker}, La Pampita=${bermasLapampita}, TOTAL=${totalBermas}`);
+        
+        if (totalBermas !== 59) {
+            console.warn(`⚠️ ATENCIÓN: El total de Bermas (${totalBermas}) no coincide con el esperado (59). Revisar palabras clave en classifyData.`);
+        } else {
+            console.log('✅ BERMAS OK: 59 reportes correctamente clasificados');
+        }
+        
+    } catch (error) {
+        console.error('❌ Error cargando datos para resumen:', error);
+        alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.');
+    } finally {
+        if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO';
+    }
+}
 
 window.addEventListener('load', () => {
 document.getElementById('passwordInput')?.focus();
