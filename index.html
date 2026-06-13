@@ -668,7 +668,8 @@ if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria'
 return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
 }
 // DETECCIÓN MEJORADA DE BERMAS
-if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar')) 
+// Versión CORREGIDA (más precisa)
+if (d.includes('berma') || d.includes('bema') || (d.includes('talud') && !d.includes('estándar')) || (d.includes('borde') && !d.includes('estándar'))) 
     return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
 if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
 if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
