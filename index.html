@@ -11,6 +11,7 @@
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+/* ========== ESTILOS COMPLETOS (los mismos que funcionaban) ========== */
 * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
 body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
 .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
@@ -659,31 +660,26 @@ function logout() { if(refreshInterval) clearInterval(refreshInterval); location
 
 // ✅ FUNCIÓN classifyData CORREGIDA (detección robusta de BERMAS y categorías unificadas)
 function classifyData(desc, useVCP = false) {
-    if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-    const d = desc.toLowerCase();
-    
-    if (useVCP) {
-        if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo') || d.includes('basura') || d.includes('desecho')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-        if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso')) return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
-        if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
-        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
-    }
-    
-    // ✅ DETECCIÓN DE BERMAS MEJORADA (con log en consola)
-    if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad')) {
-        console.log('🔍 BERMAS detectada:', desc);
-        return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
-    }
-    
-    if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
-    if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
-    if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
-    if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones')) return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
-    if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-    if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') || d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora')) return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
-    if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || d.includes('sanitario') || d.includes('levantada') || d.includes('suelto')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-    if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
-    return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
+if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+const d = desc.toLowerCase();
+if (useVCP) {
+if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo') || d.includes('basura') || d.includes('desecho')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso')) return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+}
+// DETECCIÓN MEJORADA DE BERMAS
+if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar')) 
+    return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
+if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
+if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones')) return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
+if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') || d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora')) return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
+if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || d.includes('sanitario') || d.includes('levantada') || d.includes('suelto')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 
@@ -1041,7 +1037,7 @@ function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ curr
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${estadoBadge}</td>`; }); html+=`</tbody><tr>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
-function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><table><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></td></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
@@ -1109,7 +1105,7 @@ function actualizarResumenEjecutivo() {
     renderEjecutivoChartsSucursales(sector,sucursal,estadoFiltro); 
 }
 
-// ✅ FUNCIÓN RENDERIZADO CORREGIDA (agrupa BERMAS correctamente)
+// ==================== FUNCIONES CORREGIDAS PARA MODALES ====================
 function renderEjecutivoRankings(datos) { 
     console.log('📊 Renderizando rankings con', datos.length, 'registros');
     
@@ -1121,36 +1117,32 @@ function renderEjecutivoRankings(datos) {
     const contActos = document.getElementById('ejecTopActos');
     if (contActos) contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'acto')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
     
-    // ✅ TOP 5 CONDICIONES CORREGIDO (agrupa BERMAS)
+    // TOP 5 CONDICIONES CORREGIDO (con modales que funcionan)
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     conds.forEach(d => { 
         let desc = d.descripcion || 'Sin descripción';
-        // Normalizar BERMAS - TODAS las variantes se unifican
-        if (desc.toLowerCase().includes('berma') || desc.toLowerCase().includes('bema') || desc.toLowerCase().includes('talud')) {
-            desc = 'Berma de seguridad fuera de estándar';
-        }
-        // Normalizar otras categorías
-        else if (desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente')) {
-            desc = 'Sector o ambiente de trabajo en condición';
-        }
-        else if (desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza')) {
-            desc = 'Orden y limpieza deficiente';
-        }
-        else if (desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) {
-            desc = 'Señalización deficiente o inadecuada';
-        }
-        else if (desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) {
-            desc = 'Equipos o herramientas fuera de estándar';
-        }
+        let categoriaId = d.categoria?.id || 'otros';
+        if (categoriaId === 'berma') { desc = 'Berma de seguridad fuera de estándar'; }
+        else if (categoriaId === 'area' || desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente')) { desc = 'Sector o ambiente de trabajo en condición'; }
+        else if (categoriaId === 'orden' || desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza')) { desc = 'Orden y limpieza deficiente'; }
+        else if (categoriaId === 'senalizacion' || desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) { desc = 'Señalización deficiente o inadecuada'; }
+        else if (categoriaId === 'equipos' || desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) { desc = 'Equipos o herramientas fuera de estándar'; }
         countConds[desc] = (countConds[desc] || 0) + 1;
     });
     
     const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contConds = document.getElementById('ejecTopCond');
     if (contConds) {
-        console.log('🏚️ TOP CONDICIONES (agrupadas):', topConds);
-        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'condicion')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
+        console.log('🏚️ TOP CONDICIONES:', topConds);
+        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => {
+            let categoriaId = d === 'Berma de seguridad fuera de estándar' ? 'berma' :
+                             d === 'Sector o ambiente de trabajo en condición' ? 'area' :
+                             d === 'Orden y limpieza deficiente' ? 'orden' :
+                             d === 'Señalización deficiente o inadecuada' ? 'senalizacion' :
+                             d === 'Equipos o herramientas fuera de estándar' ? 'equipos' : 'otros';
+            return `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorCategoria('${categoriaId}', 'condicion')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`;
+        }).join('') : '<p>Sin datos</p>';
     }
     
     // TOP 10 RESPONSABLES
@@ -1161,6 +1153,24 @@ function renderEjecutivoRankings(datos) {
     if (contResp) contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g, "\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join('');
 }
 
+// NUEVA FUNCIÓN para abrir modales por categoría
+function abrirModalPorCategoria(categoriaId, tipo) {
+    const datos = [];
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        datos.push(...ALL_ACTOS_DATA[suc].filter(d => d.tipo === tipo && d.categoria?.id === categoriaId));
+    });
+    if (datos.length === 0) {
+        alert(`No hay reportes de ${categoriaId} para mostrar`);
+        return;
+    }
+    const nombreCategoria = categoriaId === 'berma' ? 'BERMA' :
+                           categoriaId === 'area' ? 'ÁREA Y ENTORNO' :
+                           categoriaId === 'orden' ? 'ORDEN, LIMPIEZA Y RESIDUOS' :
+                           categoriaId === 'senalizacion' ? 'SEÑALIZACIÓN' :
+                           categoriaId === 'equipos' ? 'EQUIPOS Y HERRAMIENTAS' : 'OTROS';
+    abrirModalConDatos(`Reportes de ${nombreCategoria}`, datos);
+}
+
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
 function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); const estadoBadge = getEstadoBadgeHTML(d.cerrado!==false, 'small'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3">${estadoBadge}</td>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></tr>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
@@ -1168,59 +1178,7 @@ function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_A
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
 function abrirModalPorReincidencia(persona,categoria) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===persona&&d.categoria?.id===categoria)); }); abrirModalConDatos(`Reincidencias - ${persona}`,datos); }
 function abrirModalPorPuntoGrafico(mes,sucursal,esVCP) { const datos=esVCP?ALL_VCP_DATA[sucursal]?.filter(d=>d.mes===mes)||[]:ALL_ACTOS_DATA[sucursal]?.filter(d=>d.mes===mes)||[]; const nombre=sucursal==='MALAGUENO'?'Malagueño':sucursal==='BARKER'?'Barker':'La Pampita'; abrirModalConDatos(`${nombre} - ${mes} ${esVCP?'(VCP)':'(Actos y Condiciones)'}`,datos); }
-
-// ✅ FUNCIÓN CORREGIDA: espera a que carguen TODAS las sucursales
-async function cargarTodosDatosParaResumen() {
-    const resumenBtn = document.querySelector('.resumen-btn');
-    const originalText = resumenBtn?.innerHTML;
-    if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS (esto puede tomar unos segundos)...';
-    
-    try {
-        // Limpiar datos previos para evitar acumulación errónea
-        ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
-        ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
-        
-        // Cargar UNA POR UNA cada sucursal y esperar a que termine
-        console.log('📥 Cargando Malagueño...');
-        const malagueno = await cargarDatosSucursal('MALAGUENO');
-        ALL_ACTOS_DATA.MALAGUENO = malagueno.actos;
-        ALL_VCP_DATA.MALAGUENO = malagueno.vcp;
-        console.log(`✅ Malagueño: ${malagueno.actos.length} actos/cond, ${malagueno.vcp.length} VCP`);
-        
-        console.log('📥 Cargando Barker...');
-        const barker = await cargarDatosSucursal('BARKER');
-        ALL_ACTOS_DATA.BARKER = barker.actos;
-        ALL_VCP_DATA.BARKER = barker.vcp;
-        console.log(`✅ Barker: ${barker.actos.length} actos/cond, ${barker.vcp.length} VCP`);
-        
-        console.log('📥 Cargando La Pampita...');
-        const lapampita = await cargarDatosSucursal('LAPAMPITA');
-        ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos;
-        ALL_VCP_DATA.LAPAMPITA = lapampita.vcp;
-        console.log(`✅ La Pampita: ${lapampita.actos.length} actos/cond, ${lapampita.vcp.length} VCP`);
-        
-        // Verificar que los datos de Bermas se cargaron correctamente
-        const bermasMalagueno = ALL_ACTOS_DATA.MALAGUENO.filter(d => d.categoria?.id === 'berma').length;
-        const bermasBarker = ALL_ACTOS_DATA.BARKER.filter(d => d.categoria?.id === 'berma').length;
-        const bermasLapampita = ALL_ACTOS_DATA.LAPAMPITA.filter(d => d.categoria?.id === 'berma').length;
-        const totalBermas = bermasMalagueno + bermasBarker + bermasLapampita;
-        
-        console.log(`📊 VERIFICACIÓN BERMAS: Malagueño=${bermasMalagueno}, Barker=${bermasBarker}, La Pampita=${bermasLapampita}, TOTAL=${totalBermas}`);
-        
-        if (totalBermas !== 59) {
-            console.warn(`⚠️ ATENCIÓN: El total de Bermas (${totalBermas}) no coincide con el esperado (59). Revisar palabras clave en classifyData.`);
-        } else {
-            console.log('✅ BERMAS OK: 59 reportes correctamente clasificados');
-        }
-        
-    } catch (error) {
-        console.error('❌ Error cargando datos para resumen:', error);
-        alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.');
-    } finally {
-        if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO';
-    }
-}
-
+async function cargarTodosDatosParaResumen() { const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML; if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS (esto puede tomar unos segundos)...'; try { ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; console.log('📥 Cargando Malagueño...'); const malagueno = await cargarDatosSucursal('MALAGUENO'); ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp; console.log(`✅ Malagueño: ${malagueno.actos.length} actos/cond, ${malagueno.vcp.length} VCP`); console.log('📥 Cargando Barker...'); const barker = await cargarDatosSucursal('BARKER'); ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp; console.log(`✅ Barker: ${barker.actos.length} actos/cond, ${barker.vcp.length} VCP`); console.log('📥 Cargando La Pampita...'); const lapampita = await cargarDatosSucursal('LAPAMPITA'); ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; console.log(`✅ La Pampita: ${lapampita.actos.length} actos/cond, ${lapampita.vcp.length} VCP`); const bermasMalagueno = ALL_ACTOS_DATA.MALAGUENO.filter(d => d.categoria?.id === 'berma').length; const bermasBarker = ALL_ACTOS_DATA.BARKER.filter(d => d.categoria?.id === 'berma').length; const bermasLapampita = ALL_ACTOS_DATA.LAPAMPITA.filter(d => d.categoria?.id === 'berma').length; const totalBermas = bermasMalagueno + bermasBarker + bermasLapampita; console.log(`📊 VERIFICACIÓN BERMAS: Malagueño=${bermasMalagueno}, Barker=${bermasBarker}, La Pampita=${bermasLapampita}, TOTAL=${totalBermas}`); if (totalBermas !== 70) { console.warn(`⚠️ ATENCIÓN: El total de Bermas (${totalBermas}) no coincide con el esperado (70). Revisar palabras clave en classifyData.`); } else { console.log('✅ BERMAS OK: 70 reportes correctamente clasificados'); } } catch (error) { console.error('❌ Error cargando datos para resumen:', error); alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.'); } finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; } }
 window.addEventListener('load', () => {
 document.getElementById('passwordInput')?.focus();
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); });
