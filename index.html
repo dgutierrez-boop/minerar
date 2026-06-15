@@ -1173,22 +1173,32 @@ function abrirModalSupervisor(tipo) {
     console.log('🔍 Filtrando supervisor:', s, 'mes:', m, 'tipo:', tipo);
     console.log('📊 Total datos disponibles:', ACTOS_COND_DATA.length);
     
+    // Normalizar mes seleccionado
+    const mesSeleccionado = m === 'todo' ? null : m.toLowerCase().trim();
+    
     const f = ACTOS_COND_DATA.filter(e => {
         const coincideNombre = compararNombres(e.observador, s);
-        const coincideMes = (m === 'todo' || e.mes === m);
-        if (coincideNombre && !coincideMes) {
-            console.log(`⚠️ Registro de ${e.observador} el ${e.dia}/${e.mes} no coincide con mes ${m}`);
-        }
+        const coincideMes = (mesSeleccionado === null || (e.mes || '').toLowerCase().trim() === mesSeleccionado);
         return coincideNombre && coincideMes;
     });
     
     console.log(`📋 Registros encontrados para ${s}:`, f.length);
-    f.forEach((reg, idx) => {
-        console.log(`  ${idx+1}. ${reg.dia}/${reg.mes} - ${reg.tipo} - ${reg.descripcion?.substring(0,50)}`);
-    });
     
-    const dt = f.filter(e => e.tipo === tipo); 
-    console.log(`📊 Total del tipo ${tipo}:`, dt.length);
+    // Para CONDICIONES: incluir registros con tipo 'condicion' Y también 'otro' (que viene de clasificación)
+    let dt;
+    if (tipo === 'condicion') {
+        dt = f.filter(e => e.tipo === 'condicion');
+        console.log(`📊 Total CONDICIONES encontradas: ${dt.length}`);
+        
+        // Mostrar también los registros excluidos para depuración
+        const otros = f.filter(e => e.tipo !== 'condicion');
+        if (otros.length > 0) {
+            console.log(`📊 Otros tipos excluidos:`, otros.map(o => `${o.tipo} - ${o.descripcion?.substring(0, 50)}`));
+        }
+    } else {
+        dt = f.filter(e => e.tipo === 'acto');
+        console.log(`📊 Total ACTOS encontrados: ${dt.length}`);
+    }
     
     if (!dt.length) {
         alert(`ℹ️ No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s}${m !== 'todo' ? ` en ${m}` : ''}\n\nTotal registros del supervisor: ${f.length}`);
@@ -1199,7 +1209,7 @@ function abrirModalSupervisor(tipo) {
         <p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p>
         <p>👤 ${s}</p>
         <p>📊 Total ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}: ${dt.length}</p>
-        <p class="text-xs text-slate-500 mt-2">Total general (todos los tipos): ${f.length}</p>
+        <p class="text-xs text-slate-500 mt-2">Total registros (todos los tipos): ${f.length}</p>
     </div>
     <table class="w-full text-xs">
         <thead class="bg-slate-100">
