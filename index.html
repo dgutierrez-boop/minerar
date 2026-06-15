@@ -788,8 +788,16 @@ const row = rows[i];
 let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
 if(sucursal === 'MALAGUENO' && i >= 225) {
 const u = row[20] || '';
-if(u.toUpperCase().startsWith('AI-')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI-\s*/i,'').trim(); }
-else if(u.toUpperCase().startsWith('CI-')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI-\s*/i,'').trim(); }
+// ✅ CORREGIDO: Aceptar "AI-", "AI.", "AI -", "CI-", "CI.", "CI -"
+const uTrimmed = u.trim().toUpperCase();
+if(uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) { 
+    tipoRaw='Acto Inseguro'; 
+    desc=u.replace(/^AI[\s\.\-]*/i,'').trim(); 
+}
+else if(uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) { 
+    tipoRaw='Condición Insegura'; 
+    desc=u.replace(/^CI[\s\.\-]*/i,'').trim(); 
+}
 else { tipoRaw=''; desc=u; }
 fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || '';
 } else {
@@ -808,7 +816,19 @@ const fd = parseFecha(fecha);
 if(!fd.valido) continue;
 let tipo = 'otro';
 if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
-else if(tipoRaw.toLowerCase().includes('condición')) tipo = 'condicion';
+else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
+// ✅ CORREGIDO: Si el tipo es "otro" pero la descripción empieza con "CI" o "AI", clasificar correctamente
+if(tipo === 'otro' && desc) {
+    const descTrimmed = desc.trim().toUpperCase();
+    if(descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) {
+        tipo = 'acto';
+        desc = desc.replace(/^AI[\s\.\-]*/i,'').trim();
+    }
+    else if(descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) {
+        tipo = 'condicion';
+        desc = desc.replace(/^CI[\s\.\-]*/i,'').trim();
+    }
+}
 let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
 const cat = classifyData(desc, false);
 actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl });
