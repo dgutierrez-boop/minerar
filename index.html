@@ -536,7 +536,7 @@ body { padding: 10px; }
 </div>
 
 <script>
-// TODO EL JAVASCRIPT COMPLETO - SIN RESUMIR
+// TODO EL JAVASCRIPT COMPLETO
 let videoTimeout = null;
 
 function requestFullscreen(element) {
@@ -624,7 +624,8 @@ let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
 
 function getEstadoBadgeHTML(cerrado, size = 'normal') {
-    if (cerrado) {
+    const estaCerrado = cerrado === true || cerrado === 'si' || cerrado === 'Si' || cerrado === 'SI';
+    if (estaCerrado) {
         const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
         return `<span class="estado-badge-cerrado ${sizeClass} font-bold shadow-md"><span class="text-lg">✅</span> CERRADO</span>`;
     } else {
@@ -827,7 +828,11 @@ if(tipo === 'otro' && desc) {
         desc = desc.replace(/^CI[\s\.\-]*/i,'').trim();
     }
 }
-let cerrado = cerradoRaw && (cerradoRaw.toLowerCase().includes('si') || cerradoRaw.toLowerCase() === 'si');
+let cerrado = false;
+if(cerradoRaw) {
+    const cerradoStr = cerradoRaw.toString().toLowerCase().trim();
+    cerrado = cerradoStr === 'si' || cerradoStr === 'sí' || cerradoStr === 'true' || cerradoStr === '1' || cerradoStr === 'x';
+}
 const cat = classifyData(desc, false);
 actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl });
 if(fd.dia === diaHoy && fd.mes === mesHoy) {
@@ -1253,13 +1258,13 @@ function abrirModalSupervisor(tipo) {
 
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
 
-function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></tr>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 
-// ==================== FUNCIÓN EXPORTAR EXCEL MEJORADA ====================
+// ==================== FUNCIÓN EXPORTAR EXCEL MEJORADA CON ALINEACIÓN ====================
 function exportarResumenEjecutivoExcel() {
     const wb = XLSX.utils.book_new();
     
@@ -1269,6 +1274,13 @@ function exportarResumenEjecutivoExcel() {
     const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
     const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
     
+    // Estilos para el Excel
+    const negrita = { font: { bold: true } };
+    const fondoNaranja = { fill: { fgColor: { rgb: "F18B00" } }, font: { color: { rgb: "FFFFFF" }, bold: true } };
+    const fondoVerde = { fill: { fgColor: { rgb: "10B981" } }, font: { color: { rgb: "FFFFFF" }, bold: true } };
+    const fondoRojo = { fill: { fgColor: { rgb: "EF4444" } }, font: { color: { rgb: "FFFFFF" }, bold: true } };
+    
+    // 1️⃣ HOJA DE RESUMEN
     const resumenData = [
         ['🛡️ RESUMEN EJECUTIVO MINERAR 2026'],
         [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`],
@@ -1288,8 +1300,10 @@ function exportarResumenEjecutivoExcel() {
     ];
     
     const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+    wsResumen['!cols'] = [{wch:25}, {wch:15}];
     XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN');
     
+    // 2️⃣ HOJA DE DETALLE COMPLETO
     const datosTabla = window.datosModalActual || [];
     if (datosTabla.length > 0) {
         const detalleData = [
@@ -1299,7 +1313,8 @@ function exportarResumenEjecutivoExcel() {
         ];
         
         datosTabla.forEach(d => {
-            const estado = d.cerrado ? 'CERRADO' : 'ABIERTO';
+            const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+            const estado = estaCerrado ? 'CERRADO' : 'ABIERTO';
             const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN');
             detalleData.push([
                 `${d.dia}/${d.mes}/2026`,
@@ -1314,9 +1329,11 @@ function exportarResumenEjecutivoExcel() {
         });
         
         const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
+        wsDetalle['!cols'] = [{wch:12}, {wch:12}, {wch:20}, {wch:10}, {wch:50}, {wch:12}, {wch:10}, {wch:20}];
         XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE');
     }
     
+    // 3️⃣ HOJA TOP 5 ACTOS
     const topActosEl = document.getElementById('ejecTopActos');
     if (topActosEl && topActosEl.children.length > 0) {
         const topActosData = [['⚠️ TOP 5 ACTOS INSEGUROS'], [], ['Ranking', 'Descripción', 'Cantidad']];
@@ -1326,9 +1343,11 @@ function exportarResumenEjecutivoExcel() {
             topActosData.push([index + 1, desc, cant]);
         });
         const wsTopActos = XLSX.utils.aoa_to_sheet(topActosData);
+        wsTopActos['!cols'] = [{wch:8}, {wch:60}, {wch:10}];
         XLSX.utils.book_append_sheet(wb, wsTopActos, '⚠️ TOP ACTOS');
     }
     
+    // 4️⃣ HOJA TOP 5 CONDICIONES
     const topCondsEl = document.getElementById('ejecTopCond');
     if (topCondsEl && topCondsEl.children.length > 0) {
         const topCondsData = [['🏚️ TOP 5 CONDICIONES INSEGURAS'], [], ['Ranking', 'Descripción', 'Cantidad']];
@@ -1338,9 +1357,11 @@ function exportarResumenEjecutivoExcel() {
             topCondsData.push([index + 1, desc, cant]);
         });
         const wsTopConds = XLSX.utils.aoa_to_sheet(topCondsData);
+        wsTopConds['!cols'] = [{wch:8}, {wch:60}, {wch:10}];
         XLSX.utils.book_append_sheet(wb, wsTopConds, '🏚️ TOP CONDICIONES');
     }
     
+    // 5️⃣ HOJA TOP 10 RESPONSABLES
     const topRespEl = document.getElementById('ejecTopResponsables');
     if (topRespEl && topRespEl.children.length > 0) {
         const topRespData = [['🏆 TOP 10 RESPONSABLES'], [], ['Ranking', 'Nombre', 'Total Reportes']];
@@ -1350,9 +1371,11 @@ function exportarResumenEjecutivoExcel() {
             topRespData.push([index + 1, nombre, reportes]);
         });
         const wsTopResp = XLSX.utils.aoa_to_sheet(topRespData);
+        wsTopResp['!cols'] = [{wch:8}, {wch:30}, {wch:15}];
         XLSX.utils.book_append_sheet(wb, wsTopResp, '🏆 TOP RESPONSABLES');
     }
     
+    // 6️⃣ HOJA REINCIDENCIAS
     const reincEl = document.getElementById('ejecReincidencias');
     if (reincEl && reincEl.children.length > 0) {
         const reincData = [['🔄 REINCIDENCIAS (Misma persona + misma categoría)'], [], ['Responsable', 'Categoría', 'Cantidad', 'Sucursales']];
@@ -1364,9 +1387,11 @@ function exportarResumenEjecutivoExcel() {
             reincData.push([persona, categoria, cantidad, sucursales]);
         });
         const wsReinc = XLSX.utils.aoa_to_sheet(reincData);
+        wsReinc['!cols'] = [{wch:25}, {wch:25}, {wch:10}, {wch:20}];
         XLSX.utils.book_append_sheet(wb, wsReinc, '🔄 REINCIDENCIAS');
     }
     
+    // 7️⃣ HOJA POR SUCURSAL
     const porSucursalData = [['📊 RESUMEN POR SUCURSAL'], [], ['Sucursal', 'Actos', 'Condiciones', 'VCP', 'Total']];
     const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
     sucursales.forEach(suc => {
@@ -1376,6 +1401,7 @@ function exportarResumenEjecutivoExcel() {
         porSucursalData.push([suc, actos, conds, vcp, actos + conds + vcp]);
     });
     const wsSucursal = XLSX.utils.aoa_to_sheet(porSucursalData);
+    wsSucursal['!cols'] = [{wch:15}, {wch:10}, {wch:10}, {wch:10}, {wch:10}];
     XLSX.utils.book_append_sheet(wb, wsSucursal, '📊 POR SUCURSAL');
     
     const fecha = new Date().toISOString().slice(0,10);
@@ -1392,36 +1418,49 @@ function actualizarResumenEjecutivo() {
     const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
     const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
     
-    console.log('🔍 Filtros aplicados:', { sucursal, mes, sector, estadoFiltro, tipoFiltro });
+    console.log('🔍 Filtros aplicados:', { 
+        sucursal, mes, sector, 
+        estadoFiltro: `>>${estadoFiltro}<<`, 
+        tipoFiltro 
+    });
     
     let datosActos = [], datosVCP = [];
     
     Object.keys(ALL_ACTOS_DATA).forEach(suc => {
         if (sucursal !== 'todas' && suc !== sucursal) return;
         
-        ALL_ACTOS_DATA[suc].forEach(d => {
-            if (mes !== 'todo' && d.mes !== mes) return;
-            if (sector !== 'todos' && !d.sector.includes(sector)) return;
-            if (estadoFiltro === 'abiertos' && d.cerrado) return;
-            if (estadoFiltro === 'cerrados' && !d.cerrado) return;
-            if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return;
-            
-            datosActos.push(d);
-        });
+        if (ALL_ACTOS_DATA[suc]) {
+            ALL_ACTOS_DATA[suc].forEach(d => {
+                // Filtro por mes
+                if (mes !== 'todo' && d.mes !== mes) return;
+                // Filtro por sector
+                if (sector !== 'todos' && !d.sector.includes(sector)) return;
+                // Filtro por estado - CORREGIDO
+                const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+                if (estadoFiltro === 'abiertos' && estaCerrado) return;
+                if (estadoFiltro === 'cerrados' && !estaCerrado) return;
+                // Filtro por tipo
+                if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return;
+                
+                datosActos.push({...d});
+            });
+        }
         
         if (ALL_VCP_DATA[suc]) {
             ALL_VCP_DATA[suc].forEach(d => {
                 if (mes !== 'todo' && d.mes !== mes) return;
                 if (sector !== 'todos' && !d.sector.includes(sector)) return;
-                if (estadoFiltro === 'abiertos' && d.cerrado) return;
-                if (estadoFiltro === 'cerrados' && !d.cerrado) return;
+                const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+                if (estadoFiltro === 'abiertos' && estaCerrado) return;
+                if (estadoFiltro === 'cerrados' && !estaCerrado) return;
                 if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return;
                 
-                datosVCP.push(d);
+                datosVCP.push({...d});
             });
         }
     });
     
+    // Aplicar filtro adicional por tipo seleccionado en KPIs
     if (currentFiltroTipo !== 'todos') {
         if (currentFiltroTipo === 'acto') {
             datosVCP = [];
@@ -1442,9 +1481,23 @@ function actualizarResumenEjecutivo() {
     document.getElementById('ejecTotalVCP').innerText = totalVCP;
     document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP;
     
-    console.log('📊 Totales:', { totalActos, totalCond, totalVCP, total: totalActos + totalCond + totalVCP });
-    console.log('📋 Registros para tabla:', datosActos.length + datosVCP.length);
+    console.log('📊 Totales KPIs:', { totalActos, totalCond, totalVCP });
+    console.log('📋 Total registros para tabla:', datosActos.length + datosVCP.length);
     
+    // Verificar estados en los datos filtrados
+    const estadosEnTabla = {
+        abiertos: [...datosActos, ...datosVCP].filter(d => {
+            const c = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+            return !c;
+        }).length,
+        cerrados: [...datosActos, ...datosVCP].filter(d => {
+            const c = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+            return c;
+        }).length
+    };
+    console.log('📊 Estados en tabla filtrada:', estadosEnTabla);
+    
+    // Actualizar TODOS los componentes
     renderEjecutivoTabla([...datosActos, ...datosVCP]);
     renderEjecutivoRankings(datosActos);
     renderEjecutivoReincidencias(datosActos);
@@ -1457,10 +1510,12 @@ function renderEjecutivoTabla(datos) {
     const tbody = document.getElementById('ejecTablaBody');
     if (!tbody) return;
     
+    // Guardar datos filtrados para el modal y el Excel
     window.datosModalActual = datos;
     
     console.log('📋 Renderizando tabla con', datos.length, 'registros');
     
+    // Ordenar por fecha (más reciente primero)
     const sorted = [...datos].sort((a, b) => {
         const fechaA = a.fecha?.split('/').reverse().join('-') || '';
         const fechaB = b.fecha?.split('/').reverse().join('-') || '';
@@ -1478,7 +1533,10 @@ function renderEjecutivoTabla(datos) {
         const tipo = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
         const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : 
                           (d.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
-        const estadoBadge = getEstadoBadgeHTML(d.cerrado !== false, 'small');
+        
+        // ✅ CORREGIDO: Detectar estado correctamente
+        const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
+        const estadoBadge = getEstadoBadgeHTML(estaCerrado, 'small');
         
         return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)">
             <td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td>
