@@ -788,7 +788,6 @@ const row = rows[i];
 let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
 if(sucursal === 'MALAGUENO' && i >= 225) {
 const u = row[20] || '';
-// ✅ CORREGIDO: Aceptar "AI-", "AI.", "AI -", "CI-", "CI.", "CI -"
 const uTrimmed = u.trim().toUpperCase();
 if(uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) { 
     tipoRaw='Acto Inseguro'; 
@@ -817,7 +816,6 @@ if(!fd.valido) continue;
 let tipo = 'otro';
 if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
 else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
-// ✅ CORREGIDO: Si el tipo es "otro" pero la descripción empieza con "CI" o "AI", clasificar correctamente
 if(tipo === 'otro' && desc) {
     const descTrimmed = desc.trim().toUpperCase();
     if(descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) {
@@ -1193,7 +1191,6 @@ function abrirModalSupervisor(tipo) {
     console.log('🔍 Filtrando supervisor:', s, 'mes:', m, 'tipo:', tipo);
     console.log('📊 Total datos disponibles:', ACTOS_COND_DATA.length);
     
-    // Normalizar mes seleccionado
     const mesSeleccionado = m === 'todo' ? null : m.toLowerCase().trim();
     
     const f = ACTOS_COND_DATA.filter(e => {
@@ -1204,13 +1201,11 @@ function abrirModalSupervisor(tipo) {
     
     console.log(`📋 Registros encontrados para ${s}:`, f.length);
     
-    // Para CONDICIONES: incluir registros con tipo 'condicion' Y también 'otro' (que viene de clasificación)
     let dt;
     if (tipo === 'condicion') {
         dt = f.filter(e => e.tipo === 'condicion');
         console.log(`📊 Total CONDICIONES encontradas: ${dt.length}`);
         
-        // Mostrar también los registros excluidos para depuración
         const otros = f.filter(e => e.tipo !== 'condicion');
         if (otros.length > 0) {
             console.log(`📊 Otros tipos excluidos:`, otros.map(o => `${o.tipo} - ${o.descripcion?.substring(0, 50)}`));
@@ -1264,7 +1259,240 @@ function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker'
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 
-function exportarResumenEjecutivoExcel() { const wb=XLSX.utils.book_new(); const ws=XLSX.utils.aoa_to_sheet([['Resumen Ejecutivo Minerar',new Date().toLocaleString()]]); XLSX.utils.book_append_sheet(wb,ws,'Resumen'); XLSX.writeFile(wb,`Resumen_Minerar_${new Date().toISOString().slice(0,10)}.xlsx`); }
+// ==================== FUNCIÓN EXPORTAR EXCEL MEJORADA ====================
+function exportarResumenEjecutivoExcel() {
+    const wb = XLSX.utils.book_new();
+    
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
+    const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
+    
+    const resumenData = [
+        ['🛡️ RESUMEN EJECUTIVO MINERAR 2026'],
+        [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`],
+        [],
+        ['📊 FILTROS APLICADOS:'],
+        ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal],
+        ['Mes:', mes === 'todo' ? 'TODOS' : mes],
+        ['Sector:', sector === 'todos' ? 'TODOS' : sector],
+        ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro],
+        ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro],
+        [],
+        ['📈 INDICADORES PRINCIPALES:'],
+        ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText],
+        ['🏚️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText],
+        ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText],
+        ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText],
+    ];
+    
+    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
+    XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN');
+    
+    const datosTabla = window.datosModalActual || [];
+    if (datosTabla.length > 0) {
+        const detalleData = [
+            ['📋 DETALLE COMPLETO DE REPORTES'],
+            [],
+            ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']
+        ];
+        
+        datosTabla.forEach(d => {
+            const estado = d.cerrado ? 'CERRADO' : 'ABIERTO';
+            const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN');
+            detalleData.push([
+                `${d.dia}/${d.mes}/2026`,
+                d.sucursal,
+                d.observador || d.personaObservada || '',
+                tipo,
+                d.descripcion || '',
+                d.sector || '',
+                estado,
+                d.categoria?.name || ''
+            ]);
+        });
+        
+        const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
+        XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE');
+    }
+    
+    const topActosEl = document.getElementById('ejecTopActos');
+    if (topActosEl && topActosEl.children.length > 0) {
+        const topActosData = [['⚠️ TOP 5 ACTOS INSEGUROS'], [], ['Ranking', 'Descripción', 'Cantidad']];
+        Array.from(topActosEl.children).forEach((item, index) => {
+            const desc = item.querySelector('.font-bold')?.textContent || '';
+            const cant = item.querySelector('.text-red-600')?.textContent || '';
+            topActosData.push([index + 1, desc, cant]);
+        });
+        const wsTopActos = XLSX.utils.aoa_to_sheet(topActosData);
+        XLSX.utils.book_append_sheet(wb, wsTopActos, '⚠️ TOP ACTOS');
+    }
+    
+    const topCondsEl = document.getElementById('ejecTopCond');
+    if (topCondsEl && topCondsEl.children.length > 0) {
+        const topCondsData = [['🏚️ TOP 5 CONDICIONES INSEGURAS'], [], ['Ranking', 'Descripción', 'Cantidad']];
+        Array.from(topCondsEl.children).forEach((item, index) => {
+            const desc = item.querySelector('.font-bold')?.textContent || '';
+            const cant = item.querySelector('.text-amber-600')?.textContent || '';
+            topCondsData.push([index + 1, desc, cant]);
+        });
+        const wsTopConds = XLSX.utils.aoa_to_sheet(topCondsData);
+        XLSX.utils.book_append_sheet(wb, wsTopConds, '🏚️ TOP CONDICIONES');
+    }
+    
+    const topRespEl = document.getElementById('ejecTopResponsables');
+    if (topRespEl && topRespEl.children.length > 0) {
+        const topRespData = [['🏆 TOP 10 RESPONSABLES'], [], ['Ranking', 'Nombre', 'Total Reportes']];
+        Array.from(topRespEl.children).forEach((item, index) => {
+            const nombre = item.querySelector('.font-semibold')?.textContent || '';
+            const reportes = item.querySelector('.bg-orange-100')?.textContent?.replace(' reportes', '') || '';
+            topRespData.push([index + 1, nombre, reportes]);
+        });
+        const wsTopResp = XLSX.utils.aoa_to_sheet(topRespData);
+        XLSX.utils.book_append_sheet(wb, wsTopResp, '🏆 TOP RESPONSABLES');
+    }
+    
+    const reincEl = document.getElementById('ejecReincidencias');
+    if (reincEl && reincEl.children.length > 0) {
+        const reincData = [['🔄 REINCIDENCIAS (Misma persona + misma categoría)'], [], ['Responsable', 'Categoría', 'Cantidad', 'Sucursales']];
+        Array.from(reincEl.children).forEach(item => {
+            const persona = item.querySelector('.font-bold')?.textContent?.replace('👤 ', '') || '';
+            const categoria = item.querySelector('.text-xs.ml-2')?.textContent || '';
+            const cantidad = item.querySelector('.bg-red-100')?.textContent?.replace('x', '') || '';
+            const sucursales = item.children[1]?.textContent?.replace('🏭 ', '') || '';
+            reincData.push([persona, categoria, cantidad, sucursales]);
+        });
+        const wsReinc = XLSX.utils.aoa_to_sheet(reincData);
+        XLSX.utils.book_append_sheet(wb, wsReinc, '🔄 REINCIDENCIAS');
+    }
+    
+    const porSucursalData = [['📊 RESUMEN POR SUCURSAL'], [], ['Sucursal', 'Actos', 'Condiciones', 'VCP', 'Total']];
+    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
+    sucursales.forEach(suc => {
+        const actos = ALL_ACTOS_DATA[suc]?.filter(d => d.tipo === 'acto').length || 0;
+        const conds = ALL_ACTOS_DATA[suc]?.filter(d => d.tipo === 'condicion').length || 0;
+        const vcp = ALL_VCP_DATA[suc]?.length || 0;
+        porSucursalData.push([suc, actos, conds, vcp, actos + conds + vcp]);
+    });
+    const wsSucursal = XLSX.utils.aoa_to_sheet(porSucursalData);
+    XLSX.utils.book_append_sheet(wb, wsSucursal, '📊 POR SUCURSAL');
+    
+    const fecha = new Date().toISOString().slice(0,10);
+    XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`);
+    alert('✅ Excel exportado exitosamente con TODOS los datos');
+}
+// ==================== FIN FUNCIÓN EXPORTAR EXCEL ====================
+
+// ==================== FUNCIÓN ACTUALIZAR RESUMEN CORREGIDA ====================
+function actualizarResumenEjecutivo() { 
+    const sucursal = document.getElementById('ejecutivoSucursal').value;
+    const mes = document.getElementById('ejecutivoMes').value;
+    const sector = document.getElementById('ejecutivoSector').value;
+    const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
+    const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
+    
+    console.log('🔍 Filtros aplicados:', { sucursal, mes, sector, estadoFiltro, tipoFiltro });
+    
+    let datosActos = [], datosVCP = [];
+    
+    Object.keys(ALL_ACTOS_DATA).forEach(suc => {
+        if (sucursal !== 'todas' && suc !== sucursal) return;
+        
+        ALL_ACTOS_DATA[suc].forEach(d => {
+            if (mes !== 'todo' && d.mes !== mes) return;
+            if (sector !== 'todos' && !d.sector.includes(sector)) return;
+            if (estadoFiltro === 'abiertos' && d.cerrado) return;
+            if (estadoFiltro === 'cerrados' && !d.cerrado) return;
+            if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return;
+            
+            datosActos.push(d);
+        });
+        
+        if (ALL_VCP_DATA[suc]) {
+            ALL_VCP_DATA[suc].forEach(d => {
+                if (mes !== 'todo' && d.mes !== mes) return;
+                if (sector !== 'todos' && !d.sector.includes(sector)) return;
+                if (estadoFiltro === 'abiertos' && d.cerrado) return;
+                if (estadoFiltro === 'cerrados' && !d.cerrado) return;
+                if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return;
+                
+                datosVCP.push(d);
+            });
+        }
+    });
+    
+    if (currentFiltroTipo !== 'todos') {
+        if (currentFiltroTipo === 'acto') {
+            datosVCP = [];
+        } else if (currentFiltroTipo === 'condicion') {
+            datosActos = datosActos.filter(d => d.tipo === 'condicion');
+            datosVCP = [];
+        } else if (currentFiltroTipo === 'vcp') {
+            datosActos = [];
+        }
+    }
+    
+    const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
+    const totalCond = datosActos.filter(d => d.tipo === 'condicion').length;
+    const totalVCP = datosVCP.length;
+    
+    document.getElementById('ejecTotalActos').innerText = totalActos;
+    document.getElementById('ejecTotalCondiciones').innerText = totalCond;
+    document.getElementById('ejecTotalVCP').innerText = totalVCP;
+    document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP;
+    
+    console.log('📊 Totales:', { totalActos, totalCond, totalVCP, total: totalActos + totalCond + totalVCP });
+    console.log('📋 Registros para tabla:', datosActos.length + datosVCP.length);
+    
+    renderEjecutivoTabla([...datosActos, ...datosVCP]);
+    renderEjecutivoRankings(datosActos);
+    renderEjecutivoReincidencias(datosActos);
+    renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
+}
+// ==================== FIN FUNCIÓN ACTUALIZAR RESUMEN ====================
+
+// ==================== FUNCIÓN RENDER TABLA CORREGIDA ====================
+function renderEjecutivoTabla(datos) {
+    const tbody = document.getElementById('ejecTablaBody');
+    if (!tbody) return;
+    
+    window.datosModalActual = datos;
+    
+    console.log('📋 Renderizando tabla con', datos.length, 'registros');
+    
+    const sorted = [...datos].sort((a, b) => {
+        const fechaA = a.fecha?.split('/').reverse().join('-') || '';
+        const fechaB = b.fecha?.split('/').reverse().join('-') || '';
+        return new Date(fechaB) - new Date(fechaA);
+    });
+    
+    if (sorted.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">📭 No hay datos con los filtros aplicados</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = sorted.map(d => {
+        const badge = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : 
+                      d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
+        const tipo = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
+        const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : 
+                          (d.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
+        const estadoBadge = getEstadoBadgeHTML(d.cerrado !== false, 'small');
+        
+        return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)">
+            <td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td>
+            <td class="p-3">${d.dia || '?'}/${d.mes || '?'}</td>
+            <td class="p-3">${escapeHtml(d.observador || d.personaObservada || '-')}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td>
+            <td class="p-3 max-w-xs">${escapeHtml((d.descripcion || '-').substring(0, 50))}${(d.descripcion || '').length > 50 ? '...' : ''}</td>
+            <td class="p-3">🏭 ${escapeHtml(d.sector || '-')}</td>
+            <td class="p-3">${estadoBadge}</td>
+        </tr>`;
+    }).join('');
+}
+// ==================== FIN FUNCIÓN RENDER TABLA ====================
+
 function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display='flex'; }
 function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display='none'; }
 function verificarPasswordResumen() { const input=document.getElementById('resumenPasswordInput'); if(input.value===PASSWORD_RESUMEN){ cerrarPasswordResumenModal(); cargarTodosDatosParaResumen().then(()=>{ document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='block'; actualizarResumenEjecutivo(); }); } else { playErrorSound(); document.getElementById('resumenPasswordError').textContent='🔒 Contraseña incorrecta'; } }
@@ -1276,67 +1504,13 @@ function cerrarDetailModal() { document.getElementById('detailModal').classList.
 function abrirModalConDatos(titulo,datos) { if(!datos.length){alert("No hay datos");return;} currentModalDataList=datos; currentModalDataIndex=0; mostrarDetalleEnModal(datos[0]); }
 function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElementById('ejecutivoTipoFiltro').value=tipo; document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c=>c.classList.remove('active')); if(tipo==='acto') document.getElementById('kpiActosCard').classList.add('active'); else if(tipo==='condicion') document.getElementById('kpiCondCard').classList.add('active'); else if(tipo==='vcp') document.getElementById('kpiVCPCard').classList.add('active'); else document.getElementById('kpiTotalCard').classList.add('active'); actualizarResumenEjecutivo(); }
 
-function actualizarResumenEjecutivo() { 
-    const sucursal=document.getElementById('ejecutivoSucursal').value, 
-          mes=document.getElementById('ejecutivoMes').value, 
-          sector=document.getElementById('ejecutivoSector').value, 
-          estadoFiltro=document.getElementById('ejecutivoEstadoFiltro').value,
-          tipoFiltro=document.getElementById('ejecutivoTipoFiltro').value; 
-    
-    let datosActos=[], datosVCP=[]; 
-    
-    Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ 
-        if(sucursal!=='todas' && suc!==sucursal) return; 
-        datosActos=datosActos.concat(ALL_ACTOS_DATA[suc].filter(d=>
-            (mes==='todo'||d.mes===mes) && 
-            (sector==='todos'||d.sector.includes(sector)) && 
-            (estadoFiltro==='todos' || (estadoFiltro==='abiertos' ? !d.cerrado : d.cerrado)) && 
-            (tipoFiltro==='todos' || tipoFiltro==='vcp' || d.tipo===tipoFiltro)
-        )); 
-        if(ALL_VCP_DATA[suc]) {
-            datosVCP=datosVCP.concat(ALL_VCP_DATA[suc].filter(d=>
-                (mes==='todo'||d.mes===mes) && 
-                (sector==='todos'||d.sector.includes(sector)) && 
-                (estadoFiltro==='todos' || (estadoFiltro==='abiertos' ? !d.cerrado : d.cerrado)) && 
-                (tipoFiltro==='todos' || tipoFiltro==='vcp')
-            ));
-        }
-    }); 
-    
-    if(currentFiltroTipo!=='todos'){ 
-        if(currentFiltroTipo==='acto') datosVCP=[]; 
-        else if(currentFiltroTipo==='condicion'){ 
-            datosActos=datosActos.filter(d=>d.tipo==='condicion'); 
-            datosVCP=[]; 
-        } else if(currentFiltroTipo==='vcp') datosActos=[]; 
-    } 
-    
-    const totalActos=datosActos.filter(d=>d.tipo==='acto').length, 
-          totalCond=datosActos.filter(d=>d.tipo==='condicion').length, 
-          totalVCP=datosVCP.length; 
-    
-    document.getElementById('ejecTotalActos').innerText=totalActos; 
-    document.getElementById('ejecTotalCondiciones').innerText=totalCond; 
-    document.getElementById('ejecTotalVCP').innerText=totalVCP; 
-    document.getElementById('ejecTotalGeneral').innerText=totalActos+totalCond+totalVCP; 
-    
-    renderEjecutivoRankings(datosActos); 
-    renderEjecutivoReincidencias(datosActos); 
-    renderEjecutivoTabla([...datosActos,...datosVCP]); 
-    renderEjecutivoChartsSucursales(sector,sucursal,estadoFiltro); 
-}
-
-// ==================== FUNCIÓN CORREGIDA - PRIORIZA CATEGORÍA ====================
+// ==================== FUNCIÓN RENDER RANKINGS CORREGIDA ====================
 function renderEjecutivoRankings(datos) { 
     console.log('📊 Renderizando rankings con', datos.length, 'registros');
     
-    // TOP 5 ACTOS
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
-    actos.forEach(d => { 
-        const k = d.descripcion || 'Sin descripción'; 
-        countActos[k] = (countActos[k] || 0) + 1; 
-    });
+    actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
     const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contActos = document.getElementById('ejecTopActos');
     if (contActos) {
@@ -1352,7 +1526,6 @@ function renderEjecutivoRankings(datos) {
         ).join('') : '<p>Sin datos</p>';
     }
     
-    // TOP 5 CONDICIONES - CORREGIDO: PRIORIZA LA CATEGORÍA, NO LA DESCRIPCIÓN
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     const countCondsDetallado = {};
@@ -1361,34 +1534,15 @@ function renderEjecutivoRankings(datos) {
         let categoriaId = d.categoria?.id || 'otros';
         let descNormalizada;
         
-        // ⚠️ PRIORIZAR LA CATEGORÍA - ESTA ES LA CORRECCIÓN CLAVE
-        if (categoriaId === 'berma') { 
-            descNormalizada = 'Berma de seguridad fuera de estándar'; 
-        }
-        else if (categoriaId === 'area') { 
-            descNormalizada = 'Sector o ambiente de trabajo en condición'; 
-        }
-        else if (categoriaId === 'orden') { 
-            descNormalizada = 'Orden y limpieza deficiente'; 
-        }
-        else if (categoriaId === 'senalizacion') { 
-            descNormalizada = 'Señalización deficiente o inadecuada'; 
-        }
-        else if (categoriaId === 'equipos') { 
-            descNormalizada = 'Equipos o herramientas fuera de estándar'; 
-        }
-        else if (categoriaId === 'epp') { 
-            descNormalizada = 'Falta de EPP'; 
-        }
-        else if (categoriaId === 'procedimientos') { 
-            descNormalizada = 'Procedimientos inadecuados'; 
-        }
-        else if (categoriaId === 'conduccion') { 
-            descNormalizada = 'Conducción insegura'; 
-        }
-        else { 
-            descNormalizada = 'Otros'; 
-        }
+        if (categoriaId === 'berma') { descNormalizada = 'Berma de seguridad fuera de estándar'; }
+        else if (categoriaId === 'area') { descNormalizada = 'Sector o ambiente de trabajo en condición'; }
+        else if (categoriaId === 'orden') { descNormalizada = 'Orden y limpieza deficiente'; }
+        else if (categoriaId === 'senalizacion') { descNormalizada = 'Señalización deficiente o inadecuada'; }
+        else if (categoriaId === 'equipos') { descNormalizada = 'Equipos o herramientas fuera de estándar'; }
+        else if (categoriaId === 'epp') { descNormalizada = 'Falta de EPP'; }
+        else if (categoriaId === 'procedimientos') { descNormalizada = 'Procedimientos inadecuados'; }
+        else if (categoriaId === 'conduccion') { descNormalizada = 'Conducción insegura'; }
+        else { descNormalizada = 'Otros'; }
         
         countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1;
         
@@ -1396,9 +1550,7 @@ function renderEjecutivoRankings(datos) {
             countCondsDetallado[descNormalizada] = { total: 0, sucursales: {} };
         }
         countCondsDetallado[descNormalizada].total++;
-        if (d.sucursal) {
-            countCondsDetallado[descNormalizada].sucursales[d.sucursal] = (countCondsDetallado[descNormalizada].sucursales[d.sucursal] || 0) + 1;
-        }
+        if (d.sucursal) { countCondsDetallado[descNormalizada].sucursales[d.sucursal] = (countCondsDetallado[descNormalizada].sucursales[d.sucursal] || 0) + 1; }
     });
     
     console.log('🏚️ CONTEO DETALLADO CONDICIONES:', countCondsDetallado);
@@ -1430,12 +1582,8 @@ function renderEjecutivoRankings(datos) {
         }).join('') : '<p>Sin datos</p>';
     }
     
-    // TOP 10 RESPONSABLES
     const countResp = {};
-    datos.forEach(d => { 
-        const r = d.observador || d.personaObservada || 'Sin identificar'; 
-        countResp[r] = (countResp[r] || 0) + 1; 
-    });
+    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const contResp = document.getElementById('ejecTopResponsables');
     if (contResp) {
@@ -1450,7 +1598,7 @@ function renderEjecutivoRankings(datos) {
         ).join('');
     }
 }
-// ==================== FIN FUNCIÓN CORREGIDA ====================
+// ==================== FIN FUNCIÓN RENDER RANKINGS ====================
 
 function abrirModalPorCategoria(categoriaId, tipo) {
     const datos = [];
@@ -1470,7 +1618,6 @@ function abrirModalPorCategoria(categoriaId, tipo) {
 }
 
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
-function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); const estadoBadge = getEstadoBadgeHTML(d.cerrado!==false, 'small'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3">${estadoBadge}</td>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></tr>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.descripcion===desc&&d.tipo===tipo)); }); abrirModalConDatos(`Reportes: "${desc.substring(0,50)}..."`,datos); }
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
