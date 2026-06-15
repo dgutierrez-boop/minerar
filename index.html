@@ -261,7 +261,7 @@ body { padding: 10px; }
 <div class="glass-card p-4"><h3 class="font-black uppercase text-sm mb-2"> DISTRIBUCIÓN PORCENTUAL</h3><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
 <div class="glass-card p-4"><div class="flex justify-between items-center mb-2"><h3 class="font-black uppercase text-sm">📈 EVOLUCIÓN MENSUAL · ACTOS vs CONDICIONES</h3><button onclick="limpiarFiltroGrafico()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar mes</button></div><div class="chart-container"><canvas id="trendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody></table></div></div>
+<div class="glass-card p-5 mt-4"><h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead><tr><th class="p-2">📅 Fecha</th><th>⚠️ Tipo</th><th>👤 Observador</th><th>📝 Descripción</th><th>🔒 Estado</th></tr></thead><tbody id="generalTableBody"></tbody>}</div></div>
 </main>
 </div>
 </div>
@@ -286,7 +286,7 @@ body { padding: 10px; }
 <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📊 DISTRIBUCIÓN PORCENTUAL VCP</h3><div class="chart-container"><canvas id="vcpCategoryChart"></canvas></div></div>
 <div class="glass-card p-4 border border-amber-200"><h3 class="font-black uppercase text-amber-800 text-sm mb-2">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container"><canvas id="vcpTrendChart"></canvas></div></div>
 </div>
-<div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead>大学<th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody></table></div></div>
+<div class="glass-card p-5 mt-4 border border-amber-200"><h3 class="font-black uppercase mb-2 text-amber-800">📋 DETALLE DE VCP 📝</h3><div class="table-scroll"><table class="w-full text-left text-xs"><thead>大学<th class="p-2">📅 Fecha</th><th>👤 Persona</th><th>🏭 Sector</th><th>📝 Descripción</th><th>💬 Comentarios</th><th>🔒 Estado</th></tr></thead><tbody id="vcpTableBody"></tbody>}</div></div>
 </main>
 </div>
 </div>
@@ -507,7 +507,7 @@ let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos
 let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
 
-// ✅ CONFIGURACIÓN CON URLs CORRECTAS
+// CONFIGURACIÓN CON URLs CORRECTAS
 const SUCURSALES_CONFIG = {
   MALAGUENO: { 
     actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv', 
@@ -551,6 +551,8 @@ function getEstadoBadgeHTML(cerrado, size = 'normal') {
 }
 
 function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
+
+// FUNCIÓN MEJORADA para convertir enlaces de imágenes (usa lh3.googleusercontent.com)
 function convertirEnlacesImagenes(urlString) {
 if (!urlString || urlString.trim() === '') return [];
 const urls = urlString.split(',').map(u => u.trim()).filter(u => u);
@@ -560,7 +562,8 @@ if (url.includes('drive.google.com')) {
 const match = url.match(/[?&]id=([^&]+)/);
 if (match && match[1]) {
 const fileId = match[1];
-imagenes.push({ thumbnail: `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`, full: `https://drive.google.com/file/d/${fileId}/view`, original: url });
+// CORREGIDO: usa lh3.googleusercontent.com que es más confiable
+imagenes.push({ thumbnail: `https://lh3.googleusercontent.com/d/${fileId}=w800`, full: `https://drive.google.com/file/d/${fileId}/view`, original: url });
 }
 } else if (url.startsWith('http')) {
 imagenes.push({ thumbnail: url, full: url, original: url });
@@ -568,6 +571,7 @@ imagenes.push({ thumbnail: url, full: url, original: url });
 });
 return imagenes;
 }
+
 function abrirLightbox(imagenUrl) {
 let lightbox = document.querySelector('.lightbox');
 if(lightbox) lightbox.remove();
@@ -581,6 +585,7 @@ lightbox.remove();
 }
 };
 }
+
 function renderizarImagenesModal(imagenesString, titulo = "📸 REGISTRO FOTOGRÁFICO") {
 const imagenes = convertirEnlacesImagenes(imagenesString);
 if (!imagenes.length) return '';
@@ -658,7 +663,7 @@ console.log('✅ Panel cargado');
 
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
 
-// ✅ FUNCIÓN classifyData CORREGIDA (detección robusta de BERMAS y categorías unificadas)
+// CLASIFICACIÓN MEJORADA (más robusta para BERMAS)
 function classifyData(desc, useVCP = false) {
 if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
 const d = desc.toLowerCase();
@@ -669,7 +674,7 @@ if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria'
 return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
 }
 // DETECCIÓN MEJORADA DE BERMAS
-if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar')) 
+if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar') || d.includes('sin berma') || d.includes('falta berma') || d.includes('berma baja')) 
     return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
 if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
 if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
@@ -681,6 +686,7 @@ if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.i
 if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
 return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
+
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 
 async function cargarDatosSucursal(sucursal) {
@@ -1035,9 +1041,9 @@ function closeDailyReportsModal() { const m=document.getElementById('dailyReport
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
-function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${estadoBadge}</td>`; }); html+=`</tbody><tr>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
+function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${estadoBadge}</td>`; }); html+=`</tbody></table>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
-function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></td></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
@@ -1105,11 +1111,9 @@ function actualizarResumenEjecutivo() {
     renderEjecutivoChartsSucursales(sector,sucursal,estadoFiltro); 
 }
 
-// ==================== FUNCIONES CORREGIDAS PARA MODALES ====================
 function renderEjecutivoRankings(datos) { 
     console.log('📊 Renderizando rankings con', datos.length, 'registros');
     
-    // TOP 5 ACTOS
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
     actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
@@ -1117,7 +1121,6 @@ function renderEjecutivoRankings(datos) {
     const contActos = document.getElementById('ejecTopActos');
     if (contActos) contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'acto')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
     
-    // TOP 5 CONDICIONES CORREGIDO (con modales que funcionan)
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     conds.forEach(d => { 
@@ -1145,7 +1148,6 @@ function renderEjecutivoRankings(datos) {
         }).join('') : '<p>Sin datos</p>';
     }
     
-    // TOP 10 RESPONSABLES
     const countResp = {};
     datos.forEach(d => { const r = d.observador || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
@@ -1153,7 +1155,6 @@ function renderEjecutivoRankings(datos) {
     if (contResp) contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g, "\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join('');
 }
 
-// NUEVA FUNCIÓN para abrir modales por categoría
 function abrirModalPorCategoria(categoriaId, tipo) {
     const datos = [];
     Object.keys(ALL_ACTOS_DATA).forEach(suc => {
@@ -1178,7 +1179,50 @@ function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_A
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
 function abrirModalPorReincidencia(persona,categoria) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===persona&&d.categoria?.id===categoria)); }); abrirModalConDatos(`Reincidencias - ${persona}`,datos); }
 function abrirModalPorPuntoGrafico(mes,sucursal,esVCP) { const datos=esVCP?ALL_VCP_DATA[sucursal]?.filter(d=>d.mes===mes)||[]:ALL_ACTOS_DATA[sucursal]?.filter(d=>d.mes===mes)||[]; const nombre=sucursal==='MALAGUENO'?'Malagueño':sucursal==='BARKER'?'Barker':'La Pampita'; abrirModalConDatos(`${nombre} - ${mes} ${esVCP?'(VCP)':'(Actos y Condiciones)'}`,datos); }
-async function cargarTodosDatosParaResumen() { const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML; if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS (esto puede tomar unos segundos)...'; try { ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; console.log('📥 Cargando Malagueño...'); const malagueno = await cargarDatosSucursal('MALAGUENO'); ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp; console.log(`✅ Malagueño: ${malagueno.actos.length} actos/cond, ${malagueno.vcp.length} VCP`); console.log('📥 Cargando Barker...'); const barker = await cargarDatosSucursal('BARKER'); ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp; console.log(`✅ Barker: ${barker.actos.length} actos/cond, ${barker.vcp.length} VCP`); console.log('📥 Cargando La Pampita...'); const lapampita = await cargarDatosSucursal('LAPAMPITA'); ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; console.log(`✅ La Pampita: ${lapampita.actos.length} actos/cond, ${lapampita.vcp.length} VCP`); const bermasMalagueno = ALL_ACTOS_DATA.MALAGUENO.filter(d => d.categoria?.id === 'berma').length; const bermasBarker = ALL_ACTOS_DATA.BARKER.filter(d => d.categoria?.id === 'berma').length; const bermasLapampita = ALL_ACTOS_DATA.LAPAMPITA.filter(d => d.categoria?.id === 'berma').length; const totalBermas = bermasMalagueno + bermasBarker + bermasLapampita; console.log(`📊 VERIFICACIÓN BERMAS: Malagueño=${bermasMalagueno}, Barker=${bermasBarker}, La Pampita=${bermasLapampita}, TOTAL=${totalBermas}`); if (totalBermas !== 70) { console.warn(`⚠️ ATENCIÓN: El total de Bermas (${totalBermas}) no coincide con el esperado (70). Revisar palabras clave en classifyData.`); } else { console.log('✅ BERMAS OK: 70 reportes correctamente clasificados'); } } catch (error) { console.error('❌ Error cargando datos para resumen:', error); alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.'); } finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; } }
+
+// FUNCIÓN OPTIMIZADA PARA CARGAR TODOS LOS DATOS EN PARALELO
+async function cargarTodosDatosParaResumen() { 
+    const resumenBtn = document.querySelector('.resumen-btn'); 
+    const originalText = resumenBtn?.innerHTML; 
+    if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS...'; 
+    try { 
+        ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; 
+        ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; 
+        console.log('📥 Cargando todas las sucursales en paralelo...'); 
+        
+        // OPTIMIZACIÓN: carga en paralelo con Promise.all
+        const [malagueno, barker, lapampita] = await Promise.all([
+            cargarDatosSucursal('MALAGUENO'),
+            cargarDatosSucursal('BARKER'),
+            cargarDatosSucursal('LAPAMPITA')
+        ]);
+        
+        ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; 
+        ALL_VCP_DATA.MALAGUENO = malagueno.vcp; 
+        ALL_ACTOS_DATA.BARKER = barker.actos; 
+        ALL_VCP_DATA.BARKER = barker.vcp; 
+        ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; 
+        ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; 
+        
+        console.log(`✅ Malagueño: ${malagueno.actos.length} actos/cond, ${malagueno.vcp.length} VCP`); 
+        console.log(`✅ Barker: ${barker.actos.length} actos/cond, ${barker.vcp.length} VCP`); 
+        console.log(`✅ La Pampita: ${lapampita.actos.length} actos/cond, ${lapampita.vcp.length} VCP`); 
+        
+        const totalBermas = 
+            ALL_ACTOS_DATA.MALAGUENO.filter(d => d.categoria?.id === 'berma').length +
+            ALL_ACTOS_DATA.BARKER.filter(d => d.categoria?.id === 'berma').length +
+            ALL_ACTOS_DATA.LAPAMPITA.filter(d => d.categoria?.id === 'berma').length;
+        
+        console.log(`📊 TOTAL BERMAS IDENTIFICADAS: ${totalBermas}`); 
+        
+    } catch (error) { 
+        console.error('❌ Error cargando datos:', error); 
+        alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.'); 
+    } finally { 
+        if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; 
+    } 
+}
+
 window.addEventListener('load', () => {
 document.getElementById('passwordInput')?.focus();
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); });
