@@ -1296,12 +1296,17 @@ function actualizarResumenEjecutivo() {
     renderEjecutivoChartsSucursales(sector,sucursal,estadoFiltro); 
 }
 
+// ==================== FUNCIÓN CORREGIDA - PRIORIZA CATEGORÍA ====================
 function renderEjecutivoRankings(datos) { 
     console.log('📊 Renderizando rankings con', datos.length, 'registros');
     
+    // TOP 5 ACTOS
     const actos = datos.filter(d => d.tipo === 'acto');
     const countActos = {};
-    actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
+    actos.forEach(d => { 
+        const k = d.descripcion || 'Sin descripción'; 
+        countActos[k] = (countActos[k] || 0) + 1; 
+    });
     const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contActos = document.getElementById('ejecTopActos');
     if (contActos) {
@@ -1317,29 +1322,42 @@ function renderEjecutivoRankings(datos) {
         ).join('') : '<p>Sin datos</p>';
     }
     
+    // TOP 5 CONDICIONES - CORREGIDO: PRIORIZA LA CATEGORÍA, NO LA DESCRIPCIÓN
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
     const countCondsDetallado = {};
     
     conds.forEach(d => { 
-        let desc = d.descripcion || 'Sin descripción';
         let categoriaId = d.categoria?.id || 'otros';
-        let descNormalizada = desc;
+        let descNormalizada;
         
-        if (categoriaId === 'berma' || desc.toLowerCase().includes('berma')) { 
+        // ⚠️ PRIORIZAR LA CATEGORÍA - ESTA ES LA CORRECCIÓN CLAVE
+        if (categoriaId === 'berma') { 
             descNormalizada = 'Berma de seguridad fuera de estándar'; 
         }
-        else if (categoriaId === 'area' || desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente') || desc.toLowerCase().includes('condición insegura')) { 
+        else if (categoriaId === 'area') { 
             descNormalizada = 'Sector o ambiente de trabajo en condición'; 
         }
-        else if (categoriaId === 'orden' || desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza') || desc.toLowerCase().includes('derrame') || desc.toLowerCase().includes('absorbente')) { 
+        else if (categoriaId === 'orden') { 
             descNormalizada = 'Orden y limpieza deficiente'; 
         }
-        else if (categoriaId === 'senalizacion' || desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) { 
+        else if (categoriaId === 'senalizacion') { 
             descNormalizada = 'Señalización deficiente o inadecuada'; 
         }
-        else if (categoriaId === 'equipos' || desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) { 
+        else if (categoriaId === 'equipos') { 
             descNormalizada = 'Equipos o herramientas fuera de estándar'; 
+        }
+        else if (categoriaId === 'epp') { 
+            descNormalizada = 'Falta de EPP'; 
+        }
+        else if (categoriaId === 'procedimientos') { 
+            descNormalizada = 'Procedimientos inadecuados'; 
+        }
+        else if (categoriaId === 'conduccion') { 
+            descNormalizada = 'Conducción insegura'; 
+        }
+        else { 
+            descNormalizada = 'Otros'; 
         }
         
         countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1;
@@ -1348,7 +1366,9 @@ function renderEjecutivoRankings(datos) {
             countCondsDetallado[descNormalizada] = { total: 0, sucursales: {} };
         }
         countCondsDetallado[descNormalizada].total++;
-        countCondsDetallado[descNormalizada].sucursales[d.sucursal] = (countCondsDetallado[descNormalizada].sucursales[d.sucursal] || 0) + 1;
+        if (d.sucursal) {
+            countCondsDetallado[descNormalizada].sucursales[d.sucursal] = (countCondsDetallado[descNormalizada].sucursales[d.sucursal] || 0) + 1;
+        }
     });
     
     console.log('🏚️ CONTEO DETALLADO CONDICIONES:', countCondsDetallado);
@@ -1365,6 +1385,9 @@ function renderEjecutivoRankings(datos) {
             else if (d === 'Orden y limpieza deficiente') categoriaId = 'orden';
             else if (d === 'Señalización deficiente o inadecuada') categoriaId = 'senalizacion';
             else if (d === 'Equipos o herramientas fuera de estándar') categoriaId = 'equipos';
+            else if (d === 'Falta de EPP') categoriaId = 'epp';
+            else if (d === 'Procedimientos inadecuados') categoriaId = 'procedimientos';
+            else if (d === 'Conducción insegura') categoriaId = 'conduccion';
             
             return `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorCategoria('${categoriaId}', 'condicion')">
                 <div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div>
@@ -1377,8 +1400,12 @@ function renderEjecutivoRankings(datos) {
         }).join('') : '<p>Sin datos</p>';
     }
     
+    // TOP 10 RESPONSABLES
     const countResp = {};
-    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
+    datos.forEach(d => { 
+        const r = d.observador || d.personaObservada || 'Sin identificar'; 
+        countResp[r] = (countResp[r] || 0) + 1; 
+    });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const contResp = document.getElementById('ejecTopResponsables');
     if (contResp) {
@@ -1393,6 +1420,7 @@ function renderEjecutivoRankings(datos) {
         ).join('');
     }
 }
+// ==================== FIN FUNCIÓN CORREGIDA ====================
 
 function abrirModalPorCategoria(categoriaId, tipo) {
     const datos = [];
@@ -1412,7 +1440,7 @@ function abrirModalPorCategoria(categoriaId, tipo) {
 }
 
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
-function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); const estadoBadge = getEstadoBadgeHTML(d.cerrado!==false, 'small'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3">${estadoBadge}</td>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></td>'; }
+function renderEjecutivoTabla(datos) { const tbody=document.getElementById('ejecTablaBody'); if(!tbody) return; window.datosModalActual=datos; const sorted=[...datos].sort((a,b)=>new Date(b.fecha?.split('/').reverse().join('-'))-new Date(a.fecha?.split('/').reverse().join('-'))).slice(0,100); tbody.innerHTML=sorted.map(d=>{ const badge=d.sucursal==='MALAGUENO'?'badge-malagueno':d.sucursal==='BARKER'?'badge-barker':'badge-lapampita'; const tipo=d.tipo==='vcp'?'🎯 VCP':(d.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'); const tipoClass=d.tipo==='vcp'?'bg-purple-100 text-purple-700':(d.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'); const estadoBadge = getEstadoBadgeHTML(d.cerrado!==false, 'small'); return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalConDatos('Detalle Completo', window.datosModalActual)"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia||'?'}/${d.mes||'?'}</td><td class="p-3">${escapeHtml(d.observador||d.personaObservada||'-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml((d.descripcion||'-').substring(0,50))}${(d.descripcion||'').length>50?'...':''}</td><td class="p-3">🏭 ${escapeHtml(d.sector||'-')}</td><td class="p-3">${estadoBadge}</td>`; }).join('')||'<tr><td colspan="7" class="p-4 text-center">Sin datos</td></tr>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.descripcion===desc&&d.tipo===tipo)); }); abrirModalConDatos(`Reportes: "${desc.substring(0,50)}..."`,datos); }
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
