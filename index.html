@@ -401,9 +401,8 @@ body { padding: 10px; }
 </div> <!-- Cierra max-w-7xl -->
 </div> <!-- Cierra mainContent -->
 
-<!-- ========== MODALES (FUERA DE LA ESTRUCTURA PRINCIPAL) ========== -->
+<!-- ========== MODALES ========== -->
 
-<!-- MODAL RESUMEN PASSWORD -->
 <div id="resumenPasswordModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[30002] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-2xl border-4 border-orange-500">
 <div class="text-center">
@@ -421,7 +420,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- RESUMEN EJECUTIVO -->
 <div id="resumenEjecutivoPage" class="hidden-section resumen-fullscreen" style="display:none;">
 <div class="max-w-7xl mx-auto p-6">
 <div class="flex justify-between items-center mb-6 bg-white rounded-2xl shadow-lg p-4 sticky top-0 z-10">
@@ -473,7 +471,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- MODAL DETALLE EJECUTIVO -->
 <div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-4 border-purple-500 overflow-hidden">
 <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-5 py-4 flex justify-between items-center">
@@ -489,7 +486,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- MODAL PRINCIPAL -->
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30003] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-xl w-full max-w-md shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 flex justify-between items-center">
@@ -506,7 +502,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- MODAL REPORTES DIARIOS -->
 <div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30004] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-2xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -518,7 +513,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- MODAL SUPERVISOR -->
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30005] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -530,7 +524,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- MODAL PERSONA VCP -->
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30006] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-emerald-500 overflow-hidden">
 <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex justify-between items-center">
@@ -543,9 +536,7 @@ body { padding: 10px; }
 </div>
 
 <script>
-// ==================== TODO EL JAVASCRIPT ORIGINAL SIN CAMBIOS ====================
-// (El JavaScript permanece exactamente igual - solo se corrigió el HTML)
-// ==================== VIDEO INTRO ====================
+// TODO EL JAVASCRIPT COMPLETO - SIN RESUMIR
 let videoTimeout = null;
 
 function requestFullscreen(element) {
@@ -581,7 +572,6 @@ function skipVideoIntro() {
     }, 600);
 }
 
-// ==================== CONFIGURACIÓN ====================
 const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
 const PASSWORD_RESUMEN = "ADMIN123";
 let isUnlocked = false, soundEnabled = true;
@@ -694,7 +684,7 @@ window.initAudioContext = function() { if(window.audioContextInitialized) return
 window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { window.initAudioContext(); } if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
 function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
 function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
-function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':''; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 
 function togglePasswordVisibility() {
 const input = document.getElementById('passwordInput');
@@ -944,8 +934,44 @@ if(badgeVCP) { if(alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alerts
 }
 function updateTotalCounters() { document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0'; }
 
-function normalizarNombre(nombre) { if (!nombre) return ''; return nombre.toLowerCase().trim().replace(/,/g, ' ').replace(/\./g, '').replace(/\s+/g, ' ').split(' ').sort().join(' '); }
-function compararNombres(nombre1, nombre2) { const n1 = normalizarNombre(nombre1); const n2 = normalizarNombre(nombre2); if (n1 === n2) return true; if (n1.includes(n2) || n2.includes(n1)) return true; const palabras1 = n1.split(' '), palabras2 = n2.split(' '); let coincidencias = 0; for (const p1 of palabras1) { if (p1.length < 3) continue; for (const p2 of palabras2) { if (p2.length < 3) continue; if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) { coincidencias++; break; } } } const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.6)); return coincidencias >= minCoincidencias; }
+function normalizarNombre(nombre) { 
+    if (!nombre) return ''; 
+    return nombre.toLowerCase().trim()
+        .replace(/,/g, ' ')
+        .replace(/\./g, '')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .sort()
+        .join(' '); 
+}
+
+function compararNombres(nombre1, nombre2) { 
+    if (!nombre1 || !nombre2) return false;
+    
+    const n1 = normalizarNombre(nombre1); 
+    const n2 = normalizarNombre(nombre2); 
+    
+    if (n1 === n2) return true; 
+    if (n1.includes(n2) || n2.includes(n1)) return true; 
+    
+    const palabras1 = n1.split(' '); 
+    const palabras2 = n2.split(' '); 
+    
+    let coincidencias = 0; 
+    for (const p1 of palabras1) { 
+        if (p1.length < 2) continue;
+        for (const p2 of palabras2) { 
+            if (p2.length < 2) continue;
+            if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) { 
+                coincidencias++; 
+                break; 
+            } 
+        } 
+    } 
+    
+    const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.8)); 
+    return coincidencias >= minCoincidencias; 
+}
 
 async function populateSupervisors() {
 const sel = document.getElementById('supervisorSelect'); if (!sel) return;
@@ -1134,8 +1160,74 @@ function closeDailyReportsModal() { const m=document.getElementById('dailyReport
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
-function abrirModalSupervisor(tipo) { const s=document.getElementById('supervisorSelect').value, m=document.getElementById('supervisorMonthSelect').value; if(s==='todos'){alert("Seleccione un supervisor");return;} const f=ACTOS_COND_DATA.filter(e=>compararNombres(e.observador,s)&&(m==='todo'||e.mes===m)), dt=f.filter(e=>e.tipo===tipo); if(!dt.length){alert(`No hay ${tipo} para ${s}`);return;} let html=`<div class="mb-3"><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>👤 ${s}</p><p>📊 Total: ${dt.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`; dt.forEach(e=>{ const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${estadoBadge}</td>`; }); html+=`</tbody></table>`; document.getElementById('modalSupervisorTitle').innerHTML=tipo==='acto'?`⚠️ ACTOS de ${s}`:`🏚️ CONDICIONES de ${s}`; document.getElementById('supervisorModalContent').innerHTML=html; document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display='flex'; }
+
+function abrirModalSupervisor(tipo) { 
+    const s = document.getElementById('supervisorSelect').value; 
+    const m = document.getElementById('supervisorMonthSelect').value; 
+    
+    if (s === 'todos') {
+        alert("⚠️ Seleccione un supervisor específico");
+        return;
+    } 
+    
+    console.log('🔍 Filtrando supervisor:', s, 'mes:', m, 'tipo:', tipo);
+    console.log('📊 Total datos disponibles:', ACTOS_COND_DATA.length);
+    
+    const f = ACTOS_COND_DATA.filter(e => {
+        const coincideNombre = compararNombres(e.observador, s);
+        const coincideMes = (m === 'todo' || e.mes === m);
+        if (coincideNombre && !coincideMes) {
+            console.log(`⚠️ Registro de ${e.observador} el ${e.dia}/${e.mes} no coincide con mes ${m}`);
+        }
+        return coincideNombre && coincideMes;
+    });
+    
+    console.log(`📋 Registros encontrados para ${s}:`, f.length);
+    f.forEach((reg, idx) => {
+        console.log(`  ${idx+1}. ${reg.dia}/${reg.mes} - ${reg.tipo} - ${reg.descripcion?.substring(0,50)}`);
+    });
+    
+    const dt = f.filter(e => e.tipo === tipo); 
+    console.log(`📊 Total del tipo ${tipo}:`, dt.length);
+    
+    if (!dt.length) {
+        alert(`ℹ️ No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s}${m !== 'todo' ? ` en ${m}` : ''}\n\nTotal registros del supervisor: ${f.length}`);
+        return;
+    } 
+    
+    let html = `<div class="mb-3">
+        <p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p>
+        <p>👤 ${s}</p>
+        <p>📊 Total ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}: ${dt.length}</p>
+        <p class="text-xs text-slate-500 mt-2">Total general (todos los tipos): ${f.length}</p>
+    </div>
+    <table class="w-full text-xs">
+        <thead class="bg-slate-100">
+            <tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr>
+        </thead>
+        <tbody>`; 
+    
+    dt.forEach(e => { 
+        const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); 
+        html += `<tr class="border-b">
+            <td class="p-2">${e.dia}/${e.mes}</td>
+            <td class="p-2">${e.sector}</td>
+            <td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td>
+            <td class="p-2">${(e.descripcion || '').substring(0, 50)}</td>
+            <td class="p-2">${estadoBadge}</td>
+        </tr>`; 
+    }); 
+    
+    html += `</tbody></table>`; 
+    
+    document.getElementById('modalSupervisorTitle').innerHTML = tipo === 'acto' ? `⚠️ ACTOS de ${s}` : `🏚️ CONDICIONES de ${s}`; 
+    document.getElementById('supervisorModalContent').innerHTML = html; 
+    document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); 
+    document.getElementById('supervisorDetailModal').style.display = 'flex'; 
+}
+
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
+
 function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></table>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
@@ -1153,6 +1245,7 @@ function mostrarDetalleEnModal(item) { const isVCP=item.tipo==='vcp'; const esta
 function cerrarDetailModal() { document.getElementById('detailModal').classList.add('hidden-section'); document.getElementById('detailModal').style.display='none'; }
 function abrirModalConDatos(titulo,datos) { if(!datos.length){alert("No hay datos");return;} currentModalDataList=datos; currentModalDataIndex=0; mostrarDetalleEnModal(datos[0]); }
 function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElementById('ejecutivoTipoFiltro').value=tipo; document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c=>c.classList.remove('active')); if(tipo==='acto') document.getElementById('kpiActosCard').classList.add('active'); else if(tipo==='condicion') document.getElementById('kpiCondCard').classList.add('active'); else if(tipo==='vcp') document.getElementById('kpiVCPCard').classList.add('active'); else document.getElementById('kpiTotalCard').classList.add('active'); actualizarResumenEjecutivo(); }
+
 function actualizarResumenEjecutivo() { 
     const sucursal=document.getElementById('ejecutivoSucursal').value, 
           mes=document.getElementById('ejecutivoMes').value, 
@@ -1211,40 +1304,94 @@ function renderEjecutivoRankings(datos) {
     actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
     const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contActos = document.getElementById('ejecTopActos');
-    if (contActos) contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'acto')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>';
+    if (contActos) {
+        contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => 
+            `<div class="zr-ranking-item" onclick="abrirModalPorDescripcion('${d.replace(/'/g, "\\'")}', 'acto')">
+                <div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div>
+                <div class="flex-1">
+                    <div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div>
+                    <div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div>
+                </div>
+                <div class="text-lg font-black text-red-600">${c}</div>
+            </div>`
+        ).join('') : '<p>Sin datos</p>';
+    }
     
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countConds = {};
+    const countCondsDetallado = {};
+    
     conds.forEach(d => { 
         let desc = d.descripcion || 'Sin descripción';
         let categoriaId = d.categoria?.id || 'otros';
-        if (categoriaId === 'berma') { desc = 'Berma de seguridad fuera de estándar'; }
-        else if (categoriaId === 'area' || desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente')) { desc = 'Sector o ambiente de trabajo en condición'; }
-        else if (categoriaId === 'orden' || desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza')) { desc = 'Orden y limpieza deficiente'; }
-        else if (categoriaId === 'senalizacion' || desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) { desc = 'Señalización deficiente o inadecuada'; }
-        else if (categoriaId === 'equipos' || desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) { desc = 'Equipos o herramientas fuera de estándar'; }
-        countConds[desc] = (countConds[desc] || 0) + 1;
+        let descNormalizada = desc;
+        
+        if (categoriaId === 'berma' || desc.toLowerCase().includes('berma')) { 
+            descNormalizada = 'Berma de seguridad fuera de estándar'; 
+        }
+        else if (categoriaId === 'area' || desc.toLowerCase().includes('sector') || desc.toLowerCase().includes('ambiente') || desc.toLowerCase().includes('condición insegura')) { 
+            descNormalizada = 'Sector o ambiente de trabajo en condición'; 
+        }
+        else if (categoriaId === 'orden' || desc.toLowerCase().includes('orden') || desc.toLowerCase().includes('limpieza') || desc.toLowerCase().includes('derrame') || desc.toLowerCase().includes('absorbente')) { 
+            descNormalizada = 'Orden y limpieza deficiente'; 
+        }
+        else if (categoriaId === 'senalizacion' || desc.toLowerCase().includes('señal') || desc.toLowerCase().includes('cartel')) { 
+            descNormalizada = 'Señalización deficiente o inadecuada'; 
+        }
+        else if (categoriaId === 'equipos' || desc.toLowerCase().includes('equipo') || desc.toLowerCase().includes('herramienta')) { 
+            descNormalizada = 'Equipos o herramientas fuera de estándar'; 
+        }
+        
+        countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1;
+        
+        if (!countCondsDetallado[descNormalizada]) {
+            countCondsDetallado[descNormalizada] = { total: 0, sucursales: {} };
+        }
+        countCondsDetallado[descNormalizada].total++;
+        countCondsDetallado[descNormalizada].sucursales[d.sucursal] = (countCondsDetallado[descNormalizada].sucursales[d.sucursal] || 0) + 1;
     });
+    
+    console.log('🏚️ CONTEO DETALLADO CONDICIONES:', countCondsDetallado);
     
     const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contConds = document.getElementById('ejecTopCond');
+    
     if (contConds) {
-        console.log('🏚️ TOP CONDICIONES:', topConds);
+        console.log('🏚️ TOP 5 CONDICIONES:', topConds);
         contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => {
-            let categoriaId = d === 'Berma de seguridad fuera de estándar' ? 'berma' :
-                             d === 'Sector o ambiente de trabajo en condición' ? 'area' :
-                             d === 'Orden y limpieza deficiente' ? 'orden' :
-                             d === 'Señalización deficiente o inadecuada' ? 'senalizacion' :
-                             d === 'Equipos o herramientas fuera de estándar' ? 'equipos' : 'otros';
-            return `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorCategoria('${categoriaId}', 'condicion')"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`;
+            let categoriaId = 'otros';
+            if (d === 'Berma de seguridad fuera de estándar') categoriaId = 'berma';
+            else if (d === 'Sector o ambiente de trabajo en condición') categoriaId = 'area';
+            else if (d === 'Orden y limpieza deficiente') categoriaId = 'orden';
+            else if (d === 'Señalización deficiente o inadecuada') categoriaId = 'senalizacion';
+            else if (d === 'Equipos o herramientas fuera de estándar') categoriaId = 'equipos';
+            
+            return `<div class="zr-ranking-item" style="border-left-color:#f18b00" onclick="abrirModalPorCategoria('${categoriaId}', 'condicion')">
+                <div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div>
+                <div class="flex-1">
+                    <div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div>
+                    <div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div>
+                </div>
+                <div class="text-lg font-black text-amber-600">${c}</div>
+            </div>`;
         }).join('') : '<p>Sin datos</p>';
     }
     
     const countResp = {};
-    datos.forEach(d => { const r = d.observador || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
+    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const contResp = document.getElementById('ejecTopResponsables');
-    if (contResp) contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g, "\\'")}')"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join('');
+    if (contResp) {
+        contResp.innerHTML = topResp.map(([n, c], i) => 
+            `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50" onclick="abrirModalPorResponsable('${n.replace(/'/g, "\\'")}')">
+                <div class="flex items-center gap-3">
+                    <span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span>
+                    <span class="font-semibold">${n}</span>
+                </div>
+                <div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div>
+            </div>`
+        ).join('');
+    }
 }
 
 function abrirModalPorCategoria(categoriaId, tipo) {
