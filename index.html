@@ -8,7 +8,6 @@
 <link rel="shortcut icon" type="image/gif" href="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif">
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<!-- ✅ LIBRERÍA PARA MOSTRAR PORCENTAJES EN LAS DONAS -->
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -24,8 +23,8 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0
 .btn-filter.active { background: linear-gradient(135deg, #f18b00, #ffa543); color: white; border-color: #f18b00; }
 .sucursal-btn { padding: 8px 20px; border-radius: 30px; font-weight: 700; font-size: 13px; transition: all 0.3s ease; cursor: pointer; background: white; border: 2px solid #e2e8f0; color: #475569; display: inline-flex; align-items: center; gap: 8px; }
 .sucursal-btn.active { background: #f18b00; border-color: #f18b00; color: white; box-shadow: 0 0 0 3px rgba(241, 139, 0, 0.2); }
-.category-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 2px solid; border-radius: 14px; padding: 12px 8px; text-align: center; background: white; position: relative; }
-.category-card:hover { transform: translateY(-4px); }
+.category-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 2px solid; border-radius: 14px; padding: 12px 8px; text-align: center; background: white; position: relative; z-index: 1; }
+.category-card:hover { transform: translateY(-4px); z-index: 100; }
 .category-card.selected { box-shadow: 0 0 0 3px #f18b00, 0 8px 25px rgba(241, 139, 0, 0.25); transform: scale(1.02); border-color: #f18b00 !important; background: #fffbeb; z-index: 10; }
 .hidden-section { display: none !important; }
 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
@@ -112,6 +111,121 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 #reportModalContent .imagen-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 6px; }
 #reportModalContent .imagen-item img { height: 80px; }
 #reportModalContent .imagen-overlay { font-size: 7px; padding: 2px; }
+
+/* ✅ ANIMACIÓN DEL LOGO */
+@keyframes logoPulse {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.05) rotate(-3deg); }
+    50% { transform: scale(1) rotate(0deg); }
+    75% { transform: scale(1.05) rotate(3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+.header-left .logo-animado {
+    animation: logoPulse 3s ease-in-out infinite;
+    display: inline-block;
+    transition: all 0.3s ease;
+}
+.header-left .logo-animado:hover {
+    animation-play-state: paused;
+    transform: scale(1.1);
+}
+
+/* ✅ TOOLTIP - SOLO INFORMATIVO, NO INTERFIERE CON EL CLIC */
+.category-card .tooltip-content {
+    visibility: hidden;
+    opacity: 0;
+    width: 420px;
+    max-width: 92vw;
+    background: rgba(30, 41, 59, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #fcd34d;
+    text-align: left;
+    padding: 18px 22px;
+    border-radius: 18px;
+    position: absolute;
+    z-index: 999999 !important;
+    bottom: calc(100% + 16px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.95);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease;
+    box-shadow: 0 25px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+    font-size: 11px;
+    pointer-events: none !important;
+    border: 1px solid rgba(241, 139, 0, 0.25);
+    max-height: 400px;
+    overflow-y: auto;
+}
+.category-card .tooltip-content::-webkit-scrollbar {
+    width: 4px;
+}
+.category-card .tooltip-content::-webkit-scrollbar-track {
+    background: #2d3748;
+    border-radius: 10px;
+}
+.category-card .tooltip-content::-webkit-scrollbar-thumb {
+    background: #f18b00;
+    border-radius: 10px;
+}
+.category-card .tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 9px solid transparent;
+    border-top-color: rgba(30, 41, 59, 0.92);
+}
+.category-card:hover .tooltip-content {
+    visibility: visible;
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+.tooltip-content .tooltip-header {
+    font-weight: 800;
+    margin-bottom: 12px;
+    font-size: 16px;
+    color: #f18b00;
+    border-bottom: 1px solid rgba(241, 139, 0, 0.2);
+    padding-bottom: 10px;
+    letter-spacing: 0.5px;
+    text-shadow: 0 0 20px rgba(241, 139, 0, 0.15);
+}
+.tooltip-content .tooltip-item {
+    padding: 3px 0 3px 4px;
+    font-size: 10.5px;
+    line-height: 1.5;
+    color: #e2e8f0;
+    border-left: 2px solid rgba(241, 139, 0, 0.15);
+    padding-left: 12px;
+    margin-bottom: 2px;
+}
+.tooltip-content .tooltip-item:last-child {
+    margin-bottom: 0;
+}
+.tooltip-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(241, 139, 0, 0.12);
+    font-size: 10px;
+    color: #94a3b8;
+    font-style: italic;
+    text-align: center;
+    letter-spacing: 0.3px;
+}
+/* Tooltip hacia arriba si la tarjeta está abajo */
+.category-card:last-child .tooltip-content,
+.category-card:nth-last-child(2) .tooltip-content {
+    bottom: auto;
+    top: calc(100% + 16px);
+}
+.category-card:last-child .tooltip-content::after,
+.category-card:nth-last-child(2) .tooltip-content::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: rgba(30, 41, 59, 0.92);
+}
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; }
 .header-left { justify-content: center; width: 100%; }
@@ -121,6 +235,15 @@ body { padding: 10px; }
 .imagen-grid { grid-template-columns: 1fr; }
 .category-card { padding: 8px 4px; }
 #lastUpdateIndicator { display: none; }
+.category-card .tooltip-content {
+    width: 290px;
+    font-size: 9.5px;
+    bottom: calc(100% + 10px);
+    padding: 14px 16px;
+    max-height: 280px;
+}
+.tooltip-content .tooltip-header { font-size: 13px; }
+.tooltip-content .tooltip-item { font-size: 9px; }
 }
 </style>
 </head>
@@ -172,7 +295,7 @@ body { padding: 10px; }
 <!-- HEADER -->
 <div class="header-container">
 <div class="header-left">
-<div><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" style="width:50px;height:50px;object-fit:contain; background:white; border-radius:12px; padding:5px;"></div>
+<div class="logo-animado"><img src="https://i.ibb.co/cKVCzpy7/Logo-Minerar-1.gif" alt="Minerar" style="width:50px;height:50px;object-fit:contain; background:white; border-radius:12px; padding:5px;"></div>
 <div><h1 class="text-2xl font-black">PANEL SEGURIDAD MINERAR 2026 🛡️</h1><p class="text-xs opacity-90">👷 SISTEMA ACTIVO · MONITOREO EN VIVO 👷</p></div>
 </div>
 <div class="header-right">
@@ -538,7 +661,10 @@ body { padding: 10px; }
 </div>
 
 <script>
+// ============================================================
 // TODO EL JAVASCRIPT COMPLETO
+// ============================================================
+
 let videoTimeout = null;
 
 function requestFullscreen(element) {
@@ -624,6 +750,54 @@ let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
+
+// ✅ CATEGORÍAS POR TARJETA (CON CI / AI Y DESCRIPCIÓN COMPLETA, SIN NÚMEROS)
+const CATEGORIAS_POR_TARJETA = {
+    'epp': [
+        'Falta de uso de equipos de protección personal',
+        'Uso inapropiado del equipo de protección personal'
+    ],
+    'orden': [
+        'Falta de orden y Limpieza (Orden y limpieza deficientes)',
+        'Manejo incorrecto de residuos (mezcla, disposición inadecuada)'
+    ],
+    'procedimientos': [
+        'Incumplimiento de procedimiento',
+        'Evaluación de riesgos y planificación de tarea inadecuada',
+        'Falta de capacitación o transferencia de conocimiento inadecuados',
+        'Rutinas de trabajo ineficaz (Prácticas operativas incorrectas)',
+        'Actividad de rutina realizada en forma mecánica',
+        'Rutinas de trabajo ineficaz'
+    ],
+    'equipos': [
+        'Equipos o herramientas fuera de estándar o en mal estado',
+        'Mantenimiento de equipos o herramientas deficientes',
+        'Equipos herramientas utilizadas en forma inadecuada'
+    ],
+    'conduccion': [
+        'Conducción insegura / Manejo inadecuado de vehículos'
+    ],
+    'berma': [
+        'Berma de seguridad fuera de estándar o inexistente'
+    ],
+    'senalizacion': [
+        'Señalización deficiente o inadecuada'
+    ],
+    'area': [
+        'Problemas de Visibilidad (polvo, clima: niebla, lluvia, granizo, deslumbramiento del sol, otros)',
+        'Riesgo de derrame y contaminación de suelo y/o agua',
+        'Sistema de tratamientos de efluentes/emisiones fuera de servicio',
+        'Sistema de contención dañados o inexistentes',
+        'Sector o ambiente de trabajo en condiciones inseguras',
+        'Falta de uso de elemento de contención',
+        'Operación fuera de parámetros ambientales permitidos',
+        'No uso de sistema de contención kit anti-derrame',
+        'Almacenamiento inadecuado de sustancias'
+    ],
+    'otros': [
+        'Otros'
+    ]
+};
 
 function getEstadoBadgeHTML(cerrado, size = 'normal') {
     const estaCerrado = cerrado === true || cerrado === 'si' || cerrado === 'Si' || cerrado === 'SI';
@@ -1023,6 +1197,7 @@ document.getElementById('supActosCount').innerText = resultados.filter(e => e.ti
 document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
 }
 
+// ✅ FUNCIÓN ACTUALIZADA CON TOOLTIP (SOLO INFORMATIVO)
 function updateCategoryCards(data, type) {
 if (type === 'vcp') {
 const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
@@ -1081,6 +1256,7 @@ if (!cont) return;
 cont.innerHTML = '';
 cont.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 my-3';
 const hayFiltroActivo = selectedCausa !== null && selectedCausa !== 'todas';
+
 cats.forEach(c => {
 let val = counts[c.id] || 0;
 let pct = Math.round(val / total * 100);
@@ -1093,12 +1269,46 @@ else cardClasses += 'hover:shadow-md hover:-translate-y-1';
 div.className = cardClasses;
 div.style.borderColor = isActive ? '#f18b00' : c.color;
 const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
+
+// ✅ CLIC = FILTRAR (COMPORTAMIENTO ORIGINAL)
 div.onclick = () => {
 if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); }
 else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); }
 applyGeneralFilters();
 };
-div.innerHTML = `<div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div><div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div><div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>`;
+
+// ✅ TOOLTIP: CATEGORÍAS QUE ABARCA ESTA TARJETA (CON CI / AI Y DESCRIPCIÓN, SIN NÚMEROS)
+const categorias = CATEGORIAS_POR_TARJETA[c.id] || [];
+
+let tooltipItemsHTML = '';
+if (categorias.length > 0) {
+    // Verificar si es CONDUCCIÓN (mensaje personalizado)
+    if (c.id === 'conduccion') {
+        tooltipItemsHTML = `<div class="tooltip-item" style="color:#f1f5f9;border-left-color:transparent;font-style:italic;">${categorias[0]}</div>`;
+    } else {
+        tooltipItemsHTML = categorias.map(cat => {
+            return `<div class="tooltip-item">${cat}</div>`;
+        }).join('');
+    }
+} else {
+    tooltipItemsHTML = `<div class="tooltip-item" style="color:#94a3b8;border-left-color:transparent;">Sin categorías específicas</div>`;
+}
+
+const tooltipHTML = `
+    <div class="tooltip-content">
+        <div class="tooltip-header">📋 ${c.name}</div>
+        ${tooltipItemsHTML}
+        <div class="tooltip-footer">💡 Pasa el mouse para ver qué categorías abarca esta tarjeta</div>
+    </div>
+`;
+
+div.innerHTML = `
+    <div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div>
+    <div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div>
+    <div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div>
+    <div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>
+    ${tooltipHTML}
+`;
 cont.appendChild(div);
 });
 }
@@ -1123,7 +1333,6 @@ let counts = {}; CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0);
 data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
 if (categoryChart) categoryChart.destroy();
 
-// ✅ REGISTRAMOS EL PLUGIN DE DATALABELS PARA MOSTRAR PORCENTAJES
 categoryChart = new Chart(ctx, { 
     type: 'doughnut', 
     data: { 
@@ -1154,7 +1363,6 @@ categoryChart = new Chart(ctx, {
                     } 
                 } 
             },
-            // ✅ PLUGIN DATALABELS PARA MOSTRAR PORCENTAJES EN LA DONA
             datalabels: {
                 color: '#fff',
                 font: { weight: 'bold', size: 11 },
@@ -1168,7 +1376,7 @@ categoryChart = new Chart(ctx, {
             }
         } 
     },
-    plugins: [ChartDataLabels] // ✅ REGISTRAMOS EL PLUGIN
+    plugins: [ChartDataLabels]
 });
 }
 
@@ -1178,7 +1386,6 @@ const CATS=[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',nam
 let counts={}; CATS.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;});
 const ctxD=document.getElementById('vcpCategoryChart')?.getContext('2d'); if(vcpCategoryChart) vcpCategoryChart.destroy();
 
-// ✅ CON PORCENTAJES VISIBLES
 vcpCategoryChart = new Chart(ctxD, {
     type: 'doughnut',
     data: {
@@ -1217,7 +1424,7 @@ vcpCategoryChart = new Chart(ctxD, {
             }
         }
     },
-    plugins: [ChartDataLabels] // ✅ REGISTRAMOS EL PLUGIN
+    plugins: [ChartDataLabels]
 });
 
 const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM=meses.map(m=>data.filter(e=>e.mes===m).length);
