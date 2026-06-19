@@ -112,16 +112,17 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 #reportModalContent .imagen-item img { height: 80px; }
 #reportModalContent .imagen-overlay { font-size: 7px; padding: 2px; }
 
-/* ✅ ANIMACIÓN DEL LOGO */
-@keyframes logoPulse {
+/* ✅ ANIMACIÓN DEL LOGO - LATIDO */
+@keyframes logoHeartbeat {
     0% { transform: scale(1) rotate(0deg); }
-    25% { transform: scale(1.05) rotate(-3deg); }
-    50% { transform: scale(1) rotate(0deg); }
-    75% { transform: scale(1.05) rotate(3deg); }
+    14% { transform: scale(1.08) rotate(-2deg); }
+    28% { transform: scale(1) rotate(0deg); }
+    42% { transform: scale(1.08) rotate(2deg); }
+    56% { transform: scale(1) rotate(0deg); }
     100% { transform: scale(1) rotate(0deg); }
 }
 .header-left .logo-animado {
-    animation: logoPulse 3s ease-in-out infinite;
+    animation: logoHeartbeat 3s ease-in-out infinite;
     display: inline-block;
     transition: all 0.3s ease;
 }
@@ -130,15 +131,15 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     transform: scale(1.1);
 }
 
-/* ✅ TOOLTIP - SOLO INFORMATIVO, NO INTERFIERE CON EL CLIC */
+/* ✅ TOOLTIP - GRIS TRANSPARENTE CON BLUR, SIEMPRE ARRIBA, CON ABREVIATURAS CI / AI */
 .category-card .tooltip-content {
     visibility: hidden;
     opacity: 0;
     width: 420px;
     max-width: 92vw;
-    background: rgba(30, 41, 59, 0.92);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
+    background: rgba(15, 23, 42, 0.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     color: #fcd34d;
     text-align: left;
     padding: 18px 22px;
@@ -149,7 +150,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     left: 50%;
     transform: translateX(-50%) scale(0.95);
     transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease;
-    box-shadow: 0 25px 70px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08);
+    box-shadow: 0 25px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
     font-size: 11px;
     pointer-events: none !important;
     border: 1px solid rgba(241, 139, 0, 0.25);
@@ -160,7 +161,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     width: 4px;
 }
 .category-card .tooltip-content::-webkit-scrollbar-track {
-    background: #2d3748;
+    background: rgba(30, 41, 59, 0.3);
     border-radius: 10px;
 }
 .category-card .tooltip-content::-webkit-scrollbar-thumb {
@@ -174,7 +175,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     left: 50%;
     transform: translateX(-50%);
     border: 9px solid transparent;
-    border-top-color: rgba(30, 41, 59, 0.92);
+    border-top-color: rgba(15, 23, 42, 0.65);
 }
 .category-card:hover .tooltip-content {
     visibility: visible;
@@ -186,7 +187,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     margin-bottom: 12px;
     font-size: 16px;
     color: #f18b00;
-    border-bottom: 1px solid rgba(241, 139, 0, 0.2);
+    border-bottom: 1px solid rgba(241, 139, 0, 0.25);
     padding-bottom: 10px;
     letter-spacing: 0.5px;
     text-shadow: 0 0 20px rgba(241, 139, 0, 0.15);
@@ -195,37 +196,32 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     padding: 3px 0 3px 4px;
     font-size: 10.5px;
     line-height: 1.5;
-    color: #e2e8f0;
-    border-left: 2px solid rgba(241, 139, 0, 0.15);
+    color: #fcd34d;
+    border-left: 2px solid rgba(241, 139, 0, 0.2);
     padding-left: 12px;
     margin-bottom: 2px;
 }
 .tooltip-content .tooltip-item:last-child {
     margin-bottom: 0;
 }
+.tooltip-content .tooltip-item .abrev {
+    color: #f18b00;
+    font-weight: 700;
+}
 .tooltip-footer {
     margin-top: 12px;
     padding-top: 10px;
     border-top: 1px solid rgba(241, 139, 0, 0.12);
     font-size: 10px;
-    color: #94a3b8;
+    color: rgba(255,255,255,0.5);
     font-style: italic;
     text-align: center;
     letter-spacing: 0.3px;
 }
-/* Tooltip hacia arriba si la tarjeta está abajo */
-.category-card:last-child .tooltip-content,
-.category-card:nth-last-child(2) .tooltip-content {
-    bottom: auto;
-    top: calc(100% + 16px);
-}
-.category-card:last-child .tooltip-content::after,
-.category-card:nth-last-child(2) .tooltip-content::after {
-    top: auto;
-    bottom: 100%;
-    border-top-color: transparent;
-    border-bottom-color: rgba(30, 41, 59, 0.92);
-}
+
+/* ✅ ELIMINADO EL POSICIONAMIENTO HACIA ABAJO - SIEMPRE ARRIBA */
+/* Ya no hay reglas para :last-child o :nth-last-child que cambien la posición */
+
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; }
 .header-left { justify-content: center; width: 100%; }
@@ -241,6 +237,9 @@ body { padding: 10px; }
     bottom: calc(100% + 10px);
     padding: 14px 16px;
     max-height: 280px;
+    background: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
 }
 .tooltip-content .tooltip-header { font-size: 13px; }
 .tooltip-content .tooltip-item { font-size: 9px; }
@@ -751,48 +750,48 @@ let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendCh
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
 
-// ✅ CATEGORÍAS POR TARJETA (CON CI / AI Y DESCRIPCIÓN COMPLETA, SIN NÚMEROS)
+// ✅ CATEGORÍAS POR TARJETA (CON CI / AI Y DESCRIPCIÓN COMPLETA, CON ABREVIATURAS)
 const CATEGORIAS_POR_TARJETA = {
     'epp': [
-        'Falta de uso de equipos de protección personal',
-        'Uso inapropiado del equipo de protección personal'
+        'AI - Falta de uso de equipos de protección personal',
+        'AI - Uso inapropiado del equipo de protección personal'
     ],
     'orden': [
-        'Falta de orden y Limpieza (Orden y limpieza deficientes)',
-        'Manejo incorrecto de residuos (mezcla, disposición inadecuada)'
+        'CI - Falta de orden y Limpieza (Orden y limpieza deficientes)',
+        'AI - Manejo incorrecto de residuos (mezcla, disposición inadecuada)'
     ],
     'procedimientos': [
-        'Incumplimiento de procedimiento',
-        'Evaluación de riesgos y planificación de tarea inadecuada',
-        'Falta de capacitación o transferencia de conocimiento inadecuados',
-        'Rutinas de trabajo ineficaz (Prácticas operativas incorrectas)',
-        'Actividad de rutina realizada en forma mecánica',
-        'Rutinas de trabajo ineficaz'
+        'AI - Incumplimiento de procedimiento',
+        'AI - Evaluación de riesgos y planificación de tarea inadecuada',
+        'AI - Falta de capacitación o transferencia de conocimiento inadecuados',
+        'AI - Rutinas de trabajo ineficaz (Prácticas operativas incorrectas)',
+        'AI - Actividad de rutina realizada en forma mecánica',
+        'AI - Rutinas de trabajo ineficaz'
     ],
     'equipos': [
-        'Equipos o herramientas fuera de estándar o en mal estado',
-        'Mantenimiento de equipos o herramientas deficientes',
-        'Equipos herramientas utilizadas en forma inadecuada'
+        'CI - Equipos o herramientas fuera de estándar o en mal estado',
+        'CI - Mantenimiento de equipos o herramientas deficientes',
+        'AI - Equipos herramientas utilizadas en forma inadecuada'
     ],
     'conduccion': [
-        'Conducción insegura / Manejo inadecuado de vehículos'
+        'AI - Conducción insegura / Manejo inadecuado de vehículos'
     ],
     'berma': [
-        'Berma de seguridad fuera de estándar o inexistente'
+        'CI - Berma de seguridad fuera de estándar o inexistente'
     ],
     'senalizacion': [
-        'Señalización deficiente o inadecuada'
+        'CI - Señalizacion deficiente o inadecuada'
     ],
     'area': [
-        'Problemas de Visibilidad (polvo, clima: niebla, lluvia, granizo, deslumbramiento del sol, otros)',
-        'Riesgo de derrame y contaminación de suelo y/o agua',
-        'Sistema de tratamientos de efluentes/emisiones fuera de servicio',
-        'Sistema de contención dañados o inexistentes',
-        'Sector o ambiente de trabajo en condiciones inseguras',
-        'Falta de uso de elemento de contención',
-        'Operación fuera de parámetros ambientales permitidos',
-        'No uso de sistema de contención kit anti-derrame',
-        'Almacenamiento inadecuado de sustancias'
+        'CI - Problemas de Visibilidad (polvo, clima: niebla, lluvia, granizo, deslumbramiento del sol, otros)',
+        'CI - Riesgo de derrame y contaminación de suelo y/o agua',
+        'CI - Sistema de tratamientos de efluentes/ emisiones fuera de servicio',
+        'CI - Sistema de contencion dañados o inexistentes',
+        'CI - Sector o ambiente de trabajo en condiciones inseguras',
+        'AI - Falta de uso de elemento de contención',
+        'AI - Operación fuera de parámetros ambientales permitido',
+        'AI - No uso de sistema de contención kit- anti derrame',
+        'AI - Almacenamiento inadecuado de sustancias'
     ],
     'otros': [
         'Otros'
@@ -1197,7 +1196,7 @@ document.getElementById('supActosCount').innerText = resultados.filter(e => e.ti
 document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
 }
 
-// ✅ FUNCIÓN ACTUALIZADA CON TOOLTIP (SOLO INFORMATIVO)
+// ✅ FUNCIÓN ACTUALIZADA CON TOOLTIP CON ABREVIATURAS CI / AI
 function updateCategoryCards(data, type) {
 if (type === 'vcp') {
 const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
@@ -1277,17 +1276,23 @@ else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList
 applyGeneralFilters();
 };
 
-// ✅ TOOLTIP: CATEGORÍAS QUE ABARCA ESTA TARJETA (CON CI / AI Y DESCRIPCIÓN, SIN NÚMEROS)
+// ✅ TOOLTIP: CATEGORÍAS QUE ABARCA ESTA TARJETA (CON CI / AI Y DESCRIPCIÓN, CON ABREVIATURAS)
 const categorias = CATEGORIAS_POR_TARJETA[c.id] || [];
 
 let tooltipItemsHTML = '';
 if (categorias.length > 0) {
-    // Verificar si es CONDUCCIÓN (mensaje personalizado)
     if (c.id === 'conduccion') {
-        tooltipItemsHTML = `<div class="tooltip-item" style="color:#f1f5f9;border-left-color:transparent;font-style:italic;">${categorias[0]}</div>`;
+        tooltipItemsHTML = `<div class="tooltip-item" style="color:#fcd34d;border-left-color:transparent;font-style:italic;">${categorias[0]}</div>`;
     } else {
         tooltipItemsHTML = categorias.map(cat => {
-            return `<div class="tooltip-item">${cat}</div>`;
+            // Resaltar la abreviatura CI- o AI- en color naranja
+            let catConAbrev = cat;
+            if (cat.startsWith('CI -') || cat.startsWith('CI-') || cat.startsWith('CI.')) {
+                catConAbrev = `<span class="abrev">CI</span>${cat.substring(2)}`;
+            } else if (cat.startsWith('AI -') || cat.startsWith('AI-') || cat.startsWith('AI.')) {
+                catConAbrev = `<span class="abrev">AI</span>${cat.substring(2)}`;
+            }
+            return `<div class="tooltip-item">${catConAbrev}</div>`;
         }).join('');
     }
 } else {
