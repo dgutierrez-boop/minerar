@@ -219,9 +219,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
     letter-spacing: 0.3px;
 }
 
-/* ✅ ELIMINADO EL POSICIONAMIENTO HACIA ABAJO - SIEMPRE ARRIBA */
-/* Ya no hay reglas para :last-child o :nth-last-child que cambien la posición */
-
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; }
 .header-left { justify-content: center; width: 100%; }
@@ -402,7 +399,10 @@ body { padding: 10px; }
 </div>
 
 <div class="glass-card p-5 mt-4">
-<h3 class="font-black uppercase mb-2">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3>
+<div class="flex justify-between items-center mb-2">
+<h3 class="font-black uppercase">📋 DETALLE DE ACTOS Y CONDICIONES 📝</h3>
+<button onclick="limpiarFiltroSupervisorTabla()" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full transition-all cursor-pointer">🧹 Limpiar filtro supervisor</button>
+</div>
 <div class="table-scroll">
 <table class="w-full text-left text-xs">
 <thead>
@@ -717,6 +717,9 @@ let currentDateKey = new Date().toDateString();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
+
+// ✅ VARIABLE PARA FILTRO DE SUPERVISOR EN TABLA
+let supervisorFiltroTabla = null;
 
 const SUCURSALES_CONFIG = {
   MALAGUENO: { 
@@ -1186,17 +1189,66 @@ sel.innerHTML += `<option value="${x.replace(/'/g, '&#39;')}">👤 ${x} (${count
 });
 updateSupervisorCard();
 }
+
 function updateSupervisorCard() {
 let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
 let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
 let dataFiltrada = ACTOS_COND_DATA;
 if (mesSeleccionado !== 'todo') { const mesNormalizado = mesSeleccionado.toLowerCase().trim(); dataFiltrada = dataFiltrada.filter(e => { const mesRegistro = (e.mes || '').toLowerCase().trim(); return mesRegistro === mesNormalizado; }); }
 let resultados = (supervisor === 'todos') ? dataFiltrada : dataFiltrada.filter(e => compararNombres(e.observador, supervisor));
+
+// ✅ GUARDAR FILTRO PARA LA TABLA
+supervisorFiltroTabla = (supervisor === 'todos') ? null : supervisor;
+
 document.getElementById('supActosCount').innerText = resultados.filter(e => e.tipo === 'acto').length;
 document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
+
+// ✅ ACTUALIZAR TABLA CON EL FILTRO DEL SUPERVISOR
+renderGeneralTableConFiltroSupervisor();
 }
 
-// ✅ FUNCIÓN ACTUALIZADA CON TOOLTIP CON ABREVIATURAS CI / AI
+// ✅ NUEVA FUNCIÓN PARA RENDERIZAR TABLA CON FILTRO DE SUPERVISOR
+function renderGeneralTableConFiltroSupervisor() {
+    let data = ACTOS_COND_DATA;
+    
+    // ✅ APLICAR FILTRO DE SUPERVISOR SI ESTÁ SELECCIONADO
+    if (supervisorFiltroTabla) {
+        data = data.filter(e => compararNombres(e.observador, supervisorFiltroTabla));
+        console.log(`🔍 Tabla filtrada por supervisor: ${supervisorFiltroTabla} (${data.length} registros)`);
+    }
+    
+    // ✅ APLICAR FILTROS DE MES, SECTOR Y ESTADO (de los filtros generales)
+    if (state.mes !== 'todo') {
+        data = data.filter(e => e.mes === state.mes);
+    }
+    if (state.sector !== 'general') {
+        data = data.filter(e => e.sector.includes(state.sector));
+    }
+    if (state.estado === 'cerrados') {
+        data = data.filter(e => e.cerrado === true);
+    } else if (state.estado === 'abiertos') {
+        data = data.filter(e => e.cerrado === false);
+    }
+    
+    // ✅ ORDENAR POR FECHA (más reciente primero)
+    const sorted = [...data].sort((a, b) => {
+        const fechaA = a.fecha?.split('/').reverse().join('-') || '';
+        const fechaB = b.fecha?.split('/').reverse().join('-') || '';
+        return fechaB.localeCompare(fechaA);
+    });
+    
+    renderGeneralTable(sorted);
+}
+
+// ✅ FUNCIÓN PARA LIMPIAR FILTRO DE SUPERVISOR EN LA TABLA
+function limpiarFiltroSupervisorTabla() {
+    supervisorFiltroTabla = null;
+    // Resetear el selector a "Todos"
+    document.getElementById('supervisorSelect').value = 'todos';
+    updateSupervisorCard();
+    renderGeneralTableConFiltroSupervisor();
+}
+
 function updateCategoryCards(data, type) {
 if (type === 'vcp') {
 const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
@@ -1269,14 +1321,12 @@ div.className = cardClasses;
 div.style.borderColor = isActive ? '#f18b00' : c.color;
 const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
 
-// ✅ CLIC = FILTRAR (COMPORTAMIENTO ORIGINAL)
 div.onclick = () => {
 if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); }
 else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); }
 applyGeneralFilters();
 };
 
-// ✅ TOOLTIP: CATEGORÍAS QUE ABARCA ESTA TARJETA (CON CI / AI Y DESCRIPCIÓN, CON ABREVIATURAS)
 const categorias = CATEGORIAS_POR_TARJETA[c.id] || [];
 
 let tooltipItemsHTML = '';
@@ -1285,7 +1335,6 @@ if (categorias.length > 0) {
         tooltipItemsHTML = `<div class="tooltip-item" style="color:#fcd34d;border-left-color:transparent;font-style:italic;">${categorias[0]}</div>`;
     } else {
         tooltipItemsHTML = categorias.map(cat => {
-            // Resaltar la abreviatura CI- o AI- en color naranja
             let catConAbrev = cat;
             if (cat.startsWith('CI -') || cat.startsWith('CI-') || cat.startsWith('CI.')) {
                 catConAbrev = `<span class="abrev">CI</span>${cat.substring(2)}`;
@@ -1318,7 +1367,6 @@ cont.appendChild(div);
 });
 }
 
-// ✅ FUNCIÓN ACTUALIZADA CON PORCENTAJES VISIBLES EN LA DONA
 function updateChartsDona(data, type) {
 if (type !== 'actos') return;
 const CATS_EXPANDIDAS = [
@@ -1385,7 +1433,6 @@ categoryChart = new Chart(ctx, {
 });
 }
 
-// ✅ FUNCIÓN ACTUALIZADA CON PORCENTAJES VISIBLES EN LA DONA VCP
 function updateVCPCharts(data) {
 const CATS=[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}];
 let counts={}; CATS.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;});
@@ -1439,11 +1486,84 @@ vcpTrendChart=new Chart(ctxT,{type:'line',data:{labels:meses.map(m=>m.charAt(0).
 }
 
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
-function applyGeneralFilters() { let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa); let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion'); document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length; let pA = Math.min(a.length/currentObjetivos.actos*100,100), pC = Math.min(c.length/currentObjetivos.cond*100,100); document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%'; document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%'; let up=(id,p)=>{ let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} }; up('actosStatus',pA); up('condStatus',pC); updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTable(f); }
+
+function applyGeneralFilters() { 
+    let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado))); 
+    if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa); 
+    let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion'); 
+    document.getElementById('kpiActos').innerText = a.length; 
+    document.getElementById('kpiCondiciones').innerText = c.length; 
+    let pA = Math.min(a.length/currentObjetivos.actos*100,100), pC = Math.min(c.length/currentObjetivos.cond*100,100); 
+    document.getElementById('actosBar').style.width = pA+'%'; 
+    document.getElementById('condBar').style.width = pC+'%'; 
+    document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; 
+    document.getElementById('condPctLabel').innerText = Math.round(pC)+'%'; 
+    let up=(id,p)=>{ let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText='⚠ En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} }; 
+    up('actosStatus',pA); 
+    up('condStatus',pC); 
+    updateCategoryCards(f,'actos'); 
+    updateChartsDona(f,'actos'); 
+    updateTrendChart(f); 
+    
+    // ✅ USAR LA NUEVA FUNCIÓN PARA LA TABLA CON FILTRO DE SUPERVISOR
+    renderGeneralTableConFiltroSupervisor();
+}
+
 function updateTrendChart(data) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx=document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return; let sourceData=data||ACTOS_COND_DATA; let aPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='acto').length), cPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='condicion').length); if(trendChart) trendChart.destroy(); let maxYScale=currentSucursal==='LAPAMPITA'?150:(currentSucursal==='BARKER'?15:110); trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'⚠️ Actos',data:aPM,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}}); }
+
 function applyVCPFilters() { let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa); let pct = Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus'); if(vs){ if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; } document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%'; updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f); }
 
-function renderGeneralTable(data) { let tb=document.getElementById('generalTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=[...data].sort((a,b)=>new Date(b.fecha.split('/').reverse().join('-'))-new Date(a.fecha.split('/').reverse().join('-'))); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] ${e.tipo==='acto'?'bg-blue-100 text-blue-700':'bg-amber-100 text-amber-700'}">${e.tipo==='acto'?'⚠️ ACTO':'🏚️ COND'}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon||''} ${e.categoria?.name||''}</span><br>${(e.descripcion||'').substring(0,55)}${(e.descripcion||'').length>55?'...':''}</td><td class="p-2">${estadoBadge}</td>`; tb.appendChild(tr); }); }
+// ✅ FUNCIÓN ACTUALIZADA - RENDER GENERAL TABLE CON SIGLAS AI / CI
+function renderGeneralTable(data) { 
+    let tb = document.getElementById('generalTableBody'); 
+    if (!tb) return; 
+    tb.innerHTML = ''; 
+    
+    // Si no hay datos, mostrar mensaje
+    if (!data || data.length === 0) {
+        tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500">📭 No hay registros para mostrar</td></tr>';
+        return;
+    }
+    
+    const sorted = [...data].sort((a, b) => {
+        const fechaA = a.fecha?.split('/').reverse().join('-') || '';
+        const fechaB = b.fecha?.split('/').reverse().join('-') || '';
+        return fechaB.localeCompare(fechaA);
+    }); 
+    
+    const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; 
+    
+    // ✅ MOSTRAR TODOS LOS REGISTROS (sin límite de 50)
+    sorted.forEach((e, i) => { 
+        let tr = document.createElement('tr'); 
+        const esHoy = (e.dia === diaHoy && e.mes === mesHoy); 
+        tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer'; 
+        tr.onclick = () => openModal(e, i, sorted); 
+        const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small');
+        
+        let tipoDisplay = '';
+        let tipoClass = '';
+        if (e.tipo === 'acto') {
+            tipoDisplay = '⚠️ ACTO (AI)';
+            tipoClass = 'bg-blue-100 text-blue-700';
+        } else if (e.tipo === 'condicion') {
+            tipoDisplay = '🏚️ COND (CI)';
+            tipoClass = 'bg-amber-100 text-amber-700';
+        } else {
+            tipoDisplay = '📌 Otro';
+            tipoClass = 'bg-gray-100 text-gray-700';
+        }
+        
+        tr.innerHTML = `
+            <td class="p-2">📅 ${e.dia}/${e.mes}${esHoy ? '🔥' : ''}</td>
+            <td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${tipoClass}">${tipoDisplay}</span></td>
+            <td class="p-2 font-semibold">${e.observador}</td>
+            <td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</span><br>${(e.descripcion || '').substring(0, 55)}${(e.descripcion || '').length > 55 ? '...' : ''}</td>
+            <td class="p-2">${estadoBadge}</td>
+        `; 
+        tb.appendChild(tr); 
+    }); 
+}
 
 function renderVCPTable(data) { let tb=document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=[...data].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2">💬 ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2">${estadoBadge}</td>`; tb.appendChild(tr); }); }
 
@@ -1462,7 +1582,7 @@ if (r.tipo === 'vcp') {
 content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-slate-800 text-lg">${r.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2 flex items-center gap-2"><span>📝</span> Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2 flex items-center gap-2"><span>💬</span> Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`;
 } else {
 const esActo = r.tipo === 'acto';
-const tipoText = esActo ? '⚠️ ACTO' : '🏚️ CONDICIÓN';
+const tipoText = esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)';
 const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500';
 content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-slate-800 text-lg">${r.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2 flex items-center gap-2"><span>📝</span> Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2 flex items-center gap-2"><span>🔍</span> Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`;
 }
