@@ -1122,7 +1122,7 @@ function updateSupervisorCard() {
     let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
     let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
     
-    console.log('🔍 ACTUALIZANDO SUPERVISOR:', { supervisor, mes: mesSeleccionado });
+    console.log('🔍 FILTRO SUPERVISOR:', { supervisor, mes: mesSeleccionado });
     console.log('📊 Total de registros en ACTOS_COND_DATA:', ACTOS_COND_DATA.length);
     
     // PRIMERO: Mostrar TODOS los registros del supervisor (sin filtrar mes)
@@ -1133,9 +1133,13 @@ function updateSupervisorCard() {
             actos: todosDelSupervisor.filter(e => e.tipo === 'acto').length,
             condiciones: todosDelSupervisor.filter(e => e.tipo === 'condicion').length
         });
+        console.log('📋 Lista completa:');
+        todosDelSupervisor.forEach((r, i) => {
+            console.log(`  ${i+1}. ${r.dia}/${r.mes} - ${r.tipo.toUpperCase()}: ${(r.descripcion||'').substring(0,50)}`);
+        });
     }
     
-    // Filtrar por mes
+    // SEGUNDO: Filtrar por mes
     let dataFiltrada = ACTOS_COND_DATA;
     if (mesSeleccionado !== 'todo') {
         const mesNormalizado = mesSeleccionado.toLowerCase().trim();
@@ -1146,7 +1150,7 @@ function updateSupervisorCard() {
         console.log(`📅 Filtrado por mes ${mesSeleccionado}: ${dataFiltrada.length} registros`);
     }
     
-    // Filtrar por supervisor (comparación FLEXIBLE)
+    // TERCERO: Filtrar por supervisor
     let resultados;
     if (supervisor === 'todos') {
         resultados = dataFiltrada;
@@ -1161,6 +1165,17 @@ function updateSupervisorCard() {
             });
         } else {
             console.warn(`⚠️ No se encontraron registros para "${supervisor}"`);
+            // Buscar posibles coincidencias cercanas
+            const posibles = ACTOS_COND_DATA.filter(e => {
+                const obs = (e.observador || '').toLowerCase();
+                const sup = supervisor.toLowerCase();
+                const palabrasSup = sup.split(/\s+/);
+                return palabrasSup.some(p => p.length > 2 && obs.includes(p));
+            });
+            if (posibles.length > 0) {
+                const nombresPosibles = [...new Set(posibles.map(p => p.observador))];
+                console.log('💡 Posibles coincidencias cercanas:', nombresPosibles);
+            }
         }
     }
     
@@ -1179,11 +1194,10 @@ function updateSupervisorCard() {
     document.getElementById('supActosCount').innerText = actosCount;
     document.getElementById('supCondCount').innerText = condCount;
     
-    // Actualizar también el filtro de la tabla
+    // Actualizar filtro de la tabla
     supervisorFiltroTabla = (supervisor === 'todos') ? null : supervisor;
     renderGeneralTableConFiltroSupervisor();
 }
-
 function renderGeneralTableConFiltroSupervisor() {
 let data = ACTOS_COND_DATA;
 if (supervisorFiltroTabla) {
