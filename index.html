@@ -1171,65 +1171,76 @@ updateSupervisorCard();
 }
 
 // ==================== UPDATE SUPERVISOR CARD (CORREGIDA) ====================
+// ==================== REEMPLAZAR updateSupervisorCard ====================
 function updateSupervisorCard() {
     let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
     let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
     
-    console.log('🔍 FILTRO SUPERVISOR:', { supervisor, mes: mesSeleccionado });
-    console.log('📊 Total de registros en ACTOS_COND_DATA:', ACTOS_COND_DATA.length);
+    console.log('🔍 ACTUALIZANDO SUPERVISOR:', { supervisor, mes: mesSeleccionado });
     
-    // PRIMERO: Mostrar TODOS los registros del supervisor (sin filtrar mes)
-    if (supervisor !== 'todos') {
-        const todosDelSupervisor = ACTOS_COND_DATA.filter(e => compararNombres(e.observador, supervisor));
-        console.log(`👤 TODOS los registros de "${supervisor}" (sin filtro de mes):`, todosDelSupervisor.length);
-        console.log('📋 Detalle por tipo:', {
-            actos: todosDelSupervisor.filter(e => e.tipo === 'acto').length,
-            condiciones: todosDelSupervisor.filter(e => e.tipo === 'condicion').length
-        });
-        console.log('📋 Lista completa:');
-        todosDelSupervisor.forEach((r, i) => {
-            console.log(`  ${i+1}. ${r.dia}/${r.mes} - ${r.tipo.toUpperCase()}: ${(r.descripcion||'').substring(0,50)}`);
+    // 🔥 USAR LA MISMA LÓGICA QUE diagnosticarAlcayaga()
+    let resultados = [];
+    
+    if (supervisor === 'todos') {
+        // Si es "todos", contar todo
+        resultados = ACTOS_COND_DATA;
+    } else {
+        // Buscar TODOS los registros del supervisor (comparación flexible)
+        const supNormalizado = normalizarNombre(supervisor);
+        resultados = ACTOS_COND_DATA.filter(e => {
+            const obsNormalizado = normalizarNombre(e.observador || '');
+            return obsNormalizado === supNormalizado || 
+                   obsNormalizado.includes(supNormalizado) || 
+                   supNormalizado.includes(obsNormalizado) ||
+                   supNormalizado.split(' ').some(p => p.length > 2 && obsNormalizado.includes(p)) ||
+                   obsNormalizado.split(' ').some(p => p.length > 2 && supNormalizado.includes(p));
         });
     }
     
-    // SEGUNDO: Filtrar por mes
-    let dataFiltrada = ACTOS_COND_DATA;
+    // Filtrar por mes (si no es "todo")
     if (mesSeleccionado !== 'todo') {
         const mesNormalizado = mesSeleccionado.toLowerCase().trim();
-        dataFiltrada = dataFiltrada.filter(e => {
+        resultados = resultados.filter(e => {
             const mesRegistro = (e.mes || '').toLowerCase().trim();
             return mesRegistro === mesNormalizado;
         });
-        console.log(`📅 Filtrado por mes ${mesSeleccionado}: ${dataFiltrada.length} registros`);
+        console.log(`📅 Filtrado por mes ${mesSeleccionado}: ${resultados.length} registros`);
     }
     
-    // TERCERO: Filtrar por supervisor
-    let resultados;
-    if (supervisor === 'todos') {
-        resultados = dataFiltrada;
-    } else {
-        resultados = dataFiltrada.filter(e => compararNombres(e.observador, supervisor));
-        console.log(`👤 Filtrado por supervisor "${supervisor}": ${resultados.length} registros`);
+    // Contar actos y condiciones
+    const actosCount = resultados.filter(e => e.tipo === 'acto').length;
+    const condCount = resultados.filter(e => e.tipo === 'condicion').length;
+    
+    console.log('📊 RESULTADOS FINALES:', { 
+        total: resultados.length, 
+        actos: actosCount, 
+        condiciones: condCount,
+        mes: mesSeleccionado,
+        supervisor: supervisor
+    });
+    
+    // ACTUALIZAR DOM
+    document.getElementById('supActosCount').innerText = actosCount;
+    document.getElementById('supCondCount').innerText = condCount;
+    
+    // Actualizar filtro de la tabla
+    supervisorFiltroTabla = (supervisor === 'todos') ? null : supervisor;
+    renderGeneralTableConFiltroSupervisor();
+    
+    // Mostrar mensaje de cumplimiento en consola
+    if (supervisor !== 'todos' && mesSeleccionado !== 'todo') {
+        const metaActos = 6;
+        const metaCondiciones = 4;
+        const actosRestantes = Math.max(0, metaActos - actosCount);
+        const condRestantes = Math.max(0, metaCondiciones - condCount);
         
-        if (resultados.length > 0) {
-            console.log('📋 Registros encontrados:');
-            resultados.forEach((r, i) => {
-                console.log(`  ${i+1}. ${r.dia}/${r.mes} - ${r.tipo.toUpperCase()}: ${(r.descripcion||'').substring(0,40)}`);
-            });
+        if (actosRestantes > 0 || condRestantes > 0) {
+            console.log(`⚠️ Te faltan ${actosRestantes} acto${actosRestantes > 1 ? 's' : ''}${actosRestantes > 0 && condRestantes > 0 ? ' y ' : ''}${condRestantes > 0 ? condRestantes + ' condición' + (condRestantes > 1 ? 'es' : '') : ''} para cumplir la meta mensual`);
         } else {
-            console.warn(`⚠️ No se encontraron registros para "${supervisor}"`);
-            const posibles = ACTOS_COND_DATA.filter(e => {
-                const obs = (e.observador || '').toLowerCase();
-                const sup = supervisor.toLowerCase();
-                const palabrasSup = sup.split(/\s+/);
-                return palabrasSup.some(p => p.length > 2 && obs.includes(p));
-            });
-            if (posibles.length > 0) {
-                const nombresPosibles = [...new Set(posibles.map(p => p.observador))];
-                console.log('💡 Posibles coincidencias cercanas:', nombresPosibles);
-            }
+            console.log('✅ ¡Meta cumplida!');
         }
     }
+}
     
     let actosCount = resultados.filter(e => e.tipo === 'acto').length;
     let condCount = resultados.filter(e => e.tipo === 'condicion').length;
