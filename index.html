@@ -851,188 +851,108 @@ async function cargarDatosSucursal(sucursal) {
     const config = SUCURSALES_CONFIG[sucursal];
     let actosData = [], vcpData = [];
     const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
-    
     if(config.actosUrl) {
         try {
-            console.log(`🔄 Descargando datos de ${sucursal}...`);
-            const r1 = await fetch(config.actosUrl + '&t=' + Date.now());
-            const text = await r1.text();
-            
-            // Usar el parser mejorado
-            const rows = parseCSVMejorado(text);
-            console.log(`📊 Filas totales (incluyendo encabezado): ${rows.length}`);
-            
-            // Saltar encabezado (fila 0)
-            const dataRows = rows.slice(1);
-            console.log(`📊 Filas de datos: ${dataRows.length}`);
-            
-            let contadorActos = 0;
-            let contadorCond = 0;
-            
-            for(let i = 0; i < dataRows.length; i++) {
-                const row = dataRows[i];
-                if (row.length < 8) continue;
-                
-                // ===== MAPEO DE COLUMNAS SEGÚN TU CSV =====
-                // [0] Fecha, [1] Hora, [2] Quien reporta, [3] Sector, [4] Detalle lugar
-                // [5] Personal, [6] Responsable, [7] Descripción, [8] Causas
-                // [9] Clasificación, [10] Acciones, [11] Imagen, [12] Cerrado
-                
-                const fecha = (row[0] || '').trim();
-                const hora = (row[1] || '').trim();
-                const quienReporta = (row[2] || '').trim();
-                const sector = (row[3] || '').trim();
-                const personal = (row[5] || '').trim();
-                const responsable = (row[6] || '').trim();
-                const descripcionRaw = (row[7] || '').trim();
-                const clasificacion = (row[9] || '').trim();
-                const imagen = (row[11] || '').trim();
-                const cerradoRaw = (row[12] || '').trim();
-                
-                // Saltar filas vacías o encabezados repetidos
-                if (!fecha || fecha.toLowerCase().includes('fecha')) continue;
-                
-                // Parsear fecha
-                const fd = parseFecha(fecha);
-                if (!fd.valido) {
-                    console.log(`⚠️ Fecha inválida en fila ${i}: "${fecha}"`);
-                    continue;
-                }
-                
-                // ===== DETERMINAR TIPO =====
-                let tipo = 'otro';
-                const clasif = clasificacion.toUpperCase().trim();
-                
-                if (clasif.startsWith('AI-') || clasif.startsWith('AI ') || clasif.includes('ACTO')) {
-                    tipo = 'acto';
-                    contadorActos++;
-                } else if (clasif.startsWith('CI-') || clasif.startsWith('CI ') || clasif.includes('CONDICI')) {
-                    tipo = 'condicion';
-                    contadorCond++;
+            const r1 = await fetch(config.actosUrl + '&t=' + Date.now()), text = await r1.text(), rows = parseCSV(text);
+            for(let i=0; i<rows.length; i++) {
+                const row = rows[i];
+                let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
+                if(sucursal === 'MALAGUENO' && i >= 225) {
+                    const u = row[20] || '';
+                    const uTrimmed = u.trim().toUpperCase();
+                    if(uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) {
+                        tipoRaw='Acto Inseguro';
+                        desc=u.replace(/^AI[\s\.\-]*/i,'').trim();
+                    }
+                    else if(uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) {
+                        tipoRaw='Condición Insegura';
+                        desc=u.replace(/^CI[\s\.\-]*/i,'').trim();
+                    }
+                    else { tipoRaw=''; desc=u; }
+                    fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || '';
                 } else {
-                    // Intentar desde la descripción
-                    const descUpper = descripcionRaw.toUpperCase().trim();
-                    if (descUpper.startsWith('AI-') || descUpper.startsWith('AI ')) {
+                    if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
+                    fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
+                }
+                let imagenUrls = [];
+                for(let j=0; j<row.length; j++) {
+                    const cell = row[j] ? row[j].trim() : '';
+                    if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) {
+                        if(!cell.includes('/spreadsheets/d/')) { imagenUrls.push(cell); }
+                    }
+                }
+                let imagenUrl = imagenUrls.join(',');
+                const fd = parseFecha(fecha);
+                if(!fd.valido) continue;
+                let tipo = 'otro';
+                if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
+                else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
+                if(tipo === 'otro' && desc) {
+                    const descTrimmed = desc.trim().toUpperCase();
+                    if(descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) {
                         tipo = 'acto';
-                        contadorActos++;
-                    } else if (descUpper.startsWith('CI-') || descUpper.startsWith('CI ')) {
+                        desc = desc.replace(/^AI[\s\.\-]*/i,'').trim();
+                    }
+                    else if(descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) {
                         tipo = 'condicion';
-                        contadorCond++;
+                        desc = desc.replace(/^CI[\s\.\-]*/i,'').trim();
                     }
                 }
-                
-                // Limpiar descripción
-                let desc = descripcionRaw.replace(/[\n\r]+/g, ' ').replace(/"/g, '').trim();
-                if (desc.toUpperCase().startsWith('AI-') || desc.toUpperCase().startsWith('AI ')) {
-                    desc = desc.replace(/^AI[\s\.\-]*/i, '').trim();
-                } else if (desc.toUpperCase().startsWith('CI-') || desc.toUpperCase().startsWith('CI ')) {
-                    desc = desc.replace(/^CI[\s\.\-]*/i, '').trim();
-                }
-                
-                // Determinar cerrado
                 let cerrado = false;
-                if (cerradoRaw) {
+                if(cerradoRaw) {
                     const cerradoStr = cerradoRaw.toString().toLowerCase().trim();
-                    cerrado = cerradoStr === 'si' || cerradoStr === 'sí' || cerradoStr === 'true' || 
-                              cerradoStr === '1' || cerradoStr === 'x' || cerradoStr === 's' ||
-                              cerradoStr === 'SI' || cerradoStr === 'Si';
+                    cerrado = cerradoStr === 'si' || cerradoStr === 'sí' || cerradoStr === 'true' || cerradoStr === '1' || cerradoStr === 'x';
                 }
-                
-                // Buscar imágenes
-                let imagenUrl = imagen;
-                if (!imagenUrl) {
-                    for (let j = 0; j < row.length; j++) {
-                        const cell = row[j] ? row[j].trim() : '';
-                        if (cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) {
-                            if (!cell.includes('/spreadsheets/d/')) {
-                                imagenUrl = imagenUrl ? imagenUrl + ',' + cell : cell;
-                            }
-                        }
+                const cat = classifyData(desc, false);
+                actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl });
+                if(fd.dia === diaHoy && fd.mes === mesHoy) {
+                    const idUnico = `${observador}|${desc}|${sector}|${fecha}`;
+                    if(!reportesNotificadosActos.has(idUnico)) {
+                        reportesNotificadosActos.add(idUnico);
+                        const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+                        const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal};
+                        todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte);
+                        updatePulseBadges(); updateRealTimeUI();
+                        showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora);
                     }
                 }
-                
-                const cat = classifyData(desc, false);
-                const observador = quienReporta || responsable || personal || 'No identificado';
-                
-                actosData.push({
-                    fecha: fecha,
-                    tipo: tipo,
-                    sector: (sector || '').toLowerCase().trim(),
-                    observador: observador,
-                    descripcion: desc || 'Sin descripción',
-                    causas: '',
-                    cerrado: cerrado,
-                    mes: fd.mes,
-                    dia: fd.dia,
-                    categoria: cat,
-                    sucursal: sucursal,
-                    imagen: imagenUrl
-                });
             }
-            
-            console.log(`✅ ${sucursal}: ${actosData.length} registros cargados`);
-            console.log(`   📊 Actos (AI): ${contadorActos}, Condiciones (CI): ${contadorCond}`);
-            
-            // Mostrar los primeros 5 registros para debug
-            if (actosData.length > 0) {
-                console.log('📋 Primeros 5 registros:');
-                actosData.slice(0, 5).forEach((d, idx) => {
-                    console.log(`   ${idx+1}. ${d.dia}/${d.mes} | ${d.tipo} | ${d.observador} | ${d.descripcion.substring(0, 30)}...`);
-                });
-            }
-            
-        } catch(e) { 
-            console.error("❌ Error cargando actos:", e); 
-        }
+        } catch(e) { console.error("Error cargando actos:", e); }
     }
-    
-    // ==================== VCP ====================
     if(config.showVCP && config.vcpUrl) {
         try {
-            const r2 = await fetch(config.vcpUrl + '&t=' + Date.now());
-            const text2 = await r2.text();
-            const rows2 = parseCSVMejorado(text2);
-            const dataRows2 = rows2.slice(1);
-            
-            for(let i = 0; i < dataRows2.length; i++) {
-                const row = dataRows2[i];
-                if (row.length < 3) continue;
-                
-                const fr = (row[0] || '').trim();
-                const po = (row[1] || '').trim();
-                const sec = (row[2] || '').trim();
-                const des = (row[3] || '').replace(/[\n\r]+/g, ' ').replace(/"/g, '').trim();
-                const com = (row[4] || '').replace(/[\n\r]+/g, ' ').replace(/"/g, '').trim();
-                
-                if (!po || !des) continue;
-                
+            const r2 = await fetch(config.vcpUrl + '&t=' + Date.now()), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
+            for(let i=0; i<rows2.length; i++) {
+                const row = rows2[i];
+                let fr, po, sec, des, com;
+                if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; }
+                else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; }
+                let imagenUrlsVCP = [];
+                for(let j=0; j<row.length; j++) {
+                    const cell = row[j] ? row[j].trim() : '';
+                    if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) {
+                        if(!cell.includes('/spreadsheets/d/')) { imagenUrlsVCP.push(cell); }
+                    }
+                }
+                let imagenUrlVCP = imagenUrlsVCP.join(',');
                 const fd = parseFecha(fr.split(' ')[0]);
-                if (!fd.valido) continue;
-                
+                if(!fd.valido || !po) continue;
                 const cat = classifyData(des, true);
-                vcpData.push({
-                    fecha: fr,
-                    tipo: 'vcp',
-                    sector: (sec || 'general').toLowerCase().trim(),
-                    personaObservada: po,
-                    descripcion: des,
-                    comentarios: com,
-                    cerrado: true,
-                    mes: fd.mes,
-                    dia: fd.dia,
-                    categoria: cat,
-                    sucursal: sucursal,
-                    imagen: ''
-                });
+                vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP });
+                if(fd.dia === diaHoy && fd.mes === mesHoy) {
+                    const idUnico = `${po}|${des}|${sec}|${fr}`;
+                    if(!reportesNotificadosVCP.has(idUnico)) {
+                        reportesNotificadosVCP.add(idUnico);
+                        const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+                        const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal};
+                        todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP);
+                        updatePulseBadges(); updateRealTimeUI();
+                        showNewReportAlert(po, sec, des, 'VCP', hora);
+                    }
+                }
             }
-            
-            console.log(`✅ ${sucursal}: ${vcpData.length} VCP cargados`);
-            
-        } catch(e) { 
-            console.error("❌ Error cargando VCP:", e); 
-        }
+        } catch(e) { console.error("Error cargando VCP:", e); }
     }
-    
     return { actos: actosData, vcp: vcpData };
 }
 async function loadData() {
