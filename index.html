@@ -46,14 +46,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .report-item { transition: all 0.3s ease; animation: slideIn 0.4s ease-out; background: #fff8f0; border-radius: 10px; padding: 8px; margin-bottom: 6px; border-left: 3px solid #f18b00; }
 @keyframes slideIn { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
 .watermark { position: fixed; bottom: 10px; right: 12px; font-size: 11px; font-weight: 800; color: rgba(30, 41, 59, 0.12); z-index: 10001; pointer-events: none; user-select: none; }
-#videoIntro { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #000; z-index: 99998; display: none; align-items: center; justify-content: center; flex-direction: column; }
-#videoIntro.active { display: flex; animation: fadeInVideo 0.5s ease-out; }
-@keyframes fadeInVideo { from { opacity: 0; } to { opacity: 1; } }
-#videoIntro video { width: 100%; height: 100%; object-fit: contain; background: #000; }
-#videoIntro .video-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); padding: 30px; display: flex; justify-content: space-between; align-items: center; z-index: 10; }
-#videoIntro .video-info { color: white; }
-#skipIntroBtn { background: linear-gradient(135deg, #f18b00, #ffa543); color: white; border: none; padding: 12px 32px; border-radius: 12px; font-weight: 800; font-size: 14px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 15px rgba(241, 139, 0, 0.5); text-transform: uppercase; letter-spacing: 1px; }
-#skipIntroBtn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(241, 139, 0, 0.7); }
 #passwordOverlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, #1e293b 0%, #f18b00 100%); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 20px; }
 .password-card { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(12px); border-radius: 24px; padding: 32px; width: 100%; max-width: 420px; text-align: center; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4); border: 2px solid #f18b00; animation: modalBounce 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .password-lock-icon { font-size: 64px; margin-bottom: 16px; animation: pulse 2s infinite; display: inline-block; }
@@ -226,18 +218,6 @@ backdrop-filter: blur(12px);
 </style>
 </head>
 <body>
-<div id="videoIntro">
-<video id="introVideoPlayer" autoplay playsinline controls>
-<source src="PRESENTACIÓN.mp4" type="video/mp4">
-</video>
-<div class="video-overlay">
-<div class="video-info">
-<h3>🛡️ MINERAR 2026 · GRUPO PAOLINI</h3>
-<p>Sistema de Seguridad y Monitoreo en Vivo</p>
-</div>
-<button id="skipIntroBtn" onclick="skipVideoIntro()">Saltar Intro →</button>
-</div>
-</div>
 <div class="watermark" id="watermark">MINERAR</div>
 <div id="passwordOverlay">
 <div class="password-card">
@@ -604,46 +584,9 @@ backdrop-filter: blur(12px);
 </div>
 </div>
 <script>
-let videoTimeout = null;
-function requestFullscreen(element) {
-if (element.requestFullscreen) element.requestFullscreen();
-else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen();
-else if (element.msRequestFullscreen) element.msRequestFullscreen();
-}
-function showVideoIntro() {
-const videoIntro = document.getElementById('videoIntro');
-const video = document.getElementById('introVideoPlayer');
-videoIntro.classList.add('active');
-setTimeout(() => requestFullscreen(videoIntro), 100);
-video.play().catch(e => console.log('Autoplay prevented'));
-videoTimeout = setTimeout(() => skipVideoIntro(), 30000);
-video.addEventListener('ended', () => { if (videoTimeout) { clearTimeout(videoTimeout); skipVideoIntro(); } });
-}
-function skipVideoIntro() {
-if (videoTimeout) clearTimeout(videoTimeout);
-if (document.exitFullscreen) document.exitFullscreen();
-else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
-const videoIntro = document.getElementById('videoIntro');
-const video = document.getElementById('introVideoPlayer');
-video.pause();
-videoIntro.style.transition = 'opacity 0.6s ease-out';
-videoIntro.style.opacity = '0';
-setTimeout(() => {
-videoIntro.classList.remove('active');
-videoIntro.style.display = 'none';
-videoIntro.style.opacity = '1';
-enterMainPanel();
-}, 600);
-}
-
-// ✅ CONTRASEÑAS OFUSCADAS (no visibles en texto plano)
-const _0x4a2f = ['MasAgiles@MINERAR', 'ADMIN123'];
-function getPass(index) {
-    const key = [77, 97, 115, 65, 103, 105, 108, 101, 115, 64, 77, 73, 78, 69, 82, 65, 82];
-    const key2 = [65, 68, 77, 73, 78, 49, 50, 51];
-    const arr = index === 0 ? key : key2;
-    return String.fromCharCode(...arr);
-}
+// ==================== CONFIGURACIÓN ====================
+const PASSWORD_CORRECTA = "MasAgiles@MINERAR";
+const PASSWORD_RESUMEN = "ADMIN123";
 
 let isUnlocked = false, soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedCausa = null, selectedVCPCausa = null;
@@ -662,6 +605,7 @@ let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos
 let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
 let supervisorFiltroTabla = null;
+
 const SUCURSALES_CONFIG = {
 MALAGUENO: {
 actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv',
@@ -670,11 +614,11 @@ mapping: {
     fecha: 11, 
     tipo: 1, 
     sector: 2, 
-    observador: 17,  // Columna R - Responsable/Supervisor
-    personaObservada: 16,  // Columna Q - Personal
-    descripcion: 18,  // Columna S - Descripción
+    observador: 17,
+    personaObservada: 16,
+    descripcion: 18,
     cerrado: 23, 
-    causa: 19  // Columna T - Causas
+    causa: 19
 },
 vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
 objetivos: { actos: 66, cond: 44 },
@@ -691,14 +635,14 @@ LAPAMPITA: {
 actosUrl: 'https://docs.google.com/spreadsheets/d/1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8/export?format=csv',
 vcpUrl: 'https://docs.google.com/spreadsheets/d/1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY/export?format=csv',
 mapping: { 
-    fecha: 3,  // Columna D
+    fecha: 3,
     tipo: 2, 
-    sector: 6,  // Columna G
-    observador: 5,  // Columna F - Quien reporta
-    personaObservada: 8,  // Columna I - Personal (Propio/Contratista/Cliente)
-    descripcion: 10,  // Columna K - Descripción
+    sector: 6,
+    observador: 5,
+    personaObservada: 8,
+    descripcion: 10,
     cerrado: 14, 
-    causa: 11  // Columna L - Causas
+    causa: 11
 },
 vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
 objetivos: { actos: 66, cond: 44 },
@@ -710,135 +654,37 @@ let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
-const CATEGORIAS_POR_TARJETA = {
-'epp': [
-'AI - Falta de uso de equipos de protección personal',
-'AI - Uso inapropiado del equipo de protección personal'
-],
-'orden': [
-'CI - Falta de orden y Limpieza (Orden y limpieza deficientes)',
-'AI - Manejo incorrecto de residuos (mezcla, disposición inadecuada)'
-],
-'procedimientos': [
-'AI - Incumplimiento de procedimiento',
-'AI - Evaluación de riesgos y planificación de tarea inadecuada',
-'AI - Falta de capacitación o transferencia de conocimiento inadecuados',
-'AI - Rutinas de trabajo ineficaz (Prácticas operativas incorrectas)',
-'AI - Actividad de rutina realizada en forma mecánica',
-'AI - Rutinas de trabajo ineficaz'
-],
-'equipos': [
-'CI - Equipos o herramientas fuera de estándar o en mal estado',
-'CI - Mantenimiento de equipos o herramientas deficientes',
-'AI - Equipos herramientas utilizadas en forma inadecuada'
-],
-'conduccion': [
-'AI - Conducción insegura / Manejo inadecuado de vehículos'
-],
-'berma': [
-'CI - Berma de seguridad fuera de estándar o inexistente'
-],
-'senalizacion': [
-'CI - Señalizacion deficiente o inadecuada'
-],
-'area': [
-'CI - Problemas de Visibilidad (polvo, clima: niebla, lluvia, granizo, deslumbramiento del sol, otros)',
-'CI - Riesgo de derrame y contaminación de suelo y/o agua',
-'CI - Sistema de tratamientos de efluentes/ emisiones fuera de servicio',
-'CI - Sistema de contencion dañados o inexistentes',
-'CI - Sector o ambiente de trabajo en condiciones inseguras',
-'AI - Falta de uso de elemento de contención',
-'AI - Operación fuera de parámetros ambientales permitido',
-'AI - No uso de sistema de contención kit- anti derrame',
-'AI - Almacenamiento inadecuado de sustancias'
-],
-'otros': [
-'Otros'
-]
-};
-function getEstadoBadgeHTML(cerrado, size = 'normal') {
-const estaCerrado = cerrado === true || cerrado === 'si' || cerrado === 'Si' || cerrado === 'SI';
-if (estaCerrado) {
-const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
-return `<span class="estado-badge-cerrado ${sizeClass} font-bold shadow-md"><span class="text-lg">✅</span> CERRADO</span>`;
-} else {
-const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
-return `<span class="estado-badge-abierto ${sizeClass} font-bold shadow-md"><span class="text-lg">🔴</span> ABIERTO</span>`;
-}
-}
+
+// ==================== FUNCIONES DE UTILIDAD ====================
 function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, function(m) { if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; return m; }); }
-function convertirEnlacesImagenes(urlString) {
-if (!urlString || urlString.trim() === '') return [];
-const urls = urlString.split(',').map(u => u.trim()).filter(u => u);
-const imagenes = [];
-urls.forEach(url => {
-if (url.includes('drive.google.com')) {
-const match = url.match(/[?&]id=([^&]+)/);
-if (match && match[1]) {
-const fileId = match[1];
-imagenes.push({ thumbnail: `https://lh3.googleusercontent.com/d/${fileId}=w800`, full: `https://drive.google.com/file/d/${fileId}/view`, original: url });
-}
-} else if (url.startsWith('http')) {
-imagenes.push({ thumbnail: url, full: url, original: url });
-}
-});
-return imagenes;
-}
-function abrirLightbox(imagenUrl) {
-let lightbox = document.querySelector('.lightbox');
-if(lightbox) lightbox.remove();
-lightbox = document.createElement('div');
-lightbox.className = 'lightbox';
-lightbox.innerHTML = `<span class="lightbox-close">&times;</span><img src="${imagenUrl}" alt="Imagen ampliada">`;
-document.body.appendChild(lightbox);
-lightbox.onclick = function(e) {
-if(e.target === lightbox || e.target.className === 'lightbox-close') {
-lightbox.remove();
-}
-};
-}
-function renderizarImagenesModal(imagenesString, titulo = "📸 REGISTRO FOTOGRÁFICO") {
-const imagenes = convertirEnlacesImagenes(imagenesString);
-if (!imagenes.length) return '';
-let html = `<div class="imagen-reporte-container"><div class="imagen-reporte-title">${titulo}</div><div class="imagen-grid">`;
-imagenes.forEach((img, index) => {
-html += `<div class="imagen-item"><img src="${img.thumbnail}" alt="Imagen ${index+1}" onclick="abrirLightbox('${img.thumbnail}')" onerror="this.parentElement.innerHTML='<div class=\\'imagen-error\\'>❌ No se pudo cargar<br><button onclick=\\'window.open(\\&quot;${img.full}\\&quot;,\\\\_blank\\\\)\\\' class=\\'imagen-link-btn\\'>🔗 Ver en Drive</button></div>'"><div class="imagen-overlay">📷 Imagen ${index+1} · Click para ampliar</div></div>`;
-});
-html += `</div></div>`;
-return html;
-}
-window.getTodayKey = function() { return new Date().toDateString(); };
-window.audioContextInitialized = false; window.audioContext = null;
-window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
-window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { window.initAudioContext(); } if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
-function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
-function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
-function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+
 function togglePasswordVisibility() {
 const input = document.getElementById('passwordInput');
 if (input.type === 'password') { input.type = 'text'; } else { input.type = 'password'; }
 input.focus();
 }
+
 function toggleResumenPasswordVisibility() {
 const input = document.getElementById('resumenPasswordInput');
 if (input.type === 'password') { input.type = 'text'; } else { input.type = 'password'; }
 input.focus();
 }
+
 function verifyPassword() {
 const input = document.getElementById('passwordInput');
 const errorDiv = document.getElementById('passwordError');
 const overlay = document.getElementById('passwordOverlay');
-if (input.value === getPass(0)) {
+if (input.value === PASSWORD_CORRECTA) {
 playUnlockSound();
 errorDiv.textContent = '';
-overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando presentación...</p></div>';
+overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando panel...</p></div>';
 setTimeout(() => {
 overlay.style.opacity = '0';
 overlay.style.transition = 'opacity 0.5s';
 setTimeout(() => {
 overlay.style.display = 'none';
 isUnlocked = true;
-showVideoIntro();
+enterMainPanel();
 }, 500);
 }, 1200);
 } else {
@@ -850,51 +696,210 @@ input.classList.add('border-red-400');
 setTimeout(() => input.classList.remove('border-red-400'), 500);
 }
 }
-function updateLastUpdateIndicator() {
-lastUpdateTime = Date.now();
-const lastUpdate = new Date(lastUpdateTime);
-const timeStr = lastUpdate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-let indicator = document.getElementById('lastUpdateIndicator');
-if (!indicator) {
-indicator = document.createElement('div');
-indicator.id = 'lastUpdateIndicator';
-indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2';
-const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
-if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling);
-}
-indicator.innerHTML = `📡 ${timeStr}`;
-}
+
 function enterMainPanel() {
 document.getElementById('mainContent').classList.remove('hidden-section');
 loadData();
 if (refreshInterval) clearInterval(refreshInterval);
 refreshInterval = null;
-console.log('✅ Panel cargado');
+console.log('✅ Panel cargado - Actualización manual');
 }
+
 function logout() { if(refreshInterval) clearInterval(refreshInterval); location.reload(); }
-function classifyData(desc, useVCP = false) {
-if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-const d = desc.toLowerCase();
-if (useVCP) {
-if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo') || d.includes('basura') || d.includes('desecho')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso')) return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
-if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
-return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+
+function forceRefreshData() {
+if (isUnlocked && !isUpdating) {
+const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
+const originalText = refreshBtn?.innerHTML;
+if (refreshBtn) { refreshBtn.innerHTML = '⟳ CARGANDO...'; refreshBtn.disabled = true; }
+loadData().finally(() => { if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } });
 }
-if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('berma de seguridad') || d.includes('estándar') || d.includes('sin berma') || d.includes('falta berma') || d.includes('berma baja') || d.includes('berma inexistente'))
-return { id: 'berma', name: 'BERMA', icon: '', color: '#f97316' };
-if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
-if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
-if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '', color: '#f59e0b' };
-if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones')) return { id: 'epp', name: 'FALTA EPP', icon: '️', color: '#3b82f6' };
-if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') || d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora')) return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
-if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || d.includes('sanitario') || d.includes('levantada') || d.includes('suelto')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
-return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
-function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
+
+function getEstadoBadgeHTML(cerrado, size = 'normal') {
+const estaCerrado = cerrado === true || cerrado === 'si' || cerrado === 'Si' || cerrado === 'SI';
+if (estaCerrado) {
+const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
+return `<span class="estado-badge-cerrado ${sizeClass} font-bold shadow-md"><span class="text-lg">✅</span> CERRADO</span>`;
+} else {
+const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
+return `<span class="estado-badge-abierto ${sizeClass} font-bold shadow-md"><span class="text-lg">🔴</span> ABIERTO</span>`;
+}
+}
+
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
+
+function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
+
+// ==================== FUNCIÓN CLASSIFY DATA CORREGIDA ====================
+function classifyData(desc, useVCP = false) {
+    if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+    
+    const d = desc.toLowerCase().trim();
+    
+    if (useVCP) {
+        if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo')) 
+            return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+        if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('rutina')) 
+            return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+        if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) 
+            return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+    }
+    
+    // 🔥 CLASIFICACIÓN MEJORADA PARA ACTOS Y CONDICIONES
+    
+    // 1. BERMA
+    if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde de seguridad')) {
+        return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
+    }
+    
+    // 2. SEÑALIZACIÓN
+    if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono') || 
+        d.includes('cinta') || d.includes('señalización') || d.includes('señalizacion') || d.includes('delimitación')) {
+        return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
+    }
+    
+    // 3. EQUIPOS Y HERRAMIENTAS
+    if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || 
+        d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla') || 
+        d.includes('fuera de estándar') || d.includes('fuera de estandar')) {
+        return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+    }
+    
+    // 4. PROCEDIMIENTOS (🔥 CLAVE - DETECTA TODAS LAS VARIANTES)
+    if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || 
+        d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('mecanica') || 
+        d.includes('evaluación de riesgos') || d.includes('evaluacion de riesgos') || d.includes('planificación') || 
+        d.includes('planificacion') || d.includes('tarea') || d.includes('operación') || d.includes('operacion') || 
+        d.includes('sobrepaso') || d.includes('exceso') || d.includes('velocidad') || d.includes('procedimiento inadecuado') ||
+        d.includes('prácticas operativas') || d.includes('practicas operativas') || d.includes('rutina de trabajo') ||
+        d.includes('incumplimiento de procedimiento') || d.includes('procedimiento inadecuado') ||
+        d.includes('práctica operativa') || d.includes('practica operativa')) {
+        return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+    }
+    
+    // 5. EPP
+    if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || 
+        d.includes('arnés') || d.includes('arnes') || d.includes('protección personal') || d.includes('proteccion personal') || 
+        d.includes('barbijo') || d.includes('tapones') || d.includes('sin lentes') || d.includes('lentes claros') ||
+        d.includes('falta de uso de epp') || d.includes('falta de epp')) {
+        return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
+    }
+    
+    // 6. CAPACITACIÓN
+    if (d.includes('capacitación') || d.includes('capacitacion') || d.includes('entrenamiento') || d.includes('formación') || 
+        d.includes('formacion') || d.includes('conocimiento') || d.includes('transferencia de conocimiento')) {
+        return { id: 'capacitacion', name: 'CAPACITACIÓN', icon: '🎓', color: '#a855f7' };
+    }
+    
+    // 7. RESIDUOS
+    if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || 
+        d.includes('disposición') || d.includes('disposicion') || d.includes('reciclaje') || d.includes('contenedor') ||
+        d.includes('manejo incorrecto') || d.includes('residuos')) {
+        return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+    }
+    
+    // 8. CONDUCCIÓN
+    if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('conduccion') || 
+        d.includes('manejo') || d.includes('vehículo') || d.includes('vehiculo') || d.includes('camión') || 
+        d.includes('camion') || d.includes('retroexcavadora')) {
+        return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
+    }
+    
+    // 9. ORDEN, LIMPIEZA Y RESIDUOS
+    if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || 
+        d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || 
+        d.includes('sanitario') || d.includes('levantada') || d.includes('suelto') || d.includes('limpieza deficiente')) {
+        return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+    }
+    
+    // 10. ÁREA Y ENTORNO
+    if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || 
+        d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('derrame') || 
+        d.includes('contención') || d.includes('contencion') || d.includes('efluente') || d.includes('emisión') || 
+        d.includes('emision') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || 
+        d.includes('área') || d.includes('area') || d.includes('condiciones inseguras') || d.includes('condicion insegura')) {
+        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+    }
+    
+    // Si no coincide, mostrar en consola
+    console.log(`📌 Sin clasificar: "${desc.substring(0, 80)}"`);
+    return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
+}
+
+// ==================== FUNCIÓN DIAGNÓSTICO ALCAYAGA ====================
+function diagnosticarAlcayaga() {
+    console.log('🔍 DIAGNÓSTICO DE REGISTROS DE ALCAYAGA EMILIANO');
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    const todos = ACTOS_COND_DATA.filter(e => compararNombres(e.observador, 'Alcayaga Emiliano'));
+    
+    console.log(`📊 TOTAL DE REGISTROS: ${todos.length}`);
+    console.log('');
+    
+    const actos = todos.filter(e => e.tipo === 'acto');
+    const condiciones = todos.filter(e => e.tipo === 'condicion');
+    
+    console.log(`⚠️ ACTOS: ${actos.length}`);
+    actos.forEach((a, i) => {
+        console.log(`   ${i+1}. ${a.dia}/${a.mes} - ${a.descripcion}`);
+        console.log(`      Categoría: ${a.categoria?.name || 'Sin categoría'} (${a.categoria?.id || 'sin-id'})`);
+    });
+    
+    console.log('');
+    console.log(`🏚️ CONDICIONES: ${condiciones.length}`);
+    condiciones.forEach((c, i) => {
+        console.log(`   ${i+1}. ${c.dia}/${c.mes} - ${c.descripcion}`);
+        console.log(`      Categoría: ${c.categoria?.name || 'Sin categoría'} (${c.categoria?.id || 'sin-id'})`);
+    });
+    
+    console.log('');
+    console.log('📊 RESUMEN:');
+    console.log(`   Total: ${todos.length}`);
+    console.log(`   Actos: ${actos.length}`);
+    console.log(`   Condiciones: ${condiciones.length}`);
+    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+    
+    return todos;
+}
+
+// ==================== NORMALIZAR Y COMPARAR NOMBRES ====================
+function normalizarNombre(nombre) {
+    if (!nombre) return '';
+    return nombre.toLowerCase().trim()
+        .replace(/,/g, ' ')
+        .replace(/\./g, '')
+        .replace(/\s+/g, ' ')
+        .split(' ')
+        .sort()
+        .join(' ');
+}
+
+function compararNombres(nombre1, nombre2) {
+    if (!nombre1 || !nombre2) return false;
+    const n1 = normalizarNombre(nombre1);
+    const n2 = normalizarNombre(nombre2);
+    if (n1 === n2) return true;
+    if (n1.includes(n2) || n2.includes(n1)) return true;
+    const palabras1 = n1.split(' ');
+    const palabras2 = n2.split(' ');
+    let coincidencias = 0;
+    for (const p1 of palabras1) {
+        if (p1.length < 2) continue;
+        for (const p2 of palabras2) {
+            if (p2.length < 2) continue;
+            if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) {
+                coincidencias++;
+                break;
+            }
+        }
+    }
+    const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.8));
+    return coincidencias >= minCoincidencias;
+}
+
+// ==================== CARGA DE DATOS ====================
 async function cargarDatosSucursal(sucursal) {
 const config = SUCURSALES_CONFIG[sucursal];
 let actosData = [], vcpData = [];
@@ -921,7 +926,6 @@ fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerra
 } else {
 if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
 fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
-// ✅ LEER PERSONA OBSERVADA
 if (config.mapping.personaObservada !== undefined && row[config.mapping.personaObservada]) {
 personaObservada = row[config.mapping.personaObservada] || '';
 }
@@ -1007,6 +1011,7 @@ showNewReportAlert(po, sec, des, 'VCP', hora);
 }
 return { actos: actosData, vcp: vcpData };
 }
+
 async function loadData() {
 if(!isUnlocked || isUpdating) return;
 isUpdating = true;
@@ -1040,14 +1045,30 @@ updateLastUpdateIndicator();
 } catch(e) { console.error("Error en loadData:", e); }
 finally { isUpdating = false; }
 }
-function forceRefreshData() {
-if (isUnlocked && !isUpdating) {
+
+// ==================== AUDIO ====================
+window.audioContextInitialized = false; window.audioContext = null;
+window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
+window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) { window.initAudioContext(); } if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
+function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
+function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
+function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
+
+function updateLastUpdateIndicator() {
+lastUpdateTime = Date.now();
+const lastUpdate = new Date(lastUpdateTime);
+const timeStr = lastUpdate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+let indicator = document.getElementById('lastUpdateIndicator');
+if (!indicator) {
+indicator = document.createElement('div');
+indicator.id = 'lastUpdateIndicator';
+indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2';
 const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
-const originalText = refreshBtn?.innerHTML;
-if (refreshBtn) { refreshBtn.innerHTML = '⟳ CARGANDO...'; refreshBtn.disabled = true; }
-loadData().finally(() => { if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } });
+if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling);
 }
+indicator.innerHTML = `📡 ${timeStr}`;
 }
+
 function showNewReportAlert(persona, sector, desc, tipo, hora) {
 if(!soundEnabled) return;
 const alertEl = document.getElementById('newReportAlert');
@@ -1065,7 +1086,9 @@ if(countdownEl) countdownEl.textContent = segundos;
 if(alertCountdownInterval) clearInterval(alertCountdownInterval);
 alertCountdownInterval = setInterval(() => { segundos--; if(countdownEl) countdownEl.textContent = segundos; if(segundos <= 0) dismissAlert(); }, 1000);
 }
+
 function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval = null; } const alertEl = document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
+
 function updatePulseBadges() {
 const badgeActos = document.getElementById('actosNovedadBadge');
 const badgeVCP = document.getElementById('vcpNovedadBadge');
@@ -1074,39 +1097,9 @@ const alertsVCP = todayAlertsBySucursal[currentSucursal]?.vcp || [];
 if(badgeActos) { if(alertsActos.length > 0) { badgeActos.textContent = Math.min(alertsActos.length, 99); badgeActos.classList.remove('hidden'); } else { badgeActos.classList.add('hidden'); } }
 if(badgeVCP) { if(alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alertsVCP.length, 99); badgeVCP.classList.remove('hidden'); } else { badgeVCP.classList.add('hidden'); } }
 }
+
 function updateTotalCounters() { document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0'; }
-function normalizarNombre(nombre) {
-if (!nombre) return '';
-return nombre.toLowerCase().trim()
-.replace(/,/g, ' ')
-.replace(/\./g, '')
-.replace(/\s+/g, ' ')
-.split(' ')
-.sort()
-.join(' ');
-}
-function compararNombres(nombre1, nombre2) {
-if (!nombre1 || !nombre2) return false;
-const n1 = normalizarNombre(nombre1);
-const n2 = normalizarNombre(nombre2);
-if (n1 === n2) return true;
-if (n1.includes(n2) || n2.includes(n1)) return true;
-const palabras1 = n1.split(' ');
-const palabras2 = n2.split(' ');
-let coincidencias = 0;
-for (const p1 of palabras1) {
-if (p1.length < 2) continue;
-for (const p2 of palabras2) {
-if (p2.length < 2) continue;
-if (p1 === p2 || p1.includes(p2) || p2.includes(p1)) {
-coincidencias++;
-break;
-}
-}
-}
-const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.8));
-return coincidencias >= minCoincidencias;
-}
+
 async function populateSupervisors() {
 const sel = document.getElementById('supervisorSelect'); if (!sel) return;
 const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
@@ -1122,6 +1115,7 @@ sel.innerHTML += `<option value="${x.replace(/'/g, '&#39;')}">👤 ${x} (${count
 });
 updateSupervisorCard();
 }
+
 function updateSupervisorCard() {
 let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
 let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
@@ -1133,6 +1127,7 @@ document.getElementById('supActosCount').innerText = resultados.filter(e => e.ti
 document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
 renderGeneralTableConFiltroSupervisor();
 }
+
 function renderGeneralTableConFiltroSupervisor() {
 let data = ACTOS_COND_DATA;
 if (supervisorFiltroTabla) {
@@ -1162,12 +1157,14 @@ return (mesB * 100 + diaB) - (mesA * 100 + diaA);
 });
 renderGeneralTable(sorted);
 }
+
 function limpiarFiltroSupervisorTabla() {
 supervisorFiltroTabla = null;
 document.getElementById('supervisorSelect').value = 'todos';
 updateSupervisorCard();
 renderGeneralTableConFiltroSupervisor();
 }
+
 function updateCategoryCards(data, type) {
 if (type === 'vcp') {
 const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
@@ -1208,11 +1205,11 @@ const CATS_EXPANDIDAS = [
 { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' },
 { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' },
 { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' },
-{ id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '', color: '#8b5cf6' },
+{ id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' },
 { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' },
 { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' },
 { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' },
-{ id: 'area', name: 'ÁREA Y ENTORNO', icon: '️', color: '#ea580c' },
+{ id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' },
 { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' }
 ];
 const cats = CATS_EXPANDIDAS;
@@ -1243,48 +1240,22 @@ if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.
 else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); }
 applyGeneralFilters();
 };
-const categorias = CATEGORIAS_POR_TARJETA[c.id] || [];
-let tooltipItemsHTML = '';
-if (categorias.length > 0) {
-if (c.id === 'conduccion') {
-tooltipItemsHTML = `<div class="tooltip-item" style="color:#fcd34d;border-left-color:transparent;font-style:italic;">${categorias[0]}</div>`;
-} else {
-tooltipItemsHTML = categorias.map(cat => {
-let catConAbrev = cat;
-if (cat.startsWith('CI -') || cat.startsWith('CI-') || cat.startsWith('CI.')) {
-catConAbrev = `<span class="abrev">CI</span>${cat.substring(2)}`;
-} else if (cat.startsWith('AI -') || cat.startsWith('AI-') || cat.startsWith('AI.')) {
-catConAbrev = `<span class="abrev">AI</span>${cat.substring(2)}`;
-}
-return `<div class="tooltip-item">${catConAbrev}</div>`;
-}).join('');
-}
-} else {
-tooltipItemsHTML = `<div class="tooltip-item" style="color:#94a3b8;border-left-color:transparent;">Sin categorías específicas</div>`;
-}
-const tooltipHTML = `
-<div class="tooltip-content">
-<div class="tooltip-header"> ${c.name}</div>
-${tooltipItemsHTML}
-<div class="tooltip-footer">💡 Pasa el mouse para ver qué categorías abarca esta tarjeta</div>
-</div>
-`;
 div.innerHTML = `
 <div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div>
 <div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div>
 <div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div>
 <div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>
-${tooltipHTML}
 `;
 cont.appendChild(div);
 });
 }
+
 function updateChartsDona(data, type) {
 if (type !== 'actos') return;
 const CATS_EXPANDIDAS = [
 { id: 'epp', name: 'EPP', icon: '🛡️', color: '#3b82f6' },
 { id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' },
-{ id: 'procedimientos', name: 'Proced.', icon: '', color: '#f59e0b' },
+{ id: 'procedimientos', name: 'Proced.', icon: '📋', color: '#f59e0b' },
 { id: 'equipos', name: 'Equipos', icon: '🔧', color: '#8b5cf6' },
 { id: 'conduccion', name: 'Conduc.', icon: '🚗', color: '#ef4444' },
 { id: 'berma', name: 'Berma', icon: '🧱', color: '#f97316' },
@@ -1326,23 +1297,12 @@ const pct = Math.round((ctx.parsed / total) * 100);
 return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
 }
 }
-},
-datalabels: {
-color: '#fff',
-font: { weight: 'bold', size: 11 },
-formatter: (value, ctx) => {
-let total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-return total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
-},
-anchor: 'center',
-align: 'center',
-offset: 0
 }
 }
-},
-plugins: [ChartDataLabels]
+}
 });
 }
+
 function updateVCPCharts(data) {
 const CATS=[{id:'orden',name:'Orden',icon:'🧹',color:'#10b981'},{id:'proc',name:'Proced.',icon:'⚡',color:'#f59e0b'},{id:'equip',name:'Equipos',icon:'🔧',color:'#8b5cf6'},{id:'area',name:'Área',icon:'🏗️',color:'#ea580c'}];
 let counts={}; CATS.forEach(c=>counts[c.id]=0); data.forEach(e=>{if(e.categoria?.id) counts[e.categoria.id]=(counts[e.categoria.id]||0)+1;});
@@ -1371,28 +1331,18 @@ const pct = Math.round((ctx.parsed / total) * 100);
 return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
 }
 }
-},
-datalabels: {
-color: '#fff',
-font: { weight: 'bold', size: 10 },
-formatter: (value, ctx) => {
-let total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-return total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
-},
-anchor: 'center',
-align: 'center',
-offset: 0
 }
 }
-},
-plugins: [ChartDataLabels]
+}
 });
 const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], vPM=meses.map(m=>data.filter(e=>e.mes===m).length);
 const ctxT=document.getElementById('vcpTrendChart')?.getContext('2d'); if(vcpTrendChart) vcpTrendChart.destroy();
 let maxYScale = 60;
 vcpTrendChart=new Chart(ctxT,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'🎯 VCP',data:vPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',borderWidth:3,fill:true,tension:0.3,pointRadius:4,pointBackgroundColor:'#f59e0b',pointBorderColor:'white'}]},options:{responsive:true,maintainAspectRatio:true,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}});
 }
+
 function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
+
 function applyGeneralFilters() {
 let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado)));
 if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa);
@@ -1412,8 +1362,11 @@ updateChartsDona(f,'actos');
 updateTrendChart(f);
 renderGeneralTableConFiltroSupervisor();
 }
+
 function updateTrendChart(data) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'], ctx=document.getElementById('trendChart')?.getContext('2d'); if(!ctx) return; let sourceData=data||ACTOS_COND_DATA; let aPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='acto').length), cPM=meses.map(m=>sourceData.filter(e=>e.mes===m && e.tipo==='condicion').length); if(trendChart) trendChart.destroy(); let maxYScale=currentSucursal==='LAPAMPITA'?150:(currentSucursal==='BARKER'?15:110); trendChart=new Chart(ctx,{type:'line',data:{labels:meses.map(m=>m.charAt(0).toUpperCase()+m.slice(1)),datasets:[{label:'️ Actos',data:aPM,borderColor:'#3b82f6',backgroundColor:'rgba(59,130,246,0.1)',tension:0.3,fill:true},{label:'🏚️ Condiciones',data:cPM,borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,0.1)',tension:0.3,fill:true}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'top',labels:{font:{size:9}}}},scales:{y:{beginAtZero:true,max:maxYScale,ticks:{stepSize:10}},x:{ticks:{font:{size:9}}}}}}); }
+
 function applyVCPFilters() { let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa); let pct = Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus'); if(vs){ if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText='⚠ Casi'; else vs.innerText='⚠ Pendiente'; } document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%'; updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f); }
+
 function renderGeneralTable(data) {
 let tb = document.getElementById('generalTableBody');
 if (!tb) return;
@@ -1441,7 +1394,6 @@ tipoClass = 'bg-amber-100 text-amber-700';
 tipoDisplay = '📌 Otro';
 tipoClass = 'bg-gray-100 text-gray-700';
 }
-// ✅ MOSTRAR PERSONA OBSERVADA O SECTOR
 const personaOSector = e.personaObservada ? e.personaObservada : e.sector;
 const sigla = e.tipo === 'acto' ? 'AI' : (e.tipo === 'condicion' ? 'CI' : '');
 const descConSigla = sigla ? `${sigla} - ${e.descripcion || ''}` : (e.descripcion || '');
@@ -1456,9 +1408,13 @@ tr.innerHTML = `
 tb.appendChild(tr);
 });
 }
+
 function renderVCPTable(data) { let tb=document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=[...data].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha)); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2 font-semibold"> ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2">💬 ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2">${estadoBadge}</td>`; tb.appendChild(tr); }); }
+
 function updatePersonVCPStatsOnly() { let p=document.getElementById('vcpPersonFilter')?.value||'todos', m=document.getElementById('vcpPersonMonthFilter')?.value||'todo', f=VCP_DATA.filter(v=>(p==='todos'||v.personaObservada===p)&&(m==='todo'||v.mes===m)); document.getElementById('personVCPCount').innerText=f.length; document.getElementById('personLastVCP').innerText=f.length?f.sort((a,b)=>new Date(b.fecha)-new Date(a.fecha))[0].dia+'/'+f[0].mes:'-'; }
+
 function populateVCPPeopleFilter() { let counts=new Map(); VCP_DATA.forEach(v=>{if(v.personaObservada) counts.set(v.personaObservada,(counts.get(v.personaObservada)||0)+1);}); let sel=document.getElementById('vcpPersonFilter'); if(!sel) return; sel.innerHTML='<option value="todos">👥 Todas las personas</option>'; [...counts.keys()].sort().forEach(n=>sel.innerHTML+=`<option value="${n}">🧑 ${n} (${counts.get(n)})</option>`); updatePersonVCPStatsOnly(); }
+
 function openModal(r, idx, data) {
 if (!isUnlocked) return;
 isModalOpen = true;
@@ -1481,23 +1437,74 @@ modal.classList.remove('hidden-section');
 modal.style.display = 'flex';
 document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
 }
+
+function convertirEnlacesImagenes(urlString) {
+if (!urlString || urlString.trim() === '') return [];
+const urls = urlString.split(',').map(u => u.trim()).filter(u => u);
+const imagenes = [];
+urls.forEach(url => {
+if (url.includes('drive.google.com')) {
+const match = url.match(/[?&]id=([^&]+)/);
+if (match && match[1]) {
+const fileId = match[1];
+imagenes.push({ thumbnail: `https://lh3.googleusercontent.com/d/${fileId}=w800`, full: `https://drive.google.com/file/d/${fileId}/view`, original: url });
+}
+} else if (url.startsWith('http')) {
+imagenes.push({ thumbnail: url, full: url, original: url });
+}
+});
+return imagenes;
+}
+
+function abrirLightbox(imagenUrl) {
+let lightbox = document.querySelector('.lightbox');
+if(lightbox) lightbox.remove();
+lightbox = document.createElement('div');
+lightbox.className = 'lightbox';
+lightbox.innerHTML = `<span class="lightbox-close">&times;</span><img src="${imagenUrl}" alt="Imagen ampliada">`;
+document.body.appendChild(lightbox);
+lightbox.onclick = function(e) {
+if(e.target === lightbox || e.target.className === 'lightbox-close') {
+lightbox.remove();
+}
+};
+}
+
+function renderizarImagenesModal(imagenesString, titulo = "📸 REGISTRO FOTOGRÁFICO") {
+const imagenes = convertirEnlacesImagenes(imagenesString);
+if (!imagenes.length) return '';
+let html = `<div class="imagen-reporte-container"><div class="imagen-reporte-title">${titulo}</div><div class="imagen-grid">`;
+imagenes.forEach((img, index) => {
+html += `<div class="imagen-item"><img src="${img.thumbnail}" alt="Imagen ${index+1}" onclick="abrirLightbox('${img.thumbnail}')" onerror="this.parentElement.innerHTML='<div class=\\'imagen-error\\'>❌ No se pudo cargar<br><button onclick=\\'window.open(\\&quot;${img.full}\\&quot;,\\\\_blank\\\\)\\\' class=\\'imagen-link-btn\\'>🔗 Ver en Drive</button></div>'"><div class="imagen-overlay">📷 Imagen ${index+1} · Click para ampliar</div></div>`;
+});
+html += `</div></div>`;
+return html;
+}
+
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#f18b00'); applyVCPFilters(); }
 function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#f18b00'); applyVCPFilters(); }
+
 function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';}); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
+
 function limpiarFiltroGrafico() { const m=document.getElementById('monthFilter'); if(m) m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
 function limpiarFiltroCausa() { selectedCausa=null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
 function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
 function clearVCPCauseFilter() { selectedVCPCausa=null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
+
 function updateRealTimeUI() { const actCont=document.getElementById('realTimeReportsActos'), vcpCont=document.getElementById('realTimeReportsVCP'), actLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), alerts=todayAlertsBySucursal[currentSucursal]; if(actLed) actLed.className=alerts.actos.length>0?'siren-green':'siren-red'; if(vcpLed) vcpLed.className=alerts.vcp.length>0?'siren-green':'siren-red'; if(alerts.actos.length) actCont.innerHTML=alerts.actos.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else actCont.innerHTML='<p class="text-center py-2">📭 Sin reportes hoy</p>'; if(alerts.vcp.length) vcpCont.innerHTML=alerts.vcp.map(a=>`<div class="report-item"><div class="flex justify-between"><span> ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else vcpCont.innerHTML='<p class="text-center py-2"> Sin VCP hoy</p>'; }
+
 function toggleActosAlerts() { showDailyReportsModal('actos', todayAlertsBySucursal[currentSucursal].actos); }
 function toggleVCPAlerts() { showDailyReportsModal('vcp', todayAlertsBySucursal[currentSucursal].vcp); }
+
 function showDailyReportsModal(type, alerts) { const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent'); titleEl.textContent=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY'; if(alerts.length===0) contentEl.innerHTML='<p class="text-center py-8">📭 Sin reportes hoy</p>'; else contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg mb-3"><div class="flex justify-between"><span>#${i+1}</span><span>${a.hora}</span></div><div class="font-bold">${a.persona}</div><div class="text-sm">🏭 ${a.sector}</div><div class="text-sm">${a.descripcion}</div></div>`).join(''); modal.classList.remove('hidden-section'); modal.style.display='flex'; }
+
 function closeDailyReportsModal() { const m=document.getElementById('dailyReportsModal'); m.classList.add('hidden-section'); m.style.display='none'; }
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
+
 function abrirModalSupervisor(tipo) {
 const s = document.getElementById('supervisorSelect').value;
 const m = document.getElementById('supervisorMonthSelect').value;
@@ -1552,12 +1559,25 @@ document.getElementById('supervisorModalContent').innerHTML = html;
 document.getElementById('supervisorDetailModal').classList.remove('hidden-section');
 document.getElementById('supervisorDetailModal').style.display = 'flex';
 }
+
 function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
+
 function abrirModalPersonaVCP() { const p=document.getElementById('vcpPersonFilter').value, m=document.getElementById('vcpPersonMonthFilter').value; if(p==='todos'){alert("Seleccione una persona");return;} const f=VCP_DATA.filter(e=>e.personaObservada===p&&(m==='todo'||e.mes===m)); if(!f.length){alert(`No hay VCPs para ${p}`);return;} let html=`<div class="mb-4 bg-orange-50 p-4 rounded"><h3> VCPs de ${p}</h3><p>📅 ${m==='todo'?'Todos los meses':m}</p><p>📊 Total: ${f.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`; f.forEach(e=>{ html+=`<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon||''} ${e.categoria?.name||''}</td><td class="p-2">${(e.descripcion||'').substring(0,50)}</td><td class="p-2">${(e.comentarios||'').substring(0,30)}</td>`; }); html+=`</tbody></tr>`; document.getElementById('personaVCPModalContent').innerHTML=html; document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display='flex'; }
+
 function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
+
 function cambiarSucursal(suc) { currentSucursal=suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id=>document.getElementById(id)?.classList.remove('active')); selectedCausa=null; selectedVCPCausa=null; state.mes='todo'; document.getElementById('monthFilter').value='todo'; document.querySelectorAll('.category-card').forEach(c=>c.classList.remove('selected')); document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); const c=SUCURSALES_CONFIG[suc]; if(c){ currentObjetivos=c.objetivos; currentShowVCP=c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); } document.getElementById(suc==='MALAGUENO'?'btnMalagueno':suc==='BARKER'?'btnBarker':'btnLaPampita')?.classList.add('active'); if(isUnlocked) loadData(); }
+
 function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.actos}`; document.getElementById('objetivoCondicionesTexto').innerHTML=`🎯 Objetivo: ${currentObjetivos.cond}`; document.getElementById('objetivosTitulo').innerHTML=`📊 OBJETIVOS MENSUALES (${currentObjetivos.actos+currentObjetivos.cond})`; document.getElementById('objetivosMeta').innerHTML=`🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos+currentObjetivos.cond} Total`; }
+
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
+
+// ==================== RESUMEN EJECUTIVO ====================
+function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display='flex'; }
+function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display='none'; }
+function verificarPasswordResumen() { const input=document.getElementById('resumenPasswordInput'); if(input.value===PASSWORD_RESUMEN){ cerrarPasswordResumenModal(); cargarTodosDatosParaResumen().then(()=>{ document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='block'; actualizarResumenEjecutivo(); }); } else { playErrorSound(); document.getElementById('resumenPasswordError').textContent='🔒 Contraseña incorrecta'; } }
+function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='none'; }
+
 function exportarResumenEjecutivoExcel() {
 const wb = XLSX.utils.book_new();
 const sucursal = document.getElementById('ejecutivoSucursal').value;
@@ -1677,6 +1697,7 @@ const fecha = new Date().toISOString().slice(0,10);
 XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`);
 alert('✅ Excel exportado exitosamente con TODOS los datos');
 }
+
 function actualizarResumenEjecutivo() {
 const sucursal = document.getElementById('ejecutivoSucursal').value;
 const mes = document.getElementById('ejecutivoMes').value;
@@ -1731,6 +1752,7 @@ renderEjecutivoRankings(datosActos);
 renderEjecutivoReincidencias(datosActos);
 renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
 }
+
 function renderEjecutivoTabla(datos) {
 const tbody = document.getElementById('ejecTablaBody');
 if (!tbody) return;
@@ -1758,16 +1780,18 @@ return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirMod
 </tr>`;
 }).join('');
 }
-function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display='flex'; }
-function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display='none'; }
-function verificarPasswordResumen() { const input=document.getElementById('resumenPasswordInput'); if(input.value===getPass(1)){ cerrarPasswordResumenModal(); cargarTodosDatosParaResumen().then(()=>{ document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='block'; actualizarResumenEjecutivo(); }); } else { playErrorSound(); document.getElementById('resumenPasswordError').textContent='🔒 Contraseña incorrecta'; } }
-function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='none'; }
+
 function detailModalPrev() { if(currentModalDataIndex>0){ currentModalDataIndex--; mostrarDetalleEnModal(currentModalDataList[currentModalDataIndex]); } }
 function detailModalNext() { if(currentModalDataIndex<currentModalDataList.length-1){ currentModalDataIndex++; mostrarDetalleEnModal(currentModalDataList[currentModalDataIndex]); } }
+
 function mostrarDetalleEnModal(item) { const isVCP=item.tipo==='vcp'; const estadoHTML = getEstadoBadgeHTML(item.cerrado!==false); let html=`<div class="space-y-4"><div class="grid grid-cols-2 gap-3 text-sm border-b pb-3"><p><strong>📅 Fecha:</strong> ${item.dia}/${item.mes}/2026</p><p><strong>🏭 Sucursal:</strong> ${item.sucursal}</p>`; if(isVCP) html+=`<p><strong> Persona:</strong> ${item.personaObservada}</p>`; else html+=`<p><strong>👤 Observador:</strong> ${item.observador}</p>`; html+=`<p><strong>🏭 Sector:</strong> ${item.sector}</p><p><strong> Tipo:</strong> ${isVCP?'VCP':(item.tipo==='acto'?'ACTO':'CONDICIÓN')}</p><p><strong>️ Categoría:</strong> ${item.categoria?.icon||''} ${item.categoria?.name||''}</p><p><strong>⚙️ Estado:</strong> ${estadoHTML}</p></div><div><p><strong>📝 Descripción:</strong></p><div class="bg-slate-50 p-3 rounded border-l-4 border-purple-500">${item.descripcion}</div></div>`; if(!isVCP && item.causas) html+=`<div><p><strong>🔍 Causas:</strong></p><div class="bg-amber-50 p-3 rounded">${item.causas}</div></div>`; if(isVCP && item.comentarios) html+=`<div><p><strong>💬 Comentarios:</strong></p><div class="bg-purple-50 p-3 rounded">${item.comentarios}</div></div>`; html+=item.imagen?renderizarImagenesModal(item.imagen):''; html+=`</div>`; document.getElementById('detailModalContent').innerHTML=html; document.getElementById('detailModalCounter').innerText=`${currentModalDataIndex+1}/${currentModalDataList.length}`; document.getElementById('detailModal').classList.remove('hidden-section'); document.getElementById('detailModal').style.display='flex'; }
+
 function cerrarDetailModal() { document.getElementById('detailModal').classList.add('hidden-section'); document.getElementById('detailModal').style.display='none'; }
+
 function abrirModalConDatos(titulo,datos) { if(!datos.length){alert("No hay datos");return;} currentModalDataList=datos; currentModalDataIndex=0; mostrarDetalleEnModal(datos[0]); }
+
 function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElementById('ejecutivoTipoFiltro').value=tipo; document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c=>c.classList.remove('active')); if(tipo==='acto') document.getElementById('kpiActosCard').classList.add('active'); else if(tipo==='condicion') document.getElementById('kpiCondCard').classList.add('active'); else if(tipo==='vcp') document.getElementById('kpiVCPCard').classList.add('active'); else document.getElementById('kpiTotalCard').classList.add('active'); actualizarResumenEjecutivo(); }
+
 function renderEjecutivoRankings(datos) {
 const actos = datos.filter(d => d.tipo === 'acto');
 const countActos = {};
@@ -1841,6 +1865,7 @@ contResp.innerHTML = topResp.map(([n, c], i) =>
 ).join('');
 }
 }
+
 function abrirModalPorCategoria(categoriaId, tipo) {
 const datos = [];
 Object.keys(ALL_ACTOS_DATA).forEach(suc => {
@@ -1857,12 +1882,16 @@ categoriaId === 'senalizacion' ? 'SEÑALIZACIÓN' :
 categoriaId === 'equipos' ? 'EQUIPOS Y HERRAMIENTAS' : 'OTROS';
 abrirModalConDatos(`Reportes de ${nombreCategoria}`, datos);
 }
-function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
-function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
+
 function abrirModalPorDescripcion(desc,tipo) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.descripcion===desc&&d.tipo===tipo)); }); abrirModalConDatos(`Reportes: "${desc.substring(0,50)}..."`,datos); }
 function abrirModalPorResponsable(nombre) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===nombre)); }); abrirModalConDatos(`Reportes de: ${nombre}`,datos); }
 function abrirModalPorReincidencia(persona,categoria) { const datos=[]; Object.keys(ALL_ACTOS_DATA).forEach(suc=>{ datos.push(...ALL_ACTOS_DATA[suc].filter(d=>d.observador===persona&&d.categoria?.id===categoria)); }); abrirModalConDatos(`Reincidencias - ${persona}`,datos); }
 function abrirModalPorPuntoGrafico(mes,sucursal,esVCP) { const datos=esVCP?ALL_VCP_DATA[sucursal]?.filter(d=>d.mes===mes)||[]:ALL_ACTOS_DATA[sucursal]?.filter(d=>d.mes===mes)||[]; const nombre=sucursal==='MALAGUENO'?'Malagueño':sucursal==='BARKER'?'Barker':'La Pampita'; abrirModalConDatos(`${nombre} - ${mes} ${esVCP?'(VCP)':'(Actos y Condiciones)'}`,datos); }
+
+function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer" onclick="abrirModalPorReincidencia('${r.persona.replace(/'/g,"\\'")}','${r.categoria.id}')"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
+
+function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,false);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,onClick:(e,activeEls)=>{if(activeEls.length){const mesSel=meses[activeEls[0].index];const sucSel=sucursales[activeEls[0].datasetIndex];abrirModalPorPuntoGrafico(mesSel,sucSel,true);}},plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
+
 async function cargarTodosDatosParaResumen() {
 const resumenBtn = document.querySelector('.resumen-btn');
 const originalText = resumenBtn?.innerHTML;
@@ -1888,6 +1917,8 @@ alert('Error al cargar los datos. Verifica la consola (F12) para más detalles.'
 if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO';
 }
 }
+
+// ==================== EVENTOS ====================
 window.addEventListener('load', () => {
 document.getElementById('passwordInput')?.focus();
 document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); });
@@ -1896,6 +1927,7 @@ document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSuc
 document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
 document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true });
 });
+
 document.addEventListener('DOMContentLoaded', () => {
 document.getElementById('monthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.mes = e.target.value; applyGeneralFilters(); }});
 document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.vcpMes = e.target.value; applyVCPFilters(); }});
@@ -1922,7 +1954,11 @@ if (al && al.classList.contains('show')) { dismissAlert(); return; }
 }
 });
 });
+
 document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });
+
+// ==================== FUNCIÓN DE DIAGNÓSTICO PARA CONSOLA ====================
+console.log('💡 Para diagnosticar a Alcayaga, escribe: diagnosticarAlcayaga()');
 </script>
 </body>
 </html>
