@@ -762,7 +762,11 @@ function cancelarCerrarSesion() {
 function confirmarCerrarSesion() {
   borrarSesion();
   if (refreshInterval) clearInterval(refreshInterval);
-  location.reload();
+  // 🎵 Detener cualquier audio/video antes de recargar
+  const video = document.getElementById('introVideoPlayer');
+  if (video) { video.pause(); video.currentTime = 0; video.muted = true; video.src = ''; video.load(); }
+  document.querySelectorAll('video, audio').forEach(v => { try { v.pause(); v.muted = true; } catch(e){} });
+  setTimeout(() => location.reload(), 150);  // Pequeña pausa para que se libere
 }
 
 // ═══════════════════════════════════════════════════════════════
