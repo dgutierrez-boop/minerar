@@ -1773,7 +1773,83 @@ if (al && al.classList.contains('show')) { dismissAlert(); return; }
 }
 });
 });
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });// ══════════════════════════════════════════════════════════════
+// 📌 FIX MODALES - Bloquear scroll al abrir modales
+// ═════════════════════════════════════════════════════════════
+let scrollPositionSaved = 0;
+
+function bloquearScroll() {
+    scrollPositionSaved = window.scrollY;
+    document.body.style.position = 'fixed';
+    document.body.style.top = `-${scrollPositionSaved}px`;
+    document.body.style.width = '100%';
+    document.body.style.overflow = 'hidden';
+}
+
+function liberarScroll() {
+    document.body.style.position = '';
+    document.body.style.top = '';
+    document.body.style.width = '';
+    document.body.style.overflow = '';
+    window.scrollTo(0, scrollPositionSaved);
+}
+
+// Guardar funciones originales
+const _openModalOriginal = window.openModal;
+const _closeReportModalOriginal = window.closeReportModal;
+const _showDailyReportsModalOriginal = window.showDailyReportsModal;
+const _closeDailyReportsModalOriginal = window.closeDailyReportsModal;
+const _abrirModalSupervisorOriginal = window.abrirModalSupervisor;
+const _closeSupervisorModalOriginal = window.closeSupervisorModal;
+const _abrirModalPersonaVCPOriginal = window.abrirModalPersonaVCP;
+const _closePersonaVCPModalOriginal = window.closePersonaVCPModal;
+const _dismissAlertOriginal = window.dismissAlert;
+
+// Sobrescribir con bloqueo de scroll
+window.openModal = function(r, idx, data) {
+    _openModalOriginal(r, idx, data);
+    setTimeout(bloquearScroll, 50);
+};
+
+window.closeReportModal = function() {
+    _closeReportModalOriginal();
+    liberarScroll();
+};
+
+window.showDailyReportsModal = function(type, alerts) {
+    _showDailyReportsModalOriginal(type, alerts);
+    setTimeout(bloquearScroll, 50);
+};
+
+window.closeDailyReportsModal = function() {
+    _closeDailyReportsModalOriginal();
+    liberarScroll();
+};
+
+window.abrirModalSupervisor = function(tipo) {
+    _abrirModalSupervisorOriginal(tipo);
+    setTimeout(bloquearScroll, 50);
+};
+
+window.closeSupervisorModal = function() {
+    _closeSupervisorModalOriginal();
+    liberarScroll();
+};
+
+window.abrirModalPersonaVCP = function() {
+    _abrirModalPersonaVCPOriginal();
+    setTimeout(bloquearScroll, 50);
+};
+
+window.closePersonaVCPModal = function() {
+    _closePersonaVCPModalOriginal();
+    liberarScroll();
+};
+
+window.dismissAlert = function() {
+    _dismissAlertOriginal();
+    liberarScroll();
+};
 </script>
 </body>
 </html>
