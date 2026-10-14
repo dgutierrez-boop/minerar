@@ -87,9 +87,9 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .badge-malagueno { background: #f18b00; color: white; }
 .badge-barker { background: #10b981; color: white; }
 .badge-lapampita { background: #f59e0b; color: white; }
-.zr-ranking-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: white; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid #f18b00; transition: all 0.2s ease; cursor: pointer; }
-.zr-ranking-item:hover { transform: translateX(8px); background: #fff8f0; }
-.zr-rank-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; }
+.zr-ranking-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; background: white; border-radius: 10px; margin-bottom: 6px; border-left: 4px solid #f18b00; transition: all 0.2s ease; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+.zr-ranking-item:hover { transform: translateX(8px); background: #fff8f0; box-shadow: 0 4px 15px rgba(241,139,0,0.2); border-left-width: 6px; }
+.zr-rank-num { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; flex-shrink: 0; }
 .zr-rank-1 { background: #fbbf24; color: #78350f; }
 .zr-rank-2 { background: #9ca3af; color: white; }
 .zr-rank-3 { background: #fcd34d; color: #78350f; }
@@ -458,7 +458,7 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- ✅ NUEVO MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO -->
+<!-- ✅ MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO -->
 <div id="cerrarResumenConfirmModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 40001; display: none; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-bounce" style="background: white; border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f18b00;">
         <div style="font-size: 64px; margin-bottom: 12px; display: inline-block; animation: pulse 1.5s infinite;">📊</div>
@@ -481,7 +481,6 @@ body { padding: 10px; }
 <p class="text-xs text-slate-500">Dashboard gerencial · Datos consolidados 2026</p>
 </div>
 </div>
-<!-- ✅ BOTÓN ACTUALIZADO: abre modal de confirmación -->
 <button onclick="abrirConfirmCerrarResumen()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105">
     🔒 CERRAR RESUMEN EJECUTIVO
 </button>
@@ -656,7 +655,27 @@ function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.t
 async function cargarDatosSucursal(sucursal) { const config = SUCURSALES_CONFIG[sucursal]; let actosData = [], vcpData = []; const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; if(config.actosUrl) { try { const r1 = await fetch(config.actosUrl + '&t=' + Date.now()), text = await r1.text(), rows = parseCSV(text); for(let i=0; i<rows.length; i++) { const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = ''; if(sucursal === 'MALAGUENO' && i >= 225) { const u = row[20] || ''; const uTrimmed = u.trim().toUpperCase(); if(uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI[\s\.\-]*/i,'').trim(); } else if(uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI[\s\.\-]*/i,'').trim(); } else { tipoRaw=''; desc=u; } fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || ''; causas = row[19] || ''; } else { if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue; fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || ''; } let imagenUrls = []; for(let j=0; j<row.length; j++) { const cell = row[j] ? row[j].trim() : ''; if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) { if(!cell.includes('/spreadsheets/d/')) { imagenUrls.push(cell); } } } let imagenUrl = imagenUrls.join(','); const fd = parseFecha(fecha); if(!fd.valido) continue; let tipo = 'otro'; if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion'; if(tipo === 'otro' && desc) { const descTrimmed = desc.trim().toUpperCase(); if(descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) { tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i,'').trim(); } else if(descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) { tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i,'').trim(); } } if(tipo === 'otro' && desc) { const tipoInferido = inferirTipoDesdeDescripcion(desc); tipo = tipoInferido; } let cerrado = false; if(cerradoRaw) { const cerradoStr = cerradoRaw.toString().toLowerCase().trim(); cerrado = cerradoStr === 'si' || cerradoStr === 'sí' || cerradoStr === 'true' || cerradoStr === '1' || cerradoStr === 'x'; } const cat = classifyData(desc, false); actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${observador}|${desc}|${sector}|${fecha}`; if(!reportesNotificadosActos.has(idUnico)) { reportesNotificadosActos.add(idUnico); const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoReporte = {persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, causas:causas, sector, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte); updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora); } } } } catch(e) { console.error("Error cargando actos:", e); } } if(config.showVCP && config.vcpUrl) { try { const r2 = await fetch(config.vcpUrl + '&t=' + Date.now()), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping; for(let i=0; i<rows2.length; i++) { const row = rows2[i]; let fr, po, sec, des, com; if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; } else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; } let imagenUrlsVCP = []; for(let j=0; j<row.length; j++) { const cell = row[j] ? row[j].trim() : ''; if(cell && (cell.includes('drive.google.com') || cell.startsWith('http'))) { if(!cell.includes('/spreadsheets/d/')) { imagenUrlsVCP.push(cell); } } } let imagenUrlVCP = imagenUrlsVCP.join(','); const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue; const cat = classifyData(des, true); vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP }); if(fd.dia === diaHoy && fd.mes === mesHoy) { const idUnico = `${po}|${des}|${sec}|${fr}`; if(!reportesNotificadosVCP.has(idUnico)) { reportesNotificadosVCP.add(idUnico); const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}); const nuevoVCP = {persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal}; todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP); updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(po, sec, des, 'VCP', hora); } } } } catch(e) { console.error("Error cargando VCP:", e); } } return { actos: actosData, vcp: vcpData }; }
 async function loadData() { if(!isUnlocked || isUpdating) return; isUpdating = true; try { const config = SUCURSALES_CONFIG[currentSucursal]; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP; const result = await cargarDatosSucursal(currentSucursal); if (result.actos.length > 0) { ACTOS_COND_DATA = result.actos; ALL_ACTOS_DATA[currentSucursal] = result.actos; lastSuccessfulData = JSON.parse(JSON.stringify(result.actos)); } else if (lastSuccessfulData && lastSuccessfulData.length > 0) { ACTOS_COND_DATA = lastSuccessfulData; ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData; } if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; } updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator(); } catch(e) { console.error("Error en loadData:", e); } finally { isUpdating = false; } }
 function forceRefreshData() { if (isUnlocked && !isUpdating) { const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); const originalText = refreshBtn?.innerHTML; if (refreshBtn) { refreshBtn.innerHTML = '⏳ CARGANDO...'; refreshBtn.disabled = true; } loadData().finally(() => { if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } }); } }
-function showNewReportAlert(persona, sector, desc, tipo, hora) { const alertEl = document.getElementById('newReportAlert'); const contentEl = document.getElementById('alertContent'); if(!alertEl || !contentEl) return; if(alertEl.classList.contains('show')) return; const iconoTipo = tipo === 'vcp' ? '🎯' : (tipo.toLowerCase().includes('acto') ? '⚠️' : '🏚️'); const tituloTipo = tipo === 'vcp' ? 'VCP' : tipo.toUpperCase(); contentEl.innerHTML = `<div class="alert-person text-lg font-bold text-slate-800 mb-2">👤 ${escapeHtml(persona) || 'No identificado'}</div><div class="alert-sector text-sm text-indigo-600 mb-3">🏭 ${escapeHtml(sector) || 'Sector no especificado'}</div><div class="alert-desc bg-slate-50 p-3 rounded-lg mb-3">${iconoTipo} <strong>${tituloTipo}</strong><br><span class="text-slate-700">${escapeHtml(desc) || 'Sin descripción'}</span></div><div class="alert-time text-xs text-slate-500"> ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>`; alertEl.classList.add('show'); try { window.playAlarmSound(); } catch(e) {} let segundos = 15; const countdownEl = document.getElementById('alertCountdown'); if(countdownEl) countdownEl.textContent = segundos; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval = setInterval(() => { segundos--; if(countdownEl) countdownEl.textContent = segundos; if(segundos <= 0) dismissAlert(); }, 1000); }
+function showNewReportAlert(persona, sector, desc, tipo, hora) { 
+    const resumenPage = document.getElementById('resumenEjecutivoPage');
+    if (resumenPage && resumenPage.style.display === 'block') {
+        console.log('🔕 Alerta suprimida (Resumen Ejecutivo activo)');
+        return;
+    }
+    const alertEl = document.getElementById('newReportAlert'); 
+    const contentEl = document.getElementById('alertContent'); 
+    if(!alertEl || !contentEl) return; 
+    if(alertEl.classList.contains('show')) return; 
+    const iconoTipo = tipo === 'vcp' ? '🎯' : (tipo.toLowerCase().includes('acto') ? '⚠️' : '🏚️'); 
+    const tituloTipo = tipo === 'vcp' ? 'VCP' : tipo.toUpperCase(); 
+    contentEl.innerHTML = `<div class="alert-person text-lg font-bold text-slate-800 mb-2">👤 ${escapeHtml(persona) || 'No identificado'}</div><div class="alert-sector text-sm text-indigo-600 mb-3">🏭 ${escapeHtml(sector) || 'Sector no especificado'}</div><div class="alert-desc bg-slate-50 p-3 rounded-lg mb-3">${iconoTipo} <strong>${tituloTipo}</strong><br><span class="text-slate-700">${escapeHtml(desc) || 'Sin descripción'}</span></div><div class="alert-time text-xs text-slate-500"> ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>`; 
+    alertEl.classList.add('show'); 
+    try { window.playAlarmSound(); } catch(e) {} 
+    let segundos = 15; 
+    const countdownEl = document.getElementById('alertCountdown'); 
+    if(countdownEl) countdownEl.textContent = segundos; 
+    if(alertCountdownInterval) clearInterval(alertCountdownInterval); 
+    alertCountdownInterval = setInterval(() => { segundos--; if(countdownEl) countdownEl.textContent = segundos; if(segundos <= 0) dismissAlert(); }, 1000); 
+}
 function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval = null; } const alertEl = document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
 function updatePulseBadges() { const badgeActos = document.getElementById('actosNovedadBadge'); const badgeVCP = document.getElementById('vcpNovedadBadge'); const alertsActos = todayAlertsBySucursal[currentSucursal]?.actos || []; const alertsVCP = todayAlertsBySucursal[currentSucursal]?.vcp || []; if(badgeActos) { if(alertsActos.length > 0) { badgeActos.textContent = Math.min(alertsActos.length, 99); badgeActos.classList.remove('hidden'); } else { badgeActos.classList.add('hidden'); } } if(badgeVCP) { if(alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alertsVCP.length, 99); badgeVCP.classList.remove('hidden'); } else { badgeVCP.classList.add('hidden'); } } }
 function updateTotalCounters() { document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0'; }
@@ -705,9 +724,6 @@ function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection
 function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display='flex'; }
 function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display='none'; }
 
-/* ═══════════════════════════════════════════════════════════════
-   ✅ NUEVO: MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO
-   ══════════════════════════════════════════════════════════════ */
 function abrirConfirmCerrarResumen() {
     const modal = document.getElementById('cerrarResumenConfirmModal');
     if (modal) modal.style.display = 'flex';
@@ -736,9 +752,6 @@ function confirmarCerrarResumen() {
     }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   ✅ ACTUALIZADO: verificarPasswordResumen con persistencia
-   ══════════════════════════════════════════════════════════════ */
 function verificarPasswordResumen() { 
     const input=document.getElementById('resumenPasswordInput'); 
     if(input.value===PASSWORD_RESUMEN){ 
@@ -778,9 +791,6 @@ function restaurarResumenSiEstabaAbierto() {
 
 function actualizarResumenEjecutivo() { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datosActos = [], datosVCP = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if (sucursal !== 'todas' && suc !== sucursal) return; if (ALL_ACTOS_DATA[suc]) { ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({...d}); }); } if (ALL_VCP_DATA[suc]) { ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({...d}); }); } }); if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') { datosVCP = []; } else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') { datosActos = []; } } const totalActos = datosActos.filter(d => d.tipo === 'acto').length; const totalCond = datosActos.filter(d => d.tipo === 'condicion').length; const totalVCP = datosVCP.length; document.getElementById('ejecTotalActos').innerText = totalActos; document.getElementById('ejecTotalCondiciones').innerText = totalCond; document.getElementById('ejecTotalVCP').innerText = totalVCP; document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP; const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]); renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings([...datosActos, ...datosVCP]); renderEjecutivoReincidencias([...datosActos, ...datosVCP]); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro); }
 
-/* ═══════════════════════════════════════════════════════════════
-   ✅ REEMPLAZO: renderEjecutivoTabla + abrirModalEjecutivo
-   ══════════════════════════════════════════════════════════════ */
 function renderEjecutivoTabla(datos) {
     const tbody = document.getElementById('ejecTablaBody');
     if (!tbody) return;
@@ -826,26 +836,237 @@ function abrirModalEjecutivo(idx) {
 }
 
 function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElementById('ejecutivoTipoFiltro').value=tipo; document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c=>c.classList.remove('active')); if(tipo==='acto') document.getElementById('kpiActosCard').classList.add('active'); else if(tipo==='condicion') document.getElementById('kpiCondCard').classList.add('active'); else if(tipo==='vcp') document.getElementById('kpiVCPCard').classList.add('active'); else document.getElementById('kpiTotalCard').classList.add('active'); actualizarResumenEjecutivo(); }
+
 function renderEjecutivoRankings(datos) { 
     const actos = datos.filter(d => d.tipo === 'acto'); 
     const conds = datos.filter(d => d.tipo === 'condicion');
     const countActos = {}; 
-    actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; }); 
+    const gruposActos = {};
+    actos.forEach(d => { 
+        const k = d.descripcion || 'Sin descripción'; 
+        countActos[k] = (countActos[k] || 0) + 1; 
+        if (!gruposActos[k]) gruposActos[k] = [];
+        gruposActos[k].push(d);
+    }); 
     const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5); 
     const contActos = document.getElementById('ejecTopActos'); 
-    if (contActos) { contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } 
+    if (contActos) { 
+        window.__gruposTopActos = gruposActos;
+        contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => {
+            const key = encodeURIComponent(d);
+            return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorDescripcion('acto', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`;
+        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; 
+    } 
     const countConds = {}; 
-    conds.forEach(d => { let categoriaId = d.categoria?.id || 'otros'; let descNormalizada; if (categoriaId === 'berma') descNormalizada = 'CI - Berma de seguridad fuera de estándar'; else if (categoriaId === 'area') descNormalizada = 'CI - Sector o ambiente de trabajo en condición'; else if (categoriaId === 'orden') descNormalizada = 'CI - Orden y limpieza deficiente'; else if (categoriaId === 'senalizacion') descNormalizada = 'CI - Señalización deficiente o inadecuada'; else if (categoriaId === 'equipos') descNormalizada = 'CI - Equipos o herramientas fuera de estándar'; else if (categoriaId === 'epp') descNormalizada = 'AI - Falta de EPP'; else if (categoriaId === 'procedimientos') descNormalizada = 'AI - Procedimientos inadecuados'; else if (categoriaId === 'conduccion') descNormalizada = 'AI - Conducción insegura'; else descNormalizada = 'Otros'; countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1; }); 
+    const gruposConds = {};
+    conds.forEach(d => { 
+        let categoriaId = d.categoria?.id || 'otros'; 
+        let descNormalizada; 
+        if (categoriaId === 'berma') descNormalizada = 'CI - Berma de seguridad fuera de estándar'; 
+        else if (categoriaId === 'area') descNormalizada = 'CI - Sector o ambiente de trabajo en condición'; 
+        else if (categoriaId === 'orden') descNormalizada = 'CI - Orden y limpieza deficiente'; 
+        else if (categoriaId === 'senalizacion') descNormalizada = 'CI - Señalización deficiente o inadecuada'; 
+        else if (categoriaId === 'equipos') descNormalizada = 'CI - Equipos o herramientas fuera de estándar'; 
+        else if (categoriaId === 'epp') descNormalizada = 'AI - Falta de EPP'; 
+        else if (categoriaId === 'procedimientos') descNormalizada = 'AI - Procedimientos inadecuados'; 
+        else if (categoriaId === 'conduccion') descNormalizada = 'AI - Conducción insegura'; 
+        else descNormalizada = 'Otros'; 
+        countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1; 
+        if (!gruposConds[descNormalizada]) gruposConds[descNormalizada] = [];
+        gruposConds[descNormalizada].push(d);
+    }); 
     const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5); 
     const contConds = document.getElementById('ejecTopCond'); 
-    if (contConds) { contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } 
+    if (contConds) { 
+        window.__gruposTopConds = gruposConds;
+        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => {
+            const key = encodeURIComponent(d);
+            return `<div class="zr-ranking-item cursor-pointer" style="border-left-color:#f18b00" onclick="abrirModalTopPorDescripcion('condicion', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`;
+        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; 
+    } 
     const countResp = {}; 
-    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; }); 
+    const gruposResp = {};
+    datos.forEach(d => { 
+        const r = d.observador || d.personaObservada || 'Sin identificar'; 
+        countResp[r] = (countResp[r] || 0) + 1; 
+        if (!gruposResp[r]) gruposResp[r] = [];
+        gruposResp[r].push(d);
+    }); 
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10); 
     const contResp = document.getElementById('ejecTopResponsables'); 
-    if (contResp) { contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join(''); } 
+    if (contResp) { 
+        window.__gruposTopResp = gruposResp;
+        contResp.innerHTML = topResp.length ? topResp.map(([n, c], i) => {
+            const key = encodeURIComponent(n);
+            return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorResponsable(decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-semibold">${n}</div><div class="text-xs">Click para ver sus reportes</div></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`;
+        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; 
+    } 
 }
-function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs"> ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
+
+function abrirModalTopPorDescripcion(tipo, descripcion) {
+    const grupos = tipo === 'acto' ? window.__gruposTopActos : window.__gruposTopConds;
+    if (!grupos) return;
+    const registros = grupos[descripcion] || [];
+    if (!registros.length) return;
+    window.datosModalActual = registros;
+    const modal = document.getElementById('reportDetailModal');
+    const content = document.getElementById('reportModalContent');
+    const color = tipo === 'acto' ? 'blue' : 'amber';
+    content.innerHTML = `
+        <div class="mb-4 p-4 rounded-xl bg-${color}-50 border-2 border-${color}-200">
+            <div class="text-xs font-black uppercase text-${color}-700 mb-1">${tipo === 'acto' ? '⚠️ TOP ACTO' : '🏚️ TOP CONDICIÓN'}</div>
+            <div class="font-bold text-slate-800">${descripcion}</div>
+            <div class="text-sm text-slate-600 mt-1">📊 ${registros.length} registro${registros.length > 1 ? 's' : ''}</div>
+        </div>
+        <div class="space-y-2">
+            ${registros.map((r, i) => {
+                const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
+                const fecha = `${r.dia || '?'}/${r.mes || '?'}`;
+                const persona = r.observador || r.personaObservada || '-';
+                const suc = r.sucursal || '-';
+                return `<div class="border-l-4 border-${color}-400 bg-white p-3 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-slate-500">#${i+1} · 📅 ${fecha}</span>
+                        ${estadoHTML}
+                    </div>
+                    <div class="text-sm font-semibold text-slate-800">👤 ${escapeHtml(persona)}</div>
+                    <div class="text-xs text-slate-500">🏭 ${escapeHtml(suc)} · ${escapeHtml(r.sector || '-')}</div>
+                </div>`;
+            }).join('')}
+        </div>
+    `;
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter');
+    if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
+    isModalOpen = true;
+    currentModalData = registros;
+    currentModalIndex = 0;
+}
+
+function abrirModalTopPorResponsable(nombre) {
+    const grupos = window.__gruposTopResp;
+    if (!grupos) return;
+    const registros = grupos[nombre] || [];
+    if (!registros.length) return;
+    window.datosModalActual = registros;
+    const modal = document.getElementById('reportDetailModal');
+    const content = document.getElementById('reportModalContent');
+    content.innerHTML = `
+        <div class="mb-4 p-4 rounded-xl bg-orange-50 border-2 border-orange-200">
+            <div class="text-xs font-black uppercase text-orange-700 mb-1">🏆 RESPONSABLE</div>
+            <div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(nombre)}</div>
+            <div class="text-sm text-slate-600 mt-1">📊 ${registros.length} reporte${registros.length > 1 ? 's' : ''} registrados</div>
+        </div>
+        <div class="space-y-2 max-h-[45vh] overflow-y-auto">
+            ${registros.map((r, i) => {
+                const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
+                const fecha = `${r.dia || '?'}/${r.mes || '?'}`;
+                const tipoBadge = r.tipo === 'vcp' ? '🎯 VCP' : (r.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
+                const tipoClass = r.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (r.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
+                const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : '');
+                const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || '');
+                return `<div class="border-l-4 border-orange-400 bg-white p-3 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-slate-500">#${i+1} · 📅 ${fecha}</span>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoBadge}</span>
+                    </div>
+                    <div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div>
+                    <div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 80))}${desc.length > 80 ? '...' : ''}</div>
+                    <div class="mt-1">${estadoHTML}</div>
+                </div>`;
+            }).join('')}
+        </div>
+    `;
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter');
+    if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
+    isModalOpen = true;
+    currentModalData = registros;
+    currentModalIndex = 0;
+}
+
+function abrirModalReincidencia(index) {
+    const lista = window.__gruposReincidencias || [];
+    const reinc = lista[index];
+    if (!reinc) return;
+    const registros = reinc.registros || [];
+    window.datosModalActual = registros;
+    const modal = document.getElementById('reportDetailModal');
+    const content = document.getElementById('reportModalContent');
+    content.innerHTML = `
+        <div class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300">
+            <div class="text-xs font-black uppercase text-red-700 mb-1">🔄 REINCIDENCIA DETECTADA</div>
+            <div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(reinc.persona)}</div>
+            <div class="text-sm text-slate-600 mt-1">
+                ${reinc.categoria?.icon || ''} ${escapeHtml(reinc.categoria?.name || 'Sin categoría')}
+            </div>
+            <div class="mt-2 inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black">
+                ⚠️ ${reinc.count} REPETICIONES
+            </div>
+        </div>
+        <div class="space-y-2 max-h-[45vh] overflow-y-auto">
+            ${registros.map((r, i) => {
+                const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
+                const fecha = `${r.dia || '?'}/${r.mes || '?'}`;
+                const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : '');
+                const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || '');
+                return `<div class="border-l-4 border-red-400 bg-white p-3 rounded-lg shadow-sm">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-xs font-bold text-slate-500">#${i+1} · 📅 ${fecha}</span>
+                        ${estadoHTML}
+                    </div>
+                    <div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div>
+                    <div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 90))}${desc.length > 90 ? '...' : ''}</div>
+                </div>`;
+            }).join('')}
+        </div>
+    `;
+    modal.classList.remove('hidden-section');
+    modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter');
+    if (counter) counter.innerText = `REINCIDENCIA · ${registros.length}x`;
+    isModalOpen = true;
+    currentModalData = registros;
+    currentModalIndex = 0;
+}
+
+function renderEjecutivoReincidencias(datos) { 
+    const reincMap = new Map(); 
+    datos.forEach(d => { 
+        if (!d.observador && !d.personaObservada) return; 
+        if (!d.categoria?.id) return; 
+        const persona = d.observador || d.personaObservada;
+        const key = `${persona}|${d.categoria.id}`; 
+        if (!reincMap.has(key)) reincMap.set(key, { persona, categoria: d.categoria, count: 0, sucursales: new Set(), registros: [] }); 
+        const item = reincMap.get(key); 
+        item.count++; 
+        item.sucursales.add(d.sucursal); 
+        item.registros.push(d);
+    }); 
+    const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a, b) => b.count - a.count).slice(0, 10); 
+    const cont = document.getElementById('ejecReincidencias'); 
+    if (cont) {
+        window.__gruposReincidencias = reincList;
+        cont.innerHTML = reincList.length ? reincList.map((r, i) => `
+            <div class="zr-ranking-item cursor-pointer" style="border-left-color:#ef4444" onclick="abrirModalReincidencia(${i})">
+                <div class="zr-rank-num zr-rank-default" style="background:#fee2e2;color:#dc2626">⚠️</div>
+                <div class="flex-1">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <div>
+                            <span class="font-bold">👤 ${r.persona}</span>
+                            <span class="text-xs ml-2">${r.categoria?.icon || ''} ${r.categoria?.name || ''}</span>
+                        </div>
+                        <span class="bg-red-100 text-red-700 px-2 rounded-full text-xs font-black">${r.count}x</span>
+                    </div>
+                    <div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')} · Click para ver los ${r.count} reportes</div>
+                </div>
+            </div>
+        `).join('') : '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias detectadas</p>'; 
+    }
+}
+
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 async function cargarTodosDatosParaResumen() { const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML; if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS...'; try { ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; const [malagueno, barker, lapampita] = await Promise.all([cargarDatosSucursal('MALAGUENO'), cargarDatosSucursal('BARKER'), cargarDatosSucursal('LAPAMPITA')]); ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp; ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp; ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; } catch (error) { console.error('❌ Error cargando datos:', error); alert('Error al cargar los datos.'); } finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; } }
 function exportarResumenEjecutivoExcel() { const wb = XLSX.utils.book_new(); const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; const resumenData = [['🛡️ RESUMEN EJECUTIVO MINERAR 2026'], [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`], [], [' FILTROS APLICADOS:'], ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal], ['Mes:', mes === 'todo' ? 'TODOS' : mes], ['Sector:', sector === 'todos' ? 'TODOS' : sector], ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro], ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro], [], ['📈 INDICADORES PRINCIPALES:'], ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText], ['️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText], ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText], ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]]; const wsResumen = XLSX.utils.aoa_to_sheet(resumenData); wsResumen['!cols'] = [{wch:25}, {wch:15}]; XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN'); const datosTabla = window.datosModalActual || []; if (datosTabla.length > 0) { const detalleData = [['📋 DETALLE COMPLETO DE REPORTES'], [], ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']]; datosTabla.forEach(d => { const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; const estado = estaCerrado ? 'CERRADO' : 'ABIERTO'; const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN'); detalleData.push([`${d.dia}/${d.mes}/2026`, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estado, d.categoria?.name || '']); }); const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData); wsDetalle['!cols'] = [{wch:12}, {wch:12}, {wch:20}, {wch:10}, {wch:50}, {wch:12}, {wch:10}, {wch:20}]; XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE'); } const fecha = new Date().toISOString().slice(0,10); XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`); alert('✅ Excel exportado exitosamente'); }
