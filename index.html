@@ -762,13 +762,43 @@ function cancelarCerrarSesion() {
 function confirmarCerrarSesion() {
   borrarSesion();
   if (refreshInterval) clearInterval(refreshInterval);
-  // 🎵 Detener cualquier audio/video antes de recargar
-  const video = document.getElementById('introVideoPlayer');
-  if (video) { video.pause(); video.currentTime = 0; video.muted = true; video.src = ''; video.load(); }
-  document.querySelectorAll('video, audio').forEach(v => { try { v.pause(); v.muted = true; } catch(e){} });
-  setTimeout(() => location.reload(), 150);  // Pequeña pausa para que se libere
+  
+  // 🔇 Matar TODOS los audios y videos de raíz
+  document.querySelectorAll('video, audio').forEach(el => {
+    try {
+      el.pause();
+      el.muted = true;
+      el.volume = 0;
+      el.currentTime = 0;
+      el.removeAttribute('src');
+      el.srcObject = null;
+      el.load();
+      el.remove();
+    } catch(e) {}
+  });
+  
+  // 🔇 Frenar cualquier AudioContext (los sonidos del sistema)
+  try {
+    if (window.audioContext && window.audioContext.state !== 'closed') {
+      window.audioContext.close();
+    }
+    window.audioContextInitialized = false;
+    window.audioContext = null;
+  } catch(e) {}
+  
+  // 🔇 Frenar video de intro si sigue activo
+  const videoIntro = document.getElementById('videoIntro');
+  if (videoIntro) { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; }
+  
+  // 🔇 Ir al login SIN recargar toda la página
+  // (esto evita que el navegador "recuerde" el audio)
+  document.body.style.overflow = 'auto';
+  
+  setTimeout(() => {
+    // En vez de location.reload, forzamos recarga limpia
+    window.location.href = window.location.pathname + '?logout=' + Date.now();
+  }, 200);
 }
-
 // ═══════════════════════════════════════════════════════════════
 // ESTADO GLOBAL
 // ═══════════════════════════════════════════════════════════════
