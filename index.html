@@ -693,13 +693,20 @@ grid-template-columns: 1fr;
 <div class="border-t border-emerald-100 px-5 py-4 bg-emerald-50/30"><button onclick="closePersonaVCPModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div><script>
+// 
 // ═══════════════════════════════════════════════════════════════
-// 🔐 SISTEMA DE SESIÓN — Lógica nueva
+// 🔐 SISTEMA DE SEGURIDAD — NIVEL MINERAR 2026
+// ═══════════════════════════════════════════════════════════════
+// Si no les gusta cómo está protegido, que contraten a Elon Musk 🚀
+//
+// Y si sos el vivo que está abriendo F12 para buscar la contraseña:
+//    >> "NO TENÉS OTRA COSA QUE HACER QUE ESTAR BUSCANDO
+//        UNA CONTRASEÑA, HACKER TRUCHO? PONETE A LABURAR!!!" <<
+//
 // ═══════════════════════════════════════════════════════════════
 const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
-
 function getTodayKey() {
   const d = new Date();
   return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
