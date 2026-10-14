@@ -1773,83 +1773,95 @@ if (al && al.classList.contains('show')) { dismissAlert(); return; }
 }
 });
 });
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });// ══════════════════════════════════════════════════════════════
-// 📌 FIX MODALES - Bloquear scroll al abrir modales
-// ═════════════════════════════════════════════════════════════
-let scrollPositionSaved = 0;
-
-function bloquearScroll() {
-    scrollPositionSaved = window.scrollY;
-    document.body.style.position = 'fixed';
-    document.body.style.top = `-${scrollPositionSaved}px`;
-    document.body.style.width = '100%';
-    document.body.style.overflow = 'hidden';
-}
-
-function liberarScroll() {
-    document.body.style.position = '';
-    document.body.style.top = '';
-    document.body.style.width = '';
-    document.body.style.overflow = '';
-    window.scrollTo(0, scrollPositionSaved);
-}
-
-// Guardar funciones originales
-const _openModalOriginal = window.openModal;
-const _closeReportModalOriginal = window.closeReportModal;
-const _showDailyReportsModalOriginal = window.showDailyReportsModal;
-const _closeDailyReportsModalOriginal = window.closeDailyReportsModal;
-const _abrirModalSupervisorOriginal = window.abrirModalSupervisor;
-const _closeSupervisorModalOriginal = window.closeSupervisorModal;
-const _abrirModalPersonaVCPOriginal = window.abrirModalPersonaVCP;
-const _closePersonaVCPModalOriginal = window.closePersonaVCPModal;
-const _dismissAlertOriginal = window.dismissAlert;
-
-// Sobrescribir con bloqueo de scroll
-window.openModal = function(r, idx, data) {
-    _openModalOriginal(r, idx, data);
-    setTimeout(bloquearScroll, 50);
-};
-
-window.closeReportModal = function() {
-    _closeReportModalOriginal();
-    liberarScroll();
-};
-
-window.showDailyReportsModal = function(type, alerts) {
-    _showDailyReportsModalOriginal(type, alerts);
-    setTimeout(bloquearScroll, 50);
-};
-
-window.closeDailyReportsModal = function() {
-    _closeDailyReportsModalOriginal();
-    liberarScroll();
-};
-
-window.abrirModalSupervisor = function(tipo) {
-    _abrirModalSupervisorOriginal(tipo);
-    setTimeout(bloquearScroll, 50);
-};
-
-window.closeSupervisorModal = function() {
-    _closeSupervisorModalOriginal();
-    liberarScroll();
-};
-
-window.abrirModalPersonaVCP = function() {
-    _abrirModalPersonaVCPOriginal();
-    setTimeout(bloquearScroll, 50);
-};
-
-window.closePersonaVCPModal = function() {
-    _closePersonaVCPModalOriginal();
-    liberarScroll();
-};
-
-window.dismissAlert = function() {
-    _dismissAlertOriginal();
-    liberarScroll();
-};
+document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });// // ══════════════════════════════════════════════════════════════
+// 📌 FIX AUTOMÁTICO DE MODALES - No tocar nada más
+// ══════════════════════════════════════════════════════════════
+(function() {
+    let scrollYGuardado = 0;
+    let modalAbierto = false;
+    
+    // Lista de IDs de todos los modales que queremos controlar
+    const modales = [
+        'reportDetailModal',
+        'dailyReportsModal', 
+        'supervisorDetailModal',
+        'personaVCPModal',
+        'newReportAlert',
+        'logoutConfirmModal',
+        'resumenPasswordModal'
+    ];
+    
+    function bloquearScroll() {
+        if (modalAbierto) return;
+        modalAbierto = true;
+        scrollYGuardado = window.scrollY;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${scrollYGuardado}px`;
+        document.body.style.width = '100%';
+        document.body.style.overflow = 'hidden';
+    }
+    
+    function liberarScroll() {
+        if (!modalAbierto) return;
+        modalAbierto = false;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        window.scrollTo(0, scrollYGuardado);
+    }
+    
+    // Observar cambios en los modales automáticamente
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                const target = mutation.target;
+                if (modales.includes(target.id)) {
+                    const display = target.style.display;
+                    if (display === 'flex' || display === 'block') {
+                        setTimeout(bloquearScroll, 50);
+                    } else if (display === 'none') {
+                        liberarScroll();
+                    }
+                }
+            }
+        });
+    });
+    
+    // Observar cada modal
+    modales.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            observer.observe(el, { attributes: true, attributeFilter: ['style', 'class'] });
+        }
+    });
+    
+    // También observar cambios de clase (para modales que usan classList)
+    const observerClases = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                const target = mutation.target;
+                if (modales.includes(target.id)) {
+                    const estaActivo = target.classList.contains('show') || 
+                                      target.classList.contains('active') ||
+                                      (!target.classList.contains('hidden-section') && target.style.display !== 'none');
+                    if (estaActivo) {
+                        setTimeout(bloquearScroll, 50);
+                    } else {
+                        liberarScroll();
+                    }
+                }
+            }
+        });
+    });
+    
+    modales.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            observerClases.observe(el, { attributes: true, attributeFilter: ['class'] });
+        }
+    });
+})();
 </script>
 </body>
 </html>
