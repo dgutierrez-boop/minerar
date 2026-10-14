@@ -16,35 +16,10 @@
 body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e6f0f8 100%); color: #1e293b; font-size: 12px; margin: 0; padding: 16px; min-height: 100vh; }
 .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(8px); border-radius: 20px; border: 1px solid rgba(203, 213, 225, 0.5); box-shadow: 0 4px 15px rgba(0,0,0,0.05); transition: all 0.2s ease; cursor: pointer; }
 .glass-card:hover { transform: translateY(-3px); border-color: #f18b00; box-shadow: 0 8px 25px rgba(241, 139, 0, 0.15); background: rgba(255, 255, 255, 0.98); }
-
-/* ══════════════════════════════════════════════════════════════
-   📌 HEADER STICKY - Fijo al hacer scroll
-   ══════════════════════════════════════════════════════════════ */
-.header-container { 
-    background: linear-gradient(135deg, #f18b00, #ffa543); 
-    border-radius: 20px; 
-    padding: 16px 24px; 
-    margin-bottom: 24px; 
-    box-shadow: 0 4px 20px rgba(0,0,0,0.15); 
-    display: flex; 
-    flex-wrap: wrap; 
-    justify-content: space-between; 
-    align-items: center; 
-    gap: 16px; 
-    color: white; 
-    position: sticky; 
-    top: 0; 
-    z-index: 9999; 
-    transition: all 0.3s ease;
-}
-.header-container.scrolled {
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-    border-radius: 0 0 20px 20px;
-    padding: 10px 20px;
-}
+.header-container { background: linear-gradient(135deg, #f18b00, #ffa543); border-radius: 20px; padding: 16px 24px; margin-bottom: 24px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 16px; color: white; position: sticky; top: 0; z-index: 9999; transition: all 0.3s ease; }
+.header-container.scrolled { box-shadow: 0 8px 30px rgba(0,0,0,0.3); border-radius: 0 0 20px 20px; padding: 10px 20px; }
 .header-container.scrolled h1 { font-size: 18px; }
 .header-container.scrolled .text-3xl { font-size: 22px; }
-
 .header-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .header-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end; flex: 1; }
 .btn-filter { transition: all 0.2s; cursor: pointer; font-size: 10px; font-weight: 700; padding: 8px 12px; border-radius: 10px; width: 100%; text-align: left; border: 1px solid #e2e8f0; background: white; color: #475569; }
@@ -54,6 +29,7 @@ body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0
 .category-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border: 2px solid; border-radius: 14px; padding: 12px 8px; text-align: center; background: white; position: relative; z-index: 1; }
 .category-card:hover { transform: translateY(-4px); z-index: 100; }
 .category-card.selected { box-shadow: 0 0 0 3px #f18b00, 0 8px 25px rgba(241, 139, 0, 0.25); transform: scale(1.02); border-color: #f18b00 !important; background: #fffbeb; z-index: 10; }
+.category-card.selected::after { content: '✓ FILTRANDO'; position: absolute; top: -8px; right: -8px; background: #f18b00; color: white; font-size: 8px; font-weight: 900; padding: 3px 8px; border-radius: 20px; box-shadow: 0 2px 8px rgba(241,139,0,0.4); letter-spacing: 0.5px; }
 .hidden-section { display: none !important; }
 .status-badge { padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
 .status-ok { background: #dcfce7; color: #16a34a; border: 1px solid #bbf7d0; }
@@ -66,6 +42,8 @@ tr:hover { background-color: #fff8f0; }
 tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b00; }
 @keyframes modalBounce { 0% { transform: scale(0.3) translateY(-100px); opacity: 0; } 50% { transform: scale(1.05) translateY(10px); opacity: 1; } 70% { transform: scale(0.95) translateY(-5px); } 100% { transform: scale(1) translateY(0); opacity: 1; } }
 .modal-bounce { animation: modalBounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+@keyframes modalBounceOut { 0% { transform: scale(1); opacity: 1; } 100% { transform: scale(0.7) translateY(50px); opacity: 0; } }
+.modal-bounce-out { animation: modalBounceOut 0.35s cubic-bezier(0.55, 0.06, 0.68, 0.19) forwards; }
 .chart-container { position: relative; height: 350px; width: 100%; margin-top: 16px; }
 @keyframes blink-red { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #ef4444; } 50% { opacity: 0.5; box-shadow: 0 0 15px #ef4444; } }
 @keyframes blink-green { 0%, 100% { opacity: 1; box-shadow: 0 0 5px #10b981; } 50% { opacity: 0.5; box-shadow: 0 0 15px #10b981; } }
@@ -131,8 +109,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .lightbox img { max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }
 .lightbox-close { position: absolute; top: 20px; right: 30px; font-size: 40px; color: white; cursor: pointer; }
 .lightbox-close:hover { color: #f18b00; }
-.estado-cerrado { display: inline-block; background: #dcfce7; color: #16a34a; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid #bbf7d0; }
-.estado-abierto { display: inline-block; background: #fee2e2; color: #dc2626; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; border: 1px solid #fecaca; }
 .estado-badge-cerrado { display: inline-flex; align-items: center; gap: 4px; background: #dcfce7; color: #16a34a; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; border: 1.5px solid #bbf7d0; }
 .estado-badge-abierto { display: inline-flex; align-items: center; gap: 4px; background: #fee2e2; color: #dc2626; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: 800; border: 1.5px solid #fecaca; }
 #lastUpdateIndicator { font-size: 9px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 20px; margin-left: 8px; }
@@ -151,160 +127,31 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 56% { transform: scale(1) rotate(0deg); }
 100% { transform: scale(1) rotate(0deg); }
 }
-.header-left .logo-animado {
-animation: logoHeartbeat 3s ease-in-out infinite;
-display: inline-block;
-transition: all 0.3s ease;
-}
-.header-left .logo-animado:hover {
-animation-play-state: paused;
-transform: scale(1.1);
-}
-.category-card .tooltip-content {
-visibility: hidden;
-opacity: 0;
-width: 480px;
-max-width: 92vw;
-background: rgba(15, 23, 42, 0.65);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-color: #fcd34d;
-text-align: left;
-padding: 18px 22px;
-border-radius: 18px;
-position: absolute;
-z-index: 999999 !important;
-bottom: calc(100% + 16px);
-left: 50%;
-transform: translateX(-50%) scale(0.95);
-transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease;
-box-shadow: 0 25px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
-font-size: 11px;
-pointer-events: none !important;
-border: 1px solid rgba(241, 139, 0, 0.25);
-max-height: 450px;
-overflow-y: auto;
-}
+.header-left .logo-animado { animation: logoHeartbeat 3s ease-in-out infinite; display: inline-block; transition: all 0.3s ease; }
+.header-left .logo-animado:hover { animation-play-state: paused; transform: scale(1.1); }
+.category-card .tooltip-content { visibility: hidden; opacity: 0; width: 480px; max-width: 92vw; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fcd34d; text-align: left; padding: 18px 22px; border-radius: 18px; position: absolute; z-index: 999999 !important; bottom: calc(100% + 16px); left: 50%; transform: translateX(-50%) scale(0.95); transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease; box-shadow: 0 25px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08); font-size: 11px; pointer-events: none !important; border: 1px solid rgba(241, 139, 0, 0.25); max-height: 450px; overflow-y: auto; }
 .category-card .tooltip-content::-webkit-scrollbar { width: 4px; }
 .category-card .tooltip-content::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.3); border-radius: 10px; }
 .category-card .tooltip-content::-webkit-scrollbar-thumb { background: #f18b00; border-radius: 10px; }
-.category-card .tooltip-content::after {
-content: '';
-position: absolute;
-top: 100%;
-left: 50%;
-transform: translateX(-50%);
-border: 9px solid transparent;
-border-top-color: rgba(15, 23, 42, 0.65);
-}
-.category-card:hover .tooltip-content {
-visibility: visible;
-opacity: 1;
-transform: translateX(-50%) scale(1);
-}
-.tooltip-content .tooltip-header {
-font-weight: 800;
-margin-bottom: 12px;
-font-size: 16px;
-color: #f18b00;
-border-bottom: 1px solid rgba(241, 139, 0, 0.25);
-padding-bottom: 10px;
-letter-spacing: 0.5px;
-text-shadow: 0 0 20px rgba(241, 139, 0, 0.15);
-}
-.tooltip-content .tooltip-item {
-padding: 3px 0 3px 4px;
-font-size: 10.5px;
-line-height: 1.5;
-color: #fcd34d;
-border-left: 2px solid rgba(241, 139, 0, 0.2);
-padding-left: 12px;
-margin-bottom: 2px;
-}
+.category-card .tooltip-content::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 9px solid transparent; border-top-color: rgba(15, 23, 42, 0.65); }
+.category-card:hover .tooltip-content { visibility: visible; opacity: 1; transform: translateX(-50%) scale(1); }
+.tooltip-content .tooltip-header { font-weight: 800; margin-bottom: 12px; font-size: 16px; color: #f18b00; border-bottom: 1px solid rgba(241, 139, 0, 0.25); padding-bottom: 10px; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(241, 139, 0, 0.15); }
+.tooltip-content .tooltip-item { padding: 3px 0 3px 4px; font-size: 10.5px; line-height: 1.5; color: #fcd34d; border-left: 2px solid rgba(241, 139, 0, 0.2); padding-left: 12px; margin-bottom: 2px; }
 .tooltip-content .tooltip-item:last-child { margin-bottom: 0; }
 .tooltip-content .tooltip-item .abrev { color: #f18b00; font-weight: 700; }
-.tooltip-footer {
-margin-top: 12px;
-padding-top: 10px;
-border-top: 1px solid rgba(241, 139, 0, 0.12);
-font-size: 10px;
-color: rgba(255,255,255,0.5);
-font-style: italic;
-text-align: center;
-letter-spacing: 0.3px;
-}
-.tooltip-content .criterios-section {
-margin-top: 10px;
-padding: 10px 12px;
-background: rgba(241, 139, 0, 0.1);
-border-radius: 8px;
-border: 1px solid rgba(241, 139, 0, 0.3);
-}
-.tooltip-content .criterios-title {
-font-weight: 700;
-color: #f18b00;
-font-size: 11px;
-margin-bottom: 6px;
-text-transform: uppercase;
-display: flex;
-align-items: center;
-gap: 6px;
-}
-.tooltip-content .criterio-item {
-font-size: 9.5px;
-color: #fcd34d;
-padding: 2px 0;
-line-height: 1.4;
-}
-.tooltip-content .criterio-item::before {
-content: '→ ';
-color: #f18b00;
-font-weight: bold;
-}
-.tooltip-content .palabras-clave-grid {
-display: grid;
-grid-template-columns: 1fr 1fr;
-gap: 8px;
-margin-top: 8px;
-}
-.tooltip-content .palabras-clave-box {
-background: rgba(0, 0, 0, 0.3);
-border-radius: 6px;
-padding: 8px;
-border: 1px solid rgba(255, 255, 255, 0.1);
-}
-.tooltip-content .palabras-clave-box.ai-box {
-border-color: rgba(59, 130, 246, 0.5);
-background: rgba(59, 130, 246, 0.1);
-}
-.tooltip-content .palabras-clave-box.ci-box {
-border-color: rgba(245, 158, 11, 0.5);
-background: rgba(245, 158, 11, 0.1);
-}
-.tooltip-content .palabras-clave-title {
-font-weight: 700;
-font-size: 10px;
-margin-bottom: 6px;
-display: flex;
-align-items: center;
-gap: 4px;
-}
-.tooltip-content .palabras-clave-title.ai-title {
-color: #60a5fa;
-}
-.tooltip-content .palabras-clave-title.ci-title {
-color: #fbbf24;
-}
-.tooltip-content .palabra-tag {
-display: inline-block;
-background: rgba(255, 255, 255, 0.1);
-padding: 2px 6px;
-border-radius: 4px;
-font-size: 9px;
-margin: 2px;
-color: #fcd34d;
-border: 1px solid rgba(255, 255, 255, 0.15);
-}
+.tooltip-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(241, 139, 0, 0.12); font-size: 10px; color: rgba(255,255,255,0.5); font-style: italic; text-align: center; letter-spacing: 0.3px; }
+.tooltip-content .criterios-section { margin-top: 10px; padding: 10px 12px; background: rgba(241, 139, 0, 0.1); border-radius: 8px; border: 1px solid rgba(241, 139, 0, 0.3); }
+.tooltip-content .criterios-title { font-weight: 700; color: #f18b00; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
+.tooltip-content .criterio-item { font-size: 9.5px; color: #fcd34d; padding: 2px 0; line-height: 1.4; }
+.tooltip-content .criterio-item::before { content: '→ '; color: #f18b00; font-weight: bold; }
+.tooltip-content .palabras-clave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
+.tooltip-content .palabras-clave-box { background: rgba(0, 0, 0, 0.3); border-radius: 6px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
+.tooltip-content .palabras-clave-box.ai-box { border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.1); }
+.tooltip-content .palabras-clave-box.ci-box { border-color: rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.1); }
+.tooltip-content .palabras-clave-title { font-weight: 700; font-size: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
+.tooltip-content .palabras-clave-title.ai-title { color: #60a5fa; }
+.tooltip-content .palabras-clave-title.ci-title { color: #fbbf24; }
+.tooltip-content .palabra-tag { display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin: 2px; color: #fcd34d; border: 1px solid rgba(255, 255, 255, 0.15); }
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; position: sticky; top: 0; z-index: 9999; margin-bottom: 16px; border-radius: 16px; }
 .header-container.scrolled { padding: 8px 12px; border-radius: 0 0 16px 16px; }
@@ -317,21 +164,10 @@ body { padding: 10px; }
 .imagen-grid { grid-template-columns: 1fr; }
 .category-card { padding: 8px 4px; }
 #lastUpdateIndicator { display: none; }
-.category-card .tooltip-content {
-width: 320px;
-font-size: 9.5px;
-bottom: calc(100% + 10px);
-padding: 14px 16px;
-max-height: 320px;
-background: rgba(15, 23, 42, 0.7);
-backdrop-filter: blur(12px);
--webkit-backdrop-filter: blur(12px);
-}
+.category-card .tooltip-content { width: 320px; font-size: 9.5px; bottom: calc(100% + 10px); padding: 14px 16px; max-height: 320px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
 .tooltip-content .tooltip-header { font-size: 13px; }
 .tooltip-content .tooltip-item { font-size: 9px; }
-.tooltip-content .palabras-clave-grid {
-grid-template-columns: 1fr;
-}
+.tooltip-content .palabras-clave-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -621,6 +457,20 @@ grid-template-columns: 1fr;
 </div>
 </div>
 </div>
+
+<!-- ✅ NUEVO MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO -->
+<div id="cerrarResumenConfirmModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 40001; display: none; align-items: center; justify-content: center; padding: 20px;">
+    <div class="modal-bounce" style="background: white; border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f18b00;">
+        <div style="font-size: 64px; margin-bottom: 12px; display: inline-block; animation: pulse 1.5s infinite;">📊</div>
+        <h3 class="text-xl font-black text-slate-800 mb-2">CONFIRMAR SALIDA</h3>
+        <p class="text-sm text-slate-500 mb-6">¿Desea cerrar el Resumen Ejecutivo?</p>
+        <div class="flex gap-3">
+            <button onclick="cancelarCerrarResumen()" style="flex: 1; background: #dc2626; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">❌ CANCELAR</button>
+            <button onclick="confirmarCerrarResumen()" style="flex: 1; background: #16a34a; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">✅ SÍ, CERRAR</button>
+        </div>
+    </div>
+</div>
+
 <div id="resumenEjecutivoPage" class="hidden-section resumen-fullscreen" style="display:none;">
 <div class="max-w-[1700px] w-[96%] mx-auto p-6">
 <div class="flex justify-between items-center mb-6 bg-white rounded-2xl shadow-lg p-4 sticky top-0 z-10">
@@ -631,7 +481,10 @@ grid-template-columns: 1fr;
 <p class="text-xs text-slate-500">Dashboard gerencial · Datos consolidados 2026</p>
 </div>
 </div>
-<button onclick="cerrarResumenEjecutivo()" class="bg-orange-600 hover:bg-orange-700 text-white px-5 py-2 rounded-xl font-bold transition-all flex items-center gap-2 shadow-md">← VOLVER</button>
+<!-- ✅ BOTÓN ACTUALIZADO: abre modal de confirmación -->
+<button onclick="abrirConfirmCerrarResumen()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105">
+    🔒 CERRAR RESUMEN EJECUTIVO
+</button>
 </div>
 <div class="bg-white rounded-2xl shadow-md p-4 mb-6">
 <div class="flex flex-wrap gap-4 items-end">
@@ -851,14 +704,82 @@ function actualizarObjetivosUI() { document.getElementById('objetivoActosTexto')
 function toggleVCPVisibility(show) { const v=document.getElementById('vcpSection'); if(v) show?v.classList.remove('hidden-section'):v.classList.add('hidden-section'); }
 function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display='flex'; }
 function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display='none'; }
-function verificarPasswordResumen() { const input=document.getElementById('resumenPasswordInput'); if(input.value===PASSWORD_RESUMEN){ cerrarPasswordResumenModal(); cargarTodosDatosParaResumen().then(()=>{ document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='block'; actualizarResumenEjecutivo(); }); } else { playErrorSound(); document.getElementById('resumenPasswordError').textContent=' Contraseña incorrecta'; } }
-function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='none'; }
-function actualizarResumenEjecutivo() { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datosActos = [], datosVCP = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if (sucursal !== 'todas' && suc !== sucursal) return; if (ALL_ACTOS_DATA[suc]) { ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({...d}); }); } if (ALL_VCP_DATA[suc]) { ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({...d}); }); } }); if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') { datosVCP = []; } else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') { datosActos = []; } } const totalActos = datosActos.filter(d => d.tipo === 'acto').length; const totalCond = datosActos.filter(d => d.tipo === 'condicion').length; const totalVCP = datosVCP.length; document.getElementById('ejecTotalActos').innerText = totalActos; document.getElementById('ejecTotalCondiciones').innerText = totalCond; document.getElementById('ejecTotalVCP').innerText = totalVCP; document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP; const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]); renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings(datosActos); renderEjecutivoReincidencias(datosActos); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro); }
+
+/* ═══════════════════════════════════════════════════════════════
+   ✅ NUEVO: MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO
+   ══════════════════════════════════════════════════════════════ */
+function abrirConfirmCerrarResumen() {
+    const modal = document.getElementById('cerrarResumenConfirmModal');
+    if (modal) modal.style.display = 'flex';
+}
+function cancelarCerrarResumen() {
+    const modal = document.getElementById('cerrarResumenConfirmModal');
+    if (modal) {
+        const card = modal.querySelector('.modal-bounce');
+        if (card) card.classList.add('modal-bounce-out');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            if (card) card.classList.remove('modal-bounce-out');
+        }, 320);
+    }
+}
+function confirmarCerrarResumen() {
+    const modal = document.getElementById('cerrarResumenConfirmModal');
+    if (modal) {
+        const card = modal.querySelector('.modal-bounce');
+        if (card) card.classList.add('modal-bounce-out');
+        setTimeout(() => {
+            modal.style.display = 'none';
+            if (card) card.classList.remove('modal-bounce-out');
+            cerrarResumenEjecutivo();
+        }, 320);
+    }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   ✅ ACTUALIZADO: verificarPasswordResumen con persistencia
+   ══════════════════════════════════════════════════════════════ */
+function verificarPasswordResumen() { 
+    const input=document.getElementById('resumenPasswordInput'); 
+    if(input.value===PASSWORD_RESUMEN){ 
+        cerrarPasswordResumenModal(); 
+        cargarTodosDatosParaResumen().then(()=>{ 
+            abrirResumenEjecutivoPersistente();
+            actualizarResumenEjecutivo(); 
+        }); 
+    } else { 
+        playErrorSound(); 
+        document.getElementById('resumenPasswordError').textContent='❌ Contraseña incorrecta'; 
+    } 
+}
+
+function cerrarResumenEjecutivo() { 
+    document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); 
+    document.getElementById('resumenEjecutivoPage').style.display='none'; 
+    try { localStorage.removeItem('minerar_resumen_abierto'); } catch(e) {}
+}
+
+function abrirResumenEjecutivoPersistente() {
+    document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section');
+    document.getElementById('resumenEjecutivoPage').style.display='block';
+    try { localStorage.setItem('minerar_resumen_abierto', '1'); } catch(e) {}
+}
+
+function restaurarResumenSiEstabaAbierto() {
+    try {
+        if (localStorage.getItem('minerar_resumen_abierto') === '1' && isUnlocked) {
+            cargarTodosDatosParaResumen().then(() => {
+                abrirResumenEjecutivoPersistente();
+                actualizarResumenEjecutivo();
+            });
+        }
+    } catch(e) {}
+}
+
+function actualizarResumenEjecutivo() { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datosActos = [], datosVCP = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if (sucursal !== 'todas' && suc !== sucursal) return; if (ALL_ACTOS_DATA[suc]) { ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({...d}); }); } if (ALL_VCP_DATA[suc]) { ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({...d}); }); } }); if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') { datosVCP = []; } else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') { datosActos = []; } } const totalActos = datosActos.filter(d => d.tipo === 'acto').length; const totalCond = datosActos.filter(d => d.tipo === 'condicion').length; const totalVCP = datosVCP.length; document.getElementById('ejecTotalActos').innerText = totalActos; document.getElementById('ejecTotalCondiciones').innerText = totalCond; document.getElementById('ejecTotalVCP').innerText = totalVCP; document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP; const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]); renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings([...datosActos, ...datosVCP]); renderEjecutivoReincidencias([...datosActos, ...datosVCP]); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro); }
 
 /* ═══════════════════════════════════════════════════════════════
    ✅ REEMPLAZO: renderEjecutivoTabla + abrirModalEjecutivo
-   Ahora las filas del Resumen Ejecutivo son clickeables y abren
-   el modal reutilizado (reportDetailModal) con toda la info.
    ══════════════════════════════════════════════════════════════ */
 function renderEjecutivoTabla(datos) {
     const tbody = document.getElementById('ejecTablaBody');
@@ -905,32 +826,40 @@ function abrirModalEjecutivo(idx) {
 }
 
 function aplicarFiltroPorTipo(tipo) { currentFiltroTipo=tipo; document.getElementById('ejecutivoTipoFiltro').value=tipo; document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c=>c.classList.remove('active')); if(tipo==='acto') document.getElementById('kpiActosCard').classList.add('active'); else if(tipo==='condicion') document.getElementById('kpiCondCard').classList.add('active'); else if(tipo==='vcp') document.getElementById('kpiVCPCard').classList.add('active'); else document.getElementById('kpiTotalCard').classList.add('active'); actualizarResumenEjecutivo(); }
-function renderEjecutivoRankings(datos) { const actos = datos.filter(d => d.tipo === 'acto'); const countActos = {}; actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; }); const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5); const contActos = document.getElementById('ejecTopActos'); if (contActos) { contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } const conds = datos.filter(d => d.tipo === 'condicion'); const countConds = {}; conds.forEach(d => { let categoriaId = d.categoria?.id || 'otros'; let descNormalizada; if (categoriaId === 'berma') descNormalizada = 'CI - Berma de seguridad fuera de estándar'; else if (categoriaId === 'area') descNormalizada = 'CI - Sector o ambiente de trabajo en condición'; else if (categoriaId === 'orden') descNormalizada = 'CI - Orden y limpieza deficiente'; else if (categoriaId === 'senalizacion') descNormalizada = 'CI - Señalización deficiente o inadecuada'; else if (categoriaId === 'equipos') descNormalizada = 'CI - Equipos o herramientas fuera de estándar'; else if (categoriaId === 'epp') descNormalizada = 'AI - Falta de EPP'; else if (categoriaId === 'procedimientos') descNormalizada = 'AI - Procedimientos inadecuados'; else if (categoriaId === 'conduccion') descNormalizada = 'AI - Conducción insegura'; else descNormalizada = 'Otros'; countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1; }); const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5); const contConds = document.getElementById('ejecTopCond'); if (contConds) { contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } const countResp = {}; datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; }); const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10); const contResp = document.getElementById('ejecTopResponsables'); if (contResp) { contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join(''); } }
+function renderEjecutivoRankings(datos) { 
+    const actos = datos.filter(d => d.tipo === 'acto'); 
+    const conds = datos.filter(d => d.tipo === 'condicion');
+    const countActos = {}; 
+    actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; }); 
+    const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5); 
+    const contActos = document.getElementById('ejecTopActos'); 
+    if (contActos) { contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } 
+    const countConds = {}; 
+    conds.forEach(d => { let categoriaId = d.categoria?.id || 'otros'; let descNormalizada; if (categoriaId === 'berma') descNormalizada = 'CI - Berma de seguridad fuera de estándar'; else if (categoriaId === 'area') descNormalizada = 'CI - Sector o ambiente de trabajo en condición'; else if (categoriaId === 'orden') descNormalizada = 'CI - Orden y limpieza deficiente'; else if (categoriaId === 'senalizacion') descNormalizada = 'CI - Señalización deficiente o inadecuada'; else if (categoriaId === 'equipos') descNormalizada = 'CI - Equipos o herramientas fuera de estándar'; else if (categoriaId === 'epp') descNormalizada = 'AI - Falta de EPP'; else if (categoriaId === 'procedimientos') descNormalizada = 'AI - Procedimientos inadecuados'; else if (categoriaId === 'conduccion') descNormalizada = 'AI - Conducción insegura'; else descNormalizada = 'Otros'; countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1; }); 
+    const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5); 
+    const contConds = document.getElementById('ejecTopCond'); 
+    if (contConds) { contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p>Sin datos</p>'; } 
+    const countResp = {}; 
+    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; }); 
+    const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10); 
+    const contResp = document.getElementById('ejecTopResponsables'); 
+    if (contResp) { contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join(''); } 
+}
 function renderEjecutivoReincidencias(datos) { const reincMap=new Map(); datos.forEach(d=>{ if(!d.observador||!d.categoria?.id) return; const key=`${d.observador}|${d.categoria.id}`; if(!reincMap.has(key)) reincMap.set(key,{persona:d.observador,categoria:d.categoria,count:0,sucursales:new Set()}); const item=reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); }); const reincList=Array.from(reincMap.values()).filter(r=>r.count>=2).sort((a,b)=>b.count-a.count).slice(0,10); const cont=document.getElementById('ejecReincidencias'); if(cont) cont.innerHTML=reincList.length?reincList.map(r=>`<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs"> ${Array.from(r.sucursales).join(', ')}</div></div>`).join(''):'<p class="text-center py-4">✅ Sin reincidencias</p>'; }
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 async function cargarTodosDatosParaResumen() { const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML; if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS...'; try { ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; const [malagueno, barker, lapampita] = await Promise.all([cargarDatosSucursal('MALAGUENO'), cargarDatosSucursal('BARKER'), cargarDatosSucursal('LAPAMPITA')]); ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp; ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp; ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; } catch (error) { console.error('❌ Error cargando datos:', error); alert('Error al cargar los datos.'); } finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; } }
 function exportarResumenEjecutivoExcel() { const wb = XLSX.utils.book_new(); const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; const resumenData = [['🛡️ RESUMEN EJECUTIVO MINERAR 2026'], [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`], [], [' FILTROS APLICADOS:'], ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal], ['Mes:', mes === 'todo' ? 'TODOS' : mes], ['Sector:', sector === 'todos' ? 'TODOS' : sector], ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro], ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro], [], ['📈 INDICADORES PRINCIPALES:'], ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText], ['️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText], ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText], ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]]; const wsResumen = XLSX.utils.aoa_to_sheet(resumenData); wsResumen['!cols'] = [{wch:25}, {wch:15}]; XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN'); const datosTabla = window.datosModalActual || []; if (datosTabla.length > 0) { const detalleData = [['📋 DETALLE COMPLETO DE REPORTES'], [], ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']]; datosTabla.forEach(d => { const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; const estado = estaCerrado ? 'CERRADO' : 'ABIERTO'; const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN'); detalleData.push([`${d.dia}/${d.mes}/2026`, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estado, d.categoria?.name || '']); }); const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData); wsDetalle['!cols'] = [{wch:12}, {wch:12}, {wch:20}, {wch:10}, {wch:50}, {wch:12}, {wch:10}, {wch:20}]; XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE'); } const fecha = new Date().toISOString().slice(0,10); XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`); alert('✅ Excel exportado exitosamente'); }
 
-// ═══════════════════════════════════════════════════════════════
-// 📌 HEADER STICKY - Efecto visual al hacer scroll
-// ══════════════════════════════════════════════════════════════
 (function() {
     const header = document.querySelector('.header-container');
     if (!header) return;
     let ticking = false;
     function updateHeaderOnScroll() {
-        if (window.scrollY > 10) {
-            header.classList.add('scrolled');
-        } else {
-            header.classList.remove('scrolled');
-        }
+        if (window.scrollY > 10) { header.classList.add('scrolled'); } else { header.classList.remove('scrolled'); }
         ticking = false;
     }
     window.addEventListener('scroll', function() {
-        if (!ticking) {
-            window.requestAnimationFrame(updateHeaderOnScroll);
-            ticking = true;
-        }
+        if (!ticking) { window.requestAnimationFrame(updateHeaderOnScroll); ticking = true; }
     }, { passive: true });
 })();
 
@@ -940,6 +869,7 @@ if (tieneSesionValida()) {
 isUnlocked = true;
 overlay.style.display = 'none';
 enterMainPanel();
+setTimeout(() => restaurarResumenSiEstabaAbierto(), 800);
 } else {
 overlay.style.display = 'flex';
 document.getElementById('passwordInput')?.focus();
@@ -960,7 +890,9 @@ const supervisorMonthSelect = document.getElementById('supervisorMonthSelect');
 if (supervisorSelect) { supervisorSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); }); }
 if (supervisorMonthSelect) { supervisorMonthSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); }); }
 document.addEventListener('keydown', function(e) {
-if (e.key === 'Enter') {
+if (e.key === 'Escape' || e.key === 'Enter') {
+const cm = document.getElementById('cerrarResumenConfirmModal');
+if (cm && cm.style.display === 'flex') { if (e.key === 'Escape') cancelarCerrarResumen(); return; }
 const rm = document.getElementById('reportDetailModal');
 if (rm && !rm.classList.contains('hidden-section')) { closeReportModal(); return; }
 const sm = document.getElementById('supervisorDetailModal');
