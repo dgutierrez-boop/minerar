@@ -610,23 +610,23 @@ let lastSuccessfulData = null;
 let supervisorFiltroTabla = null;
 const SUCURSALES_CONFIG = {
   MALAGUENO: { 
-    actosUrl: 'https://script.google.com/macros/s/AKfycbz6nX3lnofO5Wbg5G8NJK_G6rd9oaDqDX2bAp_sVnf8bZkn8yTiJtCvv7Ti4kfNS9Ok/exec?key=PMMasAgiles1122SEG&id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I', 
-    vcpUrl: 'https://script.google.com/macros/s/AKfycbzYlGpPrHtUufXcuWxzcFsZXSIFrGQeVt-apy113bBYjjErXZXufIW8DXVgrtEppx0svQ/exec?key=PMMasAgiles1122SEG&id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw',
+    actosUrl: 'https://script.google.com/macros/s/AKfycbykZSRyEyoL-LdkAeUT2w2NKxc8IJG-bWHSFCNZT-qZBMdUiEtxCS7jZVI3bZc6qlgi/exec?key=PMMasAgiles1122SEG&id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I', 
+    vcpUrl: 'https://script.google.com/macros/s/AKfycbwAd7lLLD1f4ZRiwFZOZK3Uuie_uhFG_oL66bfy0VJs9YN_x-MX0Ms39BaNBDNDarclfQ/exec?key=PMMasAgiles1122SEG&id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw',
     mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
     vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
     objetivos: { actos: 66, cond: 44 },
     showVCP: true
   },
   BARKER: { 
-    actosUrl: 'https://script.google.com/macros/s/AKfycbzZ5W4cOLKpCMvcCaBVBgxQw8GP4wYvc55IC4xMFy1cHr5_G_5U65N8PqtNPO8SR30/exec?key=PMMasAgiles1122SEG&id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc',
+    actosUrl: 'https://script.google.com/macros/s/AKfycbwlhA7fcNj17QyCa2synHmMHk73pGHBix3qyg-Iv_tNPwqMtdCLmzYukiebRpqi_3Q/exec?key=PMMasAgiles1122SEG&id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc',
     vcpUrl: null,
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
     objetivos: { actos: 6, cond: 4 },
     showVCP: false
   },
   LAPAMPITA: { 
-    actosUrl: 'https://script.google.com/macros/s/AKfycbyxXAR7YV_7znJjFedDtvTfKiDPvwmVWB3nPEQ8AHSBlltfB76Nn2trHPNxF7zX9vqaVg/exec?key=PMMasAgiles1122SEG&id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8',
-    vcpUrl: 'https://script.google.com/macros/s/AKfycbzaJPCan5lZBr6fUfGj2EEfLOMZ5ljRllty5Nv43J5L0zz-QFPutEugmqRN6gbwSaAx9w/exec?key=PMMasAgiles1122SEG&id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY',
+    actosUrl: 'https://script.google.com/macros/s/AKfycbxmAVDnRyt4GfvxF1lYmQOExmgx1rCbSC0BXxe6jftjtYU0jFycqXcMQ_zdlsCigQMJHg/exec?key=PMMasAgiles1122SEG&id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8',
+    vcpUrl: 'https://script.google.com/macros/s/AKfycbxy_lWT0ACoOYKbI3oE0USL0Ax-pW6AqDFrQ_VeLNzqvt1DK94z8j72DvTLjFKPK5zEqQ/exec?key=PMMasAgiles1122SEG&id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY',
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
     vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
     objetivos: { actos: 66, cond: 44 },
