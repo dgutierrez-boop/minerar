@@ -609,9 +609,29 @@ let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
 let supervisorFiltroTabla = null;
 const SUCURSALES_CONFIG = {
-MALAGUENO: { actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv', vcpUrl: 'https://docs.google.com/spreadsheets/d/1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw/export?format=csv', mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null }, vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 }, objetivos: { actos: 66, cond: 44 }, showVCP: true },
-BARKER: { actosUrl: 'https://docs.google.com/spreadsheets/d/1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc/export?format=csv', vcpUrl: null, mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 }, objetivos: { actos: 6, cond: 4 }, showVCP: false },
-LAPAMPITA: { actosUrl: 'https://docs.google.com/spreadsheets/d/1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8/export?format=csv', vcpUrl: 'https://docs.google.com/spreadsheets/d/1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY/export?format=csv', mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 }, vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 }, objetivos: { actos: 66, cond: 44 }, showVCP: true }
+  MALAGUENO: { 
+    actosUrl: 'https://script.google.com/macros/s/AKfycbxxkX3knyepelXidCPXl0Vvw9LWRcPQfTsiOx1bD2Z-UtxySMChaTUwG8e4mc6cPmlyvQ/exec?id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I', 
+    vcpUrl: 'https://script.google.com/macros/s/AKfycbxxkX3knyepelXidCPXl0Vvw9LWRcPQfTsiOx1bD2Z-UtxySMChaTUwG8e4mc6cPmlyvQ/exec?id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw',
+    mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
+    vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
+    objetivos: { actos: 66, cond: 44 },
+    showVCP: true
+  },
+  BARKER: { 
+    actosUrl: 'https://script.google.com/macros/s/AKfycbxxkX3knyepelXidCPXl0Vvw9LWRcPQfTsiOx1bD2Z-UtxySMChaTUwG8e4mc6cPmlyvQ/exec?id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc',
+    vcpUrl: null,
+    mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
+    objetivos: { actos: 6, cond: 4 },
+    showVCP: false
+  },
+  LAPAMPITA: { 
+    actosUrl: 'https://script.google.com/macros/s/AKfycbxxkX3knyepelXidCPXl0Vvw9LWRcPQfTsiOx1bD2Z-UtxySMChaTUwG8e4mc6cPmlyvQ/exec?id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8',
+    vcpUrl: 'https://script.google.com/macros/s/AKfycbxxkX3knyepelXidCPXl0Vvw9LWRcPQfTsiOx1bD2Z-UtxySMChaTUwG8e4mc6cPmlyvQ/exec?id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY',
+    mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
+    vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
+    objetivos: { actos: 66, cond: 44 },
+    showVCP: true
+  }
 };
 const OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
