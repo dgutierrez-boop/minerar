@@ -575,71 +575,26 @@ body { padding: 10px; }
 </div>
 <script>
 // 🔒 CONFIGURACIÓN DE SEGURIDAD CON PROXY
-const PROXY_URL = 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec'; // ← REEMPLAZAR CON TU URL DEL PROXY
+// Si no les gusta cómo está protegido, que contraten a Elon Musk 🚀
+// Y si sos el vivo que está abriendo F12 para buscar la contraseña:
+// >> "NO TENÉS OTRA COSA QUE HACER QUE ESTAR BUSCANDO UNA CONTRASEÑA, HACKER TRUCHO? PONETE A LABURAR!!!" <<
+
 const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
-const TOKEN_KEY = 'minerar_auth_token';
-const TOKEN_EXPIRES_KEY = 'minerar_token_expires';
 
-let SESSION_TOKEN = null;
-let TOKEN_EXPIRES = null;
+// ⚠️ URLs DE GOOGLE APPS SCRIPT (Configuradas para cada sucursal)
+const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbzpygqZN8AzDK40_2H7fyBqzLh-64IDZMqDha4aIPns2rE7mjwyeZXE-n6hTVi8Y-Ch/exec';
+const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbxKxts6kVkSUsAMKB71TngzVqnmYcNuQ6eqCJkoDFD7rvHZyj-5BR3BUltmoJ3KQzOPIQ/exec';
+const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbwxXsE-2MXYbYSxsSP4pZcXdLO1GTdsDRbCbV9_36c1jzdy3fDDBJGgCKOKUDB7frKR/exec';
+const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbzNUxOkYOB7w-uoQ3Omd2HgYmLkQAtzNMj1IuNKiZBS8bUyd1VJ93m7yJapa6aOMWCiMA/exec';
 
 function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
-function tieneSesionValida() { 
-  try { 
-    const sessionDate = localStorage.getItem(SESSION_KEY);
-    const token = localStorage.getItem(TOKEN_KEY);
-    const expires = localStorage.getItem(TOKEN_EXPIRES_KEY);
-    return sessionDate === getTodayKey() && token && expires && Date.now() < parseInt(expires);
-  } catch(e) { return false; } 
-}
-function guardarSesion() { 
-  try { 
-    localStorage.setItem(SESSION_KEY, getTodayKey());
-    if (SESSION_TOKEN) {
-      localStorage.setItem(TOKEN_KEY, SESSION_TOKEN);
-      localStorage.setItem(TOKEN_EXPIRES_KEY, TOKEN_EXPIRES.toString());
-    }
-  } catch(e) {} 
-}
-function borrarSesion() { 
-  try { 
-    localStorage.removeItem(SESSION_KEY);
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(TOKEN_EXPIRES_KEY);
-    SESSION_TOKEN = null;
-    TOKEN_EXPIRES = null;
-  } catch(e) {} 
-}
+function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) === getTodayKey(); } catch(e) { return false; } }
+function guardarSesion() { try { localStorage.setItem(SESSION_KEY, getTodayKey()); } catch(e) {} }
+function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
 
-// 🔒 AUTENTICACIÓN CON PROXY
-async function autenticarConProxy(password) {
-  try {
-    const response = await fetch(`${PROXY_URL}?action=login&password=${encodeURIComponent(password)}`);
-    const data = await response.json();
-    
-    if (data.success) {
-      SESSION_TOKEN = data.token;
-      TOKEN_EXPIRES = data.expires;
-      return true;
-    } else {
-      return false;
-    }
-  } catch (error) {
-    console.error('Error de autenticación:', error);
-    return false;
-  }
-}
-
-// 🔒 VALIDAR TOKEN ANTES DE CARGAR DATOS
-function tieneTokenValido() {
-  // Desactivado: usamos la clave secreta de Google directamente
-  return true; 
-}
-
-// 🔒 OBTENER DATOS CON TOKEN
-// 🔒 OBTENER DATOS CON TOKEN
+// 🔒 OBTENER DATOS DESDE GOOGLE
 async function fetchConToken(urlCompleta) {
   const response = await fetch(urlCompleta + '&t=' + Date.now());
   const text = await response.text();
@@ -676,7 +631,7 @@ let lastUpdateTime = Date.now();
 let lastSuccessfulData = null;
 let supervisorFiltroTabla = null;
 
-// ⚠️ IDs DE HOJAS (sin URLs completas, solo los IDs)
+// ⚠️ IDs DE HOJAS
 const SHEET_IDS = {
   MALAGUENO: {
     actos: '1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I',
@@ -717,6 +672,7 @@ const SUCURSALES_CONFIG = {
     showVCP: true
   }
 };
+
 const OBJ_VCP = 30;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
@@ -752,8 +708,8 @@ function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('so
 function togglePasswordVisibility() { const input = document.getElementById('passwordInput'); if (input.type === 'password') { input.type = 'text'; } else { input.type = 'password'; } input.focus(); }
 function toggleResumenPasswordVisibility() { const input = document.getElementById('resumenPasswordInput'); if (input.type === 'password') { input.type = 'text'; } else { input.type = 'password'; } input.focus(); }
 
-// 🔒 VERIFICAR CONTRASEÑA CON PROXY
-async function verifyPassword() { 
+// 🔒 VERIFICAR CONTRASEÑA
+function verifyPassword() { 
   const input = document.getElementById('passwordInput'); 
   const errorDiv = document.getElementById('passwordError'); 
   const overlay = document.getElementById('passwordOverlay'); 
@@ -793,7 +749,7 @@ function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]
 
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
 
-// 🔒 CARGAR DATOS CON TOKEN
+// 🔒 CARGAR DATOS
 async function cargarDatosSucursal(sucursal) {
   const config = SUCURSALES_CONFIG[sucursal];
   let actosData = [], vcpData = [];
@@ -801,8 +757,7 @@ async function cargarDatosSucursal(sucursal) {
   
   if(config.mapping) {
     try {
-      const sheetId = SHEET_IDS[sucursal].actos;
-      const text = await fetchConToken(PROXY_URL, sheetId);
+      const text = await fetchConToken(config.actosUrl);
       const rows = parseCSV(text);
       
       for(let i=0; i<rows.length; i++) {
@@ -895,18 +850,12 @@ async function cargarDatosSucursal(sucursal) {
       }
     } catch(e) {
       console.error("Error cargando actos:", e);
-      if (e.message === 'Sesión expirada' || e.message === 'Token inválido o expirado') {
-        alert(' Sesión expirada. Por favor, inicie sesión nuevamente.');
-        borrarSesion();
-        location.reload();
-      }
     }
   }
   
-  if(config.showVCP && SHEET_IDS[sucursal].vcp) {
+  if(config.showVCP && config.vcpUrl) {
     try {
-      const sheetId = SHEET_IDS[sucursal].vcp;
-      const text2 = await fetchConToken(PROXY_URL, sheetId);
+      const text2 = await fetchConToken(config.vcpUrl);
       const rows2 = parseCSV(text2);
       const vm = config.vcpMapping;
       
@@ -960,11 +909,6 @@ async function cargarDatosSucursal(sucursal) {
       }
     } catch(e) {
       console.error("Error cargando VCP:", e);
-      if (e.message === 'Sesión expirada' || e.message === 'Token inválido o expirado') {
-        alert('🔒 Sesión expirada. Por favor, inicie sesión nuevamente.');
-        borrarSesion();
-        location.reload();
-      }
     }
   }
   
@@ -1104,10 +1048,6 @@ function exportarResumenEjecutivoExcel() { const wb = XLSX.utils.book_new(); con
 window.addEventListener('load', () => {
   const overlay = document.getElementById('passwordOverlay');
   if (tieneSesionValida()) {
-        // Restaurar token de localStorage (Desactivado)
-    // SESSION_TOKEN = localStorage.getItem(TOKEN_KEY);
-    // TOKEN_EXPIRES = parseInt(localStorage.getItem(TOKEN_EXPIRES_KEY));
-    
     isUnlocked = true;
     overlay.style.display = 'none';
     enterMainPanel();
