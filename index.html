@@ -757,44 +757,34 @@ function togglePasswordVisibility() { const input = document.getElementById('pas
 function toggleResumenPasswordVisibility() { const input = document.getElementById('resumenPasswordInput'); if (input.type === 'password') { input.type = 'text'; } else { input.type = 'password'; } input.focus(); }
 
 // 🔒 VERIFICAR CONTRASEÑA CON PROXY
-async function verifyPassword() {
-  const input = document.getElementById('passwordInput');
-  const errorDiv = document.getElementById('passwordError');
-  const overlay = document.getElementById('passwordOverlay');
+async function verifyPassword() { 
+  const input = document.getElementById('passwordInput'); 
+  const errorDiv = document.getElementById('passwordError'); 
+  const overlay = document.getElementById('passwordOverlay'); 
   
-  if (input.value === PASSWORD_CORRECTA) {
-    // Autenticar con el proxy
-    const autenticado = await autenticarConProxy(input.value);
+  if (input.value === PASSWORD_CORRECTA) { 
+    playUnlockSound(); 
+    guardarSesion(); 
+    errorDiv.textContent = ''; 
+    overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando...</p></div>'; 
     
-    if (autenticado) {
-      playUnlockSound();
-      guardarSesion();
-      errorDiv.textContent = '';
-      overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando presentación...</p></div>';
-      
-      setTimeout(() => {
-        overlay.style.opacity = '0';
-        overlay.style.transition = 'opacity 0.5s';
-        setTimeout(() => {
-          overlay.style.display = 'none';
-          isUnlocked = true;
-          showVideoIntro();
-        }, 500);
-      }, 1200);
-    } else {
-      playErrorSound();
-      errorDiv.textContent = '🔒 Error de autenticación. Intente nuevamente.';
-      input.value = '';
-      input.focus();
-    }
-  } else {
-    playErrorSound();
-    errorDiv.textContent = '🔒 Contraseña incorrecta';
-    input.value = '';
-    input.focus();
-    input.classList.add('border-red-400');
-    setTimeout(() => input.classList.remove('border-red-400'), 500);
-  }
+    setTimeout(() => { 
+      overlay.style.opacity = '0'; 
+      overlay.style.transition = 'opacity 0.5s'; 
+      setTimeout(() => { 
+        overlay.style.display = 'none'; 
+        isUnlocked = true; 
+        showVideoIntro(); 
+      }, 500); 
+    }, 1200); 
+  } else { 
+    playErrorSound(); 
+    errorDiv.textContent = '🔒 Contraseña incorrecta'; 
+    input.value = ''; 
+    input.focus(); 
+    input.classList.add('border-red-400'); 
+    setTimeout(() => input.classList.remove('border-red-400'), 500); 
+  } 
 }
 
 function updateLastUpdateIndicator() { lastUpdateTime = Date.now(); const lastUpdate = new Date(lastUpdateTime); const timeStr = lastUpdate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); let indicator = document.getElementById('lastUpdateIndicator'); if (!indicator) { indicator = document.createElement('div'); indicator.id = 'lastUpdateIndicator'; indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2'; const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling); } indicator.innerHTML = `📡 ${timeStr}`; }
