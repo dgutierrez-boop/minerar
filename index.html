@@ -634,8 +634,8 @@ async function autenticarConProxy(password) {
 
 // 🔒 VALIDAR TOKEN ANTES DE CARGAR DATOS
 function tieneTokenValido() {
-  if (!SESSION_TOKEN || !TOKEN_EXPIRES) return false;
-  return Date.now() < TOKEN_EXPIRES;
+  // Desactivado: usamos la clave secreta de Google directamente
+  return true; 
 }
 
 // 🔒 OBTENER DATOS CON TOKEN
@@ -1110,9 +1110,9 @@ function exportarResumenEjecutivoExcel() { const wb = XLSX.utils.book_new(); con
 window.addEventListener('load', () => {
   const overlay = document.getElementById('passwordOverlay');
   if (tieneSesionValida()) {
-    // Restaurar token de localStorage
-    SESSION_TOKEN = localStorage.getItem(TOKEN_KEY);
-    TOKEN_EXPIRES = parseInt(localStorage.getItem(TOKEN_EXPIRES_KEY));
+        // Restaurar token de localStorage (Desactivado)
+    // SESSION_TOKEN = localStorage.getItem(TOKEN_KEY);
+    // TOKEN_EXPIRES = parseInt(localStorage.getItem(TOKEN_EXPIRES_KEY));
     
     isUnlocked = true;
     overlay.style.display = 'none';
