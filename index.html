@@ -644,10 +644,12 @@ async function fetchConToken(url, sheetId) {
     throw new Error('Sesión expirada');
   }
   
-  const response = await fetch(`${url}&token=${SESSION_TOKEN}&id=${sheetId}&t=${Date.now()}`);
+  const fetchUrl = `${url}&id=${sheetId}&t=${Date.now()}`;
+  
+  const response = await fetch(fetchUrl);
   const text = await response.text();
   
-  if (text.includes('No autorizado') || text.includes('error')) {
+  if (text.includes('ACCESO DENEGADO') || text.includes('ERROR')) {
     throw new Error('Token inválido o expirado');
   }
   
@@ -697,23 +699,23 @@ const SHEET_IDS = {
 
 const SUCURSALES_CONFIG = {
   MALAGUENO: {
-    actosUrl: 'https://script.google.com/macros/s/AKfycbxcKKSsrc59yVdwrH9glXuhHMYvvyQHPylpiPvCde2DBJfxmuL_dBGg39s6AZLLOzQ/exec?key=PMMasAgiles1122SEG&id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I',
-    vcpUrl: 'https://script.google.com/macros/s/AKfycbx87jrBuito-G7Fm6o49OclQLbQYZzaVZX2S4yATknQbVj7r_QskxEe2jUTtb6EnzNk2Q/exec?key=PMMasAgiles1122SEG&id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw',
+    actosUrl: 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec?key=PMMasAgiles1122SEG',
+    vcpUrl: 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec?key=PMMasAgiles1122SEG',
     mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
     vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
     objetivos: { actos: 66, cond: 44 },
     showVCP: true
   },
   BARKER: {
-    actosUrl: 'https://script.google.com/macros/s/AKfycbxpz996zHXMq63-wAiiTd3eZql3CU-h5tcD9aDHTqM3zRHgLidMflkjILbrpYeYpa-1/exec?key=PMMasAgiles1122SEG&id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc',
+    actosUrl: 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec?key=PMMasAgiles1122SEG',
     vcpUrl: null,
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
     objetivos: { actos: 6, cond: 4 },
     showVCP: false
   },
   LAPAMPITA: {
-    actosUrl: 'https://script.google.com/macros/s/AKfycbwcEWff59qqCfKMSIP4P0jQMRtQpufcJQc7cxClIl93i9NEO-C6qc5JQeg5JVtpaKcUCQ/exec?key=PMMasAgiles1122SEG&id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8',
-    vcpUrl: 'https://script.google.com/macros/s/AKfycbypYQ3qIDlQIVTJtxHCzmox4CHEE68q6-1l0uiOioD_YS7s1ExEoC7me_31Bbhg8vlOXg/exec?key=PMMasAgiles1122SEG&id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY',
+    actosUrl: 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec?key=PMMasAgiles1122SEG',
+    vcpUrl: 'https://script.google.com/macros/s/TU_URL_DEL_PROXY_AQUI/exec?key=PMMasAgiles1122SEG',
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
     vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
     objetivos: { actos: 66, cond: 44 },
