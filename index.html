@@ -954,8 +954,20 @@ async function cargarDatosSucursal(sucursal) {
         const fd = parseFecha(fr.split(' ')[0]);
         if(!fd.valido || !po) continue;
         
-        const cat = classifyData(des, true);
-        vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP });
+                const cat = classifyData(des, true);
+        
+        // 🛠️ FORMATEAMOS LA FECHA PARA QUE NO SALGA EL TEXTO LARGO
+        let fechaLimpia = fr;
+        if (fr.includes('T')) {
+          const partes = fr.split('T')[0].split('-'); // Toma solo la parte de la fecha (YYYY-MM-DD)
+          if (partes.length === 3) {
+            fechaLimpia = partes[2] + '/' + partes[1] + '/' + partes[0]; // Convierte a DD/MM/YYYY
+          }
+        } else {
+           fechaLimpia = fd.dia + '/' + fd.mes + '/2026';
+        }
+        
+        vcpData.push({ fecha: fechaLimpia, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP });
         
         if(fd.dia === diaHoy && fd.mes === mesHoy) {
           const idUnico = `${po}|${des}|${sec}|${fr}`;
