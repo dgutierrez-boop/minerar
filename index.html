@@ -584,10 +584,11 @@ const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
 
 // ⚠️ URLs DE GOOGLE APPS SCRIPT (Configuradas para cada sucursal)
-const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbzpygqZN8AzDK40_2H7fyBqzLh-64IDZMqDha4aIPns2rE7mjwyeZXE-n6hTVi8Y-Ch/exec';
-const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbxKxts6kVkSUsAMKB71TngzVqnmYcNuQ6eqCJkoDFD7rvHZyj-5BR3BUltmoJ3KQzOPIQ/exec';
-const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbwxXsE-2MXYbYSxsSP4pZcXdLO1GTdsDRbCbV9_36c1jzdy3fDDBJGgCKOKUDB7frKR/exec';
-const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbzNUxOkYOB7w-uoQ3Omd2HgYmLkQAtzNMj1IuNKiZBS8bUyd1VJ93m7yJapa6aOMWCiMA/exec';
+// ⚠️ URLs DE GOOGLE APPS SCRIPT ACTUALIZADAS
+const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec';
+const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec';
+const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec';
+const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbxpzx5_kDXgIMipWT1okrGbYzYxaDH4u7oNR0Lb0DbEsDhSG1IyJgG83R4gWe-Lw1lrNA/exec';
 
 function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) === getTodayKey(); } catch(e) { return false; } }
