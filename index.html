@@ -782,7 +782,35 @@ function classifyData(desc, useVCP = false) { if (!desc) return { id: 'orden', n
 
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 
-function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
+function parseFecha(f) { 
+  if(!f) return {dia:'',mes:'',valido:false}; 
+  let s = f.toString().split(' ')[0].trim(); 
+  
+  // NUEVO: Si la fecha viene en formato ISO (ej: 2026-10-10T03:00:00.000Z), la limpiamos
+  if(s.includes('T')) {
+    s = s.split('T')[0];
+  }
+  
+  let p = s.split('/'); 
+  if(p.length>=3) { 
+    let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); 
+    if(p[2].length===2) a=2000+a; 
+    if(m>=1 && m<=12 && a===2026) { 
+      const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; 
+      return {dia: d, mes: meses[m-1], valido: true}; 
+    } 
+  } 
+  
+  p = s.split('-'); 
+  if(p.length>=3) { 
+    let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); 
+    if(m>=1 && m<=12 && a===2026) { 
+      const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; 
+      return {dia: d, mes: meses[m-1], valido: true}; 
+    } 
+  } 
+  return {dia:'',mes:'',valido:false}; 
+}
 
 // 🔒 CARGAR DATOS
 async function cargarDatosSucursal(sucursal) {
@@ -1002,7 +1030,35 @@ function applyAllFilters() { applyGeneralFilters(); if(currentShowVCP) applyVCPF
 function applyGeneralFilters() { let f = ACTOS_COND_DATA.filter(e => (state.mes==='todo'||e.mes===state.mes) && (state.sector==='general'||e.sector.includes(state.sector)) && (state.estado==='todos'||(state.estado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa); let a = f.filter(e=>e.tipo==='acto'), c = f.filter(e=>e.tipo==='condicion'); document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length; let pA = Math.min(a.length/currentObjetivos.actos*100,100), pC = Math.min(c.length/currentObjetivos.cond*100,100); document.getElementById('actosBar').style.width = pA+'%'; document.getElementById('condBar').style.width = pC+'%'; document.getElementById('actosPctLabel').innerText = Math.round(pA)+'%'; document.getElementById('condPctLabel').innerText = Math.round(pC)+'%'; let up=(id,p)=>{ let el=document.getElementById(id); if(p>=100){el.innerText='✅ Cumplido';el.className='status-badge status-ok';} else if(p>0){el.innerText=' En Progreso';el.className='status-badge status-warn';} else{el.innerText='⚠ Pendiente';el.className='status-badge status-low';} }; up('actosStatus',pA); up('condStatus',pC); updateCategoryCards(f,'actos'); updateChartsDona(f,'actos'); updateTrendChart(f); renderGeneralTableConFiltroSupervisor(); }
 function applyVCPFilters() { let f = VCP_DATA.filter(e => (state.vcpMes==='todo'||e.mes===state.vcpMes) && (state.vcpSector==='general'||e.sector.includes(state.vcpSector)) && (state.vcpEstado==='todos'||(state.vcpEstado==='cerrados'?e.cerrado:!e.cerrado))); if(selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa); let pct = Math.min(f.length/OBJ_VCP*100,100), vs=document.getElementById('vcpStatus'); if(vs){ if(pct>=100) vs.innerText='✅ Cumplido'; else if(pct>=70) vs.innerText=' Casi'; else vs.innerText='⚠ Pendiente'; } document.getElementById('vcpBar').style.width=pct+'%'; document.getElementById('vcpCurrent').innerText=f.length; document.getElementById('vcpPctLabel').innerText=Math.round(pct)+'%'; updateCategoryCards(f,'vcp'); updateVCPCharts(f); renderVCPTable(f); }
 function renderGeneralTable(data) { let tb = document.getElementById('generalTableBody'); if (!tb) return; tb.innerHTML = ''; if (!data || data.length === 0) { tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500"> No hay registros para mostrar</td></tr>'; return; } const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; data.forEach((e, i) => { let tr = document.createElement('tr'); const esHoy = (e.dia === diaHoy && e.mes === mesHoy); tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick = () => openModal(e, i, data); const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); let tipoDisplay = '', tipoClass = ''; if (e.tipo === 'acto') { tipoDisplay = '⚠️ ACTO (AI)'; tipoClass = 'bg-blue-100 text-blue-700'; } else if (e.tipo === 'condicion') { tipoDisplay = '🏚️ COND (CI)'; tipoClass = 'bg-amber-100 text-amber-700'; } else { tipoDisplay = '📌 Otro'; tipoClass = 'bg-gray-100 text-gray-700'; } const sigla = e.tipo === 'acto' ? 'AI' : (e.tipo === 'condicion' ? 'CI' : ''); const descConSigla = sigla ? `${sigla} - ${e.descripcion || ''}` : (e.descripcion || ''); tr.innerHTML = `<td class="p-2"> ${e.dia}/${e.mes}${esHoy ? '🔥' : ''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${tipoClass}">${tipoDisplay}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</span><br>${descConSigla.substring(0, 55)}${descConSigla.length > 55 ? '...' : ''}</td><td class="p-2">${estadoBadge}</td>`; tb.appendChild(tr); }); }
-function renderVCPTable(data) { let tb=document.getElementById('vcpTableBody'); if(!tb) return; tb.innerHTML=''; const sorted=ordenarPorFecha(data); const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; sorted.slice(0,50).forEach((e,i)=>{ let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; tr.onclick=()=>openModal(e,i,sorted); const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); tr.innerHTML=`<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy?'🔥':''}</td><td class="p-2 font-semibold"> ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2"> ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2">${estadoBadge}</td>`; tb.appendChild(tr); }); }
+function renderVCPTable(data) { 
+  let tb=document.getElementById('vcpTableBody'); 
+  if(!tb) return; 
+  tb.innerHTML=''; 
+  const sorted=ordenarPorFecha(data); 
+  const hoy=new Date(), diaHoy=hoy.getDate().toString().padStart(2,'0'), mesHoy=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()]; 
+  
+  sorted.slice(0,50).forEach((e,i)=>{ 
+    let tr=document.createElement('tr'), esHoy=(e.dia===diaHoy && e.mes===mesHoy); 
+    tr.className=esHoy?'row-hoy cursor-pointer':'border-b hover:bg-orange-50 cursor-pointer'; 
+    tr.onclick=()=>openModal(e,i,sorted); 
+    const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); 
+    
+    // Limpiamos el texto de la fecha por si las dudas
+    let fechaLimpia = e.fecha || '';
+    if(fechaLimpia.includes('T')) {
+      let partes = fechaLimpia.split('T');
+      let fechaBase = partes[0].split('-');
+      if(fechaBase.length === 3) {
+        fechaLimpia = fechaBase[2] + '/' + fechaBase[1]; // DD/MM
+      }
+    } else {
+      fechaLimpia = e.dia + '/' + e.mes;
+    }
+
+    tr.innerHTML=`<td class="p-2">📅 ${fechaLimpia}${esHoy?'🔥':''}</td><td class="p-2 font-semibold"> ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2"> ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2">${estadoBadge}</td>`; 
+    tb.appendChild(tr); 
+  }); 
+}
 function updatePersonVCPStatsOnly() { 
   let p=document.getElementById('vcpPersonFilter')?.value||'todos', 
       m=document.getElementById('vcpPersonMonthFilter')?.value||'todo', 
