@@ -597,10 +597,7 @@ function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e)
 // 🔒 OBTENER DATOS DESDE GOOGLE
 async function fetchConToken(urlCompleta) {
   try {
-    // Usamos el proxy de AllOrigins para evitar el bloqueo CORS del navegador
-    const urlProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(urlCompleta + '&t=' + Date.now());
-    
-    const response = await fetch(urlProxy);
+    const response = await fetch(urlCompleta + '&t=' + Date.now());
     const text = await response.text();
     
     if (text.includes('ACCESO DENEGADO') || text.includes('ERROR')) {
@@ -609,11 +606,18 @@ async function fetchConToken(urlCompleta) {
     
     return text;
   } catch (error) {
-    console.error('Error en la conexión:', error);
-    return ''; 
+    console.error('Error de conexión con Google:', error);
+    // Si el navegador bloquea la conexión directa, usamos el proxy de respaldo
+    try {
+      const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(urlCompleta + '&t=' + Date.now());
+      const res = await fetch(proxyUrl);
+      return await res.text();
+    } catch (e) {
+      console.error('El proxy también falló:', e);
+      return ''; 
+    }
   }
 }
-
 let videoTimeout = null;
 function requestFullscreen(element) { if (element.requestFullscreen) element.requestFullscreen(); else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen(); else if (element.msRequestFullscreen) element.msRequestFullscreen(); }
 function showVideoIntro() { const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer'); videoIntro.classList.add('active'); setTimeout(() => requestFullscreen(videoIntro), 100); video.play().catch(e => console.log('Autoplay prevented')); videoTimeout = setTimeout(() => skipVideoIntro(), 30000); video.addEventListener('ended', () => { if (videoTimeout) { clearTimeout(videoTimeout); skipVideoIntro(); } }); }
