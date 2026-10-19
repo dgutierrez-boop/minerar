@@ -596,14 +596,22 @@ function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e)
 
 // 🔒 OBTENER DATOS DESDE GOOGLE
 async function fetchConToken(urlCompleta) {
-  const response = await fetch(urlCompleta + '&t=' + Date.now());
-  const text = await response.text();
-  
-  if (text.includes('ACCESO DENEGADO') || text.includes('ERROR')) {
-    throw new Error('Error de acceso a los datos');
+  try {
+    // Usamos el proxy de AllOrigins para evitar el bloqueo CORS del navegador
+    const urlProxy = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(urlCompleta + '&t=' + Date.now());
+    
+    const response = await fetch(urlProxy);
+    const text = await response.text();
+    
+    if (text.includes('ACCESO DENEGADO') || text.includes('ERROR')) {
+      throw new Error('Error de acceso a los datos');
+    }
+    
+    return text;
+  } catch (error) {
+    console.error('Error en la conexión:', error);
+    return ''; 
   }
-  
-  return text;
 }
 
 let videoTimeout = null;
