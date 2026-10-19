@@ -597,21 +597,32 @@ function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e)
 // 🔒 OBTENER DATOS DESDE GOOGLE
 async function fetchConToken(urlCompleta) {
   try {
-    const response = await fetch(urlCompleta, {
-      method: 'GET',
-      headers: { 'Accept': 'text/plain' },
-      mode: 'cors' 
-    });
-    
+    // Intentamos leer directo de Google
+    const response = await fetch(urlCompleta);
     if (!response.ok) throw new Error('Error de red');
     const text = await response.text();
+    
+    // Si Google devuelve un error interno (ej: ACCESO DENEGADO), lo detectamos
+    if (text.includes('ACCESO DENEGADO') || text.includes('ERROR')) {
+      throw new Error('Error de autenticación con Google');
+    }
+    
     return text;
   } catch (e) {
-    // Intento con proxy si falla el directo
-    const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(urlCompleta);
-    const res = await fetch(proxyUrl);
-    return await res.text();
+    console.warn('Fallo la conexión directa, usando proxy de respaldo...', e);
+    try {
+      // Si el navegador bloquea la conexión (CORS), usamos un proxy
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(urlCompleta);
+      const res = await fetch(proxyUrl);
+      return await res.text();
+    } catch (proxyError) {
+      console.error('El proxy también falló:', proxyError);
+      return ''; // Devolvemos vacío para que no rompa la página
+    }
   }
+}
+
+let videoTimeout = null;
 }let videoTimeout = null;
 function requestFullscreen(element) { if (element.requestFullscreen) element.requestFullscreen(); else if (element.webkitRequestFullscreen) element.webkitRequestFullscreen(); else if (element.msRequestFullscreen) element.msRequestFullscreen(); }
 function showVideoIntro() { const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer'); videoIntro.classList.add('active'); setTimeout(() => requestFullscreen(videoIntro), 100); video.play().catch(e => console.log('Autoplay prevented')); videoTimeout = setTimeout(() => skipVideoIntro(), 30000); video.addEventListener('ended', () => { if (videoTimeout) { clearTimeout(videoTimeout); skipVideoIntro(); } }); }
