@@ -152,6 +152,67 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .tooltip-content .palabras-clave-title.ai-title { color: #60a5fa; }
 .tooltip-content .palabras-clave-title.ci-title { color: #fbbf24; }
 .tooltip-content .palabra-tag { display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin: 2px; color: #fcd34d; border: 1px solid rgba(255, 255, 255, 0.15); }
+
+/* ══════════════════════════════════════════════════════════════
+   🔥 CONTADOR DE USUARIOS CONECTADOS
+   ══════════════════════════════════════════════════════════════ */
+#usuariosConectadosBubble {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  z-index: 10002;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4));
+}
+#usuariosConectadosBubble:hover {
+  transform: scale(1.12) translateY(-3px);
+  filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6));
+}
+#usuariosConectadosBubble .bubble-count {
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: white;
+  font-weight: 900;
+  font-size: 14px;
+  min-width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border: 2px solid white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  animation: pulseUsuarios 2s ease-in-out infinite;
+}
+@keyframes pulseUsuarios {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+#usuariosConectadosBubble .bubble-icon {
+  background: white;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  border: 2px solid #10b981;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+#usuariosConectadosBubble.pulse-new .bubble-count {
+  animation: pulseNew 0.8s ease-in-out 3;
+}
+@keyframes pulseNew {
+  0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); }
+  50% { background: linear-gradient(135deg, #fbbf24, #f59e0b); transform: scale(1.25); }
+}
+
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; position: sticky; top: 0; z-index: 9999; margin-bottom: 16px; border-radius: 16px; }
 .header-container.scrolled { padding: 8px 12px; border-radius: 0 0 16px 16px; }
@@ -168,6 +229,9 @@ body { padding: 10px; }
 .tooltip-content .tooltip-header { font-size: 13px; }
 .tooltip-content .tooltip-item { font-size: 9px; }
 .tooltip-content .palabras-clave-grid { grid-template-columns: 1fr; }
+#usuariosConectadosBubble { bottom: 14px; left: 14px; }
+#usuariosConectadosBubble .bubble-icon { width: 38px; height: 38px; font-size: 20px; }
+#usuariosConectadosBubble .bubble-count { font-size: 12px; min-width: 24px; height: 24px; }
 }
 </style>
 </head>
@@ -185,6 +249,13 @@ body { padding: 10px; }
 </div>
 </div>
 <div class="watermark" id="watermark">MINERAR</div>
+
+<!-- 🔥 BURBUJA DE USUARIOS CONECTADOS -->
+<div id="usuariosConectadosBubble" title="Usuarios conectados en vivo">
+  <div class="bubble-count" id="usuariosCount">0</div>
+  <div class="bubble-icon">👤</div>
+</div>
+
 <div id="passwordOverlay" style="display:none;">
 <div class="password-card">
 <div class="password-lock-icon">🔒</div>
@@ -458,7 +529,6 @@ body { padding: 10px; }
 </div>
 </div>
 
-<!-- ✅ MODAL DE CONFIRMACIÓN PARA CERRAR RESUMEN EJECUTIVO -->
 <div id="cerrarResumenConfirmModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 40001; display: none; align-items: center; justify-content: center; padding: 20px;">
     <div class="modal-bounce" style="background: white; border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f18b00;">
         <div style="font-size: 64px; margin-bottom: 12px; display: inline-block; animation: pulse 1.5s infinite;">📊</div>
@@ -594,11 +664,158 @@ function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) ==
 function guardarSesion() { try { localStorage.setItem(SESSION_KEY, getTodayKey()); } catch(e) {} }
 function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
 
-// 🔒 FETCH CON TIMEOUT (Evita que se cuelgue)
+// ═══════════════════════════════════════════════════════════════
+// 🔥 SISTEMA DE USUARIOS CONECTADOS (BroadcastChannel + localStorage)
+// ═══════════════════════════════════════════════════════════════
+const USERS_KEY = 'minerar_usuarios_activos';
+const USER_TIMEOUT_MS = 12000; // 12s sin heartbeat = offline
+const HEARTBEAT_INTERVAL_MS = 4000; // heartbeat cada 4s
+
+// ID único por pestaña
+const MI_ID_USUARIO = 'user_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+let broadcastChannel = null;
+
+function getUsuariosActivos() {
+  try {
+    const raw = localStorage.getItem(USERS_KEY);
+    if (!raw) return {};
+    const usuarios = JSON.parse(raw);
+    const ahora = Date.now();
+    const activos = {};
+    Object.keys(usuarios).forEach(id => {
+      if (ahora - usuarios[id].lastSeen < USER_TIMEOUT_MS) {
+        activos[id] = usuarios[id];
+      }
+    });
+    return activos;
+  } catch(e) { return {}; }
+}
+
+function setUsuariosActivos(usuarios) {
+  try { localStorage.setItem(USERS_KEY, JSON.stringify(usuarios)); } catch(e) {}
+}
+
+function registrarMiUsuario() {
+  const usuarios = getUsuariosActivos();
+  usuarios[MI_ID_USUARIO] = { lastSeen: Date.now(), joinedAt: usuarios[MI_ID_USUARIO]?.joinedAt || Date.now() };
+  setUsuariosActivos(usuarios);
+  actualizarContadorUsuarios();
+}
+
+function desregistrarMiUsuario() {
+  try {
+    const usuarios = getUsuariosActivos();
+    delete usuarios[MI_ID_USUARIO];
+    setUsuariosActivos(usuarios);
+    if (broadcastChannel) {
+      try { broadcastChannel.postMessage({ type: 'leave', id: MI_ID_USUARIO }); } catch(e) {}
+    }
+  } catch(e) {}
+}
+
+function actualizarContadorUsuarios() {
+  const usuarios = getUsuariosActivos();
+  const total = Object.keys(usuarios).length;
+  const el = document.getElementById('usuariosCount');
+  if (!el) return;
+  const previo = parseInt(el.textContent) || 0;
+  el.textContent = total;
+  // Efecto si entró alguien nuevo
+  if (total > previo) {
+    const bubble = document.getElementById('usuariosConectadosBubble');
+    if (bubble) {
+      bubble.classList.add('pulse-new');
+      setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
+    }
+  }
+}
+
+function inicializarContadorUsuarios() {
+  registrarMiUsuario();
+  
+  // Heartbeat: actualiza lastSeen cada 4s
+  setInterval(() => {
+    registrarMiUsuario();
+  }, HEARTBEAT_INTERVAL_MS);
+  
+  // Escuchar cambios en otras pestañas
+  window.addEventListener('storage', (e) => {
+    if (e.key === USERS_KEY) actualizarContadorUsuarios();
+  });
+  
+  // BroadcastChannel para sync más rápido (navegadores modernos)
+  try {
+    broadcastChannel = new BroadcastChannel('minerar_presence');
+    broadcastChannel.onmessage = (e) => {
+      if (e.data && (e.data.type === 'join' || e.data.type === 'leave')) {
+        actualizarContadorUsuarios();
+      }
+    };
+    broadcastChannel.postMessage({ type: 'join', id: MI_ID_USUARIO });
+  } catch(e) { /* no soportado, seguimos con storage event */ }
+  
+  // Detectar salida
+  window.addEventListener('beforeunload', desregistrarMiUsuario);
+  window.addEventListener('pagehide', desregistrarMiUsuario);
+  
+  // Detectar pestaña oculta (opcional: desregistrar al ocultar)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      // Si oculta, no desregistramos, solo pausamos (el timeout se encarga)
+    } else {
+      registrarMiUsuario();
+    }
+  });
+  
+  // Refrescar contador cada 5s por si alguien se cayó sin avisar
+  setInterval(actualizarContadorUsuarios, 5000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 🔒 CACHÉ DE DATOS (5 minutos)
+// ═══════════════════════════════════════════════════════════════
+const CACHE_TTL_MS = 5 * 60 * 1000;
+function getCacheKey(sucursal, tipo) { return `minerar_cache_${sucursal}_${tipo}`; }
+function getCachedData(sucursal, tipo) {
+  try {
+    const raw = localStorage.getItem(getCacheKey(sucursal, tipo));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (Date.now() - parsed.timestamp > CACHE_TTL_MS) {
+      localStorage.removeItem(getCacheKey(sucursal, tipo));
+      return null;
+    }
+    return parsed.data;
+  } catch(e) { return null; }
+}
+function setCachedData(sucursal, tipo, data) {
+  try {
+    localStorage.setItem(getCacheKey(sucursal, tipo), JSON.stringify({ timestamp: Date.now(), data }));
+  } catch(e) { /* localStorage lleno, ignorar */ }
+}
+
+// 🔒 FETCH OPTIMIZADO: fetch normal con CORS + fallback a JSONP
 async function fetchConToken(urlCompleta) {
+  if (urlCompleta.includes('callback=')) {
+    return fetchConJSONP(urlCompleta);
+  }
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const resp = await fetch(urlCompleta, { signal: controller.signal, cache: 'no-store' });
+    clearTimeout(timeoutId);
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    return await resp.text();
+  } catch(e) {
+    console.warn('fetch CORS falló, usando JSONP:', e.message);
+    const urlJsonp = urlCompleta + '&callback=minerar_cb_' + Date.now();
+    return fetchConJSONP(urlJsonp);
+  }
+}
+
+function fetchConJSONP(urlCompleta) {
   return new Promise((resolve, reject) => {
-    const callbackName = 'minerar_callback_' + Date.now();
-    const urlJsonp = urlCompleta + '&callback=' + callbackName;
+    const callbackName = 'minerar_cb_' + Date.now() + '_' + Math.floor(Math.random()*1000);
     let completado = false;
     const timeoutId = setTimeout(() => {
       if (!completado) {
@@ -606,9 +823,9 @@ async function fetchConToken(urlCompleta) {
         const s = document.getElementById(callbackName);
         if (s) s.remove();
         delete window[callbackName];
-        reject(new Error('Timeout de red'));
+        reject(new Error('Timeout JSONP'));
       }
-    }, 25000); // 25s timeout
+    }, 20000);
 
     window[callbackName] = function(data) {
       if (completado) return;
@@ -634,20 +851,20 @@ async function fetchConToken(urlCompleta) {
         delete window[callbackName];
         resolve(csv);
       } catch (e) {
-        reject(new Error('Error procesando datos'));
+        reject(new Error('Error procesando JSONP'));
       }
     };
-    
+
     const script = document.createElement('script');
     script.id = callbackName;
-    script.src = urlJsonp;
+    script.src = urlCompleta;
     script.onerror = function() {
       if (completado) return;
       completado = true;
       clearTimeout(timeoutId);
       script.remove();
       delete window[callbackName];
-      reject(new Error('Fallo de red al conectar con Google'));
+      reject(new Error('Fallo de red JSONP'));
     };
     document.body.appendChild(script);
   });
@@ -659,7 +876,7 @@ function showVideoIntro() { const videoIntro = document.getElementById('videoInt
 function skipVideoIntro() { if (videoTimeout) clearTimeout(videoTimeout); if (document.exitFullscreen) document.exitFullscreen(); else if (document.webkitExitFullscreen) document.webkitExitFullscreen(); const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer'); video.pause(); videoIntro.style.transition = 'opacity 0.6s ease-out'; videoIntro.style.opacity = '0'; setTimeout(() => { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; videoIntro.style.opacity = '1'; enterMainPanel(); }, 600); }
 function abrirModalCerrarSesion() { const modal = document.getElementById('logoutConfirmModal'); if (modal) modal.classList.add('active'); }
 function cancelarCerrarSesion() { const modal = document.getElementById('logoutConfirmModal'); if (modal) modal.classList.remove('active'); }
-function confirmarCerrarSesion() { borrarSesion(); if (refreshInterval) clearInterval(refreshInterval); document.querySelectorAll('video, audio').forEach(el => { try { el.pause(); el.muted = true; el.volume = 0; el.currentTime = 0; el.removeAttribute('src'); el.srcObject = null; el.load(); el.remove(); } catch(e) {} }); try { if (window.audioContext && window.audioContext.state !== 'closed') { window.audioContext.close(); } window.audioContextInitialized = false; window.audioContext = null; } catch(e) {} const videoIntro = document.getElementById('videoIntro'); if (videoIntro) { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; } document.body.style.overflow = 'auto'; setTimeout(() => { window.location.href = window.location.pathname + '?logout=' + Date.now(); }, 200); }
+function confirmarCerrarSesion() { desregistrarMiUsuario(); borrarSesion(); if (refreshInterval) clearInterval(refreshInterval); document.querySelectorAll('video, audio').forEach(el => { try { el.pause(); el.muted = true; el.volume = 0; el.currentTime = 0; el.removeAttribute('src'); el.srcObject = null; el.load(); el.remove(); } catch(e) {} }); try { if (window.audioContext && window.audioContext.state !== 'closed') { window.audioContext.close(); } window.audioContextInitialized = false; window.audioContext = null; } catch(e) {} const videoIntro = document.getElementById('videoIntro'); if (videoIntro) { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; } document.body.style.overflow = 'auto'; setTimeout(() => { window.location.href = window.location.pathname + '?logout=' + Date.now(); }, 200); }
 let isUnlocked = false, soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedCausa = null, selectedVCPCausa = null;
 let currentObjetivos, currentShowVCP;
@@ -751,9 +968,21 @@ function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]
 
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(); if(s.includes('T')) { s = s.split('T')[0]; } let p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; return {dia: d, mes: meses[m-1], valido: true}; } } return {dia:'',mes:'',valido:false}; }
 
-async function cargarDatosSucursal(sucursal) {
+async function cargarDatosSucursal(sucursal, forceRefresh = false) {
   const config = SUCURSALES_CONFIG[sucursal];
   let actosData = [], vcpData = [];
+  
+  // ✅ 1. Intentar leer de CACHÉ
+  if (!forceRefresh) {
+    const cachedActos = getCachedData(sucursal, 'actos');
+    const cachedVCP = getCachedData(sucursal, 'vcp');
+    if (cachedActos && cachedVCP) {
+      console.log(`⚡ ${sucursal}: datos desde CACHÉ (rápido)`);
+      return { actos: cachedActos, vcp: cachedVCP };
+    }
+  }
+  
+  console.log(`📡 ${sucursal}: descargando datos frescos de Google...`);
   const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'][hoy.getMonth()];
   
   if(config.mapping) {
@@ -835,7 +1064,6 @@ async function cargarDatosSucursal(sucursal) {
         
         const cat = classifyData(desc, false);
         
-        // 🛠️ FORMATEAMOS LA FECHA PARA QUE NO SALGA EL TEXTO LARGO
         let fechaLimpiaActos = fecha;
         if (fecha.includes('T')) {
           const partes = fecha.split('T')[0].split('-');
@@ -906,7 +1134,6 @@ async function cargarDatosSucursal(sucursal) {
         
         const cat = classifyData(des, true);
         
-        // 🛠️ FORMATEAMOS LA FECHA PARA QUE NO SALGA EL TEXTO LARGO
         let fechaLimpia = fr;
         if (fr.includes('T')) {
           const partes = fr.split('T')[0].split('-');
@@ -937,12 +1164,43 @@ async function cargarDatosSucursal(sucursal) {
     }
   }
   
+  // ✅ 3. Guardar en caché para la próxima vez
+  setCachedData(sucursal, 'actos', actosData);
+  setCachedData(sucursal, 'vcp', vcpData);
+  
   return { actos: actosData, vcp: vcpData };
 }
 
 async function loadData() { if(!isUnlocked || isUpdating) return; isUpdating = true; try { const config = SUCURSALES_CONFIG[currentSucursal]; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP; const result = await cargarDatosSucursal(currentSucursal); if (result.actos.length > 0) { ACTOS_COND_DATA = result.actos; ALL_ACTOS_DATA[currentSucursal] = result.actos; lastSuccessfulData = JSON.parse(JSON.stringify(result.actos)); } else if (lastSuccessfulData && lastSuccessfulData.length > 0) { ACTOS_COND_DATA = lastSuccessfulData; ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData; } if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; } updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator(); } catch(e) { console.error("Error en loadData:", e); } finally { isUpdating = false; } }
 
-function forceRefreshData() { if (isUnlocked && !isUpdating) { const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); const originalText = refreshBtn?.innerHTML; if (refreshBtn) { refreshBtn.innerHTML = '⏳ CARGANDO...'; refreshBtn.disabled = true; } loadData().finally(() => { if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } }); } }
+async function forceRefreshData() { 
+  if (isUnlocked && !isUpdating) { 
+    const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); 
+    const originalText = refreshBtn?.innerHTML; 
+    if (refreshBtn) { 
+      refreshBtn.innerHTML = '⏳ CARGANDO...'; 
+      refreshBtn.disabled = true; 
+    } 
+    isUpdating = false;
+    try {
+      const result = await cargarDatosSucursal(currentSucursal, true);
+      if (result.actos.length > 0) { ACTOS_COND_DATA = result.actos; ALL_ACTOS_DATA[currentSucursal] = result.actos; lastSuccessfulData = JSON.parse(JSON.stringify(result.actos)); } 
+      if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; }
+      updateTotalCounters(); 
+      actualizarObjetivosUI(); 
+      toggleVCPVisibility(currentShowVCP); 
+      await populateSupervisors(); 
+      populateVCPPeopleFilter(); 
+      applyAllFilters(); 
+      updatePulseBadges(); 
+      updateRealTimeUI(); 
+      updateSupervisorCard(); 
+      updateLastUpdateIndicator(); 
+    } finally {
+      if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } 
+    }
+  } 
+}
 
 function showNewReportAlert(persona, sector, desc, tipo, hora) { const resumenPage = document.getElementById('resumenEjecutivoPage'); if (resumenPage && resumenPage.style.display === 'block') { console.log('🔕 Alerta suprimida (Resumen Ejecutivo activo)'); return; } const alertEl = document.getElementById('newReportAlert'); const contentEl = document.getElementById('alertContent'); if(!alertEl || !contentEl) return; if(alertEl.classList.contains('show')) return; const iconoTipo = tipo === 'vcp' ? '🎯' : (tipo.toLowerCase().includes('acto') ? '⚠️' : '🏚️'); const tituloTipo = tipo === 'vcp' ? 'VCP' : tipo.toUpperCase(); contentEl.innerHTML = `<div class="alert-person text-lg font-bold text-slate-800 mb-2">👤 ${escapeHtml(persona) || 'No identificado'}</div><div class="alert-sector text-sm text-indigo-600 mb-3">🏭 ${escapeHtml(sector) || 'Sector no especificado'}</div><div class="alert-desc bg-slate-50 p-3 rounded-lg mb-3">${iconoTipo} <strong>${tituloTipo}</strong><br><span class="text-slate-700">${escapeHtml(desc) || 'Sin descripción'}</span></div><div class="alert-time text-xs text-slate-500"> ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>`; alertEl.classList.add('show'); try { window.playAlarmSound(); } catch(e) {} let segundos = 15; const countdownEl = document.getElementById('alertCountdown'); if(countdownEl) countdownEl.textContent = segundos; if(alertCountdownInterval) clearInterval(alertCountdownInterval); alertCountdownInterval = setInterval(() => { segundos--; if(countdownEl) countdownEl.textContent = segundos; if(segundos <= 0) dismissAlert(); }, 1000); }
 
@@ -1012,7 +1270,6 @@ function verificarPasswordResumen() {
     cerrarPasswordResumenModal();
     abrirResumenEjecutivoPersistente();
     cargarTodosDatosParaResumen().then(actualizarResumenEjecutivo).catch(()=>{
-        // Si falla la carga, igual mostramos lo que ya haya en memoria (por las dudas)
         actualizarResumenEjecutivo();
     });
   } else {
@@ -1023,7 +1280,7 @@ function verificarPasswordResumen() {
 
 function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='none'; try { localStorage.removeItem('minerar_resumen_abierto'); } catch(e) {} }
 function abrirResumenEjecutivoPersistente() { document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display='block'; try { localStorage.setItem('minerar_resumen_abierto', '1'); } catch(e) {} }
-function restaurarResumenSiEstabaAbierto() { try { if (localStorage.getItem('minerar_resumen_abierto') === '1' && isUnlocked) { abrirResumenEjecutivoPersistente(); actualizarResumenEjecutivo(); /* ⚠️ Usa lo que ya está cargado */ } } catch(e) {} }
+function restaurarResumenSiEstabaAbierto() { try { if (localStorage.getItem('minerar_resumen_abierto') === '1' && isUnlocked) { abrirResumenEjecutivoPersistente(); actualizarResumenEjecutivo(); } } catch(e) {} }
 
 function actualizarResumenEjecutivo() { const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; let datosActos = [], datosVCP = []; Object.keys(ALL_ACTOS_DATA).forEach(suc => { if (sucursal !== 'todas' && suc !== sucursal) return; if (ALL_ACTOS_DATA[suc]) { ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({...d}); }); } if (ALL_VCP_DATA[suc]) { ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({...d}); }); } }); if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') { datosVCP = []; } else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') { datosActos = []; } } const totalActos = datosActos.filter(d => d.tipo === 'acto').length; const totalCond = datosActos.filter(d => d.tipo === 'condicion').length; const totalVCP = datosVCP.length; document.getElementById('ejecTotalActos').innerText = totalActos; document.getElementById('ejecTotalCondiciones').innerText = totalCond; document.getElementById('ejecTotalVCP').innerText = totalVCP; document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP; const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]); renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings([...datosActos, ...datosVCP]); renderEjecutivoReincidencias([...datosActos, ...datosVCP]); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro); }
 
@@ -1045,7 +1302,46 @@ function renderEjecutivoReincidencias(datos) { const reincMap = new Map(); datos
 
 function renderEjecutivoChartsSucursales(sectorFiltro,sucursalFiltro,estadoFiltro) { const meses=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre']; const sucursales=['MALAGUENO','BARKER','LAPAMPITA']; const colores={MALAGUENO:'#3b82f6',BARKER:'#10b981',LAPAMPITA:'#f59e0b'}; const nombres={MALAGUENO:'Malagueño',BARKER:'Barker',LAPAMPITA:'La Pampita'}; const datasets=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; const dataPorMes=meses.map(mes=>{ let total=0; if(ALL_ACTOS_DATA[suc]) total=ALL_ACTOS_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes&&(estadoFiltro==='todos'||(estadoFiltro==='abiertos'?!d.cerrado:d.cerrado))).length; return total; }); datasets.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx1=document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d'); if(ctx1){ if(ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales=new Chart(ctx1,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasets},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}}}}); } const datasetsVCP=[]; sucursales.forEach(suc=>{ if(sucursalFiltro!=='todas' && suc!==sucursalFiltro) return; if(!ALL_VCP_DATA[suc]||!ALL_VCP_DATA[suc].length) return; const dataPorMes=meses.map(mes=>ALL_VCP_DATA[suc].filter(d=>(sectorFiltro==='todos'||d.sector.includes(sectorFiltro))&&d.mes===mes).length); datasetsVCP.push({label:nombres[suc],data:dataPorMes,borderColor:colores[suc],backgroundColor:colores[suc]+'20',borderWidth:2,fill:false,tension:0.3,pointRadius:5,pointBackgroundColor:colores[suc],pointBorderColor:'white'}); }); const ctx2=document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d'); if(ctx2){ if(ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales=new Chart(ctx2,{type:'line',data:{labels:meses.map(m=>m.substring(0,3).toUpperCase()),datasets:datasetsVCP},options:{responsive:true,maintainAspectRatio:false,plugins:{tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.raw} reportes`}}},scales:{y:{beginAtZero:true,max:60,ticks:{stepSize:5}},x:{ticks:{font:{size:9}}}}}}); } }
 
-async function cargarTodosDatosParaResumen() { const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML; if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO DATOS...'; try { ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; const [malagueno, barker, lapampita] = await Promise.all([cargarDatosSucursal('MALAGUENO'), cargarDatosSucursal('BARKER'), cargarDatosSucursal('LAPAMPITA')]); ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp; ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp; ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp; } catch (error) { console.error('❌ Error cargando datos:', error); alert('Error al cargar los datos.'); } finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; } }
+async function cargarTodosDatosParaResumen() { 
+  const resumenBtn = document.querySelector('.resumen-btn'); 
+  const originalText = resumenBtn?.innerHTML; 
+  if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO...'; 
+  
+  try { 
+    // ✅ 1. Primero mostrar lo que haya en caché INSTANTÁNEAMENTE
+    ['MALAGUENO','BARKER','LAPAMPITA'].forEach(suc => {
+      const cA = getCachedData(suc, 'actos');
+      const cV = getCachedData(suc, 'vcp');
+      if (cA) ALL_ACTOS_DATA[suc] = cA;
+      if (cV) ALL_VCP_DATA[suc] = cV;
+    });
+    actualizarResumenEjecutivo();
+    
+    // ✅ 2. Después actualizar en background
+    const results = await Promise.allSettled([
+      cargarDatosSucursal('MALAGUENO'),
+      cargarDatosSucursal('BARKER'),
+      cargarDatosSucursal('LAPAMPITA')
+    ]);
+    
+    const sucursales = ['MALAGUENO','BARKER','LAPAMPITA'];
+    results.forEach((r, i) => {
+      if (r.status === 'fulfilled') {
+        ALL_ACTOS_DATA[sucursales[i]] = r.value.actos;
+        ALL_VCP_DATA[sucursales[i]] = r.value.vcp;
+      } else {
+        console.warn(`⚠️ ${sucursales[i]} falló, usando caché`);
+      }
+    });
+    
+    actualizarResumenEjecutivo();
+  } catch (error) { 
+    console.error('❌ Error cargando datos:', error); 
+    actualizarResumenEjecutivo();
+  } finally { 
+    if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; 
+  } 
+}
 
 function exportarResumenEjecutivoExcel() { const wb = XLSX.utils.book_new(); const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value; const resumenData = [['🛡️ RESUMEN EJECUTIVO MINERAR 2026'], [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`], [], [' FILTROS APLICADOS:'], ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal], ['Mes:', mes === 'todo' ? 'TODOS' : mes], ['Sector:', sector === 'todos' ? 'TODOS' : sector], ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro], ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro], [], ['📈 INDICADORES PRINCIPALES:'], ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText], ['🏚️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText], ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText], ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]]; const wsResumen = XLSX.utils.aoa_to_sheet(resumenData); wsResumen['!cols'] = [{wch:25}, {wch:15}]; XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN'); const datosTabla = window.datosModalActual || []; if (datosTabla.length > 0) { const detalleData = [['📋 DETALLE COMPLETO DE REPORTES'], [], ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']]; datosTabla.forEach(d => { const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; const estado = estaCerrado ? 'CERRADO' : 'ABIERTO'; const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN'); detalleData.push([d.fecha, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estado, d.categoria?.name || '']); }); const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData); wsDetalle['!cols'] = [{wch:12}, {wch:12}, {wch:20}, {wch:10}, {wch:50}, {wch:12}, {wch:10}, {wch:20}]; XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE'); } const fecha = new Date().toISOString().slice(0,10); XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`); alert('✅ Excel exportado exitosamente'); }
 
@@ -1067,6 +1363,9 @@ window.addEventListener('load', () => {
   document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
   document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
   document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true });
+  
+  // 🔥 Inicializar contador de usuarios
+  inicializarContadorUsuarios();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
