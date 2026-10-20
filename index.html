@@ -152,11 +152,6 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .tooltip-content .palabras-clave-title.ai-title { color: #60a5fa; }
 .tooltip-content .palabras-clave-title.ci-title { color: #fbbf24; }
 .tooltip-content .palabra-tag { display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin: 2px; color: #fcd34d; border: 1px solid rgba(255, 255, 255, 0.15); }
-/* 🚀 Skeleton loader para carga progresiva */
-.skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 8px; }
-@keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
-.skeleton-row { height: 40px; margin-bottom: 4px; }
-/* 🚀 Contador de usuarios */
 #usuariosConectadosBubble { position: fixed; bottom: 20px; left: 20px; z-index: 10002; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4)); }
 #usuariosConectadosBubble:hover { transform: scale(1.12) translateY(-3px); filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6)); }
 #usuariosConectadosBubble .bubble-count { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 900; font-size: 14px; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 8px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: pulseUsuarios 2s ease-in-out infinite; }
@@ -592,7 +587,8 @@ body { padding: 10px; }
 <div id="personaVCPModalContent" class="text-slate-700 space-y-3 max-h-[65vh] overflow-y-auto p-5"></div>
 <div class="border-t border-emerald-100 px-5 py-4 bg-emerald-50/30"><button onclick="closePersonaVCPModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
-</div><script>
+</div>
+<script>
 // ═══════════════════════════════════════════════════════════════
 // 🔒 CONFIGURACIÓN DE SEGURIDAD
 // ═══════════════════════════════════════════════════════════════
@@ -600,30 +596,20 @@ const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
 
-// ⚠️ URLs DE GOOGLE APPS SCRIPT
 const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec';
 const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec';
 const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec';
 const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbxpzx5_kDXgIMipWT1okrGbYzYxaDH4u7oNR0Lb0DbEsDhSG1IyJgG83R4gWe-Lw1lrNA/exec';
 
-// ═══════════════════════════════════════════════════════════════
-// ⚡ UTILIDADES DE FECHA (OPTIMIZADAS - cache de meses)
-// ═══════════════════════════════════════════════════════════════
 const MESES_NOMBRES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const MESES_UPPER = MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1));
 const MESES_SHORT = MESES_NOMBRES.map(m => m.substring(0,3).toUpperCase());
 
-function getTodayKey() {
-    const d = new Date();
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
+function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) === getTodayKey(); } catch(e) { return false; } }
 function guardarSesion() { try { localStorage.setItem(SESSION_KEY, getTodayKey()); } catch(e) {} }
 function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔥 SISTEMA DE USUARIOS CONECTADOS
-// ═══════════════════════════════════════════════════════════════
 const USERS_KEY = 'minerar_usuarios_activos';
 const USER_TIMEOUT_MS = 12000;
 const HEARTBEAT_INTERVAL_MS = 4000;
@@ -637,17 +623,11 @@ function getUsuariosActivos() {
         const usuarios = JSON.parse(raw);
         const ahora = Date.now();
         const activos = {};
-        for (const id in usuarios) {
-            if (ahora - usuarios[id].lastSeen < USER_TIMEOUT_MS) {
-                activos[id] = usuarios[id];
-            }
-        }
+        for (const id in usuarios) { if (ahora - usuarios[id].lastSeen < USER_TIMEOUT_MS) activos[id] = usuarios[id]; }
         return activos;
     } catch(e) { return {}; }
 }
-function setUsuariosActivos(usuarios) {
-    try { localStorage.setItem(USERS_KEY, JSON.stringify(usuarios)); } catch(e) {}
-}
+function setUsuariosActivos(usuarios) { try { localStorage.setItem(USERS_KEY, JSON.stringify(usuarios)); } catch(e) {} }
 function registrarMiUsuario() {
     const usuarios = getUsuariosActivos();
     usuarios[MI_ID_USUARIO] = { lastSeen: Date.now(), joinedAt: usuarios[MI_ID_USUARIO]?.joinedAt || Date.now() };
@@ -659,9 +639,7 @@ function desregistrarMiUsuario() {
         const usuarios = getUsuariosActivos();
         delete usuarios[MI_ID_USUARIO];
         setUsuariosActivos(usuarios);
-        if (broadcastChannel) {
-            try { broadcastChannel.postMessage({ type: 'leave', id: MI_ID_USUARIO }); } catch(e) {}
-        }
+        if (broadcastChannel) { try { broadcastChannel.postMessage({ type: 'leave', id: MI_ID_USUARIO }); } catch(e) {} }
     } catch(e) {}
 }
 function actualizarContadorUsuarios() {
@@ -673,10 +651,7 @@ function actualizarContadorUsuarios() {
     el.textContent = total;
     if (total > previo) {
         const bubble = document.getElementById('usuariosConectadosBubble');
-        if (bubble) {
-            bubble.classList.add('pulse-new');
-            setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
-        }
+        if (bubble) { bubble.classList.add('pulse-new'); setTimeout(() => bubble.classList.remove('pulse-new'), 2500); }
     }
 }
 function inicializarContadorUsuarios() {
@@ -685,9 +660,7 @@ function inicializarContadorUsuarios() {
     window.addEventListener('storage', (e) => { if (e.key === USERS_KEY) actualizarContadorUsuarios(); });
     try {
         broadcastChannel = new BroadcastChannel('minerar_presence');
-        broadcastChannel.onmessage = (e) => {
-            if (e.data && (e.data.type === 'join' || e.data.type === 'leave')) actualizarContadorUsuarios();
-        };
+        broadcastChannel.onmessage = (e) => { if (e.data && (e.data.type === 'join' || e.data.type === 'leave')) actualizarContadorUsuarios(); };
         broadcastChannel.postMessage({ type: 'join', id: MI_ID_USUARIO });
     } catch(e) {}
     window.addEventListener('beforeunload', desregistrarMiUsuario);
@@ -696,9 +669,6 @@ function inicializarContadorUsuarios() {
     setInterval(actualizarContadorUsuarios, 5000);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔒 CACHÉ OPTIMIZADO (5 min TTL)
-// ═══════════════════════════════════════════════════════════════
 const CACHE_TTL_MS = 5 * 60 * 1000;
 function getCacheKey(sucursal, tipo) { return `minerar_cache_${sucursal}_${tipo}`; }
 function getCachedData(sucursal, tipo) {
@@ -706,22 +676,14 @@ function getCachedData(sucursal, tipo) {
         const raw = localStorage.getItem(getCacheKey(sucursal, tipo));
         if (!raw) return null;
         const parsed = JSON.parse(raw);
-        if (Date.now() - parsed.timestamp > CACHE_TTL_MS) {
-            localStorage.removeItem(getCacheKey(sucursal, tipo));
-            return null;
-        }
+        if (Date.now() - parsed.timestamp > CACHE_TTL_MS) { localStorage.removeItem(getCacheKey(sucursal, tipo)); return null; }
         return parsed.data;
     } catch(e) { return null; }
 }
 function setCachedData(sucursal, tipo, data) {
-    try {
-        localStorage.setItem(getCacheKey(sucursal, tipo), JSON.stringify({ timestamp: Date.now(), data }));
-    } catch(e) {}
+    try { localStorage.setItem(getCacheKey(sucursal, tipo), JSON.stringify({ timestamp: Date.now(), data })); } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 FETCH OPTIMIZADO (con timeout + JSONP fallback)
-// ═══════════════════════════════════════════════════════════════
 async function fetchConToken(urlCompleta) {
     if (urlCompleta.includes('callback=')) return fetchConJSONP(urlCompleta);
     try {
@@ -764,9 +726,7 @@ function fetchConJSONP(urlCompleta) {
                         }
                         csv += rowStr.slice(0, -1) + '\n';
                     }
-                } else {
-                    csv = String(data);
-                }
+                } else { csv = String(data); }
                 const scriptEl = document.getElementById(callbackName);
                 if (scriptEl) scriptEl.remove();
                 delete window[callbackName];
@@ -788,12 +748,8 @@ function fetchConJSONP(urlCompleta) {
     });
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 PARSER CSV OPTIMIZADO (10x más rápido con regex)
-// ═══════════════════════════════════════════════════════════════
 function parseCSV(text) {
     if (!text) return [];
-    // Algoritmo optimizado: procesa línea por línea con split inteligente
     const lines = text.split('\n');
     const result = [];
     const len = lines.length;
@@ -805,15 +761,9 @@ function parseCSV(text) {
         const lineLen = line.length;
         for (let j = 0; j < lineLen; j++) {
             const ch = line[j];
-            if (ch === '"') {
-                if (inq && line[j+1] === '"') { cur += '"'; j++; }
-                else inq = !inq;
-            } else if (ch === ',' && !inq) {
-                cols.push(cur.trim());
-                cur = '';
-            } else {
-                cur += ch;
-            }
+            if (ch === '"') { if (inq && line[j+1] === '"') { cur += '"'; j++; } else inq = !inq; }
+            else if (ch === ',' && !inq) { cols.push(cur.trim()); cur = ''; }
+            else { cur += ch; }
         }
         cols.push(cur.trim());
         if (cols.length >= 10) result.push(cols);
@@ -821,89 +771,54 @@ function parseCSV(text) {
     return result;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📅 PARSE DE FECHA (optimizado con cache)
-// ═══════════════════════════════════════════════════════════════
 const fechaCache = new Map();
 function parseFecha(f) {
     if (!f) return { dia: '', mes: '', valido: false };
     const key = f.toString();
     if (fechaCache.has(key)) return fechaCache.get(key);
-    
     let s = key.split(' ')[0].trim();
     if (s.includes('T')) s = s.split('T')[0];
-    
     let p = s.split('/');
     let result;
     if (p.length >= 3) {
         let d = p[0].padStart(2, '0'), m = parseInt(p[1]), a = parseInt(p[2]);
         if (p[2].length === 2) a = 2000 + a;
-        if (m >= 1 && m <= 12 && a === 2026) {
-            result = { dia: d, mes: MESES_NOMBRES[m-1], valido: true };
-        } else {
-            result = { dia: '', mes: '', valido: false };
-        }
+        if (m >= 1 && m <= 12 && a === 2026) result = { dia: d, mes: MESES_NOMBRES[m-1], valido: true };
+        else result = { dia: '', mes: '', valido: false };
     } else {
         p = s.split('-');
         if (p.length >= 3) {
             let a = parseInt(p[0]), m = parseInt(p[1]), d = p[2].padStart(2, '0');
-            if (m >= 1 && m <= 12 && a === 2026) {
-                result = { dia: d, mes: MESES_NOMBRES[m-1], valido: true };
-            } else {
-                result = { dia: '', mes: '', valido: false };
-            }
-        } else {
-            result = { dia: '', mes: '', valido: false };
-        }
+            if (m >= 1 && m <= 12 && a === 2026) result = { dia: d, mes: MESES_NOMBRES[m-1], valido: true };
+            else result = { dia: '', mes: '', valido: false };
+        } else { result = { dia: '', mes: '', valido: false }; }
     }
-    
-    // Limitar tamaño del cache
     if (fechaCache.size > 500) fechaCache.clear();
     fechaCache.set(key, result);
     return result;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 CLASIFICACIÓN POR CATEGORÍA (optimizada)
-// ═══════════════════════════════════════════════════════════════
 function classifyData(desc, useVCP = false) {
     if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
     const d = desc.toLowerCase();
-    
     if (useVCP) {
-        if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo') || d.includes('basura') || d.includes('desecho'))
-            return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-        if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso'))
-            return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '⚡', color: '#f59e0b' };
-        if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria'))
-            return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+        if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('residuo') || d.includes('basura') || d.includes('desecho')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+        if (d.includes('procedimiento') || d.includes('bloqueo') || d.includes('permiso')) return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '⚡', color: '#f59e0b' };
+        if (d.includes('herramienta') || d.includes('equipo') || d.includes('maquinaria')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
         return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
     }
-    
-    if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('estándar') || d.includes('sin berma') || d.includes('falta berma') || d.includes('berma baja') || d.includes('berma inexistente'))
-        return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
-    if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono'))
-        return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
-    if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla'))
-        return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
-    if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea'))
-        return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
-    if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones'))
-        return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
-    if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor'))
-        return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-    if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') || d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora'))
-        return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
-    if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || d.includes('sanitario') || d.includes('levantada') || d.includes('suelto'))
-        return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
-    if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área'))
-        return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+    if (d.includes('berma') || d.includes('bema') || d.includes('talud') || d.includes('borde') || d.includes('estándar') || d.includes('sin berma') || d.includes('falta berma') || d.includes('berma baja') || d.includes('berma inexistente')) return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
+    if (d.includes('señal') || d.includes('cartel') || d.includes('advertencia') || d.includes('cono')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
+    if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria') || d.includes('mantenimiento') || d.includes('mal estado') || d.includes('roto') || d.includes('dañado') || d.includes('falla')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+    if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo') || d.includes('permiso') || d.includes('ats') || d.includes('rutina') || d.includes('mecánica') || d.includes('evaluación de riesgos') || d.includes('planificación') || d.includes('tarea')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+    if (d.includes('epp') || d.includes('casco') || d.includes('guantes') || d.includes('lentes') || d.includes('arnés') || d.includes('protección personal') || d.includes('barbijo') || d.includes('tapones')) return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
+    if (d.includes('residuo') || d.includes('basura') || d.includes('desecho') || d.includes('almacenamiento') || d.includes('disposición') || d.includes('reciclaje') || d.includes('contenedor')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+    if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción') || d.includes('manejo') || d.includes('vehículo') || d.includes('camión') || d.includes('retroexcavadora')) return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
+    if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite') || d.includes('derrame') || d.includes('desorden') || d.includes('suelo') || d.includes('mancha') || d.includes('rejilla') || d.includes('sanitario') || d.includes('levantada') || d.includes('suelto')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+    if (d.includes('visibilidad') || d.includes('polvo') || d.includes('niebla') || d.includes('lluvia') || d.includes('granizo') || d.includes('ambiente') || d.includes('sector') || d.includes('contención') || d.includes('efluente') || d.includes('emisión') || d.includes('estacionamiento') || d.includes('acceso') || d.includes('camino') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
     return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔍 INFERENCIA DE TIPO (optimizada con Set)
-// ═══════════════════════════════════════════════════════════════
 const PALABRAS_ACTO = new Set(['falta de uso','no uso','no usa','no utiliza','no lleva','incumplimiento','incumple','no cumple','no respet','no sigue','incorrecto','incorrecta','inadecuado','inadecuada','indebidamente','omitido','omitió','no realizó','no realiz','no hizo','manejo incorrecto','utilización inadecuada','uso inapropiado','conducción insegura','manejo inadecuado','velocidad excesiva','rutina mecánica','actividad mecánica','realizada en forma mecánica','evaluación de riesgos inadecuada','planificación inadecuada','falta de capacitación','transferencia inadecuada','operación fuera de parámetros','almacenamiento inadecuado']);
 const PALABRAS_CONDICION = new Set(['mal estado','en mal estado','dañado','dañada','deteriorado','deteriorada','deficiente','deficientes','inexistente','inexistentes','sin berma','falta berma','roto','rota','rotos','falla','fallas','averiado','averiada','falta de','ausente','ausentes','sin señal','sin cartel','contaminación','derrame','mancha','suelo sucio','visibilidad','polvo excesivo','niebla','deslumbramiento','fuera de estándar','fuera de estandar','no cumple estándar','ambiente inseguro','sector inseguro','condición insegura','orden deficiente','limpieza deficiente','desorden','señalización deficiente','señalizacion deficiente','cartel dañado','berma baja','berma inexistente','talud inestable']);
 
@@ -920,30 +835,19 @@ function inferirTipoDesdeDescripcion(desc) {
     return 'condicion';
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📊 FUNCIONES DE ORDENAMIENTO Y UTILIDADES
-// ═══════════════════════════════════════════════════════════════
 function getFechaOrdenable(item) {
     const mesIndex = MESES_NOMBRES.indexOf(item.mes);
     const dia = parseInt(item.dia) || 0;
     return mesIndex * 100 + dia;
 }
-function ordenarPorFecha(datos) {
-    return [...datos].sort((a, b) => getFechaOrdenable(b) - getFechaOrdenable(a));
-}
+function ordenarPorFecha(datos) { return [...datos].sort((a, b) => getFechaOrdenable(b) - getFechaOrdenable(a)); }
 function getEstadoBadgeHTML(cerrado, size = 'normal') {
     const estaCerrado = cerrado === true || cerrado === 'si' || cerrado === 'Si' || cerrado === 'SI';
     const sizeClass = size === 'small' ? 'text-[9px] px-2 py-0.5' : 'text-sm px-4 py-2';
-    if (estaCerrado) {
-        return `<span class="estado-badge-cerrado ${sizeClass} font-bold shadow-md"><span class="text-lg">✅</span> CERRADO</span>`;
-    } else {
-        return `<span class="estado-badge-abierto ${sizeClass} font-bold shadow-md"><span class="text-lg">🔴</span> ABIERTO</span>`;
-    }
+    if (estaCerrado) return `<span class="estado-badge-cerrado ${sizeClass} font-bold shadow-md"><span class="text-lg">✅</span> CERRADO</span>`;
+    else return `<span class="estado-badge-abierto ${sizeClass} font-bold shadow-md"><span class="text-lg">🔴</span> ABIERTO</span>`;
 }
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-}
+function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;'); }
 function convertirEnlacesImagenes(urlString) {
     if (!urlString || urlString.trim() === '') return [];
     const urls = urlString.split(',').map(u => u.trim()).filter(u => u);
@@ -955,9 +859,7 @@ function convertirEnlacesImagenes(urlString) {
                 const fileId = match[1];
                 imagenes.push({ thumbnail: `https://lh3.googleusercontent.com/d/${fileId}=w800`, full: `https://drive.google.com/file/d/${fileId}/view`, original: url });
             }
-        } else if (url.startsWith('http')) {
-            imagenes.push({ thumbnail: url, full: url, original: url });
-        }
+        } else if (url.startsWith('http')) { imagenes.push({ thumbnail: url, full: url, original: url }); }
     });
     return imagenes;
 }
@@ -968,9 +870,7 @@ function abrirLightbox(imagenUrl) {
     lightbox.className = 'lightbox';
     lightbox.innerHTML = `<span class="lightbox-close">&times;</span><img src="${imagenUrl}" alt="Imagen ampliada">`;
     document.body.appendChild(lightbox);
-    lightbox.onclick = function(e) {
-        if (e.target === lightbox || e.target.className === 'lightbox-close') lightbox.remove();
-    };
+    lightbox.onclick = function(e) { if (e.target === lightbox || e.target.className === 'lightbox-close') lightbox.remove(); };
 }
 function renderizarImagenesModal(imagenesString, titulo = "📷 REGISTRO FOTOGRÁFICO") {
     const imagenes = convertirEnlacesImagenes(imagenesString);
@@ -988,12 +888,7 @@ window.audioContextInitialized = false;
 window.audioContext = null;
 window.initAudioContext = function() {
     if (window.audioContextInitialized) return true;
-    try {
-        window.audioContext = new (window.AudioContext || window.webkitAudioContext)();
-        if (window.audioContext.state === 'suspended') window.audioContext.resume();
-        window.audioContextInitialized = true;
-        return true;
-    } catch(e) { return false; }
+    try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if (window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; }
 };
 window.playAlarmSound = function() {
     if (!soundEnabled) return;
@@ -1003,43 +898,37 @@ window.playAlarmSound = function() {
         for (let cycle = 0; cycle < 3; cycle++) {
             const baseTime = window.audioContext.currentTime + (cycle * 0.5);
             [880, 1175, 1568].forEach((freq, idx) => {
-                const osc = window.audioContext.createOscillator();
-                const gain = window.audioContext.createGain();
+                const osc = window.audioContext.createOscillator(); const gain = window.audioContext.createGain();
                 osc.connect(gain); gain.connect(window.audioContext.destination);
                 osc.frequency.value = freq; osc.type = 'square';
                 const start = baseTime + (idx * 0.12);
-                gain.gain.setValueAtTime(0.5, start);
-                gain.gain.exponentialRampToValueAtTime(0.01, start + 0.1);
+                gain.gain.setValueAtTime(0.5, start); gain.gain.exponentialRampToValueAtTime(0.01, start + 0.1);
                 osc.start(start); osc.stop(start + 0.1);
             });
         }
     } catch(e) {}
 };
 function playUnlockSound() {
-    if (!soundEnabled) return;
-    window.initAudioContext();
+    if (!soundEnabled) return; window.initAudioContext();
     try {
         const a = new (window.AudioContext || window.webkitAudioContext)();
         [523.25, 659.25, 783.99, 1046.50].forEach((f, i) => {
             const o = a.createOscillator(), g = a.createGain();
             o.connect(g); g.connect(a.destination);
             o.frequency.value = f; o.type = 'sine';
-            g.gain.setValueAtTime(0.3, a.currentTime + i * 0.1);
-            g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + i * 0.1 + 0.2);
+            g.gain.setValueAtTime(0.3, a.currentTime + i * 0.1); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + i * 0.1 + 0.2);
             o.start(a.currentTime + i * 0.1); o.stop(a.currentTime + i * 0.1 + 0.2);
         });
     } catch(e) {}
 }
 function playErrorSound() {
-    if (!soundEnabled) return;
-    window.initAudioContext();
+    if (!soundEnabled) return; window.initAudioContext();
     try {
         const a = new (window.AudioContext || window.webkitAudioContext)();
         const o = a.createOscillator(), g = a.createGain();
         o.connect(g); g.connect(a.destination);
         o.frequency.value = 200; o.type = 'sawtooth';
-        g.gain.setValueAtTime(0.2, a.currentTime);
-        g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.3);
+        g.gain.setValueAtTime(0.2, a.currentTime); g.gain.exponentialRampToValueAtTime(0.001, a.currentTime + 0.3);
         o.start(); o.stop(a.currentTime + 0.3);
     } catch(e) {}
 }
@@ -1048,57 +937,38 @@ function toggleSound() {
     document.getElementById('soundIcon').innerHTML = soundEnabled ? '🔊' : '🔇';
     document.getElementById('soundText').innerHTML = soundEnabled ? 'SONIDO ON' : 'SONIDO OFF';
 }
-function togglePasswordVisibility() {
-    const input = document.getElementById('passwordInput');
-    input.type = input.type === 'password' ? 'text' : 'password';
-    input.focus();
-}
-function toggleResumenPasswordVisibility() {
-    const input = document.getElementById('resumenPasswordInput');
-    input.type = input.type === 'password' ? 'text' : 'password';
-    input.focus();
-}
+function togglePasswordVisibility() { const input = document.getElementById('passwordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
+function toggleResumenPasswordVisibility() { const input = document.getElementById('resumenPasswordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
+
 function verifyPassword() {
-    const input = document.getElementById('passwordInput');
-    const errorDiv = document.getElementById('passwordError');
-    const overlay = document.getElementById('passwordOverlay');
+    const input = document.getElementById('passwordInput'); const errorDiv = document.getElementById('passwordError'); const overlay = document.getElementById('passwordOverlay');
     if (input.value === PASSWORD_CORRECTA) {
-        playUnlockSound();
-        guardarSesion();
-        errorDiv.textContent = '';
+        playUnlockSound(); guardarSesion(); errorDiv.textContent = '';
         overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando...</p></div>';
         setTimeout(() => {
-            overlay.style.opacity = '0';
-            overlay.style.transition = 'opacity 0.5s';
-            setTimeout(() => {
-                overlay.style.display = 'none';
-                isUnlocked = true;
-                showVideoIntro();
-            }, 500);
+            overlay.style.opacity = '0'; overlay.style.transition = 'opacity 0.5s';
+            setTimeout(() => { overlay.style.display = 'none'; isUnlocked = true; showVideoIntro(); }, 500);
         }, 1200);
     } else {
-        playErrorSound();
-        errorDiv.textContent = '🔒 Contraseña incorrecta';
-        input.value = '';
-        input.focus();
-        input.classList.add('border-red-400');
+        playErrorSound(); errorDiv.textContent = '🔒 Contraseña incorrecta';
+        input.value = ''; input.focus(); input.classList.add('border-red-400');
         setTimeout(() => input.classList.remove('border-red-400'), 500);
     }
 }
+
 function updateLastUpdateIndicator() {
-    lastUpdateTime = Date.now();
-    const lastUpdate = new Date(lastUpdateTime);
+    lastUpdateTime = Date.now(); const lastUpdate = new Date(lastUpdateTime);
     const timeStr = lastUpdate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
     let indicator = document.getElementById('lastUpdateIndicator');
     if (!indicator) {
-        indicator = document.createElement('div');
-        indicator.id = 'lastUpdateIndicator';
+        indicator = document.createElement('div'); indicator.id = 'lastUpdateIndicator';
         indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2';
         const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]');
         if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling);
     }
     indicator.innerHTML = `📡 ${timeStr}`;
 }
+
 function enterMainPanel() {
     document.getElementById('mainContent').classList.remove('hidden-section');
     loadData();
@@ -1107,9 +977,6 @@ function enterMainPanel() {
     console.log('✅ Panel cargado');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 DEBOUNCE (evita recalcular filtros muchas veces)
-// ═══════════════════════════════════════════════════════════════
 function debounce(fn, delay = 200) {
     let timeoutId;
     return function(...args) {
@@ -1118,9 +985,6 @@ function debounce(fn, delay = 200) {
     };
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔧 COMPARACIÓN DE NOMBRES (con memoización)
-// ═══════════════════════════════════════════════════════════════
 const nombreNormalizadoCache = new Map();
 function normalizarNombre(nombre) {
     if (!nombre) return '';
@@ -1135,9 +999,7 @@ function compararNombres(nombre1, nombre2) {
     if (!nombre1 || !nombre2) return false;
     const key = nombre1 < nombre2 ? nombre1 + '|' + nombre2 : nombre2 + '|' + nombre1;
     if (compararCache.has(key)) return compararCache.get(key);
-    
-    const n1 = normalizarNombre(nombre1);
-    const n2 = normalizarNombre(nombre2);
+    const n1 = normalizarNombre(nombre1); const n2 = normalizarNombre(nombre2);
     let result = false;
     if (n1 === n2) result = true;
     else if (n1.includes(n2) || n2.includes(n1)) result = true;
@@ -1154,20 +1016,15 @@ function compararNombres(nombre1, nombre2) {
         const minCoincidencias = Math.max(2, Math.floor(Math.min(palabras1.length, palabras2.length) * 0.8));
         result = coincidencias >= minCoincidencias;
     }
-    
     if (compararCache.size > 2000) compararCache.clear();
     compararCache.set(key, result);
     return result;
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 CARGA DE DATOS PARALELA (Promise.all)
-// ═══════════════════════════════════════════════════════════════
 async function cargarDatosSucursal(sucursal, forceRefresh = false) {
     const config = SUCURSALES_CONFIG[sucursal];
     let actosData = [], vcpData = [];
     
-    // ✅ 1. Intentar leer de CACHÉ (rápido)
     if (!forceRefresh) {
         const cachedActos = getCachedData(sucursal, 'actos');
         const cachedVCP = getCachedData(sucursal, 'vcp');
@@ -1182,53 +1039,36 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
     const diaHoy = hoy.getDate().toString().padStart(2, '0');
     const mesHoy = MESES_NOMBRES[hoy.getMonth()];
     
-    // 🚀 FETCH EN PARALELO (Actos + VCP al mismo tiempo)
     const promesas = [];
     if (config.mapping) promesas.push(fetchConToken(config.actosUrl).catch(e => { console.error("Error actos:", e); return ''; }));
     else promesas.push(Promise.resolve(''));
-    
     if (config.showVCP && config.vcpUrl) promesas.push(fetchConToken(config.vcpUrl).catch(e => { console.error("Error VCP:", e); return ''; }));
     else promesas.push(Promise.resolve(''));
     
     const [textActos, textVCP] = await Promise.all(promesas);
     
-    // Procesar Actos
     if (textActos && config.mapping) {
         const rows = parseCSV(textActos);
         for (let i = 0; i < rows.length; i++) {
             const row = rows[i];
             let fecha, tipoRaw, sector, observador, desc, cerradoRaw, causas = '';
-            
             if (sucursal === 'MALAGUENO' && i >= 225) {
                 const u = row[20] || '';
                 const uTrimmed = u.trim().toUpperCase();
-                if (uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) {
-                    tipoRaw = 'Acto Inseguro';
-                    desc = u.replace(/^AI[\s\.\-]*/i, '').trim();
-                } else if (uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) {
-                    tipoRaw = 'Condición Insegura';
-                    desc = u.replace(/^CI[\s\.\-]*/i, '').trim();
-                } else {
-                    tipoRaw = ''; desc = u;
-                }
+                if (uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) { tipoRaw = 'Acto Inseguro'; desc = u.replace(/^AI[\s\.\-]*/i, '').trim(); }
+                else if (uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) { tipoRaw = 'Condición Insegura'; desc = u.replace(/^CI[\s\.\-]*/i, '').trim(); }
+                else { tipoRaw = ''; desc = u; }
                 fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || '';
                 cerradoRaw = row[23] || ''; causas = row[19] || '';
             } else {
                 if (row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
-                fecha = row[config.mapping.fecha] || '';
-                tipoRaw = row[config.mapping.tipo] || '';
-                sector = row[config.mapping.sector] || '';
-                observador = row[config.mapping.observador] || '';
-                desc = row[config.mapping.descripcion] || '';
-                cerradoRaw = row[config.mapping.cerrado] || '';
+                fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || '';
+                observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
             }
-            
             let imagenUrls = [];
             for (let j = 0; j < row.length; j++) {
                 const cell = row[j] ? row[j].trim() : '';
-                if (cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) {
-                    imagenUrls.push(cell);
-                }
+                if (cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrls.push(cell);
             }
             const imagenUrl = imagenUrls.join(',');
             const fd = parseFecha(fecha);
@@ -1237,14 +1077,10 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
             let tipo = 'otro';
             if (tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
             else if (tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
-            
             if (tipo === 'otro' && desc) {
                 const descTrimmed = desc.trim().toUpperCase();
-                if (descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) {
-                    tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i, '').trim();
-                } else if (descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) {
-                    tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i, '').trim();
-                }
+                if (descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) { tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i, '').trim(); }
+                else if (descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) { tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i, '').trim(); }
             }
             if (tipo === 'otro' && desc) tipo = inferirTipoDesdeDescripcion(desc);
             
@@ -1253,22 +1089,14 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
                 const cs = cerradoRaw.toString().toLowerCase().trim();
                 cerrado = cs === 'si' || cs === 'sí' || cs === 'true' || cs === '1' || cs === 'x';
             }
-            
             const cat = classifyData(desc, false);
             let fechaLimpiaActos = fecha;
             if (fecha.includes('T')) {
                 const partes = fecha.split('T')[0].split('-');
                 if (partes.length === 3) fechaLimpiaActos = partes[2] + '/' + partes[1] + '/' + partes[0];
-            } else {
-                fechaLimpiaActos = fd.dia + '/' + fd.mes + '/2026';
-            }
+            } else { fechaLimpiaActos = fd.dia + '/' + fd.mes + '/2026'; }
             
-            actosData.push({
-                fecha: fechaLimpiaActos, tipo, sector: (sector || '').toLowerCase().trim(),
-                observador: (observador || '').trim(), descripcion: (desc || '').trim(),
-                causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia,
-                categoria: cat, sucursal: sucursal, imagen: imagenUrl
-            });
+            actosData.push({ fecha: fechaLimpiaActos, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), causas: (causas || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrl });
             
             if (fd.dia === diaHoy && fd.mes === mesHoy) {
                 const idUnico = `${observador}|${desc}|${sector}|${fecha}`;
@@ -1277,36 +1105,25 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
                     const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
                     const nuevoReporte = { persona: observador, tipo: tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND', descripcion: desc, causas: causas, sector, hora, timestamp: Date.now(), sucursal: sucursal };
                     todayAlertsBySucursal[sucursal].actos.unshift(nuevoReporte);
-                    updatePulseBadges();
-                    updateRealTimeUI();
-                    showNewReportAlert(observador, sector, desc, tipo === 'acto' ? 'Acto Inseguro' : 'Condición Insegura', hora);
+                    updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(observador, sector, desc, tipo === 'acto' ? 'Acto Inseguro' : 'Condición Insegura', hora);
                 }
             }
         }
     }
     
-    // Procesar VCP
     if (textVCP && config.showVCP && config.vcpUrl) {
         const rows2 = parseCSV(textVCP);
         const vm = config.vcpMapping;
         for (let i = 0; i < rows2.length; i++) {
             const row = rows2[i];
             let fr, po, sec, des, com;
-            if (vm) {
-                fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim();
-                sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || '';
-            } else {
-                fr = row[2] || ''; po = (row[1] || '').trim();
-                sec = (row[3] || '').toLowerCase().trim() || 'general';
-                des = row[32] || ''; com = row[28] || '';
-            }
+            if (vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; }
+            else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; }
             
             let imagenUrlsVCP = [];
             for (let j = 0; j < row.length; j++) {
                 const cell = row[j] ? row[j].trim() : '';
-                if (cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) {
-                    imagenUrlsVCP.push(cell);
-                }
+                if (cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrlsVCP.push(cell);
             }
             const imagenUrlVCP = imagenUrlsVCP.join(',');
             const fd = parseFecha(fr.split(' ')[0]);
@@ -1317,15 +1134,9 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
             if (fr.includes('T')) {
                 const partes = fr.split('T')[0].split('-');
                 if (partes.length === 3) fechaLimpia = partes[2] + '/' + partes[1] + '/' + partes[0];
-            } else {
-                fechaLimpia = fd.dia + '/' + fd.mes + '/2026';
-            }
+            } else { fechaLimpia = fd.dia + '/' + fd.mes + '/2026'; }
             
-            vcpData.push({
-                fecha: fechaLimpia, tipo: 'vcp', sector: sec, personaObservada: po,
-                descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia,
-                categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP
-            });
+            vcpData.push({ fecha: fechaLimpia, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: cat, sucursal: sucursal, imagen: imagenUrlVCP });
             
             if (fd.dia === diaHoy && fd.mes === mesHoy) {
                 const idUnico = `${po}|${des}|${sec}|${fr}`;
@@ -1334,23 +1145,17 @@ async function cargarDatosSucursal(sucursal, forceRefresh = false) {
                     const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
                     const nuevoVCP = { persona: po, tipo: '🎯 VCP', descripcion: des, sector: sec, hora, timestamp: Date.now(), sucursal: sucursal };
                     todayAlertsBySucursal[sucursal].vcp.unshift(nuevoVCP);
-                    updatePulseBadges();
-                    updateRealTimeUI();
-                    showNewReportAlert(po, sec, des, 'VCP', hora);
+                    updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(po, sec, des, 'VCP', hora);
                 }
             }
         }
     }
     
-    // ✅ 3. Guardar en caché
     setCachedData(sucursal, 'actos', actosData);
     setCachedData(sucursal, 'vcp', vcpData);
     return { actos: actosData, vcp: vcpData };
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 LOAD DATA OPTIMIZADO (carga caché primero, actualiza después)
-// ═══════════════════════════════════════════════════════════════
 async function loadData() {
     if (!isUnlocked || isUpdating) return;
     isUpdating = true;
@@ -1359,7 +1164,6 @@ async function loadData() {
         currentObjetivos = config.objetivos;
         currentShowVCP = config.showVCP;
         
-        // ✅ CARGA PROGRESIVA: mostrar caché inmediatamente
         const cachedActos = getCachedData(currentSucursal, 'actos');
         const cachedVCP = getCachedData(currentSucursal, 'vcp');
         if (cachedActos && cachedActos.length > 0) {
@@ -1372,7 +1176,6 @@ async function loadData() {
             ALL_VCP_DATA[currentSucursal] = cachedVCP;
         }
         
-        // ✅ Después cargar datos frescos
         const result = await cargarDatosSucursal(currentSucursal);
         if (result.actos.length > 0) {
             ACTOS_COND_DATA = result.actos;
@@ -1419,34 +1222,17 @@ async function forceRefreshData() {
         isUpdating = false;
         try {
             const result = await cargarDatosSucursal(currentSucursal, true);
-            if (result.actos.length > 0) {
-                ACTOS_COND_DATA = result.actos;
-                ALL_ACTOS_DATA[currentSucursal] = result.actos;
-                lastSuccessfulData = JSON.parse(JSON.stringify(result.actos));
-            }
-            if (result.vcp.length > 0) {
-                VCP_DATA = result.vcp;
-                ALL_VCP_DATA[currentSucursal] = result.vcp;
-            }
-            updateTotalCounters();
-            actualizarObjetivosUI();
-            toggleVCPVisibility(currentShowVCP);
-            await populateSupervisors();
-            populateVCPPeopleFilter();
-            applyAllFilters();
-            updatePulseBadges();
-            updateRealTimeUI();
-            updateSupervisorCard();
-            updateLastUpdateIndicator();
+            if (result.actos.length > 0) { ACTOS_COND_DATA = result.actos; ALL_ACTOS_DATA[currentSucursal] = result.actos; lastSuccessfulData = JSON.parse(JSON.stringify(result.actos)); }
+            if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; }
+            updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP);
+            await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters();
+            updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator();
         } finally {
             if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; }
         }
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🔔 ALERTAS Y BADGES
-// ═══════════════════════════════════════════════════════════════
 function showNewReportAlert(persona, sector, desc, tipo, hora) {
     const resumenPage = document.getElementById('resumenEjecutivoPage');
     if (resumenPage && resumenPage.style.display === 'block') return;
@@ -1463,11 +1249,7 @@ function showNewReportAlert(persona, sector, desc, tipo, hora) {
     const countdownEl = document.getElementById('alertCountdown');
     if (countdownEl) countdownEl.textContent = segundos;
     if (alertCountdownInterval) clearInterval(alertCountdownInterval);
-    alertCountdownInterval = setInterval(() => {
-        segundos--;
-        if (countdownEl) countdownEl.textContent = segundos;
-        if (segundos <= 0) dismissAlert();
-    }, 1000);
+    alertCountdownInterval = setInterval(() => { segundos--; if (countdownEl) countdownEl.textContent = segundos; if (segundos <= 0) dismissAlert(); }, 1000);
 }
 function dismissAlert() {
     if (alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval = null; }
@@ -1479,79 +1261,49 @@ function updatePulseBadges() {
     const badgeVCP = document.getElementById('vcpNovedadBadge');
     const alertsActos = todayAlertsBySucursal[currentSucursal]?.actos || [];
     const alertsVCP = todayAlertsBySucursal[currentSucursal]?.vcp || [];
-    if (badgeActos) {
-        if (alertsActos.length > 0) { badgeActos.textContent = Math.min(alertsActos.length, 99); badgeActos.classList.remove('hidden'); }
-        else badgeActos.classList.add('hidden');
-    }
-    if (badgeVCP) {
-        if (alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alertsVCP.length, 99); badgeVCP.classList.remove('hidden'); }
-        else badgeVCP.classList.add('hidden');
-    }
+    if (badgeActos) { if (alertsActos.length > 0) { badgeActos.textContent = Math.min(alertsActos.length, 99); badgeActos.classList.remove('hidden'); } else badgeActos.classList.add('hidden'); }
+    if (badgeVCP) { if (alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alertsVCP.length, 99); badgeVCP.classList.remove('hidden'); } else badgeVCP.classList.add('hidden'); }
 }
 function updateTotalCounters() {
     document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length;
     document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0';
 }
 
-// <script>
-// ═══════════════════════════════════════════════════════════════
-// 🚀 RENDERIZADO DE TABLAS OPTIMIZADO (DocumentFragment + Virtualización)
-// ═══════════════════════════════════════════════════════════════
-const MAX_FILAS_VISIBLES = 200; // Virtualización: solo renderizamos 200 filas
+const MAX_FILAS_VISIBLES = 200;
 
 function renderGeneralTable(data) {
     const tb = document.getElementById('generalTableBody');
     if (!tb) return;
-    
-    // ✅ Limpiar tabla UNA SOLA VEZ (no innerHTML vacío que fuerza reflow)
     while (tb.firstChild) tb.removeChild(tb.firstChild);
-    
     if (!data || data.length === 0) {
         const tr = document.createElement('tr');
         tr.innerHTML = '<td colspan="5" class="p-4 text-center text-slate-500">📭 No hay registros para mostrar</td>';
-        tb.appendChild(tr);
-        return;
+        tb.appendChild(tr); return;
     }
-    
-    const hoy = new Date();
-    const diaHoy = hoy.getDate().toString().padStart(2, '0');
-    const mesHoy = MESES_NOMBRES[hoy.getMonth()];
-    
-    // ✅ Virtualización: solo renderizamos las primeras MAX_FILAS_VISIBLES
+    const hoy = new Date(); const diaHoy = hoy.getDate().toString().padStart(2, '0'); const mesHoy = MESES_NOMBRES[hoy.getMonth()];
     const dataAVer = data.length > MAX_FILAS_VISIBLES ? data.slice(0, MAX_FILAS_VISIBLES) : data;
-    
-    // 🚀 DocumentFragment: insertamos TODAS las filas de una sola vez
     const fragment = document.createDocumentFragment();
-    
     for (let i = 0; i < dataAVer.length; i++) {
-        const e = dataAVer[i];
-        const tr = document.createElement('tr');
+        const e = dataAVer[i]; const tr = document.createElement('tr');
         const esHoy = (e.dia === diaHoy && e.mes === mesHoy);
         tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer';
         tr.onclick = () => openModal(e, i, data);
-        
         const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small');
         let tipoDisplay = '', tipoClass = '';
         if (e.tipo === 'acto') { tipoDisplay = '⚠️ ACTO (AI)'; tipoClass = 'bg-blue-100 text-blue-700'; }
         else if (e.tipo === 'condicion') { tipoDisplay = '🏚️ COND (CI)'; tipoClass = 'bg-amber-100 text-amber-700'; }
         else { tipoDisplay = '📌 Otro'; tipoClass = 'bg-gray-100 text-gray-700'; }
-        
         const sigla = e.tipo === 'acto' ? 'AI' : (e.tipo === 'condicion' ? 'CI' : '');
         const descConSigla = sigla ? `${sigla} - ${e.descripcion || ''}` : (e.descripcion || '');
         const descCorta = descConSigla.length > 55 ? descConSigla.substring(0, 55) + '...' : descConSigla;
-        
         tr.innerHTML = `<td class="p-2">📅 ${e.fecha}${esHoy ? '🔥' : ''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${tipoClass}">${tipoDisplay}</span></td><td class="p-2 font-semibold">👤 ${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</span><br>${descCorta}</td><td class="p-2">${estadoBadge}</td>`;
         fragment.appendChild(tr);
     }
-    
-    // ✅ Si hay más filas, agregar aviso
     if (data.length > MAX_FILAS_VISIBLES) {
         const trAviso = document.createElement('tr');
         trAviso.innerHTML = `<td colspan="5" class="p-3 text-center text-xs text-slate-500 bg-orange-50 font-bold">📊 Mostrando ${MAX_FILAS_VISIBLES} de ${data.length} registros. Aplicá filtros para ver más.</td>`;
         fragment.appendChild(trAviso);
     }
-    
-    // 🚀 UNA SOLA inserción al DOM (en vez de N inserciones)
     tb.appendChild(fragment);
 }
 
@@ -1559,30 +1311,21 @@ function renderVCPTable(data) {
     const tb = document.getElementById('vcpTableBody');
     if (!tb) return;
     while (tb.firstChild) tb.removeChild(tb.firstChild);
-    
     const sorted = ordenarPorFecha(data);
-    const hoy = new Date();
-    const diaHoy = hoy.getDate().toString().padStart(2, '0');
-    const mesHoy = MESES_NOMBRES[hoy.getMonth()];
-    
+    const hoy = new Date(); const diaHoy = hoy.getDate().toString().padStart(2, '0'); const mesHoy = MESES_NOMBRES[hoy.getMonth()];
     const dataAVer = sorted.slice(0, Math.min(50, MAX_FILAS_VISIBLES));
     const fragment = document.createDocumentFragment();
-    
     for (let i = 0; i < dataAVer.length; i++) {
-        const e = dataAVer[i];
-        const tr = document.createElement('tr');
+        const e = dataAVer[i]; const tr = document.createElement('tr');
         const esHoy = (e.dia === diaHoy && e.mes === mesHoy);
         tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer';
         tr.onclick = () => openModal(e, i, sorted);
-        
         const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small');
         const desc = (e.descripcion || '').substring(0, 40) + ((e.descripcion || '').length > 40 ? '...' : '');
         const com = (e.comentarios || '').substring(0, 20) + ((e.comentarios || '').length > 20 ? '...' : '');
-        
         tr.innerHTML = `<td class="p-2">📅 ${e.fecha}${esHoy ? '🔥' : ''}</td><td class="p-2 font-semibold">👤 ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${desc}</td><td class="p-2">💬 ${com}</td><td class="p-2">${estadoBadge}</td>`;
         fragment.appendChild(tr);
     }
-    
     tb.appendChild(fragment);
 }
 
@@ -1590,25 +1333,18 @@ function renderEjecutivoTabla(datos) {
     const tbody = document.getElementById('ejecTablaBody');
     if (!tbody) return;
     window.datosModalActual = datos;
-    
     while (tbody.firstChild) tbody.removeChild(tbody.firstChild);
-    
     if (datos.length === 0) {
         const tr = document.createElement('tr');
         tr.innerHTML = '<td colspan="7" class="p-4 text-center text-slate-500">📭 No hay datos con los filtros aplicados</td>';
-        tbody.appendChild(tr);
-        return;
+        tbody.appendChild(tr); return;
     }
-    
     const fragment = document.createDocumentFragment();
     const dataAVer = datos.slice(0, MAX_FILAS_VISIBLES);
-    
     for (let idx = 0; idx < dataAVer.length; idx++) {
-        const d = dataAVer[idx];
-        const tr = document.createElement('tr');
+        const d = dataAVer[idx]; const tr = document.createElement('tr');
         tr.className = 'border-b hover:bg-orange-50 cursor-pointer';
         tr.onclick = () => abrirModalEjecutivo(idx);
-        
         const badge = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
         const tipo = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO (AI)' : '🏚️ COND (CI)');
         const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
@@ -1616,281 +1352,102 @@ function renderEjecutivoTabla(datos) {
         const sigla = d.tipo === 'acto' ? 'AI' : (d.tipo === 'condicion' ? 'CI' : '');
         const descConSigla = sigla ? `${sigla} - ${d.descripcion || '-'}` : (d.descripcion || '-');
         const descCorta = descConSigla.length > 50 ? descConSigla.substring(0, 50) + '...' : descConSigla;
-        
         tr.innerHTML = `<td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.fecha || '?'}</td><td class="p-3">${escapeHtml(d.observador || d.personaObservada || '-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml(descCorta)}</td><td class="p-3">🏭 ${escapeHtml(d.sector || '-')}</td><td class="p-3">${estadoBadge}</td>`;
         fragment.appendChild(tr);
     }
-    
     if (datos.length > MAX_FILAS_VISIBLES) {
         const trAviso = document.createElement('tr');
         trAviso.innerHTML = `<td colspan="7" class="p-3 text-center text-xs text-slate-500 bg-orange-50 font-bold">📊 Mostrando ${MAX_FILAS_VISIBLES} de ${datos.length} registros</td>`;
         fragment.appendChild(trAviso);
     }
-    
     tbody.appendChild(fragment);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📊 CHARTS REUTILIZABLES (no destroy + new, solo update data)
-// ═══════════════════════════════════════════════════════════════
 const CATS_EXPANDIDAS = [
-    { id: 'epp', name: 'EPP', icon: '🛡️', color: '#3b82f6' },
-    { id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' },
-    { id: 'procedimientos', name: 'Proced.', icon: '📋', color: '#f59e0b' },
-    { id: 'equipos', name: 'Equipos', icon: '🔧', color: '#8b5cf6' },
-    { id: 'conduccion', name: 'Conduc.', icon: '🚗', color: '#ef4444' },
-    { id: 'berma', name: 'Berma', icon: '🧱', color: '#f97316' },
-    { id: 'senalizacion', name: 'Señal.', icon: '🚸', color: '#06b6d4' },
-    { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' },
-    { id: 'otros', name: 'Otros', icon: '📌', color: '#6b7280' }
+    { id: 'epp', name: 'EPP', icon: '🛡️', color: '#3b82f6' }, { id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' }, { id: 'procedimientos', name: 'Proced.', icon: '📋', color: '#f59e0b' }, { id: 'equipos', name: 'Equipos', icon: '🔧', color: '#8b5cf6' }, { id: 'conduccion', name: 'Conduc.', icon: '🚗', color: '#ef4444' }, { id: 'berma', name: 'Berma', icon: '🧱', color: '#f97316' }, { id: 'senalizacion', name: 'Señal.', icon: '🚸', color: '#06b6d4' }, { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' }, { id: 'otros', name: 'Otros', icon: '📌', color: '#6b7280' }
 ];
 
 function updateChartsDona(data, type) {
     if (type !== 'actos') return;
     const ctx = document.getElementById('categoryChart')?.getContext('2d');
     if (!ctx) return;
-    
-    const counts = {};
-    CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0);
+    const counts = {}; CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0);
     data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
     const valores = CATS_EXPANDIDAS.map(c => counts[c.id] || 0);
-    
-    // 🚀 REUTILIZAR chart si ya existe (mucho más rápido que destroy+new)
-    if (categoryChart) {
-        categoryChart.data.datasets[0].data = valores;
-        categoryChart.update('none'); // 'none' = sin animación (instantáneo)
-        return;
-    }
-    
+    if (categoryChart) { categoryChart.data.datasets[0].data = valores; categoryChart.update('none'); return; }
     categoryChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: CATS_EXPANDIDAS.map(c => `${c.icon} ${c.name}`),
-            datasets: [{
-                data: valores,
-                backgroundColor: CATS_EXPANDIDAS.map(c => c.color),
-                borderWidth: 2, borderColor: 'white', hoverOffset: 10
-            }]
-        },
-        options: {
-            cutout: '60%', responsive: true, maintainAspectRatio: false,
-            animation: { duration: 400 },
-            plugins: {
-                legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, boxWidth: 8 } },
-                tooltip: { callbacks: { label: (ctx) => {
-                    const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                    const pct = Math.round((ctx.parsed / total) * 100);
-                    return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                }}},
-                datalabels: {
-                    color: '#fff', font: { weight: 'bold', size: 11 },
-                    formatter: (value, ctx) => {
-                        const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                        return total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
-                    },
-                    anchor: 'center', align: 'center', offset: 0
-                }
-            }
-        },
-        plugins: [ChartDataLabels]
+        type: 'doughnut', data: { labels: CATS_EXPANDIDAS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: valores, backgroundColor: CATS_EXPANDIDAS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] },
+        options: { cutout: '60%', responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, boxWidth: 8 } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); const pct = Math.round((ctx.parsed / total) * 100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center', offset: 0 } } }, plugins: [ChartDataLabels]
     });
 }
 
 function updateTrendChart(data) {
     const ctx = document.getElementById('trendChart')?.getContext('2d');
     if (!ctx) return;
-    
     const sourceData = data || ACTOS_COND_DATA;
     const aPM = MESES_NOMBRES.map(m => sourceData.filter(e => e.mes === m && e.tipo === 'acto').length);
     const cPM = MESES_NOMBRES.map(m => sourceData.filter(e => e.mes === m && e.tipo === 'condicion').length);
-    
-    // 🚀 REUTILIZAR chart si ya existe
-    if (trendChart) {
-        trendChart.data.datasets[0].data = aPM;
-        trendChart.data.datasets[1].data = cPM;
-        trendChart.options.scales.y.max = currentSucursal === 'LAPAMPITA' ? 150 : (currentSucursal === 'BARKER' ? 15 : 110);
-        trendChart.update('none');
-        return;
-    }
-    
+    if (trendChart) { trendChart.data.datasets[0].data = aPM; trendChart.data.datasets[1].data = cPM; trendChart.options.scales.y.max = currentSucursal === 'LAPAMPITA' ? 150 : (currentSucursal === 'BARKER' ? 15 : 110); trendChart.update('none'); return; }
     trendChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
-            datasets: [
-                { label: '⚠️ Actos', data: aPM, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true },
-                { label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true }
-            ]
-        },
-        options: {
-            responsive: true, maintainAspectRatio: false,
-            animation: { duration: 400 },
-            plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } },
-            scales: {
-                y: { beginAtZero: true, max: currentSucursal === 'LAPAMPITA' ? 150 : (currentSucursal === 'BARKER' ? 15 : 110), ticks: { stepSize: 10 } },
-                x: { ticks: { font: { size: 9 } } }
-            }
-        }
+        type: 'line', data: { labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '⚠️ Actos', data: aPM, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true }, { label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true }] },
+        options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, max: currentSucursal === 'LAPAMPITA' ? 150 : (currentSucursal === 'BARKER' ? 15 : 110), ticks: { stepSize: 10 } }, x: { ticks: { font: { size: 9 } } } } }
     });
 }
 
 function updateVCPCharts(data) {
-    const CATS = [
-        { id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' },
-        { id: 'proc', name: 'Proced.', icon: '⚡', color: '#f59e0b' },
-        { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8b5cf6' },
-        { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' }
-    ];
-    
-    const counts = {};
-    CATS.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    const CATS = [{ id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'Proced.', icon: '⚡', color: '#f59e0b' }, { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' }];
+    const counts = {}; CATS.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
     const valores = CATS.map(c => counts[c.id] || 0);
-    
     const ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d');
     if (ctxD) {
-        if (vcpCategoryChart) {
-            vcpCategoryChart.data.datasets[0].data = valores;
-            vcpCategoryChart.update('none');
-        } else {
+        if (vcpCategoryChart) { vcpCategoryChart.data.datasets[0].data = valores; vcpCategoryChart.update('none'); }
+        else {
             vcpCategoryChart = new Chart(ctxD, {
-                type: 'doughnut',
-                data: {
-                    labels: CATS.map(c => `${c.icon} ${c.name}`),
-                    datasets: [{ data: valores, backgroundColor: CATS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }]
-                },
-                options: {
-                    cutout: '55%',
-                    animation: { duration: 400 },
-                    plugins: {
-                        legend: { position: 'bottom', labels: { font: { size: 9 } } },
-                        tooltip: { callbacks: { label: (ctx) => {
-                            const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                            const pct = Math.round((ctx.parsed / total) * 100);
-                            return `${ctx.label}: ${ctx.parsed} (${pct}%)`;
-                        }}},
-                        datalabels: {
-                            color: '#fff', font: { weight: 'bold', size: 10 },
-                            formatter: (value, ctx) => {
-                                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                                return total > 0 ? Math.round((value / total) * 100) + '%' : '0%';
-                            },
-                            anchor: 'center', align: 'center', offset: 0
-                        }
-                    }
-                },
-                plugins: [ChartDataLabels]
+                type: 'doughnut', data: { labels: CATS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: valores, backgroundColor: CATS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
+                options: { cutout: '55%', animation: { duration: 400 }, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); const pct = Math.round((ctx.parsed / total) * 100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center', offset: 0 } } }, plugins: [ChartDataLabels]
             });
         }
     }
-    
     const vPM = MESES_NOMBRES.map(m => data.filter(e => e.mes === m).length);
     const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d');
     if (ctxT) {
-        if (vcpTrendChart) {
-            vcpTrendChart.data.datasets[0].data = vPM;
-            vcpTrendChart.update('none');
-        } else {
+        if (vcpTrendChart) { vcpTrendChart.data.datasets[0].data = vPM; vcpTrendChart.update('none'); }
+        else {
             vcpTrendChart = new Chart(ctxT, {
-                type: 'line',
-                data: {
-                    labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
-                    datasets: [{ label: '🎯 VCP', data: vPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white' }]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: true,
-                    animation: { duration: 400 },
-                    plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } },
-                    scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } }
-                }
+                type: 'line', data: { labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: vPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white' }] },
+                options: { responsive: true, maintainAspectRatio: true, animation: { duration: 400 }, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } } }
             });
         }
     }
 }
 
 function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) {
-    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
-    const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' };
-    const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
-    
+    const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
     const datasets = [];
     sucursales.forEach(suc => {
         if (sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
-        const dataPorMes = MESES_NOMBRES.map(mes => {
-            let total = 0;
-            if (ALL_ACTOS_DATA[suc]) {
-                total = ALL_ACTOS_DATA[suc].filter(d =>
-                    (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) &&
-                    d.mes === mes &&
-                    (estadoFiltro === 'todos' || (estadoFiltro === 'abiertos' ? !d.cerrado : d.cerrado))
-                ).length;
-            }
-            return total;
-        });
-        datasets.push({
-            label: nombres[suc], data: dataPorMes,
-            borderColor: colores[suc], backgroundColor: colores[suc] + '20',
-            borderWidth: 2, fill: false, tension: 0.3,
-            pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white'
-        });
+        const dataPorMes = MESES_NOMBRES.map(mes => { let total = 0; if (ALL_ACTOS_DATA[suc]) { total = ALL_ACTOS_DATA[suc].filter(d => (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) && d.mes === mes && (estadoFiltro === 'todos' || (estadoFiltro === 'abiertos' ? !d.cerrado : d.cerrado))).length; } return total; });
+        datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc] + '20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white' });
     });
-    
     const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d');
     if (ctx1) {
-        if (ejecutivoChartSucursales) {
-            ejecutivoChartSucursales.data.datasets = datasets;
-            ejecutivoChartSucursales.update('none');
-        } else {
-            ejecutivoChartSucursales = new Chart(ctx1, {
-                type: 'line',
-                data: { labels: MESES_SHORT, datasets: datasets },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 400 },
-                    plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }
-                }
-            });
-        }
+        if (ejecutivoChartSucursales) { ejecutivoChartSucursales.data.datasets = datasets; ejecutivoChartSucursales.update('none'); }
+        else { ejecutivoChartSucursales = new Chart(ctx1, { type: 'line', data: { labels: MESES_SHORT, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } } }); }
     }
-    
     const datasetsVCP = [];
     sucursales.forEach(suc => {
         if (sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
         if (!ALL_VCP_DATA[suc] || !ALL_VCP_DATA[suc].length) return;
-        const dataPorMes = MESES_NOMBRES.map(mes =>
-            ALL_VCP_DATA[suc].filter(d => (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) && d.mes === mes).length
-        );
-        datasetsVCP.push({
-            label: nombres[suc], data: dataPorMes,
-            borderColor: colores[suc], backgroundColor: colores[suc] + '20',
-            borderWidth: 2, fill: false, tension: 0.3,
-            pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white'
-        });
+        const dataPorMes = MESES_NOMBRES.map(mes => ALL_VCP_DATA[suc].filter(d => (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) && d.mes === mes).length);
+        datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc] + '20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white' });
     });
-    
     const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d');
     if (ctx2) {
-        if (ejecutivoChartVCPSucursales) {
-            ejecutivoChartVCPSucursales.data.datasets = datasetsVCP;
-            ejecutivoChartVCPSucursales.update('none');
-        } else {
-            ejecutivoChartVCPSucursales = new Chart(ctx2, {
-                type: 'line',
-                data: { labels: MESES_SHORT, datasets: datasetsVCP },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    animation: { duration: 400 },
-                    plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } },
-                    scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } }
-                }
-            });
-        }
+        if (ejecutivoChartVCPSucursales) { ejecutivoChartVCPSucursales.data.datasets = datasetsVCP; ejecutivoChartVCPSucursales.update('none'); }
+        else { ejecutivoChartVCPSucursales = new Chart(ctx2, { type: 'line', data: { labels: MESES_SHORT, datasets: datasetsVCP }, options: { responsive: true, maintainAspectRatio: false, animation: { duration: 400 }, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }, scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } } } }); }
     }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 TARJETAS DE CATEGORÍA (optimizadas)
-// ═══════════════════════════════════════════════════════════════
 const CATEGORIAS_POR_TARJETA = {
     'epp': ['AI - Falta de uso de equipos de protección personal', 'AI - Uso inapropiado del equipo de protección personal'],
     'orden': ['CI - Falta de orden y Limpieza (Orden y limpieza deficientes)', 'AI - Manejo incorrecto de residuos (mezcla, disposición inadecuada)'],
@@ -1905,174 +1462,77 @@ const CATEGORIAS_POR_TARJETA = {
 
 function updateCategoryCards(data, type) {
     if (type === 'vcp') {
-        const CATS_VCP = [
-            { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' },
-            { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' },
-            { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' },
-            { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }
-        ];
+        const CATS_VCP = [{ id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS Y HERRAM.', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }];
         const cont = document.getElementById('vcpCategoryCards');
         if (!cont) return;
-        
-        const counts = {};
-        CATS_VCP.forEach(c => counts[c.id] = 0);
-        data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+        const counts = {}; CATS_VCP.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
         const total = data.length || 1;
-        
-        // 🚀 DocumentFragment
         const fragment = document.createDocumentFragment();
         const hayFiltroActivo = selectedVCPCausa !== null && selectedVCPCausa !== 'todas';
-        
         CATS_VCP.forEach(c => {
-            const val = counts[c.id] || 0;
-            const pct = Math.round(val / total * 100);
-            const isActive = selectedVCPCausa === c.id;
+            const val = counts[c.id] || 0; const pct = Math.round(val / total * 100); const isActive = selectedVCPCausa === c.id;
             const div = document.createElement('div');
             div.className = 'category-card p-3 text-center relative cursor-pointer transition-all duration-300 ' + (isActive ? 'selected shadow-lg scale-102' : (hayFiltroActivo ? 'opacado' : 'hover:shadow-md hover:-translate-y-1'));
             div.style.borderColor = isActive ? '#f18b00' : c.color;
             const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
-            div.onclick = () => {
-                if (isActive) { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); }
-                else { selectedVCPCausa = c.id; document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section'); }
-                applyVCPFilters();
-            };
+            div.onclick = () => { if (isActive) { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); } else { selectedVCPCausa = c.id; document.getElementById('clearVCPCauseBtn')?.classList.remove('hidden-section'); } applyVCPFilters(); };
             div.innerHTML = `<div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div><div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div><div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>`;
             fragment.appendChild(div);
         });
-        
         while (cont.firstChild) cont.removeChild(cont.firstChild);
-        cont.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3 my-3';
-        cont.appendChild(fragment);
-        return;
+        cont.className = 'grid grid-cols-2 sm:grid-cols-4 gap-3 my-3'; cont.appendChild(fragment); return;
     }
-    
-    // ACTOS
     const cont = document.getElementById('categoryCards');
     if (!cont) return;
-    
-    const counts = {};
-    CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0);
-    data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+    const counts = {}; CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
     const total = data.length || 1;
-    
     const fragment = document.createDocumentFragment();
     const hayFiltroActivo = selectedCausa !== null && selectedCausa !== 'todas';
-    
     CATS_EXPANDIDAS.forEach(c => {
-        const val = counts[c.id] || 0;
-        const pct = Math.round(val / total * 100);
-        const isActive = selectedCausa === c.id;
+        const val = counts[c.id] || 0; const pct = Math.round(val / total * 100); const isActive = selectedCausa === c.id;
         const div = document.createElement('div');
         div.className = 'category-card p-3 text-center relative cursor-pointer transition-all duration-300 ' + (isActive ? 'selected shadow-lg scale-102' : (hayFiltroActivo ? 'opacado' : 'hover:shadow-md hover:-translate-y-1'));
         div.style.borderColor = isActive ? '#f18b00' : c.color;
         const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
-        div.onclick = () => {
-            if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); }
-            else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); }
-            applyGeneralFilters();
-        };
-        
-        const categorias = CATEGORIAS_POR_TARJETA[c.id] || [];
-        let tooltipItemsHTML = '';
-        if (c.id === 'otros') {
-            tooltipItemsHTML = `<div class="tooltip-item" style="color:#fcd34d;border-left-color:transparent;font-style:italic;font-weight:600;">📋 <strong>Categoría "Otros" - Sistema de Inferencia Automática</strong></div><div class="criterios-section"><div class="criterios-title"> ¿Cómo funciona la clasificación automática?</div><div class="criterio-item">Cuando un reporte no tiene siglas AI/CI y no coincide con categorías específicas, el sistema analiza el contenido de la descripción para clasificarlo automáticamente.</div></div>`;
-        } else if (categorias.length > 0) {
-            tooltipItemsHTML = categorias.map(cat => {
-                let catConAbrev = cat;
-                if (cat.startsWith('CI -') || cat.startsWith('CI-') || cat.startsWith('CI.')) catConAbrev = `<span class="abrev">CI</span>${cat.substring(2)}`;
-                else if (cat.startsWith('AI -') || cat.startsWith('AI-') || cat.startsWith('AI.')) catConAbrev = `<span class="abrev">AI</span>${cat.substring(2)}`;
-                return `<div class="tooltip-item">${catConAbrev}</div>`;
-            }).join('');
-        } else {
-            tooltipItemsHTML = `<div class="tooltip-item" style="color:#94a3b8;border-left-color:transparent;">Sin categorías específicas</div>`;
-        }
-        
+        div.onclick = () => { if (isActive) { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); } else { selectedCausa = c.id; document.getElementById('clearCausaBtn')?.classList.remove('hidden-section'); } applyGeneralFilters(); };
+        const categorias = CATEGORIAS_POR_TARJETA[c.id] || []; let tooltipItemsHTML = '';
+        if (c.id === 'otros') { tooltipItemsHTML = `<div class="tooltip-item" style="color:#fcd34d;border-left-color:transparent;font-style:italic;font-weight:600;">📋 <strong>Categoría "Otros" - Sistema de Inferencia Automática</strong></div><div class="criterios-section"><div class="criterios-title"> ¿Cómo funciona la clasificación automática?</div><div class="criterio-item">Cuando un reporte no tiene siglas AI/CI y no coincide con categorías específicas, el sistema analiza el contenido de la descripción para clasificarlo automáticamente.</div></div>`; }
+        else if (categorias.length > 0) { tooltipItemsHTML = categorias.map(cat => { let catConAbrev = cat; if (cat.startsWith('CI -') || cat.startsWith('CI-') || cat.startsWith('CI.')) catConAbrev = `<span class="abrev">CI</span>${cat.substring(2)}`; else if (cat.startsWith('AI -') || cat.startsWith('AI-') || cat.startsWith('AI.')) catConAbrev = `<span class="abrev">AI</span>${cat.substring(2)}`; return `<div class="tooltip-item">${catConAbrev}</div>`; }).join(''); }
+        else { tooltipItemsHTML = `<div class="tooltip-item" style="color:#94a3b8;border-left-color:transparent;">Sin categorías específicas</div>`; }
         const tooltipHTML = `<div class="tooltip-content"><div class="tooltip-header">📋 ${c.name}</div>${tooltipItemsHTML}<div class="tooltip-footer">💡 Pasa el mouse para ver qué categorías abarca esta tarjeta</div></div>`;
         div.innerHTML = `<div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div><div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div><div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>${tooltipHTML}`;
         fragment.appendChild(div);
     });
-    
     while (cont.firstChild) cont.removeChild(cont.firstChild);
-    cont.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 my-3';
-    cont.appendChild(fragment);
+    cont.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 my-3'; cont.appendChild(fragment);
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 FILTROS CON DEBOUNCE (evita recalcular muchas veces)
-// ═══════════════════════════════════════════════════════════════
 const applyGeneralFiltersDebounced = debounce(function() {
-    let f = ACTOS_COND_DATA.filter(e =>
-        (state.mes === 'todo' || e.mes === state.mes) &&
-        (state.sector === 'general' || e.sector.includes(state.sector)) &&
-        (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado))
-    );
+    let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)));
     if (selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa);
-    
-    const a = f.filter(e => e.tipo === 'acto');
-    const c = f.filter(e => e.tipo === 'condicion');
-    
-    document.getElementById('kpiActos').innerText = a.length;
-    document.getElementById('kpiCondiciones').innerText = c.length;
-    
-    const pA = Math.min(a.length / currentObjetivos.actos * 100, 100);
-    const pC = Math.min(c.length / currentObjetivos.cond * 100, 100);
-    
-    document.getElementById('actosBar').style.width = pA + '%';
-    document.getElementById('condBar').style.width = pC + '%';
-    document.getElementById('actosPctLabel').innerText = Math.round(pA) + '%';
-    document.getElementById('condPctLabel').innerText = Math.round(pC) + '%';
-    
-    const up = (id, p) => {
-        const el = document.getElementById(id);
-        if (p >= 100) { el.innerText = '✅ Cumplido'; el.className = 'status-badge status-ok'; }
-        else if (p > 0) { el.innerText = '📈 En Progreso'; el.className = 'status-badge status-warn'; }
-        else { el.innerText = '⚠ Pendiente'; el.className = 'status-badge status-low'; }
-    };
-    up('actosStatus', pA);
-    up('condStatus', pC);
-    
-    updateCategoryCards(f, 'actos');
-    updateChartsDona(f, 'actos');
-    updateTrendChart(f);
-    renderGeneralTableConFiltroSupervisor();
+    const a = f.filter(e => e.tipo === 'acto'); const c = f.filter(e => e.tipo === 'condicion');
+    document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length;
+    const pA = Math.min(a.length / currentObjetivos.actos * 100, 100); const pC = Math.min(c.length / currentObjetivos.cond * 100, 100);
+    document.getElementById('actosBar').style.width = pA + '%'; document.getElementById('condBar').style.width = pC + '%';
+    document.getElementById('actosPctLabel').innerText = Math.round(pA) + '%'; document.getElementById('condPctLabel').innerText = Math.round(pC) + '%';
+    const up = (id, p) => { const el = document.getElementById(id); if (p >= 100) { el.innerText = '✅ Cumplido'; el.className = 'status-badge status-ok'; } else if (p > 0) { el.innerText = '📈 En Progreso'; el.className = 'status-badge status-warn'; } else { el.innerText = '⚠ Pendiente'; el.className = 'status-badge status-low'; } };
+    up('actosStatus', pA); up('condStatus', pC);
+    updateCategoryCards(f, 'actos'); updateChartsDona(f, 'actos'); updateTrendChart(f); renderGeneralTableConFiltroSupervisor();
 }, 150);
 
 const applyVCPFiltersDebounced = debounce(function() {
-    let f = VCP_DATA.filter(e =>
-        (state.vcpMes === 'todo' || e.mes === state.vcpMes) &&
-        (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) &&
-        (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado))
-    );
+    let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)));
     if (selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa);
-    
-    const pct = Math.min(f.length / OBJ_VCP * 100, 100);
-    const vs = document.getElementById('vcpStatus');
-    if (vs) {
-        if (pct >= 100) vs.innerText = '✅ Cumplido';
-        else if (pct >= 70) vs.innerText = '📈 Casi';
-        else vs.innerText = '⚠ Pendiente';
-    }
-    document.getElementById('vcpBar').style.width = pct + '%';
-    document.getElementById('vcpCurrent').innerText = f.length;
-    document.getElementById('vcpPctLabel').innerText = Math.round(pct) + '%';
-    
-    updateCategoryCards(f, 'vcp');
-    updateVCPCharts(f);
-    renderVCPTable(f);
+    const pct = Math.min(f.length / OBJ_VCP * 100, 100); const vs = document.getElementById('vcpStatus');
+    if (vs) { if (pct >= 100) vs.innerText = '✅ Cumplido'; else if (pct >= 70) vs.innerText = '📈 Casi'; else vs.innerText = '⚠ Pendiente'; }
+    document.getElementById('vcpBar').style.width = pct + '%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct) + '%';
+    updateCategoryCards(f, 'vcp'); updateVCPCharts(f); renderVCPTable(f);
 }, 150);
 
-function applyAllFilters() {
-    applyGeneralFiltersDebounced();
-    if (currentShowVCP) applyVCPFiltersDebounced();
-    updateSupervisorCard();
-}
-
+function applyAllFilters() { applyGeneralFiltersDebounced(); if (currentShowVCP) applyVCPFiltersDebounced(); updateSupervisorCard(); }
 function applyGeneralFilters() { applyGeneralFiltersDebounced(); }
 function applyVCPFilters() { applyVCPFiltersDebounced(); }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 UI: OBJETIVOS, SUPERVISORES, VCP
-// ═══════════════════════════════════════════════════════════════
 function actualizarObjetivosUI() {
     document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.actos}`;
     document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.cond}`;
@@ -2080,62 +1540,32 @@ function actualizarObjetivosUI() {
     document.getElementById('objetivosMeta').innerHTML = `🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos + currentObjetivos.cond} Total`;
 }
 
-function toggleVCPVisibility(show) {
-    const v = document.getElementById('vcpSection');
-    if (v) show ? v.classList.remove('hidden-section') : v.classList.add('hidden-section');
-}
+function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if (v) show ? v.classList.remove('hidden-section') : v.classList.add('hidden-section'); }
 
 async function populateSupervisors() {
-    const sel = document.getElementById('supervisorSelect');
-    if (!sel) return;
-    
+    const sel = document.getElementById('supervisorSelect'); if (!sel) return;
     const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
-    
-    // ✅ Memoización: construir map una sola vez
     const nombreNormalizadoMap = new Map();
-    for (const obs of observadoresRaw) {
-        const normalizado = normalizarNombre(obs);
-        if (!nombreNormalizadoMap.has(normalizado)) {
-            nombreNormalizadoMap.set(normalizado, obs);
-        }
-    }
-    
+    for (const obs of observadoresRaw) { const normalizado = normalizarNombre(obs); if (!nombreNormalizadoMap.has(normalizado)) { nombreNormalizadoMap.set(normalizado, obs); } }
     const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).sort();
-    
-    // 🚀 DocumentFragment para opciones
     const fragment = document.createDocumentFragment();
-    const optTodos = document.createElement('option');
-    optTodos.value = 'todos';
-    optTodos.textContent = '🔘 Todos';
-    fragment.appendChild(optTodos);
-    
+    const optTodos = document.createElement('option'); optTodos.value = 'todos'; optTodos.textContent = '🔘 Todos'; fragment.appendChild(optTodos);
     for (const x of supervisoresUnicos) {
         const count = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x)).length;
         const abiertos = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x) && !d.cerrado).length;
-        const opt = document.createElement('option');
-        opt.value = x;
-        opt.textContent = `👤 ${x} (${count})${abiertos > 0 ? ' ⚠' + abiertos : ''}`;
-        fragment.appendChild(opt);
+        const opt = document.createElement('option'); opt.value = x; opt.textContent = `👤 ${x} (${count})${abiertos > 0 ? ' ⚠' + abiertos : ''}`; fragment.appendChild(opt);
     }
-    
     while (sel.firstChild) sel.removeChild(sel.firstChild);
-    sel.appendChild(fragment);
-    updateSupervisorCard();
+    sel.appendChild(fragment); updateSupervisorCard();
 }
 
 function updateSupervisorCard() {
     const supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
     const mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
-    
     let dataFiltrada = ACTOS_COND_DATA;
-    if (mesSeleccionado !== 'todo') {
-        const mesNormalizado = mesSeleccionado.toLowerCase().trim();
-        dataFiltrada = dataFiltrada.filter(e => (e.mes || '').toLowerCase().trim() === mesNormalizado);
-    }
-    
+    if (mesSeleccionado !== 'todo') { const mesNormalizado = mesSeleccionado.toLowerCase().trim(); dataFiltrada = dataFiltrada.filter(e => (e.mes || '').toLowerCase().trim() === mesNormalizado); }
     const resultados = (supervisor === 'todos') ? dataFiltrada : dataFiltrada.filter(e => compararNombres(e.observador, supervisor));
     supervisorFiltroTabla = (supervisor === 'todos') ? null : supervisor;
-    
     document.getElementById('supActosCount').innerText = resultados.filter(e => e.tipo === 'acto').length;
     document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
     renderGeneralTableConFiltroSupervisor();
@@ -2146,479 +1576,164 @@ function renderGeneralTableConFiltroSupervisor() {
     if (supervisorFiltroTabla) data = data.filter(e => compararNombres(e.observador, supervisorFiltroTabla));
     if (state.mes !== 'todo') data = data.filter(e => e.mes === state.mes);
     if (state.sector !== 'general') data = data.filter(e => e.sector.includes(state.sector));
-    if (state.estado === 'cerrados') data = data.filter(e => e.cerrado === true);
-    else if (state.estado === 'abiertos') data = data.filter(e => e.cerrado === false);
+    if (state.estado === 'cerrados') data = data.filter(e => e.cerrado === true); else if (state.estado === 'abiertos') data = data.filter(e => e.cerrado === false);
     if (selectedCausa && selectedCausa !== 'todas') data = data.filter(e => e.categoria?.id === selectedCausa);
-    
-    const sorted = ordenarPorFecha(data);
-    renderGeneralTable(sorted);
+    renderGeneralTable(ordenarPorFecha(data));
 }
 
-function limpiarFiltroSupervisorTabla() {
-    supervisorFiltroTabla = null;
-    document.getElementById('supervisorSelect').value = 'todos';
-    updateSupervisorCard();
-    renderGeneralTableConFiltroSupervisor();
-}
+function limpiarFiltroSupervisorTabla() { supervisorFiltroTabla = null; document.getElementById('supervisorSelect').value = 'todos'; updateSupervisorCard(); renderGeneralTableConFiltroSupervisor(); }
 
 function populateVCPPeopleFilter() {
-    const counts = new Map();
-    VCP_DATA.forEach(v => { if (v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); });
-    const sel = document.getElementById('vcpPersonFilter');
-    if (!sel) return;
-    
+    const counts = new Map(); VCP_DATA.forEach(v => { if (v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); });
+    const sel = document.getElementById('vcpPersonFilter'); if (!sel) return;
     const fragment = document.createDocumentFragment();
-    const optTodos = document.createElement('option');
-    optTodos.value = 'todos';
-    optTodos.textContent = '👥 Todas las personas';
-    fragment.appendChild(optTodos);
-    
-    [...counts.keys()].sort().forEach(n => {
-        const opt = document.createElement('option');
-        opt.value = n;
-        opt.textContent = `🧑 ${n} (${counts.get(n)})`;
-        fragment.appendChild(opt);
-    });
-    
+    const optTodos = document.createElement('option'); optTodos.value = 'todos'; optTodos.textContent = '👥 Todas las personas'; fragment.appendChild(optTodos);
+    [...counts.keys()].sort().forEach(n => { const opt = document.createElement('option'); opt.value = n; opt.textContent = `🧑 ${n} (${counts.get(n)})`; fragment.appendChild(opt); });
     while (sel.firstChild) sel.removeChild(sel.firstChild);
-    sel.appendChild(fragment);
-    updatePersonVCPStatsOnly();
+    sel.appendChild(fragment); updatePersonVCPStatsOnly();
 }
 
 function updatePersonVCPStatsOnly() {
-    const p = document.getElementById('vcpPersonFilter')?.value || 'todos';
-    const m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo';
+    const p = document.getElementById('vcpPersonFilter')?.value || 'todos'; const m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo';
     const f = VCP_DATA.filter(v => (p === 'todos' || v.personaObservada === p) && (m === 'todo' || v.mes === m));
     document.getElementById('personVCPCount').innerText = f.length;
-    if (f.length) {
-        f.sort((a, b) => getFechaOrdenable(b) - getFechaOrdenable(a));
-        document.getElementById('personLastVCP').innerText = f[0].fecha;
-    } else {
-        document.getElementById('personLastVCP').innerText = '-';
-    }
+    if (f.length) { f.sort((a, b) => getFechaOrdenable(b) - getFechaOrdenable(a)); document.getElementById('personLastVCP').innerText = f[0].fecha; }
+    else { document.getElementById('personLastVCP').innerText = '-'; }
 }
 
-// 
-</script><script>
-// ═══════════════════════════════════════════════════════════════
-// 📋 MODALES (con navegación anterior/siguiente optimizada)
-// ═══════════════════════════════════════════════════════════════
 function openModal(r, idx, data) {
     if (!isUnlocked) return;
-    isModalOpen = true;
-    currentModalData = data;
-    currentModalIndex = idx;
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    const estadoHTML = getEstadoBadgeHTML(r.cerrado);
-    
+    isModalOpen = true; currentModalData = data; currentModalIndex = idx;
+    const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent'); const estadoHTML = getEstadoBadgeHTML(r.cerrado);
     if (r.tipo === 'vcp') {
-        content.innerHTML = `<div class="space-y-3 text-base">
-            <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200">
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div>
-                <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-slate-800 text-lg">${r.personaObservada || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div>
-            </div>
-            <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300">
-                <div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div>
-                <p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p>
-            </div>
-            ${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}
-            ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
-            <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
-                <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}
-            </div>
-        </div>`;
+        content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-slate-800 text-lg">${r.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`;
     } else {
-        const esActo = r.tipo === 'acto';
-        const tipoText = esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)';
-        const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500';
-        const sigla = esActo ? 'AI' : 'CI';
-        const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
-        content.innerHTML = `<div class="space-y-3 text-base">
-            <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div>
-                <div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-slate-800 text-lg">${r.observador || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span></div>
-            </div>
-            <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300">
-                <div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div>
-                <p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p>
-            </div>
-            ${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}
-            ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
-            <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
-                <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}
-            </div>
-        </div>`;
+        const esActo = r.tipo === 'acto'; const tipoText = esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'; const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'; const sigla = esActo ? 'AI' : 'CI'; const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
+        content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${r.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-slate-800 text-lg">${r.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${r.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`;
     }
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex'; document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
 }
 
-function closeReportModal() {
-    const m = document.getElementById('reportDetailModal');
-    m.classList.add('hidden-section');
-    m.style.display = 'none';
-    isModalOpen = false;
-}
-function goToNextModal() {
-    if (currentModalIndex < currentModalData.length - 1) {
-        currentModalIndex++;
-        openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData);
-    }
-}
-function goToPreviousModal() {
-    if (currentModalIndex > 0) {
-        currentModalIndex--;
-        openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData);
-    }
-}
+function closeReportModal() { const m = document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display = 'none'; isModalOpen = false; }
+function goToNextModal() { if (currentModalIndex < currentModalData.length - 1) { currentModalIndex++; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } }
+function goToPreviousModal() { if (currentModalIndex > 0) { currentModalIndex--; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 UI HELPERS (botones de filtro)
-// ═══════════════════════════════════════════════════════════════
 function setSector(s, b) { state.sector = s; updateButtons('sectorButtons', b, '#f18b00'); applyGeneralFilters(); }
 function setStatus(s, b) { state.estado = s; updateButtons('statusButtons', b, '#f18b00'); applyGeneralFilters(); }
 function setVCPSector(s, b) { state.vcpSector = s; updateButtons('vcpSectorButtons', b, '#f18b00'); applyVCPFilters(); }
 function setStatusVCP(s, b) { state.vcpEstado = s; updateButtons('vcpStatusButtons', b, '#f18b00'); applyVCPFilters(); }
+function updateButtons(cid, act, col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b => { b.classList.remove('active'); b.style.background = 'white'; b.style.color = '#475569'; }); act.classList.add('active'); act.style.background = col; act.style.color = 'white'; }
+function limpiarFiltroGrafico() { const m = document.getElementById('monthFilter'); if (m) m.value = 'todo'; applyGeneralFilters(); updateTrendChart(); }
+function limpiarFiltroCausa() { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
+function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
+function clearVCPCauseFilter() { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
 
-function updateButtons(cid, act, col) {
-    document.querySelectorAll(`#${cid} .btn-filter`).forEach(b => {
-        b.classList.remove('active');
-        b.style.background = 'white';
-        b.style.color = '#475569';
-    });
-    act.classList.add('active');
-    act.style.background = col;
-    act.style.color = 'white';
-}
-
-function limpiarFiltroGrafico() {
-    const m = document.getElementById('monthFilter');
-    if (m) m.value = 'todo';
-    applyGeneralFilters();
-    updateTrendChart();
-}
-function limpiarFiltroCausa() {
-    selectedCausa = null;
-    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
-    applyGeneralFilters();
-}
-function limpiarTodosLosFiltros() {
-    limpiarFiltroCausa();
-    limpiarFiltroGrafico();
-}
-function clearVCPCauseFilter() {
-    selectedVCPCausa = null;
-    document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
-    applyVCPFilters();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// 📢 UI EN VIVO (reportes del día)
-// ═══════════════════════════════════════════════════════════════
 function updateRealTimeUI() {
-    const actCont = document.getElementById('realTimeReportsActos');
-    const vcpCont = document.getElementById('realTimeReportsVCP');
-    const actLed = document.getElementById('actosLed');
-    const vcpLed = document.getElementById('vcpLed');
+    const actCont = document.getElementById('realTimeReportsActos'); const vcpCont = document.getElementById('realTimeReportsVCP');
+    const actLed = document.getElementById('actosLed'); const vcpLed = document.getElementById('vcpLed');
     const alerts = todayAlertsBySucursal[currentSucursal];
-    
     if (actLed) actLed.className = alerts.actos.length > 0 ? 'siren-green' : 'siren-red';
     if (vcpLed) vcpLed.className = alerts.vcp.length > 0 ? 'siren-green' : 'siren-red';
-    
-    if (alerts.actos.length) {
-        actCont.innerHTML = alerts.actos.map(a => `<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion || '').substring(0, 60)}</div></div>`).join('');
-    } else {
-        actCont.innerHTML = '<p class="text-center py-2">📭 Sin reportes hoy</p>';
-    }
-    
-    if (alerts.vcp.length) {
-        vcpCont.innerHTML = alerts.vcp.map(a => `<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion || '').substring(0, 60)}</div></div>`).join('');
-    } else {
-        vcpCont.innerHTML = '<p class="text-center py-2">📭 Sin VCP hoy</p>';
-    }
+    if (alerts.actos.length) { actCont.innerHTML = alerts.actos.map(a => `<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion || '').substring(0, 60)}</div></div>`).join(''); }
+    else { actCont.innerHTML = '<p class="text-center py-2">📭 Sin reportes hoy</p>'; }
+    if (alerts.vcp.length) { vcpCont.innerHTML = alerts.vcp.map(a => `<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion || '').substring(0, 60)}</div></div>`).join(''); }
+    else { vcpCont.innerHTML = '<p class="text-center py-2">📭 Sin VCP hoy</p>'; }
 }
-
 function toggleActosAlerts() { showDailyReportsModal('actos', todayAlertsBySucursal[currentSucursal].actos); }
 function toggleVCPAlerts() { showDailyReportsModal('vcp', todayAlertsBySucursal[currentSucursal].vcp); }
-
 function showDailyReportsModal(type, alerts) {
-    const modal = document.getElementById('dailyReportsModal');
-    const titleEl = document.getElementById('dailyReportsTitle');
-    const contentEl = document.getElementById('dailyReportsContent');
+    const modal = document.getElementById('dailyReportsModal'); const titleEl = document.getElementById('dailyReportsTitle'); const contentEl = document.getElementById('dailyReportsContent');
     titleEl.textContent = type === 'actos' ? '📋 REPORTES DE ACTOS HOY' : '📋 REPORTES DE VCP HOY';
     if (alerts.length === 0) contentEl.innerHTML = '<p class="text-center py-8">📭 Sin reportes hoy</p>';
     else contentEl.innerHTML = alerts.map((a, i) => `<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg mb-3"><div class="flex justify-between"><span>#${i + 1}</span><span>${a.hora}</span></div><div class="font-bold">${a.persona}</div><div class="text-sm">🏭 ${a.sector}</div><div class="text-sm">${a.descripcion}</div></div>`).join('');
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
 }
-function closeDailyReportsModal() {
-    const m = document.getElementById('dailyReportsModal');
-    m.classList.add('hidden-section');
-    m.style.display = 'none';
-}
+function closeDailyReportsModal() { const m = document.getElementById('dailyReportsModal'); m.classList.add('hidden-section'); m.style.display = 'none'; }
 
-// ═══════════════════════════════════════════════════════════════
-// 👔 MODALES DE SUPERVISOR Y PERSONA VCP
-// ═══════════════════════════════════════════════════════════════
 function abrirModalSupervisor(tipo) {
-    const s = document.getElementById('supervisorSelect').value;
-    const m = document.getElementById('supervisorMonthSelect').value;
+    const s = document.getElementById('supervisorSelect').value; const m = document.getElementById('supervisorMonthSelect').value;
     if (s === 'todos') { alert("⚠️ Seleccione un supervisor específico"); return; }
     const mesSeleccionado = m === 'todo' ? null : m.toLowerCase().trim();
-    const f = ACTOS_COND_DATA.filter(e => {
-        const coincideNombre = compararNombres(e.observador, s);
-        const coincideMes = (mesSeleccionado === null || (e.mes || '').toLowerCase().trim() === mesSeleccionado);
-        return coincideNombre && coincideMes;
-    });
+    const f = ACTOS_COND_DATA.filter(e => { const coincideNombre = compararNombres(e.observador, s); const coincideMes = (mesSeleccionado === null || (e.mes || '').toLowerCase().trim() === mesSeleccionado); return coincideNombre && coincideMes; });
     let dt = (tipo === 'condicion') ? f.filter(e => e.tipo === 'condicion') : f.filter(e => e.tipo === 'acto');
     if (!dt.length) { alert(`ℹ️ No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s}${m !== 'todo' ? ` en ${m}` : ''}`); return; }
     const sorted = ordenarPorFecha(dt);
-    let html = `<div class="mb-3"><p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p><p>👤 ${s}</p><p>📊 Total ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}: ${sorted.length}</p></div>
-    <table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`;
-    sorted.forEach(e => {
-        const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small');
-        const sigla = e.tipo === 'acto' ? 'AI' : 'CI';
-        const descConSigla = `${sigla} - ${e.descripcion || ''}`;
-        html += `<tr class="border-b"><td class="p-2">${e.fecha}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${descConSigla.substring(0, 50)}</td><td class="p-2">${estadoBadge}</td></tr>`;
-    });
+    let html = `<div class="mb-3"><p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p><p>👤 ${s}</p><p>📊 Total ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}: ${sorted.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`;
+    sorted.forEach(e => { const estadoBadge = getEstadoBadgeHTML(e.cerrado, 'small'); const sigla = e.tipo === 'acto' ? 'AI' : 'CI'; const descConSigla = `${sigla} - ${e.descripcion || ''}`; html += `<tr class="border-b"><td class="p-2">${e.fecha}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${descConSigla.substring(0, 50)}</td><td class="p-2">${estadoBadge}</td></tr>`; });
     html += `</tbody></table>`;
     document.getElementById('modalSupervisorTitle').innerHTML = tipo === 'acto' ? `⚠️ ACTOS de ${s}` : `🏚️ CONDICIONES de ${s}`;
     document.getElementById('supervisorModalContent').innerHTML = html;
-    document.getElementById('supervisorDetailModal').classList.remove('hidden-section');
-    document.getElementById('supervisorDetailModal').style.display = 'flex';
+    document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display = 'flex';
 }
-function closeSupervisorModal() {
-    document.getElementById('supervisorDetailModal').classList.add('hidden-section');
-    document.getElementById('supervisorDetailModal').style.display = 'none';
-}
+function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display = 'none'; }
 
 function abrirModalPersonaVCP() {
-    const p = document.getElementById('vcpPersonFilter').value;
-    const m = document.getElementById('vcpPersonMonthFilter').value;
+    const p = document.getElementById('vcpPersonFilter').value; const m = document.getElementById('vcpPersonMonthFilter').value;
     if (p === 'todos') { alert("Seleccione una persona"); return; }
     const f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m));
     if (!f.length) { alert(`No hay VCPs para ${p}`); return; }
     const sorted = ordenarPorFecha(f);
-    let html = `<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p><p>📊 Total: ${sorted.length}</p></div>
-    <table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`;
-    sorted.forEach(e => {
-        html += `<tr class="border-b"><td class="p-2">${e.fecha}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${(e.descripcion || '').substring(0, 50)}</td><td class="p-2">${(e.comentarios || '').substring(0, 30)}</td></tr>`;
-    });
+    let html = `<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p><p>📊 Total: ${sorted.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`;
+    sorted.forEach(e => { html += `<tr class="border-b"><td class="p-2">${e.fecha}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${(e.descripcion || '').substring(0, 50)}</td><td class="p-2">${(e.comentarios || '').substring(0, 30)}</td></tr>`; });
     html += `</tbody></table>`;
     document.getElementById('personaVCPModalContent').innerHTML = html;
-    document.getElementById('personaVCPModal').classList.remove('hidden-section');
-    document.getElementById('personaVCPModal').style.display = 'flex';
+    document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display = 'flex';
 }
-function closePersonaVCPModal() {
-    document.getElementById('personaVCPModal').classList.add('hidden-section');
-    document.getElementById('personaVCPModal').style.display = 'none';
-}
+function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display = 'none'; }
 
-// ═══════════════════════════════════════════════════════════════
-// 🏢 CAMBIO DE SUCURSAL
-// ═══════════════════════════════════════════════════════════════
 function cambiarSucursal(suc) {
     currentSucursal = suc;
     ['btnMalagueno', 'btnBarker', 'btnLaPampita'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-    selectedCausa = null;
-    selectedVCPCausa = null;
-    state.mes = 'todo';
+    selectedCausa = null; selectedVCPCausa = null; state.mes = 'todo';
     document.getElementById('monthFilter').value = 'todo';
     document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
-    document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
-    document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
+    document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
     const c = SUCURSALES_CONFIG[suc];
-    if (c) {
-        currentObjetivos = c.objetivos;
-        currentShowVCP = c.showVCP;
-        actualizarObjetivosUI();
-        toggleVCPVisibility(currentShowVCP);
-    }
+    if (c) { currentObjetivos = c.objetivos; currentShowVCP = c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
     document.getElementById(suc === 'MALAGUENO' ? 'btnMalagueno' : suc === 'BARKER' ? 'btnBarker' : 'btnLaPampita')?.classList.add('active');
     if (isUnlocked) loadData();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📊 RESUMEN EJECUTIVO
-// ═══════════════════════════════════════════════════════════════
-function abrirPasswordResumen() {
-    document.getElementById('resumenPasswordModal').classList.remove('hidden-section');
-    document.getElementById('resumenPasswordModal').style.display = 'flex';
-}
-function cerrarPasswordResumenModal() {
-    document.getElementById('resumenPasswordModal').classList.add('hidden-section');
-    document.getElementById('resumenPasswordModal').style.display = 'none';
-}
-function abrirConfirmCerrarResumen() {
-    const modal = document.getElementById('cerrarResumenConfirmModal');
-    if (modal) modal.style.display = 'flex';
-}
-function cancelarCerrarResumen() {
-    const modal = document.getElementById('cerrarResumenConfirmModal');
-    if (modal) {
-        const card = modal.querySelector('.modal-bounce');
-        if (card) card.classList.add('modal-bounce-out');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            if (card) card.classList.remove('modal-bounce-out');
-        }, 320);
-    }
-}
-function confirmarCerrarResumen() {
-    const modal = document.getElementById('cerrarResumenConfirmModal');
-    if (modal) {
-        const card = modal.querySelector('.modal-bounce');
-        if (card) card.classList.add('modal-bounce-out');
-        setTimeout(() => {
-            modal.style.display = 'none';
-            if (card) card.classList.remove('modal-bounce-out');
-            cerrarResumenEjecutivo();
-        }, 320);
-    }
-}
+function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display = 'flex'; }
+function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display = 'none'; }
+function abrirConfirmCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) modal.style.display = 'flex'; }
+function cancelarCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) { const card = modal.querySelector('.modal-bounce'); if (card) card.classList.add('modal-bounce-out'); setTimeout(() => { modal.style.display = 'none'; if (card) card.classList.remove('modal-bounce-out'); }, 320); } }
+function confirmarCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) { const card = modal.querySelector('.modal-bounce'); if (card) card.classList.add('modal-bounce-out'); setTimeout(() => { modal.style.display = 'none'; if (card) card.classList.remove('modal-bounce-out'); cerrarResumenEjecutivo(); }, 320); } }
+
 function verificarPasswordResumen() {
     const input = document.getElementById('resumenPasswordInput');
-    if (input.value === PASSWORD_RESUMEN) {
-        cerrarPasswordResumenModal();
-        abrirResumenEjecutivoPersistente();
-        cargarTodosDatosParaResumen().then(actualizarResumenEjecutivo).catch(() => actualizarResumenEjecutivo());
-    } else {
-        playErrorSound();
-        document.getElementById('resumenPasswordError').textContent = '❌ Contraseña incorrecta';
-    }
+    if (input.value === PASSWORD_RESUMEN) { cerrarPasswordResumenModal(); abrirResumenEjecutivoPersistente(); cargarTodosDatosParaResumen().then(actualizarResumenEjecutivo).catch(() => actualizarResumenEjecutivo()); }
+    else { playErrorSound(); document.getElementById('resumenPasswordError').textContent = '❌ Contraseña incorrecta'; }
 }
-function cerrarResumenEjecutivo() {
-    document.getElementById('resumenEjecutivoPage').classList.add('hidden-section');
-    document.getElementById('resumenEjecutivoPage').style.display = 'none';
-    try { localStorage.removeItem('minerar_resumen_abierto'); } catch (e) {}
-}
-function abrirResumenEjecutivoPersistente() {
-    document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section');
-    document.getElementById('resumenEjecutivoPage').style.display = 'block';
-    try { localStorage.setItem('minerar_resumen_abierto', '1'); } catch (e) {}
-}
-function restaurarResumenSiEstabaAbierto() {
-    try {
-        if (localStorage.getItem('minerar_resumen_abierto') === '1' && isUnlocked) {
-            abrirResumenEjecutivoPersistente();
-            actualizarResumenEjecutivo();
-        }
-    } catch (e) {}
-}
+function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display = 'none'; try { localStorage.removeItem('minerar_resumen_abierto'); } catch (e) {} }
+function abrirResumenEjecutivoPersistente() { document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display = 'block'; try { localStorage.setItem('minerar_resumen_abierto', '1'); } catch (e) {} }
+function restaurarResumenSiEstabaAbierto() { try { if (localStorage.getItem('minerar_resumen_abierto') === '1' && isUnlocked) { abrirResumenEjecutivoPersistente(); actualizarResumenEjecutivo(); } } catch (e) {} }
 
 function actualizarResumenEjecutivo() {
-    const sucursal = document.getElementById('ejecutivoSucursal').value;
-    const mes = document.getElementById('ejecutivoMes').value;
-    const sector = document.getElementById('ejecutivoSector').value;
-    const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
-    const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
-    
+    const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
     let datosActos = [], datosVCP = [];
     Object.keys(ALL_ACTOS_DATA).forEach(suc => {
         if (sucursal !== 'todas' && suc !== sucursal) return;
-        if (ALL_ACTOS_DATA[suc]) {
-            ALL_ACTOS_DATA[suc].forEach(d => {
-                if (mes !== 'todo' && d.mes !== mes) return;
-                if (sector !== 'todos' && !d.sector.includes(sector)) return;
-                const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
-                if (estadoFiltro === 'abiertos' && estaCerrado) return;
-                if (estadoFiltro === 'cerrados' && !estaCerrado) return;
-                if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return;
-                datosActos.push({ ...d });
-            });
-        }
-        if (ALL_VCP_DATA[suc]) {
-            ALL_VCP_DATA[suc].forEach(d => {
-                if (mes !== 'todo' && d.mes !== mes) return;
-                if (sector !== 'todos' && !d.sector.includes(sector)) return;
-                if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return;
-                datosVCP.push({ ...d });
-            });
-        }
+        if (ALL_ACTOS_DATA[suc]) { ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({ ...d }); }); }
+        if (ALL_VCP_DATA[suc]) { ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({ ...d }); }); }
     });
-    
-    if (currentFiltroTipo !== 'todos') {
-        if (currentFiltroTipo === 'acto') datosVCP = [];
-        else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; }
-        else if (currentFiltroTipo === 'vcp') datosActos = [];
-    }
-    
-    const totalActos = datosActos.filter(d => d.tipo === 'acto').length;
-    const totalCond = datosActos.filter(d => d.tipo === 'condicion').length;
-    const totalVCP = datosVCP.length;
-    
-    document.getElementById('ejecTotalActos').innerText = totalActos;
-    document.getElementById('ejecTotalCondiciones').innerText = totalCond;
-    document.getElementById('ejecTotalVCP').innerText = totalVCP;
-    document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP;
-    
+    if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') datosVCP = []; else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') datosActos = []; }
+    const totalActos = datosActos.filter(d => d.tipo === 'acto').length; const totalCond = datosActos.filter(d => d.tipo === 'condicion').length; const totalVCP = datosVCP.length;
+    document.getElementById('ejecTotalActos').innerText = totalActos; document.getElementById('ejecTotalCondiciones').innerText = totalCond; document.getElementById('ejecTotalVCP').innerText = totalVCP; document.getElementById('ejecTotalGeneral').innerText = totalActos + totalCond + totalVCP;
     const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]);
-    renderEjecutivoTabla(datosOrdenados);
-    renderEjecutivoRankings([...datosActos, ...datosVCP]);
-    renderEjecutivoReincidencias([...datosActos, ...datosVCP]);
-    renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
+    renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings([...datosActos, ...datosVCP]); renderEjecutivoReincidencias([...datosActos, ...datosVCP]); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
 }
 
 function abrirModalEjecutivo(idx) {
-    const datos = window.datosModalActual || [];
-    if (!datos[idx]) return;
-    const d = datos[idx];
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    const estadoHTML = getEstadoBadgeHTML(d.cerrado);
-    if (d.tipo === 'vcp') {
-        content.innerHTML = `<div class="space-y-3 text-base">
-            <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200">
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${d.fecha || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${d.sucursal || '-'}</div></div>
-                <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-slate-800 text-lg">${d.personaObservada || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${d.sector || '-'}</div></div>
-                <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div>
-            </div>
-            <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${d.descripcion || '-'}</p></div>
-            ${d.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${d.comentarios}</p></div>` : ''}
-            ${d.imagen ? renderizarImagenesModal(d.imagen) : ''}
-            <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div>
-        </div>`;
-    } else {
-        const esActo = d.tipo === 'acto';
-        const tipoText = esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)';
-        const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500';
-        const sigla = esActo ? 'AI' : 'CI';
-        const descConSigla = `${sigla} - ${d.descripcion || '-'}`;
-        content.innerHTML = `<div class="space-y-3 text-base">
-            <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${d.fecha || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${d.sucursal || '-'}</div></div>
-                <div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-slate-800 text-lg">${d.observador || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${d.sector || '-'}</div></div>
-                <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span></div>
-            </div>
-            <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>
-            ${d.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${d.causas}</p></div>` : ''}
-            ${d.imagen ? renderizarImagenesModal(d.imagen) : ''}
-            <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div>
-        </div>`;
-    }
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    document.getElementById('modalCounter').innerText = `${idx + 1}/${datos.length}`;
-    isModalOpen = true;
-    currentModalData = datos;
-    currentModalIndex = idx;
+    const datos = window.datosModalActual || []; if (!datos[idx]) return;
+    const d = datos[idx]; const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent'); const estadoHTML = getEstadoBadgeHTML(d.cerrado);
+    if (d.tipo === 'vcp') { content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${d.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${d.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-slate-800 text-lg">${d.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${d.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${d.descripcion || '-'}</p></div>${d.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${d.comentarios}</p></div>` : ''}${d.imagen ? renderizarImagenesModal(d.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`; }
+    else { const esActo = d.tipo === 'acto'; const tipoText = esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'; const tipoBg = esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'; const sigla = esActo ? 'AI' : 'CI'; const descConSigla = `${sigla} - ${d.descripcion || '-'}`; content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold text-slate-800 text-base">${d.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold text-slate-800 text-base">${d.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-slate-800 text-lg">${d.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold text-slate-700">${d.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${tipoBg} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${tipoText}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>${d.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${d.causas}</p></div>` : ''}${d.imagen ? renderizarImagenesModal(d.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${estadoHTML}</div></div>`; }
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex'; document.getElementById('modalCounter').innerText = `${idx + 1}/${datos.length}`; isModalOpen = true; currentModalData = datos; currentModalIndex = idx;
 }
 
 function aplicarFiltroPorTipo(tipo) {
-    currentFiltroTipo = tipo;
-    document.getElementById('ejecutivoTipoFiltro').value = tipo;
+    currentFiltroTipo = tipo; document.getElementById('ejecutivoTipoFiltro').value = tipo;
     document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c => c.classList.remove('active'));
     if (tipo === 'acto') document.getElementById('kpiActosCard').classList.add('active');
     else if (tipo === 'condicion') document.getElementById('kpiCondCard').classList.add('active');
@@ -2627,36 +1742,16 @@ function aplicarFiltroPorTipo(tipo) {
     actualizarResumenEjecutivo();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🏆 RANKINGS Y REINCIDENCIAS
-// ═══════════════════════════════════════════════════════════════
 function renderEjecutivoRankings(datos) {
-    const actos = datos.filter(d => d.tipo === 'acto');
-    const conds = datos.filter(d => d.tipo === 'condicion');
-    
-    // TOP ACTOS
+    const actos = datos.filter(d => d.tipo === 'acto'); const conds = datos.filter(d => d.tipo === 'condicion');
     const countActos = {}, gruposActos = {};
-    actos.forEach(d => {
-        const k = d.descripcion || 'Sin descripción';
-        countActos[k] = (countActos[k] || 0) + 1;
-        if (!gruposActos[k]) gruposActos[k] = [];
-        gruposActos[k].push(d);
-    });
+    actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; if (!gruposActos[k]) gruposActos[k] = []; gruposActos[k].push(d); });
     const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contActos = document.getElementById('ejecTopActos');
-    if (contActos) {
-        window.__gruposTopActos = gruposActos;
-        contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => {
-            const key = encodeURIComponent(d);
-            return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorDescripcion('acto', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`;
-        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>';
-    }
-    
-    // TOP CONDICIONES
+    if (contActos) { window.__gruposTopActos = gruposActos; contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => { const key = encodeURIComponent(d); return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorDescripcion('acto', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`; }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; }
     const countConds = {}, gruposConds = {};
     conds.forEach(d => {
-        const categoriaId = d.categoria?.id || 'otros';
-        let descNormalizada;
+        const categoriaId = d.categoria?.id || 'otros'; let descNormalizada;
         if (categoriaId === 'berma') descNormalizada = 'CI - Berma de seguridad fuera de estándar';
         else if (categoriaId === 'area') descNormalizada = 'CI - Sector o ambiente de trabajo en condición';
         else if (categoriaId === 'orden') descNormalizada = 'CI - Orden y limpieza deficiente';
@@ -2667,346 +1762,126 @@ function renderEjecutivoRankings(datos) {
         else if (categoriaId === 'conduccion') descNormalizada = 'AI - Conducción insegura';
         else descNormalizada = 'Otros';
         countConds[descNormalizada] = (countConds[descNormalizada] || 0) + 1;
-        if (!gruposConds[descNormalizada]) gruposConds[descNormalizada] = [];
-        gruposConds[descNormalizada].push(d);
+        if (!gruposConds[descNormalizada]) gruposConds[descNormalizada] = []; gruposConds[descNormalizada].push(d);
     });
     const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5);
     const contConds = document.getElementById('ejecTopCond');
-    if (contConds) {
-        window.__gruposTopConds = gruposConds;
-        contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => {
-            const key = encodeURIComponent(d);
-            return `<div class="zr-ranking-item cursor-pointer" style="border-left-color:#f18b00" onclick="abrirModalTopPorDescripcion('condicion', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`;
-        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>';
-    }
-    
-    // TOP RESPONSABLES
+    if (contConds) { window.__gruposTopConds = gruposConds; contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => { const key = encodeURIComponent(d); return `<div class="zr-ranking-item cursor-pointer" style="border-left-color:#f18b00" onclick="abrirModalTopPorDescripcion('condicion', decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''} · Click para ver detalle</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`; }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; }
     const countResp = {}, gruposResp = {};
-    datos.forEach(d => {
-        const r = d.observador || d.personaObservada || 'Sin identificar';
-        countResp[r] = (countResp[r] || 0) + 1;
-        if (!gruposResp[r]) gruposResp[r] = [];
-        gruposResp[r].push(d);
-    });
+    datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; if (!gruposResp[r]) gruposResp[r] = []; gruposResp[r].push(d); });
     const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
     const contResp = document.getElementById('ejecTopResponsables');
-    if (contResp) {
-        window.__gruposTopResp = gruposResp;
-        contResp.innerHTML = topResp.length ? topResp.map(([n, c], i) => {
-            const key = encodeURIComponent(n);
-            return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorResponsable(decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-semibold">${n}</div><div class="text-xs">Click para ver sus reportes</div></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`;
-        }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>';
-    }
+    if (contResp) { window.__gruposTopResp = gruposResp; contResp.innerHTML = topResp.length ? topResp.map(([n, c], i) => { const key = encodeURIComponent(n); return `<div class="zr-ranking-item cursor-pointer" onclick="abrirModalTopPorResponsable(decodeURIComponent('${key}'))"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-semibold">${n}</div><div class="text-xs">Click para ver sus reportes</div></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`; }).join('') : '<p class="text-center py-4 text-slate-400">Sin datos disponibles</p>'; }
 }
 
 function abrirModalTopPorDescripcion(tipo, descripcion) {
-    const grupos = tipo === 'acto' ? window.__gruposTopActos : window.__gruposTopConds;
-    if (!grupos) return;
-    const registros = grupos[descripcion] || [];
-    if (!registros.length) return;
+    const grupos = tipo === 'acto' ? window.__gruposTopActos : window.__gruposTopConds; if (!grupos) return;
+    const registros = grupos[descripcion] || []; if (!registros.length) return;
     window.datosModalActual = registros;
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    const color = tipo === 'acto' ? 'blue' : 'amber';
-    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-${color}-50 border-2 border-${color}-200">
-        <div class="text-xs font-black uppercase text-${color}-700 mb-1">${tipo === 'acto' ? '⚠️ TOP ACTO' : '🏚️ TOP CONDICIÓN'}</div>
-        <div class="font-bold text-slate-800">${descripcion}</div>
-        <div class="text-sm text-slate-600 mt-1">📊 ${registros.length} registro${registros.length > 1 ? 's' : ''}</div>
-    </div>
-    <div class="space-y-2">${registros.map((r, i) => {
-        const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
-        const fecha = `${r.fecha}`;
-        const persona = r.observador || r.personaObservada || '-';
-        const suc = r.sucursal || '-';
-        return `<div class="border-l-4 border-${color}-400 bg-white p-3 rounded-lg shadow-sm">
-            <div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span>${estadoHTML}</div>
-            <div class="text-sm font-semibold text-slate-800">👤 ${escapeHtml(persona)}</div>
-            <div class="text-xs text-slate-500">🏭 ${escapeHtml(suc)} · ${escapeHtml(r.sector || '-')}</div>
-        </div>`;
-    }).join('')}</div>`;
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    const counter = document.getElementById('modalCounter');
-    if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
-    isModalOpen = true;
-    currentModalData = registros;
-    currentModalIndex = 0;
+    const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent'); const color = tipo === 'acto' ? 'blue' : 'amber';
+    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-${color}-50 border-2 border-${color}-200"><div class="text-xs font-black uppercase text-${color}-700 mb-1">${tipo === 'acto' ? '⚠️ TOP ACTO' : '🏚️ TOP CONDICIÓN'}</div><div class="font-bold text-slate-800">${descripcion}</div><div class="text-sm text-slate-600 mt-1">📊 ${registros.length} registro${registros.length > 1 ? 's' : ''}</div></div><div class="space-y-2">${registros.map((r, i) => { const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small'); const fecha = `${r.fecha}`; const persona = r.observador || r.personaObservada || '-'; const suc = r.sucursal || '-'; return `<div class="border-l-4 border-${color}-400 bg-white p-3 rounded-lg shadow-sm"><div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span>${estadoHTML}</div><div class="text-sm font-semibold text-slate-800">👤 ${escapeHtml(persona)}</div><div class="text-xs text-slate-500">🏭 ${escapeHtml(suc)} · ${escapeHtml(r.sector || '-')}</div></div>`; }).join('')}</div>`;
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter'); if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
+    isModalOpen = true; currentModalData = registros; currentModalIndex = 0;
 }
 
 function abrirModalTopPorResponsable(nombre) {
-    const grupos = window.__gruposTopResp;
-    if (!grupos) return;
-    const registros = grupos[nombre] || [];
-    if (!registros.length) return;
+    const grupos = window.__gruposTopResp; if (!grupos) return;
+    const registros = grupos[nombre] || []; if (!registros.length) return;
     window.datosModalActual = registros;
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-orange-50 border-2 border-orange-200">
-        <div class="text-xs font-black uppercase text-orange-700 mb-1">🏆 RESPONSABLE</div>
-        <div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(nombre)}</div>
-        <div class="text-sm text-slate-600 mt-1">📊 ${registros.length} reporte${registros.length > 1 ? 's' : ''} registrados</div>
-    </div>
-    <div class="space-y-2 max-h-[45vh] overflow-y-auto">${registros.map((r, i) => {
-        const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
-        const fecha = `${r.fecha}`;
-        const tipoBadge = r.tipo === 'vcp' ? '🎯 VCP' : (r.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND');
-        const tipoClass = r.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (r.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
-        const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : '');
-        const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || '');
-        return `<div class="border-l-4 border-orange-400 bg-white p-3 rounded-lg shadow-sm">
-            <div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoBadge}</span></div>
-            <div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div>
-            <div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 80))}${desc.length > 80 ? '...' : ''}</div>
-            <div class="mt-1">${estadoHTML}</div>
-        </div>`;
-    }).join('')}</div>`;
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    const counter = document.getElementById('modalCounter');
-    if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
-    isModalOpen = true;
-    currentModalData = registros;
-    currentModalIndex = 0;
+    const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent');
+    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-orange-50 border-2 border-orange-200"><div class="text-xs font-black uppercase text-orange-700 mb-1">🏆 RESPONSABLE</div><div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(nombre)}</div><div class="text-sm text-slate-600 mt-1">📊 ${registros.length} reporte${registros.length > 1 ? 's' : ''} registrados</div></div><div class="space-y-2 max-h-[45vh] overflow-y-auto">${registros.map((r, i) => { const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small'); const fecha = `${r.fecha}`; const tipoBadge = r.tipo === 'vcp' ? '🎯 VCP' : (r.tipo === 'acto' ? '⚠️ ACTO' : '🏚️ COND'); const tipoClass = r.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (r.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700'); const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : ''); const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || ''); return `<div class="border-l-4 border-orange-400 bg-white p-3 rounded-lg shadow-sm"><div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span><span class="px-2 py-0.5 rounded-full text-[9px] font-black ${tipoClass}">${tipoBadge}</span></div><div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div><div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 80))}${desc.length > 80 ? '...' : ''}</div><div class="mt-1">${estadoHTML}</div></div>`; }).join('')}</div>`;
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter'); if (counter) counter.innerText = `TOP · ${registros.length} reportes`;
+    isModalOpen = true; currentModalData = registros; currentModalIndex = 0;
 }
 
 function abrirModalReincidencia(index) {
-    const lista = window.__gruposReincidencias || [];
-    const reinc = lista[index];
-    if (!reinc) return;
-    const registros = reinc.registros || [];
-    window.datosModalActual = registros;
-    const modal = document.getElementById('reportDetailModal');
-    const content = document.getElementById('reportModalContent');
-    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300">
-        <div class="text-xs font-black uppercase text-red-700 mb-1">🔄 REINCIDENCIA DETECTADA</div>
-        <div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(reinc.persona)}</div>
-        <div class="text-sm text-slate-600 mt-1">${reinc.categoria?.icon || ''} ${escapeHtml(reinc.categoria?.name || 'Sin categoría')}</div>
-        <div class="mt-2 inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black">⚠️ ${reinc.count} REPETICIONES</div>
-    </div>
-    <div class="space-y-2 max-h-[45vh] overflow-y-auto">${registros.map((r, i) => {
-        const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small');
-        const fecha = `${r.fecha}`;
-        const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : '');
-        const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || '');
-        return `<div class="border-l-4 border-red-400 bg-white p-3 rounded-lg shadow-sm">
-            <div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span>${estadoHTML}</div>
-            <div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div>
-            <div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 90))}${desc.length > 90 ? '...' : ''}</div>
-        </div>`;
-    }).join('')}</div>`;
-    modal.classList.remove('hidden-section');
-    modal.style.display = 'flex';
-    const counter = document.getElementById('modalCounter');
-    if (counter) counter.innerText = `REINCIDENCIA · ${registros.length}x`;
-    isModalOpen = true;
-    currentModalData = registros;
-    currentModalIndex = 0;
+    const lista = window.__gruposReincidencias || []; const reinc = lista[index]; if (!reinc) return;
+    const registros = reinc.registros || []; window.datosModalActual = registros;
+    const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent');
+    content.innerHTML = `<div class="mb-4 p-4 rounded-xl bg-red-50 border-2 border-red-300"><div class="text-xs font-black uppercase text-red-700 mb-1">🔄 REINCIDENCIA DETECTADA</div><div class="font-bold text-slate-800 text-lg">👤 ${escapeHtml(reinc.persona)}</div><div class="text-sm text-slate-600 mt-1">${reinc.categoria?.icon || ''} ${escapeHtml(reinc.categoria?.name || 'Sin categoría')}</div><div class="mt-2 inline-block bg-red-600 text-white px-3 py-1 rounded-full text-xs font-black">⚠️ ${reinc.count} REPETICIONES</div></div><div class="space-y-2 max-h-[45vh] overflow-y-auto">${registros.map((r, i) => { const estadoHTML = getEstadoBadgeHTML(r.cerrado, 'small'); const fecha = `${r.fecha}`; const sigla = r.tipo === 'acto' ? 'AI' : (r.tipo === 'condicion' ? 'CI' : ''); const desc = sigla ? `${sigla} - ${r.descripcion || ''}` : (r.descripcion || ''); return `<div class="border-l-4 border-red-400 bg-white p-3 rounded-lg shadow-sm"><div class="flex justify-between items-center mb-1"><span class="text-xs font-bold text-slate-500">#${i + 1} · 📅 ${fecha}</span>${estadoHTML}</div><div class="text-xs text-slate-500 mb-1">🏭 ${escapeHtml(r.sucursal || '-')} · ${escapeHtml(r.sector || '-')}</div><div class="text-sm text-slate-700">${escapeHtml(desc.substring(0, 90))}${desc.length > 90 ? '...' : ''}</div></div>`; }).join('')}</div>`;
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    const counter = document.getElementById('modalCounter'); if (counter) counter.innerText = `REINCIDENCIA · ${registros.length}x`;
+    isModalOpen = true; currentModalData = registros; currentModalIndex = 0;
 }
 
 function renderEjecutivoReincidencias(datos) {
     const reincMap = new Map();
     datos.forEach(d => {
-        if (!d.observador && !d.personaObservada) return;
-        if (!d.categoria?.id) return;
-        const persona = d.observador || d.personaObservada;
-        const key = `${persona}|${d.categoria.id}`;
+        if (!d.observador && !d.personaObservada) return; if (!d.categoria?.id) return;
+        const persona = d.observador || d.personaObservada; const key = `${persona}|${d.categoria.id}`;
         if (!reincMap.has(key)) reincMap.set(key, { persona, categoria: d.categoria, count: 0, sucursales: new Set(), registros: [] });
-        const item = reincMap.get(key);
-        item.count++;
-        item.sucursales.add(d.sucursal);
-        item.registros.push(d);
+        const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); item.registros.push(d);
     });
     const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a, b) => b.count - a.count).slice(0, 10);
     const cont = document.getElementById('ejecReincidencias');
-    if (cont) {
-        window.__gruposReincidencias = reincList;
-        cont.innerHTML = reincList.length ? reincList.map((r, i) => `<div class="zr-ranking-item cursor-pointer" style="border-left-color:#ef4444" onclick="abrirModalReincidencia(${i})"><div class="zr-rank-num zr-rank-default" style="background:#fee2e2;color:#dc2626">⚠️</div><div class="flex-1"><div class="flex justify-between items-center flex-wrap gap-2"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon || ''} ${r.categoria?.name || ''}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs font-black">${r.count}x</span></div><div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')} · Click para ver los ${r.count} reportes</div></div></div>`).join('') : '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias detectadas</p>';
-    }
+    if (cont) { window.__gruposReincidencias = reincList; cont.innerHTML = reincList.length ? reincList.map((r, i) => `<div class="zr-ranking-item cursor-pointer" style="border-left-color:#ef4444" onclick="abrirModalReincidencia(${i})"><div class="zr-rank-num zr-rank-default" style="background:#fee2e2;color:#dc2626">⚠️</div><div class="flex-1"><div class="flex justify-between items-center flex-wrap gap-2"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon || ''} ${r.categoria?.name || ''}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs font-black">${r.count}x</span></div><div class="text-xs text-slate-500 mt-1">🏭 ${Array.from(r.sucursales).join(', ')} · Click para ver los ${r.count} reportes</div></div></div>`).join('') : '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias detectadas</p>'; }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📊 CARGA DE DATOS PARA RESUMEN (PARALELA con Promise.allSettled)
-// ═══════════════════════════════════════════════════════════════
 async function cargarTodosDatosParaResumen() {
-    const resumenBtn = document.querySelector('.resumen-btn');
-    const originalText = resumenBtn?.innerHTML;
+    const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML;
     if (resumenBtn) resumenBtn.innerHTML = '⏳ CARGANDO...';
     try {
-        // ✅ 1. Mostrar caché INSTANTÁNEAMENTE
-        ['MALAGUENO', 'BARKER', 'LAPAMPITA'].forEach(suc => {
-            const cA = getCachedData(suc, 'actos');
-            const cV = getCachedData(suc, 'vcp');
-            if (cA) ALL_ACTOS_DATA[suc] = cA;
-            if (cV) ALL_VCP_DATA[suc] = cV;
-        });
+        ['MALAGUENO', 'BARKER', 'LAPAMPITA'].forEach(suc => { const cA = getCachedData(suc, 'actos'); const cV = getCachedData(suc, 'vcp'); if (cA) ALL_ACTOS_DATA[suc] = cA; if (cV) ALL_VCP_DATA[suc] = cV; });
         actualizarResumenEjecutivo();
-        
-        // ✅ 2. Actualizar en background (PARALELO)
-        const results = await Promise.allSettled([
-            cargarDatosSucursal('MALAGUENO'),
-            cargarDatosSucursal('BARKER'),
-            cargarDatosSucursal('LAPAMPITA')
-        ]);
+        const results = await Promise.allSettled([cargarDatosSucursal('MALAGUENO'), cargarDatosSucursal('BARKER'), cargarDatosSucursal('LAPAMPITA')]);
         const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA'];
-        results.forEach((r, i) => {
-            if (r.status === 'fulfilled') {
-                ALL_ACTOS_DATA[sucursales[i]] = r.value.actos;
-                ALL_VCP_DATA[sucursales[i]] = r.value.vcp;
-            } else {
-                console.warn(`⚠️ ${sucursales[i]} falló, usando caché`);
-            }
-        });
+        results.forEach((r, i) => { if (r.status === 'fulfilled') { ALL_ACTOS_DATA[sucursales[i]] = r.value.actos; ALL_VCP_DATA[sucursales[i]] = r.value.vcp; } else { console.warn(`⚠️ ${sucursales[i]} falló, usando caché`); } });
         actualizarResumenEjecutivo();
-    } catch (error) {
-        console.error('❌ Error cargando datos:', error);
-        actualizarResumenEjecutivo();
-    } finally {
-        if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO';
-    }
+    } catch (error) { console.error('❌ Error cargando datos:', error); actualizarResumenEjecutivo(); }
+    finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; }
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 📊 EXPORTAR A EXCEL
-// ═══════════════════════════════════════════════════════════════
 function exportarResumenEjecutivoExcel() {
-    const wb = XLSX.utils.book_new();
-    const sucursal = document.getElementById('ejecutivoSucursal').value;
-    const mes = document.getElementById('ejecutivoMes').value;
-    const sector = document.getElementById('ejecutivoSector').value;
-    const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value;
-    const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
-    
-    const resumenData = [
-        ['🛡️ RESUMEN EJECUTIVO MINERAR 2026'],
-        [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`],
-        [],
-        ['🔍 FILTROS APLICADOS:'],
-        ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal],
-        ['Mes:', mes === 'todo' ? 'TODOS' : mes],
-        ['Sector:', sector === 'todos' ? 'TODOS' : sector],
-        ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro],
-        ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro],
-        [],
-        ['📈 INDICADORES PRINCIPALES:'],
-        ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText],
-        ['🏚️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText],
-        ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText],
-        ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]
-    ];
-    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData);
-    wsResumen['!cols'] = [{ wch: 25 }, { wch: 15 }];
-    XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN');
-    
+    const wb = XLSX.utils.book_new(); const sucursal = document.getElementById('ejecutivoSucursal').value; const mes = document.getElementById('ejecutivoMes').value; const sector = document.getElementById('ejecutivoSector').value; const estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value; const tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
+    const resumenData = [['🛡️ RESUMEN EJECUTIVO MINERAR 2026'], [`Fecha de generación: ${new Date().toLocaleString('es-AR')}`], [], ['🔍 FILTROS APLICADOS:'], ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal], ['Mes:', mes === 'todo' ? 'TODOS' : mes], ['Sector:', sector === 'todos' ? 'TODOS' : sector], ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro], ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro], [], ['📈 INDICADORES PRINCIPALES:'], ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText], ['🏚️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText], ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText], ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]];
+    const wsResumen = XLSX.utils.aoa_to_sheet(resumenData); wsResumen['!cols'] = [{ wch: 25 }, { wch: 15 }]; XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN');
     const datosTabla = window.datosModalActual || [];
     if (datosTabla.length > 0) {
         const detalleData = [['📋 DETALLE COMPLETO DE REPORTES'], [], ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']];
-        datosTabla.forEach(d => {
-            const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
-            const estado = estaCerrado ? 'CERRADO' : 'ABIERTO';
-            const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN');
-            detalleData.push([d.fecha, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estado, d.categoria?.name || '']);
-        });
-        const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData);
-        wsDetalle['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 20 }, { wch: 10 }, { wch: 50 }, { wch: 12 }, { wch: 10 }, { wch: 20 }];
-        XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE');
+        datosTabla.forEach(d => { const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; const estado = estaCerrado ? 'CERRADO' : 'ABIERTO'; const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN'); detalleData.push([d.fecha, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estado, d.categoria?.name || '']); });
+        const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData); wsDetalle['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 20 }, { wch: 10 }, { wch: 50 }, { wch: 12 }, { wch: 10 }, { wch: 20 }]; XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE');
     }
-    
-    const fecha = new Date().toISOString().slice(0, 10);
-    XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`);
-    alert('✅ Excel exportado exitosamente');
+    const fecha = new Date().toISOString().slice(0, 10); XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${fecha}.xlsx`); alert('✅ Excel exportado exitosamente');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🎬 HEADER SCROLL EFFECT
-// ═══════════════════════════════════════════════════════════════
 (function() {
-    const header = document.querySelector('.header-container');
-    if (!header) return;
-    let ticking = false;
-    function updateHeaderOnScroll() {
-        if (window.scrollY > 10) header.classList.add('scrolled');
-        else header.classList.remove('scrolled');
-        ticking = false;
-    }
-    window.addEventListener('scroll', function() {
-        if (!ticking) {
-            window.requestAnimationFrame(updateHeaderOnScroll);
-            ticking = true;
-        }
-    }, { passive: true });
+    const header = document.querySelector('.header-container'); if (!header) return; let ticking = false;
+    function updateHeaderOnScroll() { if (window.scrollY > 10) header.classList.add('scrolled'); else header.classList.remove('scrolled'); ticking = false; }
+    window.addEventListener('scroll', function() { if (!ticking) { window.requestAnimationFrame(updateHeaderOnScroll); ticking = true; } }, { passive: true });
 })();
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 INICIALIZACIÓN PRINCIPAL
-// ═══════════════════════════════════════════════════════════════
 window.addEventListener('load', () => {
     const overlay = document.getElementById('passwordOverlay');
-    if (tieneSesionValida()) {
-        isUnlocked = true;
-        overlay.style.display = 'none';
-        enterMainPanel();
-        setTimeout(() => restaurarResumenSiEstabaAbierto(), 800);
-    } else {
-        overlay.style.display = 'flex';
-        document.getElementById('passwordInput')?.focus();
-        document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); });
-    }
-    
-    document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
-    document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
-    document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
-    document.addEventListener('click', function initAudio() {
-        window.initAudioContext();
-        document.removeEventListener('click', initAudio);
-    }, { once: true });
-    
-    // 🔥 Inicializar contador de usuarios
+    if (tieneSesionValida()) { isUnlocked = true; overlay.style.display = 'none'; enterMainPanel(); setTimeout(() => restaurarResumenSiEstabaAbierto(), 800); }
+    else { overlay.style.display = 'flex'; document.getElementById('passwordInput')?.focus(); document.getElementById('passwordInput')?.addEventListener('keypress', e => { if (e.key === 'Enter') verifyPassword(); }); }
+    document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO')); document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER')); document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LA PAMPITA'));
+    document.addEventListener('click', function initAudio() { window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true });
     inicializarContadorUsuarios();
 });
 
-// ═══════════════════════════════════════════════════════════════
-// 🎯 EVENT LISTENERS DE FILTROS (con debounce automático)
-// ═══════════════════════════════════════════════════════════════
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('monthFilter')?.addEventListener('change', e => {
-        if (isUnlocked) { state.mes = e.target.value; applyGeneralFilters(); }
-    });
-    document.getElementById('vcpMonthFilter')?.addEventListener('change', e => {
-        if (isUnlocked) { state.vcpMes = e.target.value; applyVCPFilters(); }
-    });
+    document.getElementById('monthFilter')?.addEventListener('change', e => { if (isUnlocked) { state.mes = e.target.value; applyGeneralFilters(); } });
+    document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if (isUnlocked) { state.vcpMes = e.target.value; applyVCPFilters(); } });
     document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
     document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-    
-    const supervisorSelect = document.getElementById('supervisorSelect');
-    const supervisorMonthSelect = document.getElementById('supervisorMonthSelect');
+    const supervisorSelect = document.getElementById('supervisorSelect'); const supervisorMonthSelect = document.getElementById('supervisorMonthSelect');
     if (supervisorSelect) supervisorSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
     if (supervisorMonthSelect) supervisorMonthSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
-    
-    // 🎯 Teclado: ESC cierra modales
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' || e.key === 'Enter') {
-            const cm = document.getElementById('cerrarResumenConfirmModal');
-            if (cm && cm.style.display === 'flex') { if (e.key === 'Escape') cancelarCerrarResumen(); return; }
-            const rm = document.getElementById('reportDetailModal');
-            if (rm && !rm.classList.contains('hidden-section')) { closeReportModal(); return; }
-            const sm = document.getElementById('supervisorDetailModal');
-            if (sm && !sm.classList.contains('hidden-section')) { closeSupervisorModal(); return; }
-            const vm = document.getElementById('personaVCPModal');
-            if (vm && !vm.classList.contains('hidden-section')) { closePersonaVCPModal(); return; }
-            const dm = document.getElementById('dailyReportsModal');
-            if (dm && !dm.classList.contains('hidden-section')) { closeDailyReportsModal(); return; }
-            const al = document.getElementById('newReportAlert');
-            if (al && al.classList.contains('show')) { dismissAlert(); return; }
+            const cm = document.getElementById('cerrarResumenConfirmModal'); if (cm && cm.style.display === 'flex') { if (e.key === 'Escape') cancelarCerrarResumen(); return; }
+            const rm = document.getElementById('reportDetailModal'); if (rm && !rm.classList.contains('hidden-section')) { closeReportModal(); return; }
+            const sm = document.getElementById('supervisorDetailModal'); if (sm && !sm.classList.contains('hidden-section')) { closeSupervisorModal(); return; }
+            const vm = document.getElementById('personaVCPModal'); if (vm && !vm.classList.contains('hidden-section')) { closePersonaVCPModal(); return; }
+            const dm = document.getElementById('dailyReportsModal'); if (dm && !dm.classList.contains('hidden-section')) { closeDailyReportsModal(); return; }
+            const al = document.getElementById('newReportAlert'); if (al && al.classList.contains('show')) { dismissAlert(); return; }
         }
     });
 });
 
-// 🔄 Auto-refresh al volver a la pestaña
-document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && isUnlocked && !isModalOpen && !isUpdating) {
-        loadData();
-    }
-});
+document.addEventListener('visibilitychange', () => { if (!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });
 </script>
 </body>
 </html>
