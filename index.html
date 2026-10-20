@@ -736,23 +736,37 @@ function setCachedData(sucursal, tipo, data) {
     try { localStorage.setItem(getCacheKey(sucursal, tipo), JSON.stringify({ timestamp: Date.now(), data })); } catch(e) {}
 }
 
+// ═══════════════════════════════════════════════════════════════
+// 🚀 FETCH DIRECTO A GOOGLE APPS SCRIPT (sin proxy)
+// ═══════════════════════════════════════════════════════════════
 async function fetchConToken(urlCompleta) {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000); 
-        const resp = await fetch(urlCompleta, { signal: controller.signal, cache: 'no-store' });
+        const timeoutId = setTimeout(() => controller.abort(), 20000);
+        
+        const resp = await fetch(urlCompleta, { 
+            signal: controller.signal,
+            cache: 'no-store',
+            method: 'GET',
+            headers: {
+                'Accept': 'text/plain,application/json'
+            }
+        });
+        
         clearTimeout(timeoutId);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        
+        if (!resp.ok) {
+            throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
+        }
+        
         return await resp.text();
     } catch(e) {
-        console.error("❌ Error de conexión con el proxy:", e.message);
-        // Alerta visual
-        const noti = document.createElement('div');
-        noti.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:white; padding:12px 24px; border-radius:10px; z-index:999999; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.3); text-align:center;";
-        noti.innerHTML = "⚠️ Error: Google Sheets no responde (Timeout).<br><span style='font-size:12px'>Verifica tu conexión a internet.</span>";
-        document.body.appendChild(noti);
-        setTimeout(() => noti.remove(), 6000);
-        return ''; 
+        console.error("❌ Error fetching:", e.message);
+        // Si falla, intentar con JSONP como fallback
+        if (urlCompleta.includes('callback=')) {
+            return fetchConJSONP(urlCompleta);
+        }
+        throw e;
     }
 }
 
