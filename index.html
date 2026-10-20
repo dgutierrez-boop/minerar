@@ -1613,15 +1613,53 @@ function updateVCPCharts(data) {
   const valores = CATS.map(c => counts[c.id] || 0);
   const ctxD = document.getElementById('vcpCategoryChart')?.getContext('2d');
   if (ctxD) {
-    if (vcpCategoryChart) { vcpCategoryChart.data.datasets[0].data = valores; vcpCategoryChart.update('none'); }
-    else {
-      vcpCategoryChart = new Chart(ctxD, {
-        type: 'doughnut', data: { labels: CATS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: valores, backgroundColor: CATS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] },
-        options: { cutout: '55%', animation: { duration: 400 }, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } }, tooltip: { callbacks: { label: (ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); const pct = Math.round((ctx.parsed / total) * 100); return `${ctx.label}: ${ctx.parsed} (${pct}%)`; } } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center', offset: 0 } } },
-        plugins: [ChartDataLabels]
-      );
-    }
+  if (vcpCategoryChart) { 
+    vcpCategoryChart.data.datasets[0].data = valores; 
+    vcpCategoryChart.update('none'); 
+  } else {
+    vcpCategoryChart = new Chart(ctxD, {
+      type: 'doughnut', 
+      data: { 
+        labels: CATS.map(c => `${c.icon} ${c.name}`), 
+        datasets: [{ 
+          data: valores, 
+          backgroundColor: CATS.map(c => c.color), 
+          borderWidth: 2, 
+          borderColor: 'white', 
+          hoverOffset: 15 
+        }] 
+      },
+      options: { 
+        cutout: '55%', 
+        animation: { duration: 400 }, 
+        plugins: { 
+          legend: { position: 'bottom', labels: { font: { size: 9 } } }, 
+          tooltip: { 
+            callbacks: { 
+              label: (ctx) => { 
+                const total = ctx.dataset.data.reduce((a, b) => a + b, 0); 
+                const pct = Math.round((ctx.parsed / total) * 100); 
+                return `${ctx.label}: ${ctx.parsed} (${pct}%)`; 
+              } 
+            } 
+          }, 
+          datalabels: { 
+            color: '#fff', 
+            font: { weight: 'bold', size: 10 }, 
+            formatter: (value, ctx) => { 
+              const total = ctx.dataset.data.reduce((a, b) => a + b, 0); 
+              return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; 
+            }, 
+            anchor: 'center', 
+            align: 'center', 
+            offset: 0 
+          } 
+        } 
+      },
+      plugins: [ChartDataLabels]
+    });
   }
+}
   const vPM = MESES_NOMBRES.map(m => data.filter(e => e.mes === m).length);
   const ctxT = document.getElementById('vcpTrendChart')?.getContext('2d');
   if (ctxT) {
