@@ -727,22 +727,62 @@ function setCachedData(sucursal, tipo, data) {
 }
 
 async function fetchConToken(urlCompleta) {
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 25000); 
-        const resp = await fetch(urlCompleta, { signal: controller.signal, cache: 'no-store' });
-        clearTimeout(timeoutId);
-        if (!resp.ok) throw new Error('HTTP ' + resp.status);
-        return await resp.text();
-    } catch(e) {
-        console.error("❌ Error de conexión con el proxy:", e.message);
-        const noti = document.createElement('div');
-        noti.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:white; padding:12px 24px; border-radius:10px; z-index:999999; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.3); text-align:center;";
-        noti.innerHTML = "⚠️ Error: Google Sheets no responde (Timeout).<br><span style='font-size:12px'>Verifica tu conexión a internet.</span>";
-        document.body.appendChild(noti);
-        setTimeout(() => noti.remove(), 6000);
-        return ''; 
-    }
+  return new Promise((resolve, reject) => {
+    const callbackName = 'minerar_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+    let completado = false;
+    
+    const timeoutId = setTimeout(() => {
+      if (!completado) {
+        completado = true;
+        const s = document.getElementById(callbackName);
+        if (s) s.remove();
+        delete window[callbackName];
+        reject(new Error('Timeout'));
+      }
+    }, 25000);
+    
+    window[callbackName] = function(data) {
+      if (completado) return;
+      completado = true;
+      clearTimeout(timeoutId);
+      try {
+        let csv = '';
+        if (Array.isArray(data)) {
+          for (let i = 0; i < data.length; i++) {
+            let row = data[i], rowStr = '';
+            for (let j = 0; j < row.length; j++) {
+              let cell = row[j] === null || row[j] === undefined ? '' : String(row[j]);
+              rowStr += '"' + cell.replace(/"/g, '""') + '",';
+            }
+            csv += rowStr.slice(0, -1) + '\n';
+          }
+        } else {
+          csv = String(data);
+        }
+        const scriptEl = document.getElementById(callbackName);
+        if (scriptEl) scriptEl.remove();
+        delete window[callbackName];
+        resolve(csv);
+      } catch (e) {
+        reject(new Error('Error procesando JSONP'));
+      }
+    };
+    
+    // Agregar callback a la URL
+    const separator = urlCompleta.includes('?') ? '&' : '?';
+    const script = document.createElement('script');
+    script.id = callbackName;
+    script.src = urlCompleta + separator + 'callback=' + callbackName;
+    script.onerror = function() {
+      if (completado) return;
+      completado = true;
+      clearTimeout(timeoutId);
+      script.remove();
+      delete window[callbackName];
+      reject(new Error('Fallo de red'));
+    };
+    document.body.appendChild(script);
+  });
 }
 
 function parseCSV(text) {
