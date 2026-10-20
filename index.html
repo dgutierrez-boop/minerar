@@ -590,10 +590,11 @@ const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
 
 // URLs DIRECTAS a Google Apps Script (sin proxy)
-const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec';
-const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec';
-const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec';
-const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbxpzx5_kDXgIMipWT1okrGbYzYxaDH4u7oNR0Lb0DbEsDhSG1IyJgG83R4gWe-Lw1lrNA/exec';
+// ✅ REEMPLAZAR POR ESTO:
+const PROXY_URL_ACTOS = 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv';
+const PROXY_URL_VCP_MALAGUENO = 'https://docs.google.com/spreadsheets/d/1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw/export?format=csv';
+const PROXY_URL_BARKER = 'https://docs.google.com/spreadsheets/d/1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc/export?format=csv';
+const PROXY_URL_VCP_LAPAMPITA = 'https://docs.google.com/spreadsheets/d/1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY/export?format=csv';
 
 const MESES_NOMBRES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const MESES_UPPER = MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1));
@@ -622,23 +623,23 @@ let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
 
 const SUCURSALES_CONFIG = {
   MALAGUENO: {
-    actosUrl: `${PROXY_URL_ACTOS}?key=PMMasAgiles1122SEG&id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I`,
-    vcpUrl: `${PROXY_URL_VCP_MALAGUENO}?key=PMMasAgiles1122SEG&id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw`,
+    actosUrl: PROXY_URL_ACTOS,
+    vcpUrl: PROXY_URL_VCP_MALAGUENO,
     mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
     vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
     objetivos: { actos: 66, cond: 44 },
     showVCP: true
   },
   BARKER: {
-    actosUrl: `${PROXY_URL_BARKER}?key=PMMasAgiles1122SEG&id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc`,
+    actosUrl: PROXY_URL_BARKER,
     vcpUrl: null,
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
     objetivos: { actos: 6, cond: 4 },
     showVCP: false
   },
   LAPAMPITA: {
-    actosUrl: `${PROXY_URL_ACTOS}?key=PMMasAgiles1122SEG&id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8`,
-    vcpUrl: `${PROXY_URL_VCP_LAPAMPITA}?key=PMMasAgiles1122SEG&id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY`,
+    actosUrl: 'https://docs.google.com/spreadsheets/d/1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8/export?format=csv',
+    vcpUrl: PROXY_URL_VCP_LAPAMPITA,
     mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
     vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
     objetivos: { actos: 66, cond: 44 },
