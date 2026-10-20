@@ -119,14 +119,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 #reportModalContent .imagen-grid { grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 6px; }
 #reportModalContent .imagen-item img { height: 80px; }
 #reportModalContent .imagen-overlay { font-size: 7px; padding: 2px; }
-@keyframes logoHeartbeat {
-0% { transform: scale(1) rotate(0deg); }
-14% { transform: scale(1.08) rotate(-2deg); }
-28% { transform: scale(1) rotate(0deg); }
-42% { transform: scale(1.08) rotate(2deg); }
-56% { transform: scale(1) rotate(0deg); }
-100% { transform: scale(1) rotate(0deg); }
-}
+@keyframes logoHeartbeat { 0% { transform: scale(1) rotate(0deg); } 14% { transform: scale(1.08) rotate(-2deg); } 28% { transform: scale(1) rotate(0deg); } 42% { transform: scale(1.08) rotate(2deg); } 56% { transform: scale(1) rotate(0deg); } 100% { transform: scale(1) rotate(0deg); } }
 .header-left .logo-animado { animation: logoHeartbeat 3s ease-in-out infinite; display: inline-block; transition: all 0.3s ease; }
 .header-left .logo-animado:hover { animation-play-state: paused; transform: scale(1.1); }
 .category-card .tooltip-content { visibility: hidden; opacity: 0; width: 480px; max-width: 92vw; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fcd34d; text-align: left; padding: 18px 22px; border-radius: 18px; position: absolute; z-index: 999999 !important; bottom: calc(100% + 16px); left: 50%; transform: translateX(-50%) scale(0.95); transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease; box-shadow: 0 25px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08); font-size: 11px; pointer-events: none !important; border: 1px solid rgba(241, 139, 0, 0.25); max-height: 450px; overflow-y: auto; }
@@ -590,24 +583,21 @@ body { padding: 10px; }
 </div>
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔒 CONFIGURACIÓN DE SEGURIDAD Y VARIABLES GLOBALES
+// 🔒 CONFIGURACIÓN DE SEGURIDAD
 // ═══════════════════════════════════════════════════════════════
 const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
 
-// ✅ USAMOS UN PROXY PÚBLICO PARA QUE VERCEL NO BLOQUEE LAS PETICIONES
-const CORS_PROXY = 'https://api.cors.lol/?url=';
-const PROXY_URL_ACTOS = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec');
-const PROXY_URL_VCP_MALAGUENO = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec');
-const PROXY_URL_BARKER = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec');
-const PROXY_URL_VCP_LAPAMPITA = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbxpzx5_kDXgIMipWT1okrGbYzYxaDH4u7oNR0Lb0DbEsDhSG1IyJgG83R4gWe-Lw1lrNA/exec');
+const PROXY_URL_ACTOS = 'https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec';
+const PROXY_URL_VCP_MALAGUENO = 'https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec';
+const PROXY_URL_BARKER = 'https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec';
+const PROXY_URL_VCP_LAPAMPITA = 'https://script.google.com/macros/s/AKfycbxpzx5_kDXgIMipWT1okrGbYzYxaDH4u7oNR0Lb0DbEsDhSG1IyJgG83R4gWe-Lw1lrNA/exec';
 
 const MESES_NOMBRES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const MESES_UPPER = MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1));
 const MESES_SHORT = MESES_NOMBRES.map(m => m.substring(0,3).toUpperCase());
 
-// ✅ RESTAURACIÓN DE VARIABLES GLOBALES PERDIDAS
 let isUnlocked = false, soundEnabled = true;
 let currentSucursal = 'MALAGUENO', selectedCausa = null, selectedVCPCausa = null;
 let currentObjetivos, currentShowVCP;
@@ -736,37 +726,22 @@ function setCachedData(sucursal, tipo, data) {
     try { localStorage.setItem(getCacheKey(sucursal, tipo), JSON.stringify({ timestamp: Date.now(), data })); } catch(e) {}
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 🚀 FETCH DIRECTO A GOOGLE APPS SCRIPT (sin proxy)
-// ═══════════════════════════════════════════════════════════════
 async function fetchConToken(urlCompleta) {
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 20000);
-        
-        const resp = await fetch(urlCompleta, { 
-            signal: controller.signal,
-            cache: 'no-store',
-            method: 'GET',
-            headers: {
-                'Accept': 'text/plain,application/json'
-            }
-        });
-        
+        const timeoutId = setTimeout(() => controller.abort(), 25000); 
+        const resp = await fetch(urlCompleta, { signal: controller.signal, cache: 'no-store' });
         clearTimeout(timeoutId);
-        
-        if (!resp.ok) {
-            throw new Error(`HTTP ${resp.status}: ${resp.statusText}`);
-        }
-        
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
         return await resp.text();
     } catch(e) {
-        console.error("❌ Error fetching:", e.message);
-        // Si falla, intentar con JSONP como fallback
-        if (urlCompleta.includes('callback=')) {
-            return fetchConJSONP(urlCompleta);
-        }
-        throw e;
+        console.error("❌ Error de conexión con el proxy:", e.message);
+        const noti = document.createElement('div');
+        noti.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:white; padding:12px 24px; border-radius:10px; z-index:999999; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.3); text-align:center;";
+        noti.innerHTML = "⚠️ Error: Google Sheets no responde (Timeout).<br><span style='font-size:12px'>Verifica tu conexión a internet.</span>";
+        document.body.appendChild(noti);
+        setTimeout(() => noti.remove(), 6000);
+        return ''; 
     }
 }
 
