@@ -590,7 +590,7 @@ body { padding: 10px; }
 </div>
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔒 CONFIGURACIÓN DE SEGURIDAD
+// 🔒 CONFIGURACIÓN DE SEGURIDAD Y VARIABLES GLOBALES
 // ═══════════════════════════════════════════════════════════════
 const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
@@ -598,7 +598,6 @@ const SESSION_KEY = 'minerar_session_date';
 
 // ✅ USAMOS UN PROXY PÚBLICO PARA QUE VERCEL NO BLOQUEE LAS PETICIONES
 const CORS_PROXY = 'https://api.allorigins.win/raw?url=';
-
 const PROXY_URL_ACTOS = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbznyuks5StY9XL74e01YpghPRsptiYCKUPHjRBRpdKWLjb703aAtcmL1ao5GA6XuIo-/exec');
 const PROXY_URL_VCP_MALAGUENO = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbyesn33ZLvJ43qnX_s7-W86tQnEed6EGlqJxYIpdjJmp0ZF_Dmxqy4co25MtJ3TPb_v9g/exec');
 const PROXY_URL_BARKER = CORS_PROXY + encodeURIComponent('https://script.google.com/macros/s/AKfycbzlc5FMGjW4yMmGb3ZYkSmVDTPQ3IFC-eUrKT4NJUx7DeZ-Q08zHHzWB6sni0CC5CW6/exec');
@@ -607,6 +606,56 @@ const PROXY_URL_VCP_LAPAMPITA = CORS_PROXY + encodeURIComponent('https://script.
 const MESES_NOMBRES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const MESES_UPPER = MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1));
 const MESES_SHORT = MESES_NOMBRES.map(m => m.substring(0,3).toUpperCase());
+
+// ✅ RESTAURACIÓN DE VARIABLES GLOBALES PERDIDAS
+let isUnlocked = false, soundEnabled = true;
+let currentSucursal = 'MALAGUENO', selectedCausa = null, selectedVCPCausa = null;
+let currentObjetivos, currentShowVCP;
+let isUpdating = false;
+let ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+let ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
+let ejecutivoChartSucursales = null, ejecutivoChartVCPSucursales = null;
+let currentFiltroTipo = 'todos';
+let currentModalDataList = [], currentModalDataIndex = 0;
+window.datosModalActual = [];
+let alertCountdownInterval = null, refreshInterval = null;
+let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
+let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
+let lastUpdateTime = Date.now();
+let lastSuccessfulData = null;
+let supervisorFiltroTabla = null;
+let ACTOS_COND_DATA = [], VCP_DATA = [];
+let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
+let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
+let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
+
+const SUCURSALES_CONFIG = {
+  MALAGUENO: {
+    actosUrl: `${PROXY_URL_ACTOS}?key=PMMasAgiles1122SEG&id=1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I`,
+    vcpUrl: `${PROXY_URL_VCP_MALAGUENO}?key=PMMasAgiles1122SEG&id=1W_AmD638i5e4oCZJ6syDrd_iPOBzjxUY67RNXkj4hjw`,
+    mapping: { fecha: 3, tipo: 1, sector: 2, observador: 5, descripcion: 6, cerrado: 23, causa: null },
+    vcpMapping: { fecha: 2, persona: 1, sector: 4, descripcion: 32, comentarios: 28 },
+    objetivos: { actos: 66, cond: 44 },
+    showVCP: true
+  },
+  BARKER: {
+    actosUrl: `${PROXY_URL_BARKER}?key=PMMasAgiles1122SEG&id=1-AhAyMh_wl3rJ89fS1mpQyDpj50ULo5vVV-8xqBlNcc`,
+    vcpUrl: null,
+    mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 12 },
+    objetivos: { actos: 6, cond: 4 },
+    showVCP: false
+  },
+  LAPAMPITA: {
+    actosUrl: `${PROXY_URL_ACTOS}?key=PMMasAgiles1122SEG&id=1AE-orgeAdicrOiVOC8OIS1m-8BPMjsPIOgf3dR89uf8`,
+    vcpUrl: `${PROXY_URL_VCP_LAPAMPITA}?key=PMMasAgiles1122SEG&id=1WMXL-UnFyBrxKEBMZh-7zr3zmun8p_rmK5RKivdMGzY`,
+    mapping: { fecha: 3, tipo: 2, sector: 6, observador: 5, descripcion: 10, cerrado: 14, causa: 18 },
+    vcpMapping: { fecha: 2, persona: 4, sector: 5, descripcion: 6, comentarios: 15 },
+    objetivos: { actos: 66, cond: 44 },
+    showVCP: true
+  }
+};
+
+const OBJ_VCP = 30;
 
 function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) === getTodayKey(); } catch(e) { return false; } }
@@ -688,67 +737,23 @@ function setCachedData(sucursal, tipo, data) {
 }
 
 async function fetchConToken(urlCompleta) {
-    if (urlCompleta.includes('callback=')) return fetchConJSONP(urlCompleta);
     try {
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const timeoutId = setTimeout(() => controller.abort(), 25000); 
         const resp = await fetch(urlCompleta, { signal: controller.signal, cache: 'no-store' });
         clearTimeout(timeoutId);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         return await resp.text();
     } catch(e) {
-        console.warn('fetch CORS falló, usando JSONP:', e.message);
-        return fetchConJSONP(urlCompleta + '&callback=minerar_cb_' + Date.now());
+        console.error("❌ Error de conexión con el proxy:", e.message);
+        // Alerta visual
+        const noti = document.createElement('div');
+        noti.style = "position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#ef4444; color:white; padding:12px 24px; border-radius:10px; z-index:999999; font-weight:bold; box-shadow:0 4px 12px rgba(0,0,0,0.3); text-align:center;";
+        noti.innerHTML = "⚠️ Error: Google Sheets no responde (Timeout).<br><span style='font-size:12px'>Verifica tu conexión a internet.</span>";
+        document.body.appendChild(noti);
+        setTimeout(() => noti.remove(), 6000);
+        return ''; 
     }
-}
-function fetchConJSONP(urlCompleta) {
-    return new Promise((resolve, reject) => {
-        const callbackName = 'minerar_cb_' + Date.now() + '_' + Math.floor(Math.random()*1000);
-        let completado = false;
-        const timeoutId = setTimeout(() => {
-            if (!completado) {
-                completado = true;
-                const s = document.getElementById(callbackName);
-                if (s) s.remove();
-                delete window[callbackName];
-                reject(new Error('Timeout JSONP'));
-            }
-        }, 20000);
-        window[callbackName] = function(data) {
-            if (completado) return;
-            completado = true;
-            clearTimeout(timeoutId);
-            try {
-                let csv = '';
-                if (Array.isArray(data)) {
-                    for (let i = 0; i < data.length; i++) {
-                        let row = data[i], rowStr = '';
-                        for (let j = 0; j < row.length; j++) {
-                            let cell = row[j] === null || row[j] === undefined ? '' : String(row[j]);
-                            rowStr += '"' + cell.replace(/"/g, '""') + '",';
-                        }
-                        csv += rowStr.slice(0, -1) + '\n';
-                    }
-                } else { csv = String(data); }
-                const scriptEl = document.getElementById(callbackName);
-                if (scriptEl) scriptEl.remove();
-                delete window[callbackName];
-                resolve(csv);
-            } catch (e) { reject(new Error('Error procesando JSONP')); }
-        };
-        const script = document.createElement('script');
-        script.id = callbackName;
-        script.src = urlCompleta;
-        script.onerror = function() {
-            if (completado) return;
-            completado = true;
-            clearTimeout(timeoutId);
-            script.remove();
-            delete window[callbackName];
-            reject(new Error('Fallo de red JSONP'));
-        };
-        document.body.appendChild(script);
-    });
 }
 
 function parseCSV(text) {
