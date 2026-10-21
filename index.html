@@ -712,26 +712,26 @@ body { padding: 10px; }
 
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURACIÓN CON DETECCIÓN DE UBICACIÓN 🌎
+// 🔥 FIREBASE + GEOLOCALIZACIÓN POR IP
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
-  apiKey: "AIzaSyCDYZyMeXjbKd7F4DPW1k9ll0rXMCkYExM",
-  authDomain: "infominerar.firebaseapp.com",
-  databaseURL: "https://infominerar-default-rtdb.firebaseio.com",
-  projectId: "infominerar",
-  storageBucket: "infominerar.firebasestorage.app",
-  messagingSenderId: "661551649914",
-  appId: "1:661551649914:web:510b9878fa5867ae3817c3",
-  measurementId: "G-XC1ZRLNG2J"
+apiKey: "AIzaSyCDYZyMeXjbKd7F4DPW1k9ll0rXMCkYExM",
+authDomain: "infominerar.firebaseapp.com",
+databaseURL: "https://infominerar-default-rtdb.firebaseio.com",
+projectId: "infominerar",
+storageBucket: "infominerar.firebasestorage.app",
+messagingSenderId: "661551649914",
+appId: "1:661551649914:web:510b9878fa5867ae3817c3",
+measurementId: "G-XC1ZRLNG2J"
 };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const connectedRef = database.ref(".info/connected");
 const MI_ID_USUARIO = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
 let userRef = null;
-let miUbicacion = null;
+let miUbicacion = 'Cargando...';
 
-// ═══ DETECTAR UBICACIÓN DEL USUARIO POR IP 🌍 ═══
+// ═══ DETECTAR UBICACIÓN POR IP ═══
 async function detectarMiUbicacion() {
   try {
     const response = await fetch('https://ipapi.co/json/');
@@ -739,141 +739,167 @@ async function detectarMiUbicacion() {
     const ciudad = data.city || '';
     const region = data.region || '';
     const pais = data.country_name || '';
-    let ubicacion = ciudad;
-    if (region && region !== ciudad) ubicacion += `, ${region}`;
-    if (pais && !ubicacion.includes(pais)) ubicacion += `, ${pais}`;
-    miUbicacion = ubicacion || 'Ubicación desconocida 🌐';
-    console.log('📍 Mi ubicación detectada:', miUbicacion);
-    if (userRef) userRef.update({ ubicacion: miUbicacion });
+    
+    let ubicacionCompleta = ciudad;
+    if (region && region !== ciudad) ubicacionCompleta += `, ${region}`;
+    if (pais && pais !== 'Argentina') ubicacionCompleta += `, ${pais}`;
+    
+    miUbicacion = ubicacionCompleta || 'Ubicación desconocida';
+    console.log(' Mi ubicación:', miUbicacion);
+    
+    if (userRef) {
+      userRef.update({ ubicacion: miUbicacion });
+    }
+    
     return miUbicacion;
   } catch (error) {
-    console.log('⚠️ No se pudo detectar ubicación:', error);
-    miUbicacion = 'Ubicación desconocida 🌐';
+    console.error('Error detectando ubicación:', error);
+    miUbicacion = 'Ubicación desconocida';
     return miUbicacion;
   }
 }
 
-// ═══ OBTENER LA UBICACIÓN A MOSTRAR PARA ESTE USUARIO ═══
-function obtenerMiUbicacionAMostrar() {
-  if (currentSucursal && ['MALAGUENO', 'BARKER', 'LAPAMPITA'].includes(currentSucursal)) {
-    const nombres = {
-      'MALAGUENO': '🏭 MALAGUEÑO',
-      'BARKER': '🏭 BARKER',
-      'LAPAMPITA': '⛏️ LA PAMPITA'
-    };
-    return nombres[currentSucursal];
-  }
-  return miUbicacion || '🌐 Ubicación desconocida';
+// ══ ACTUALIZAR CONTADOR CON UBICACIONES ═══
+function actualizarContadorUsuariosUI() {
+const counterRef = database.ref('usuarios_conectados/contador');
+const usersRef = database.ref('usuarios_conectados/users');
+
+counterRef.on('value', (snapshot) => {
+const total = snapshot.val() || 0;
+const el = document.getElementById('usuariosCount');
+if (el) {
+const previo = parseInt(el.textContent) || 0;
+el.textContent = total;
+
+if (total > previo && total > 1) {
+playConexionSound();
+const bubble = document.getElementById('usuariosConectadosBubble');
+if (bubble) {
+bubble.classList.add('pulse-new');
+setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
+}
+}
+}
+});
+
+usersRef.on('value', (snapshot) => {
+const users = snapshot.val() || {};
+const ubicaciones = {};
+let total = 0;
+
+Object.values(users).forEach(user => {
+const ubic = user.ubicacion || 'Ubicación desconocida';
+if (!ubicaciones[ubic]) ubicaciones[ubic] = 0;
+ubicaciones[ubic]++;
+total++;
+});
+
+actualizarTooltipUbicaciones(ubicaciones, total);
+});
 }
 
-// ═══ ACTUALIZAR SUCURSAL EN FIREBASE CUANDO CAMBIA ═══
-function actualizarSucursalEnFirebase() {
-  if (userRef) {
-    userRef.update({ 
-      sucursal: currentSucursal,
-      ubicacion: obtenerMiUbicacionAMostrar(),
-      timestamp: Date.now()
-    });
-  }
+// ═══ ACTUALIZAR TOOLTIP CON UBICACIONES ═══
+function actualizarTooltipUbicaciones(ubicaciones, total) {
+const bubble = document.getElementById('usuariosConectadosBubble');
+if (!bubble) return;
+
+let tooltip = bubble.querySelector('.bubble-tooltip');
+if (!tooltip) {
+tooltip = document.createElement('div');
+tooltip.className = 'bubble-tooltip';
+tooltip.style.cssText = `
+position: absolute;
+bottom: 100%;
+left: 50%;
+transform: translateX(-50%) translateY(-10px);
+background: rgba(15, 23, 42, 0.95);
+backdrop-filter: blur(12px);
+-webkit-backdrop-filter: blur(12px);
+color: white;
+padding: 16px 20px;
+border-radius: 16px;
+font-size: 12px;
+font-weight: 600;
+white-space: nowrap;
+opacity: 0;
+pointer-events: none;
+transition: all 0.3s ease;
+box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+border: 2px solid rgba(241, 139, 0, 0.3);
+z-index: 10003;
+min-width: 280px;
+max-width: 400px;
+`;
+bubble.appendChild(tooltip);
 }
 
-// ═══ ACTUALIZAR EL TOOLTIP CON LAS UBICACIONES DE TODOS ═══
-function actualizarTooltipUbicaciones() {
-  const usersRef = database.ref('usuarios_conectados/users');
-  usersRef.on('value', (snapshot) => {
-    const users = snapshot.val() || {};
-    const ubicaciones = {};
-    let total = 0;
-    
-    Object.values(users).forEach(user => {
-      let ubicacionMostrar = '🌐 Desconocido';
-      if (user.sucursal && ['MALAGUENO', 'BARKER', 'LAPAMPITA'].includes(user.sucursal)) {
-        const nombres = {
-          'MALAGUENO': '🏭 MALAGUEÑO',
-          'BARKER': '🏭 BARKER',
-          'LAPAMPITA': '⛏️ LA PAMPITA'
-        };
-        ubicacionMostrar = nombres[user.sucursal];
-      } else if (user.ubicacion) {
-        ubicacionMostrar = '🌍 ' + user.ubicacion;
-      }
-      if (!ubicaciones[ubicacionMostrar]) ubicaciones[ubicacionMostrar] = 0;
-      ubicaciones[ubicacionMostrar]++;
-      total++;
-    });
-    
-    const tooltipContent = document.getElementById('tooltipContent');
-    if (tooltipContent) {
-      if (total === 0) {
-        tooltipContent.innerHTML = '<div class="tooltip-empty">Sin usuarios conectados</div>';
-      } else {
-        const sucursales = [];
-        const ciudades = [];
-        Object.entries(ubicaciones).forEach(([ubic, count]) => {
-          if (ubic.includes('MALAGUENO') || ubic.includes('BARKER') || ubic.includes('PAMPITA')) {
-            sucursales.push([ubic, count]);
-          } else {
-            ciudades.push([ubic, count]);
-          }
-        });
-        ciudades.sort((a, b) => b[1] - a[1]);
-        let html = '';
-        sucursales.forEach(([ubic, count]) => {
-          html += `<div class="tooltip-location-item"><span class="loc-name">${ubic}</span><span class="loc-count">${count}</span></div>`;
-        });
-        if (sucursales.length > 0 && ciudades.length > 0) {
-          html += '<div style="border-top:1px dashed rgba(241,139,0,0.3); margin:6px 0;"></div>';
-        }
-        ciudades.forEach(([ubic, count]) => {
-          html += `<div class="tooltip-location-item"><span class="loc-name">${ubic}</span><span class="loc-count">${count}</span></div>`;
-        });
-        tooltipContent.innerHTML = html;
-      }
-    }
-    
-    const bubbleCount = document.getElementById('usuariosCount');
-    if (bubbleCount) {
-      const previo = parseInt(bubbleCount.textContent) || 0;
-      bubbleCount.textContent = total;
-      const bubble = document.getElementById('usuariosConectadosBubble');
-      if (total > previo && total > 0) {
-        playConexionSound();
-        if (bubble) {
-          bubble.classList.remove('pulse-exit');
-          bubble.classList.add('pulse-new');
-          setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
-        }
-      } else if (total < previo && previo > 0) {
-        playDesconexionSound();
-        if (bubble) {
-          bubble.classList.remove('pulse-new');
-          bubble.classList.add('pulse-exit');
-          setTimeout(() => bubble.classList.remove('pulse-exit'), 2500);
-        }
-      }
-    }
-  });
+let html = `<div style="margin-bottom: 12px; padding-bottom: 10px; border-bottom: 2px solid rgba(241, 139, 0, 0.3); display: flex; align-items: center; gap: 8px;">
+<span style="display: inline-block; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; animation: blink-red 1.5s infinite;"></span>
+<span style="color: #fbbf24; font-weight: 900; font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px;">👥 USUARIOS EN VIVO</span>
+</div>`;
+
+const entries = Object.entries(ubicaciones).sort((a, b) => b[1] - a[1]);
+
+if (entries.length === 0) {
+html += `<div style="color: #94a3b8; font-style: italic; text-align: center; padding: 8px;">Sin usuarios conectados</div>`;
+} else {
+entries.forEach(([ubic, count], index) => {
+const emoji = ubic.includes('Argentina') ? '🇷' : 
+ubic.includes('USA') || ubic.includes('United States') ? '🇸' : 
+ubic.includes('Spain') || ubic.includes('España') ? '🇪' : 
+ubic.includes('Mexico') || ubic.includes('México') ? '🇲' : '🌍';
+
+html += `<div style="display: flex; align-items: center; justify-content: space-between; padding: 8px 0; ${index < entries.length - 1 ? 'border-bottom: 1px solid rgba(255,255,255,0.1);' : ''}">
+<div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+<span style="font-size: 16px;">${emoji}</span>
+<span style="color: #fcd34d; font-weight: 700; flex: 1;">${ubic}</span>
+</div>
+<div style="background: linear-gradient(135deg, #f18b00, #ffa543); color: white; padding: 2px 12px; border-radius: 20px; font-size: 11px; font-weight: 900; min-width: 28px; text-align: center;">
+${count}
+</div>
+</div>`;
+});
 }
 
+html += `<div style="margin-top: 12px; padding-top: 10px; border-top: 2px solid rgba(241, 139, 0, 0.3); display: flex; justify-content: space-between; align-items: center;">
+<span style="color: rgba(255,255,255,0.7); font-size: 11px;">TOTAL:</span>
+<span style="color: #fbbf24; font-weight: 900; font-size: 16px;">${total} usuarios</span>
+</div>`;
+
+tooltip.innerHTML = html;
+
+bubble.addEventListener('mouseenter', () => {
+tooltip.style.opacity = '1';
+tooltip.style.transform = 'translateX(-50%) translateY(-12px)';
+});
+
+bubble.addEventListener('mouseleave', () => {
+tooltip.style.opacity = '0';
+tooltip.style.transform = 'translateX(-50%) translateY(-10px)';
+});
+}
+
+// ═══ INICIALIZAR ═══
 function inicializarContadorUsuarios() {
-  detectarMiUbicacion().then(() => {
-    connectedRef.on("value", (snap) => {
-      if (snap.val() === true) {
-        userRef = database.ref('usuarios_conectados/users/' + MI_ID_USUARIO);
-        userRef.onDisconnect().remove();
-        userRef.set({ 
-          sucursal: currentSucursal,
-          ubicacion: obtenerMiUbicacionAMostrar(),
-          timestamp: Date.now()
-        });
-        actualizarTooltipUbicaciones();
-      }
-    });
-  });
-  window.addEventListener('beforeunload', () => { if (userRef) userRef.remove(); });
-  window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
-}
+detectarMiUbicacion().then(() => {
+connectedRef.on("value", (snap) => {
+if (snap.val() === true) {
+userRef = database.ref('usuarios_conectados/users/' + MI_ID_USUARIO);
+userRef.onDisconnect().remove();
+userRef.set({ 
+ubicacion: miUbicacion,
+timestamp: Date.now(),
+lastActive: new Date().toISOString()
+});
 
+actualizarContadorUsuariosUI();
+}
+});
+});
+
+window.addEventListener('beforeunload', () => { if (userRef) userRef.remove(); });
+window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
+}
 // ═══════════════════════════════════════════════════════════════
 // 🔒 CONFIGURACIÓN DE SEGURIDAD Y DATOS
 // ═══════════════════════════════════════════════════════════════
