@@ -758,52 +758,7 @@ window.audioContextInitialized = false; window.audioContext = null;
 window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
 window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) window.initAudioContext(); if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
 function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
-function playErrorSound() // 🔔 Sonido cuando alguien se conecta (campanita de recepción)
-function playConexionSound() {
-  if (!soundEnabled) return;
-  if (!window.audioContextInitialized) window.initAudioContext();
-  if (window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume();
-  try {
-    const a = window.audioContext;
-    const now = a.currentTime;
-    
-    // Nota principal (campana brillante)
-    const osc1 = a.createOscillator();
-    const gain1 = a.createGain();
-    osc1.connect(gain1);
-    gain1.connect(a.destination);
-    osc1.frequency.value = 1200; // Frecuencia alta tipo campanita
-    osc1.type = 'sine';
-    gain1.gain.setValueAtTime(0.25, now);
-    gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
-    osc1.start(now);
-    osc1.stop(now + 0.6);
-    
-    // Armónico (da el brillo de campana)
-    const osc2 = a.createOscillator();
-    const gain2 = a.createGain();
-    osc2.connect(gain2);
-    gain2.connect(a.destination);
-    osc2.frequency.value = 1800; // Armónico superior
-    osc2.type = 'sine';
-    gain2.gain.setValueAtTime(0.12, now);
-    gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
-    osc2.start(now);
-    osc2.stop(now + 0.4);
-    
-    // Tercer armónico (toque metálico)
-    const osc3 = a.createOscillator();
-    const gain3 = a.createGain();
-    osc3.connect(gain3);
-    gain3.connect(a.destination);
-    osc3.frequency.value = 2400;
-    osc3.type = 'sine';
-    gain3.gain.setValueAtTime(0.06, now);
-    gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
-    osc3.start(now);
-    osc3.stop(now + 0.25);
-  } catch(e) { console.log('Error sonido conexión:', e); }
-} { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
+function playErrorSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(), o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=200;o.type='sawtooth'; g.gain.setValueAtTime(0.2,a.currentTime); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+0.3); o.start();o.stop(a.currentTime+0.3); } catch(e){} }
 function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 function togglePasswordVisibility() { const input = document.getElementById('passwordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
 function toggleResumenPasswordVisibility() { const input = document.getElementById('resumenPasswordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
