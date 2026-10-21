@@ -10,7 +10,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="https://cdn.sheetjs.com/xlsx-0.20.2/package/dist/xlsx.full.min.js"></script>
-<!-- Firebase SDK -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -149,58 +148,16 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .tooltip-content .palabras-clave-title.ci-title { color: #fbbf24; }
 .tooltip-content .palabra-tag { display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin: 2px; color: #fcd34d; border: 1px solid rgba(255, 255, 255, 0.15); }
 
-/* === BURBUJA DE USUARIOS CONECTADOS (OPTIMIZADA) === */
-#usuariosConectadosBubble {
-  position: fixed;
-  bottom: 20px;
-  left: 20px;
-  z-index: 10002;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-  filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4));
-}
-#usuariosConectadosBubble:hover {
-  transform: scale(1.12) translateY(-3px);
-  filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6));
-}
-#usuariosConectadosBubble .bubble-count {
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: white;
-  font-weight: 900;
-  font-size: 14px;
-  min-width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0 8px;
-  border: 2px solid white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  animation: pulseUsuarios 2s ease-in-out infinite;
-}
+/* === BURBUJA DE USUARIOS CONECTADOS === */
+#usuariosConectadosBubble { position: fixed; bottom: 20px; left: 20px; z-index: 10002; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4)); }
+#usuariosConectadosBubble:hover { transform: scale(1.12) translateY(-3px); filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6)); }
+#usuariosConectadosBubble .bubble-count { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 900; font-size: 14px; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 8px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: pulseUsuarios 2s ease-in-out infinite; }
 @keyframes pulseUsuarios { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-#usuariosConectadosBubble .bubble-icon {
-  background: white;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 26px; /* Un poco más grande para el casco */
-  border: 2px solid #10b981;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-}
-#usuariosConectadosBubble.pulse-new .bubble-count {
-  animation: pulseNew 0.8s ease-in-out 3;
-}
+#usuariosConectadosBubble .bubble-icon { background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; border: 2px solid #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+#usuariosConectadosBubble.pulse-new .bubble-count { animation: pulseNew 0.8s ease-in-out 3; }
+#usuariosConectadosBubble.pulse-exit .bubble-count { animation: pulseExit 0.8s ease-in-out 3; }
 @keyframes pulseNew { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #fbbf24, #f59e0b); transform: scale(1.25); } }
-
+@keyframes pulseExit { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #64748b, #475569); transform: scale(0.9); } }
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; position: sticky; top: 0; z-index: 9999; margin-bottom: 16px; border-radius: 16px; }
 .header-container.scrolled { padding: 8px 12px; border-radius: 0 0 16px 16px; }
@@ -237,13 +194,10 @@ body { padding: 10px; }
 </div>
 </div>
 <div class="watermark" id="watermark">MINERAR</div>
-
-<!-- BURBUJA DE USUARIOS MEJORADA (Sin puntito, con casco 👷) -->
 <div id="usuariosConectadosBubble" title="Usuarios conectados en vivo">
-  <div class="bubble-count" id="usuariosCount">0</div>
-  <div class="bubble-icon">👷</div>
+<div class="bubble-count" id="usuariosCount">0</div>
+<div class="bubble-icon">👷</div>
 </div>
-
 <div id="passwordOverlay" style="display:none;">
 <div class="password-card">
 <div class="password-lock-icon">🔒</div>
@@ -258,7 +212,6 @@ body { padding: 10px; }
 <p class="text-[11px] text-slate-400 mt-2">Presioná ENTER para acceder</p>
 </div>
 </div>
-
 <div id="logoutConfirmModal">
 <div class="logout-modal-card">
 <div class="logout-icon">🔒</div>
@@ -270,7 +223,6 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
-
 <div id="newReportAlert">
 <div class="alert-card">
 <div class="alert-icon">🚨</div>
@@ -280,7 +232,6 @@ body { padding: 10px; }
 <p class="text-[10px] text-slate-400 mt-2">Cierre automático en <span id="alertCountdown">15</span>s</p>
 </div>
 </div>
-
 <div id="mainContent" class="hidden-section">
 <div class="max-w-[1700px] w-[96%] mx-auto">
 <div class="header-container">
@@ -305,7 +256,6 @@ body { padding: 10px; }
 <button onclick="abrirModalCerrarSesion()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">🔒 CERRAR SESIÓN</button>
 </div>
 </div>
-
 <div class="glass-card p-6 mb-6">
 <div class="text-center mb-4">
 <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
@@ -331,7 +281,6 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
-
 <div class="grid lg:grid-cols-[280px_1fr] gap-5">
 <aside>
 <div class="glass-card p-4">
@@ -404,9 +353,7 @@ body { padding: 10px; }
 </main>
 </div>
 </div>
-
 <hr class="my-4">
-
 <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
 <div class="text-center mb-4">
 <h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 📋</h2>
@@ -507,8 +454,6 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
-
-<!-- MODALES (Password, Resumen, Detail, Daily, Supervisor, PersonaVCP) -->
 <div id="resumenPasswordModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[30002] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-2xl border-4 border-orange-500">
 <div class="text-center">
@@ -525,19 +470,17 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
-
 <div id="cerrarResumenConfirmModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 40001; display: none; align-items: center; justify-content: center; padding: 20px;">
 <div class="modal-bounce" style="background: white; border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f18b00;">
 <div style="font-size: 64px; margin-bottom: 12px; display: inline-block; animation: pulse 1.5s infinite;">📊</div>
 <h3 class="text-xl font-black text-slate-800 mb-2">CONFIRMAR SALIDA</h3>
 <p class="text-sm text-slate-500 mb-6">¿Desea cerrar el Resumen Ejecutivo?</p>
 <div class="flex gap-3">
-<button onclick="cancelarCerrarResumen()" style="flex: 1; background: #dc2626; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">❌ CANCELAR</button>
-<button onclick="confirmarCerrarResumen()" style="flex: 1; background: #16a34a; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">✅ SÍ, CERRAR</button>
+<button onclick="cancelarCerrarResumen()" style="flex: 1; background: #dc2626; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.3);">❌ CANCELAR</button>
+<button onclick="confirmarCerrarResumen()" style="flex: 1; background: #16a34a; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3);">✅ SÍ, CERRAR</button>
 </div>
 </div>
 </div>
-
 <div id="resumenEjecutivoPage" class="hidden-section resumen-fullscreen" style="display:none;">
 <div class="max-w-[1700px] w-[96%] mx-auto p-6">
 <div class="flex justify-between items-center mb-6 bg-white rounded-2xl shadow-lg p-4 sticky top-0 z-10">
@@ -550,7 +493,6 @@ body { padding: 10px; }
 </div>
 <button onclick="abrirConfirmCerrarResumen()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105">🔒 CERRAR RESUMEN EJECUTIVO</button>
 </div>
-
 <div class="bg-white rounded-2xl shadow-md p-4 mb-6">
 <div class="flex flex-wrap gap-4 items-end">
 <div><label class="text-xs font-bold text-slate-500 block mb-1">🏢 SUCURSAL</label><select id="ejecutivoSucursal" class="border-2 border-orange-200 rounded-lg p-2 text-sm bg-white" onchange="actualizarResumenEjecutivo()"><option value="todas">TODAS</option><option value="MALAGUENO">MALAGUEÑO</option><option value="BARKER">BARKER</option><option value="LAPAMPITA">LA PAMPITA</option></select></div>
@@ -562,38 +504,31 @@ body { padding: 10px; }
 <button onclick="exportarResumenEjecutivoExcel()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-md transition-all">📊 EXCEL</button>
 </div>
 </div>
-
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 <div id="kpiActosCard" class="glass-card p-5 text-center border-l-4 border-cyan-500 kpi-card-clickable" onclick="aplicarFiltroPorTipo('acto')"><div class="text-4xl font-black text-cyan-700" id="ejecTotalActos">0</div><div class="text-sm font-bold text-slate-600 mt-1">⚠️ ACTOS</div></div>
 <div id="kpiCondCard" class="glass-card p-5 text-center border-l-4 border-amber-500 kpi-card-clickable" onclick="aplicarFiltroPorTipo('condicion')"><div class="text-4xl font-black text-amber-700" id="ejecTotalCondiciones">0</div><div class="text-sm font-bold text-slate-600 mt-1">🏚️ CONDICIONES</div></div>
 <div id="kpiVCPCard" class="glass-card p-5 text-center border-l-4 border-emerald-500 kpi-card-clickable" onclick="aplicarFiltroPorTipo('vcp')"><div class="text-4xl font-black text-emerald-700" id="ejecTotalVCP">0</div><div class="text-sm font-bold text-slate-600 mt-1">🎯 VCP</div></div>
-<!-- TARJETA TOTAL MODIFICADA PARA SER EXPLÍCITA -->
 <div id="kpiTotalCard" class="glass-card p-5 text-center border-l-4 border-purple-500 bg-gradient-to-r from-purple-50 to-indigo-50 kpi-card-clickable" onclick="aplicarFiltroPorTipo('todos')">
     <div class="text-4xl font-black text-purple-700" id="ejecTotalGeneral">0</div>
     <div class="text-sm font-bold text-slate-600 mt-1">🔄 RESTAURAR TODO</div>
 </div>
 </div>
-
 <div class="grid md:grid-cols-2 gap-6 mb-6">
 <div class="glass-card p-5"><h3 class="text-lg font-black text-purple-800 mb-3">📊 EVOLUCIÓN MENSUAL · SUCURSALES</h3><div class="chart-container" style="height: 350px;"><canvas id="ejecutivoEvolucionSucursalesChart"></canvas></div></div>
 <div class="glass-card p-5"><h3 class="text-lg font-black text-purple-800 mb-3">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container" style="height: 350px;"><canvas id="ejecutivoVCPSucursalesChart"></canvas></div></div>
 </div>
-
 <div class="glass-card p-5 mb-6">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h3 class="text-xl font-black text-purple-800">📋 DETALLE COMPLETO</h3><button onclick="aplicarFiltroPorTipo('todos')" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full">🗑️ Limpiar</button></div>
 <div class="table-scroll max-h-96"><table class="w-full text-left text-sm"><thead class="bg-purple-100 sticky top-0"><tr><th class="p-3">🏢 Sucursal</th><th>📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th>🔒 Estado</th></tr></thead><tbody id="ejecTablaBody"></tbody></table></div>
 </div>
-
 <div class="grid lg:grid-cols-3 gap-6 mb-6">
 <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 shadow-lg border-l-4 border-red-600"><h3 class="text-xl font-black text-red-800 mb-4">⚠️ TOP 5 ACTOS</h3><div id="ejecTopActos" class="space-y-2"></div></div>
 <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-4 shadow-lg border-l-4 border-amber-600"><h3 class="text-xl font-black text-amber-800 mb-4">🏚️ TOP 5 CONDICIONES</h3><div id="ejecTopCond" class="space-y-2"></div></div>
 <div class="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl p-4 shadow-lg border-l-4 border-purple-600"><h3 class="text-xl font-black text-purple-800 mb-4">🏆 TOP 10 RESPONSABLES</h3><div id="ejecTopResponsables" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div></div>
 </div>
-
 <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-5 shadow-lg border-l-4 border-yellow-600 mb-6"><h3 class="text-xl font-black text-yellow-800 mb-4">🔄 REINCIDENCIAS</h3><div id="ejecReincidencias" class="grid md:grid-cols-2 gap-3 max-h-64 overflow-y-auto"></div></div>
 </div>
 </div>
-
 <div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-4 border-purple-500 overflow-hidden">
 <div class="bg-gradient-to-r from-purple-600 to-purple-700 px-5 py-4 flex justify-between items-center">
@@ -608,7 +543,6 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
-
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30003] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-xl w-full max-w-md shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 flex justify-between items-center">
@@ -624,7 +558,6 @@ body { padding: 10px; }
 <div class="px-5 pb-5"><button onclick="closeReportModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-lg text-base font-bold cursor-pointer transition-all border-2 border-gray-300">Cerrar ✕</button></div>
 </div>
 </div>
-
 <div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30004] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-2xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -635,7 +568,6 @@ body { padding: 10px; }
 <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30"><button onclick="closeDailyReportsModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
-
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30005] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -646,7 +578,6 @@ body { padding: 10px; }
 <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30"><button onclick="closeSupervisorModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
-
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30006] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-emerald-500 overflow-hidden">
 <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex justify-between items-center">
@@ -657,10 +588,9 @@ body { padding: 10px; }
 <div class="border-t border-emerald-100 px-5 py-4 bg-emerald-50/30"><button onclick="closePersonaVCPModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
-
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURACIÓN (Usuarios Conectados en Tiempo Real)
+// 🔥 FIREBASE CONFIGURACIÓN
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
 apiKey: "AIzaSyCDYZyMeXjbKd7F4DPW1k9ll0rXMCkYExM",
@@ -680,32 +610,32 @@ let userRef = null;
 
 function actualizarContadorUsuariosUI() {
 const counterRef = database.ref('usuarios_conectados/contador');
-let ultimoContador = 0;
 counterRef.on('value', (snapshot) => {
 const total = snapshot.val() || 0;
 const el = document.getElementById('usuariosCount');
 if (el) {
 const previo = parseInt(el.textContent) || 0;
 el.textContent = total;
-if (total > previo && total > 1) {
-playConexionSound();
 const bubble = document.getElementById('usuariosConectadosBubble');
+// 🔔 ALGUIEN INGRESÓ → Sonido de "puerta abriéndose"
+if (total > previo && total > 0) {
+playConexionSound();
 if (bubble) {
+bubble.classList.remove('pulse-exit');
 bubble.classList.add('pulse-new');
 setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
 }
 }
-if (total < previo) {
-const bubble = document.getElementById('usuariosConectadosBubble');
+// 🔕 ALGUIEN SE FUE → Sonido de "puerta cerrándose"
+if (total < previo && previo > 0) {
+playDesconexionSound();
 if (bubble) {
-bubble.style.filter = 'drop-shadow(0 4px 12px rgba(100, 116, 139, 0.4))';
-setTimeout(() => {
-bubble.style.filter = 'drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4))';
-}, 1000);
+bubble.classList.remove('pulse-new');
+bubble.classList.add('pulse-exit');
+setTimeout(() => bubble.classList.remove('pulse-exit'), 2500);
 }
 }
 }
-ultimoContador = total;
 });
 }
 
@@ -732,10 +662,7 @@ window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
 const PASSWORD_CORRECTA = atob("TWFzQWdpbGVzQE1JTkVSQVI=");
 const PASSWORD_RESUMEN = atob("QURNSU4xMjM=");
 const SESSION_KEY = 'minerar_session_date';
-function getTodayKey() {
-const d = new Date();
-return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-}
+function getTodayKey() { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
 function tieneSesionValida() { try { return localStorage.getItem(SESSION_KEY) === getTodayKey(); } catch(e) { return false; } }
 function guardarSesion() { try { localStorage.setItem(SESSION_KEY, getTodayKey()); } catch(e) {} }
 function borrarSesion() { try { localStorage.removeItem(SESSION_KEY); } catch(e) {} }
@@ -837,14 +764,14 @@ return html + `</div></div>`;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// AUDIO Y SESIÓN
+// 🔊 AUDIO Y SESIÓN (SONIDOS MEJORADOS)
 // ═══════════════════════════════════════════════════════════════
 window.audioContextInitialized = false; window.audioContext = null;
 window.initAudioContext = function() { if(window.audioContextInitialized) return true; try { window.audioContext = new (window.AudioContext || window.webkitAudioContext)(); if(window.audioContext.state === 'suspended') window.audioContext.resume(); window.audioContextInitialized = true; return true; } catch(e) { return false; } };
 
 window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) window.initAudioContext(); if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
 
-// 🔔 SONIDO DE CONEXIÓN: Tipo "pop/ventosa" o "puerta cerrándose suavemente" (Ligero y distintivo)
+// 🔔 SONIDO DE ENTRADA: "Puerta abriéndose" (Pop grave + tono cálido ascendente)
 function playConexionSound() {
     if (!soundEnabled) return;
     if (!window.audioContextInitialized) window.initAudioContext();
@@ -853,31 +780,94 @@ function playConexionSound() {
         const a = window.audioContext;
         const now = a.currentTime;
         
-        // 1. Sonido base tipo "thud" o "pop" (frecuencia que cae rápido)
-        const osc = a.createOscillator();
-        const gain = a.createGain();
-        osc.connect(gain);
-        gain.connect(a.destination);
-        osc.frequency.setValueAtTime(180, now);
-        osc.frequency.exponentialRampToValueAtTime(60, now + 0.15); // Efecto de caída
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.4, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
-        osc.start(now);
-        osc.stop(now + 0.2);
+        // 1. "Thunk" grave de la puerta abriéndose (frecuencia que cae)
+        const osc1 = a.createOscillator();
+        const gain1 = a.createGain();
+        osc1.connect(gain1);
+        gain1.connect(a.destination);
+        osc1.frequency.setValueAtTime(200, now);
+        osc1.frequency.exponentialRampToValueAtTime(80, now + 0.12);
+        osc1.type = 'sine';
+        gain1.gain.setValueAtTime(0.5, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
+        osc1.start(now);
+        osc1.stop(now + 0.2);
 
-        // 2. Pequeño "click" agudo para simular el cierre mecánico/ventosa
+        // 2. "Click" mecánico del picaporte
         const osc2 = a.createOscillator();
         const gain2 = a.createGain();
         osc2.connect(gain2);
         gain2.connect(a.destination);
-        osc2.frequency.value = 800;
+        osc2.frequency.value = 1200;
         osc2.type = 'triangle';
-        gain2.gain.setValueAtTime(0.1, now + 0.05);
-        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
-        osc2.start(now + 0.05);
-        osc2.stop(now + 0.1);
+        gain2.gain.setValueAtTime(0.25, now + 0.08);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
+        osc2.start(now + 0.08);
+        osc2.stop(now + 0.15);
+
+        // 3. Tono cálido de bienvenida (ascendente)
+        const osc3 = a.createOscillator();
+        const gain3 = a.createGain();
+        osc3.connect(gain3);
+        gain3.connect(a.destination);
+        osc3.frequency.setValueAtTime(440, now + 0.15);
+        osc3.frequency.exponentialRampToValueAtTime(660, now + 0.35);
+        osc3.type = 'sine';
+        gain3.gain.setValueAtTime(0.001, now);
+        gain3.gain.linearRampToValueAtTime(0.2, now + 0.2);
+        gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+        osc3.start(now + 0.15);
+        osc3.stop(now + 0.5);
     } catch(e) { console.log('Error sonido conexión:', e); }
+}
+
+// 🔕 SONIDO DE SALIDA: "Puerta cerrándose" (Pop seco + tono grave descendente)
+function playDesconexionSound() {
+    if (!soundEnabled) return;
+    if (!window.audioContextInitialized) window.initAudioContext();
+    if (window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume();
+    try {
+        const a = window.audioContext;
+        const now = a.currentTime;
+        
+        // 1. "Click" seco del cierre
+        const osc1 = a.createOscillator();
+        const gain1 = a.createGain();
+        osc1.connect(gain1);
+        gain1.connect(a.destination);
+        osc1.frequency.value = 900;
+        osc1.type = 'triangle';
+        gain1.gain.setValueAtTime(0.3, now);
+        gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+        osc1.start(now);
+        osc1.stop(now + 0.1);
+
+        // 2. "Thunk" grave del golpe de la puerta
+        const osc2 = a.createOscillator();
+        const gain2 = a.createGain();
+        osc2.connect(gain2);
+        gain2.connect(a.destination);
+        osc2.frequency.setValueAtTime(150, now + 0.05);
+        osc2.frequency.exponentialRampToValueAtTime(50, now + 0.25);
+        osc2.type = 'sine';
+        gain2.gain.setValueAtTime(0.4, now + 0.05);
+        gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc2.start(now + 0.05);
+        osc2.stop(now + 0.3);
+
+        // 3. Tono descendente de despedida
+        const osc3 = a.createOscillator();
+        const gain3 = a.createGain();
+        osc3.connect(gain3);
+        gain3.connect(a.destination);
+        osc3.frequency.setValueAtTime(500, now + 0.15);
+        osc3.frequency.exponentialRampToValueAtTime(250, now + 0.4);
+        osc3.type = 'sine';
+        gain3.gain.setValueAtTime(0.15, now + 0.15);
+        gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+        osc3.start(now + 0.15);
+        osc3.stop(now + 0.45);
+    } catch(e) { console.log('Error sonido desconexión:', e); }
 }
 
 function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
@@ -885,7 +875,6 @@ function playErrorSound() { if(!soundEnabled) return; window.initAudioContext();
 function toggleSound() { soundEnabled=!soundEnabled; document.getElementById('soundIcon').innerHTML=soundEnabled?'🔊':'🔇'; document.getElementById('soundText').innerHTML=soundEnabled?'SONIDO ON':'SONIDO OFF'; }
 function togglePasswordVisibility() { const input = document.getElementById('passwordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
 function toggleResumenPasswordVisibility() { const input = document.getElementById('resumenPasswordInput'); input.type = input.type === 'password' ? 'text' : 'password'; input.focus(); }
-
 function verifyPassword() {
 const input = document.getElementById('passwordInput'); const errorDiv = document.getElementById('passwordError'); const overlay = document.getElementById('passwordOverlay');
 if (input.value === PASSWORD_CORRECTA) {
@@ -894,7 +883,6 @@ overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-s
 setTimeout(() => { overlay.style.opacity = '0'; overlay.style.transition = 'opacity 0.5s'; setTimeout(() => { overlay.style.display = 'none'; isUnlocked = true; showVideoIntro(); }, 500); }, 1200);
 } else { playErrorSound(); errorDiv.textContent = '🔒 Contraseña incorrecta'; input.value = ''; input.focus(); input.classList.add('border-red-400'); setTimeout(() => input.classList.remove('border-red-400'), 500); }
 }
-
 function showVideoIntro() {
 const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer');
 videoIntro.classList.add('active');
@@ -1138,7 +1126,6 @@ document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b) => 
 // GRÁFICOS Y TARJETAS
 // ═══════════════════════════════════════════════════════════════
 const CATS_EXPANDIDAS = [ { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' }, { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' }, { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equipos', name: 'EQUIPOS', icon: '🔧', color: '#8b5cf6' }, { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' }, { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' }, { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }, { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' } ];
-const CATEGORIAS_POR_TARJETA = { 'epp': ['AI - Falta de uso de EPP'], 'orden': ['CI - Falta de orden y Limpieza'], 'procedimientos': ['AI - Incumplimiento de procedimiento'], 'equipos': ['CI - Equipos o herramientas fuera de estándar'], 'conduccion': ['AI - Conducción insegura'], 'berma': ['CI - Berma de seguridad fuera de estándar'], 'senalizacion': ['CI - Señalizacion deficiente'], 'area': ['CI - Problemas de Visibilidad'], 'otros': ['Otros'] };
 function updateCategoryCards(data, type) {
 const cats = type === 'vcp' ? [{ id: 'orden', name: 'ORDEN', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'PROCED.', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA', icon: '🏗️', color: '#ea580c' }] : CATS_EXPANDIDAS;
 const contId = type === 'vcp' ? 'vcpCategoryCards' : 'categoryCards';
@@ -1233,16 +1220,17 @@ document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
 document.getElementById('btnPrev').style.display = 'inline-block';
 document.getElementById('btnNext').style.display = 'inline-block';
 }
-
 function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 
-// FUNCIÓN NUEVA: Modal para el Resumen Ejecutivo
-function abrirModalEjecutivo(index) {
-    const data = window.datosModalActual;
-    if (!data || !data[index]) return;
-    const r = data[index];
+// NUEVA FUNCIÓN: Abrir modal desde TOPS y REINCIDENCIAS
+function abrirModalDesdeTop(listaDatos, index) {
+    if (!listaDatos || !listaDatos[index]) return;
+    const r = listaDatos[index];
+    isModalOpen = true;
+    currentModalData = listaDatos;
+    currentModalIndex = index;
     const modal = document.getElementById('reportDetailModal');
     const content = document.getElementById('reportModalContent');
     
@@ -1253,10 +1241,9 @@ function abrirModalEjecutivo(index) {
         content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-lg">${r.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
     }
     modal.classList.remove('hidden-section'); modal.style.display = 'flex';
-    // Ocultamos navegación en resumen para no confundir índices
-    document.getElementById('btnPrev').style.display = 'none';
-    document.getElementById('btnNext').style.display = 'none';
-    document.getElementById('modalCounter').innerText = 'Detalle';
+    document.getElementById('modalCounter').innerText = `${index + 1}/${listaDatos.length}`;
+    document.getElementById('btnPrev').style.display = 'inline-block';
+    document.getElementById('btnNext').style.display = 'inline-block';
 }
 
 function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
@@ -1368,7 +1355,10 @@ document.getElementById('ejecTotalCondiciones').innerText = datosActos.filter(d 
 document.getElementById('ejecTotalVCP').innerText = datosVCP.length;
 document.getElementById('ejecTotalGeneral').innerText = datosActos.filter(d => d.tipo === 'acto').length + datosActos.filter(d => d.tipo === 'condicion').length + datosVCP.length;
 const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]);
-renderEjecutivoTabla(datosOrdenados); renderEjecutivoRankings(datosActos); renderEjecutivoReincidencias(datosActos); renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
+renderEjecutivoTabla(datosOrdenados); 
+renderEjecutivoRankings(datosActos, datosVCP); 
+renderEjecutivoReincidencias(datosActos); 
+renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
 }
 
 function renderEjecutivoTabla(datos) {
@@ -1381,15 +1371,13 @@ const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo =
 const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
 const sigla = d.tipo === 'acto' ? 'AI' : (d.tipo === 'condicion' ? 'CI' : '');
 const descConSigla = sigla ? `${sigla} - ${d.descripcion || '-'}` : (d.descripcion || '-');
-// AQUÍ SE AGREGÓ EL onclick PARA ABRIR EL MODAL
-return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalEjecutivo(${index})"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia || '?'}/${d.mes || '?'}</td><td class="p-3">${escapeHtml(d.observador || d.personaObservada || '-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml(descConSigla.substring(0, 50))}${descConSigla.length > 50 ? '...' : ''}</td><td class="p-3">🏭 ${escapeHtml(d.sector || '-')}</td><td class="p-3">${getEstadoBadgeHTML(estaCerrado, 'small')}</td></tr>`;
+return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalDesdeTop(window.datosModalActual, ${index})"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia || '?'}/${d.mes || '?'}</td><td class="p-3">${escapeHtml(d.observador || d.personaObservada || '-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml(descConSigla.substring(0, 50))}${descConSigla.length > 50 ? '...' : ''}</td><td class="p-3">🏭 ${escapeHtml(d.sector || '-')}</td><td class="p-3">${getEstadoBadgeHTML(estaCerrado, 'small')}</td></tr>`;
 }).join('');
 }
 
 function aplicarFiltroPorTipo(tipo) {
     if (tipo === 'todos') {
         currentFiltroTipo = 'todos';
-        // Restauramos explícitamente los selectores para que el usuario vea que se limpió todo
         document.getElementById('ejecutivoTipoFiltro').value = 'todos';
         document.getElementById('ejecutivoSucursal').value = 'todas';
         document.getElementById('ejecutivoMes').value = 'todo';
@@ -1399,39 +1387,76 @@ function aplicarFiltroPorTipo(tipo) {
         currentFiltroTipo = tipo;
         document.getElementById('ejecutivoTipoFiltro').value = tipo;
     }
-
     document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c => c.classList.remove('active'));
     if (tipo === 'acto') document.getElementById('kpiActosCard').classList.add('active');
     else if (tipo === 'condicion') document.getElementById('kpiCondCard').classList.add('active');
     else if (tipo === 'vcp') document.getElementById('kpiVCPCard').classList.add('active');
     else document.getElementById('kpiTotalCard').classList.add('active');
-
     actualizarResumenEjecutivo();
 }
 
-function renderEjecutivoRankings(datos) {
-const actos = datos.filter(d => d.tipo === 'acto'); const countActos = {};
-actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; countActos[k] = (countActos[k] || 0) + 1; });
-const topActos = Object.entries(countActos).sort((a, b) => b[1] - a[1]).slice(0, 5);
+// 🔥 FUNCIÓN MEJORADA: Ahora los TOPS son clickeables y abren el modal
+function renderEjecutivoRankings(datosActos, datosVCP) {
+// TOP 5 ACTOS
+const actos = datosActos.filter(d => d.tipo === 'acto'); 
+const countActos = {};
+actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; if(!countActos[k]) countActos[k] = { count: 0, items: [] }; countActos[k].count++; countActos[k].items.push(d); });
+const topActos = Object.entries(countActos).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
 const contActos = document.getElementById('ejecTopActos');
-if (contActos) contActos.innerHTML = topActos.length ? topActos.map(([d, c], i) => `<div class="zr-ranking-item"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-red-600">${c}</div></div>`).join('') : '<p class="text-center py-4 text-slate-400">Sin datos</p>';
-const conds = datos.filter(d => d.tipo === 'condicion'); const countConds = {};
-conds.forEach(d => { let cat = d.categoria?.id || 'otros'; let desc = cat === 'berma' ? 'CI - Berma fuera de estándar' : cat === 'area' ? 'CI - Ambiente inseguro' : cat === 'orden' ? 'CI - Orden deficiente' : cat === 'senalizacion' ? 'CI - Señalización deficiente' : cat === 'equipos' ? 'CI - Equipos fuera de estándar' : cat === 'epp' ? 'AI - Falta de EPP' : cat === 'procedimientos' ? 'AI - Procedimientos inadecuados' : cat === 'conduccion' ? 'AI - Conducción insegura' : 'Otros'; countConds[desc] = (countConds[desc] || 0) + 1; });
-const topConds = Object.entries(countConds).sort((a, b) => b[1] - a[1]).slice(0, 5);
-const contConds = document.getElementById('ejecTopCond');
-if (contConds) contConds.innerHTML = topConds.length ? topConds.map(([d, c], i) => `<div class="zr-ranking-item" style="border-left-color:#f18b00"><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${d.length > 40 ? d.substring(0, 40) + '...' : d}</div><div class="text-xs">${c} registro${c > 1 ? 's' : ''}</div></div><div class="text-lg font-black text-amber-600">${c}</div></div>`).join('') : '<p class="text-center py-4 text-slate-400">Sin datos</p>';
-const countResp = {}; datos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; countResp[r] = (countResp[r] || 0) + 1; });
-const topResp = Object.entries(countResp).sort((a, b) => b[1] - a[1]).slice(0, 10);
-const contResp = document.getElementById('ejecTopResponsables');
-if (contResp) contResp.innerHTML = topResp.map(([n, c], i) => `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2"><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${c} reportes</div></div>`).join('');
+if (contActos) {
+    if (topActos.length) {
+        contActos.innerHTML = topActos.map(([desc, info], i) => {
+            const onclickAttr = `onclick="abrirModalDesdeTop(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
+            return `<div class="zr-ranking-item" ${onclickAttr}><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${desc.length > 40 ? desc.substring(0, 40) + '...' : desc}</div><div class="text-xs">${info.count} registro${info.count > 1 ? 's' : ''} · Click para ver</div></div><div class="text-lg font-black text-red-600">${info.count}</div></div>`;
+        }).join('');
+    } else contActos.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
 }
+
+// TOP 5 CONDICIONES
+const conds = datosActos.filter(d => d.tipo === 'condicion'); 
+const countConds = {};
+conds.forEach(d => { let cat = d.categoria?.id || 'otros'; let desc = cat === 'berma' ? 'CI - Berma fuera de estándar' : cat === 'area' ? 'CI - Ambiente inseguro' : cat === 'orden' ? 'CI - Orden deficiente' : cat === 'senalizacion' ? 'CI - Señalización deficiente' : cat === 'equipos' ? 'CI - Equipos fuera de estándar' : cat === 'epp' ? 'AI - Falta de EPP' : cat === 'procedimientos' ? 'AI - Procedimientos inadecuados' : cat === 'conduccion' ? 'AI - Conducción insegura' : 'Otros'; if(!countConds[desc]) countConds[desc] = { count: 0, items: [] }; countConds[desc].count++; countConds[desc].items.push(d); });
+const topConds = Object.entries(countConds).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
+const contConds = document.getElementById('ejecTopCond');
+if (contConds) {
+    if (topConds.length) {
+        contConds.innerHTML = topConds.map(([desc, info], i) => {
+            const onclickAttr = `onclick="abrirModalDesdeTop(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
+            return `<div class="zr-ranking-item" style="border-left-color:#f18b00" ${onclickAttr}><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${desc.length > 40 ? desc.substring(0, 40) + '...' : desc}</div><div class="text-xs">${info.count} registro${info.count > 1 ? 's' : ''} · Click para ver</div></div><div class="text-lg font-black text-amber-600">${info.count}</div></div>`;
+        }).join('');
+    } else contConds.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
+}
+
+// TOP 10 RESPONSABLES
+const todosDatos = [...datosActos, ...datosVCP];
+const countResp = {}; 
+todosDatos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; if(!countResp[r]) countResp[r] = { count: 0, items: [] }; countResp[r].count++; countResp[r].items.push(d); });
+const topResp = Object.entries(countResp).sort((a, b) => b[1].count - a[1].count).slice(0, 10);
+const contResp = document.getElementById('ejecTopResponsables');
+if (contResp) {
+    contResp.innerHTML = topResp.map(([n, info], i) => {
+        const onclickAttr = `onclick="abrirModalDesdeTop(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
+        return `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50 transition-all" ${onclickAttr}><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${info.count} reportes</div></div>`;
+    }).join('');
+}
+}
+
+// 🔥 FUNCIÓN MEJORADA: REINCIDENCIAS ahora son clickeables
 function renderEjecutivoReincidencias(datos) {
 const reincMap = new Map();
-datos.forEach(d => { if (!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if (!reincMap.has(key)) reincMap.set(key, { persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set() }); const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); });
+datos.forEach(d => { if (!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if (!reincMap.has(key)) reincMap.set(key, { persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set(), items: [] }); const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); item.items.push(d); });
 const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a, b) => b.count - a.count).slice(0, 10);
 const cont = document.getElementById('ejecReincidencias');
-if (cont) cont.innerHTML = reincList.length ? reincList.map(r => `<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500"><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs">🏭 ${Array.from(r.sucursales).join(', ')}</div></div>`).join('') : '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias</p>';
+if (cont) {
+    if (reincList.length) {
+        cont.innerHTML = reincList.map(r => {
+            const onclickAttr = `onclick="abrirModalDesdeTop(${JSON.stringify(r.items).replace(/"/g, '&quot;')}, 0)"`;
+            return `<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer hover:bg-orange-50 transition-all" ${onclickAttr}><div class="flex justify-between"><div><span class="font-bold">👤 ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div><div class="text-[10px] text-orange-600 mt-1 italic">👆 Click para ver detalles</div></div>`;
+        }).join('');
+    } else cont.innerHTML = '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias</p>';
 }
+}
+
 function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) {
 const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
 const datasets = [];
