@@ -124,40 +124,116 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 @keyframes logoHeartbeat { 0% { transform: scale(1) rotate(0deg); } 14% { transform: scale(1.08) rotate(-2deg); } 28% { transform: scale(1) rotate(0deg); } 42% { transform: scale(1.08) rotate(2deg); } 56% { transform: scale(1) rotate(0deg); } 100% { transform: scale(1) rotate(0deg); } }
 .header-left .logo-animado { animation: logoHeartbeat 3s ease-in-out infinite; display: inline-block; transition: all 0.3s ease; }
 .header-left .logo-animado:hover { animation-play-state: paused; transform: scale(1.1); }
-.category-card .tooltip-content { visibility: hidden; opacity: 0; width: 480px; max-width: 92vw; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); color: #fcd34d; text-align: left; padding: 18px 22px; border-radius: 18px; position: absolute; z-index: 999999 !important; bottom: calc(100% + 16px); left: 50%; transform: translateX(-50%) scale(0.95); transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.25s ease; box-shadow: 0 25px 70px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08); font-size: 11px; pointer-events: none !important; border: 1px solid rgba(241, 139, 0, 0.25); max-height: 450px; overflow-y: auto; }
-.category-card .tooltip-content::-webkit-scrollbar { width: 4px; }
-.category-card .tooltip-content::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.3); border-radius: 10px; }
-.category-card .tooltip-content::-webkit-scrollbar-thumb { background: #f18b00; border-radius: 10px; }
-.category-card .tooltip-content::after { content: ''; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 9px solid transparent; border-top-color: rgba(15, 23, 42, 0.65); }
-.category-card:hover .tooltip-content { visibility: visible; opacity: 1; transform: translateX(-50%) scale(1); }
-.tooltip-content .tooltip-header { font-weight: 800; margin-bottom: 12px; font-size: 16px; color: #f18b00; border-bottom: 1px solid rgba(241, 139, 0, 0.25); padding-bottom: 10px; letter-spacing: 0.5px; text-shadow: 0 0 20px rgba(241, 139, 0, 0.15); }
-.tooltip-content .tooltip-item { padding: 3px 0 3px 4px; font-size: 10.5px; line-height: 1.5; color: #fcd34d; border-left: 2px solid rgba(241, 139, 0, 0.2); padding-left: 12px; margin-bottom: 2px; }
-.tooltip-content .tooltip-item:last-child { margin-bottom: 0; }
-.tooltip-content .tooltip-item .abrev { color: #f18b00; font-weight: 700; }
-.tooltip-footer { margin-top: 12px; padding-top: 10px; border-top: 1px solid rgba(241, 139, 0, 0.12); font-size: 10px; color: rgba(255,255,255,0.5); font-style: italic; text-align: center; letter-spacing: 0.3px; }
-.tooltip-content .criterios-section { margin-top: 10px; padding: 10px 12px; background: rgba(241, 139, 0, 0.1); border-radius: 8px; border: 1px solid rgba(241, 139, 0, 0.3); }
-.tooltip-content .criterios-title { font-weight: 700; color: #f18b00; font-size: 11px; margin-bottom: 6px; text-transform: uppercase; display: flex; align-items: center; gap: 6px; }
-.tooltip-content .criterio-item { font-size: 9.5px; color: #fcd34d; padding: 2px 0; line-height: 1.4; }
-.tooltip-content .criterio-item::before { content: '→ '; color: #f18b00; font-weight: bold; }
-.tooltip-content .palabras-clave-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px; }
-.tooltip-content .palabras-clave-box { background: rgba(0, 0, 0, 0.3); border-radius: 6px; padding: 8px; border: 1px solid rgba(255, 255, 255, 0.1); }
-.tooltip-content .palabras-clave-box.ai-box { border-color: rgba(59, 130, 246, 0.5); background: rgba(59, 130, 246, 0.1); }
-.tooltip-content .palabras-clave-box.ci-box { border-color: rgba(245, 158, 11, 0.5); background: rgba(245, 158, 11, 0.1); }
-.tooltip-content .palabras-clave-title { font-weight: 700; font-size: 10px; margin-bottom: 6px; display: flex; align-items: center; gap: 4px; }
-.tooltip-content .palabras-clave-title.ai-title { color: #60a5fa; }
-.tooltip-content .palabras-clave-title.ci-title { color: #fbbf24; }
-.tooltip-content .palabra-tag { display: inline-block; background: rgba(255, 255, 255, 0.1); padding: 2px 6px; border-radius: 4px; font-size: 9px; margin: 2px; color: #fcd34d; border: 1px solid rgba(255, 255, 255, 0.15); }
 
-/* === BURBUJA DE USUARIOS CONECTADOS === */
-#usuariosConectadosBubble { position: fixed; bottom: 20px; left: 20px; z-index: 10002; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4)); }
-#usuariosConectadosBubble:hover { transform: scale(1.12) translateY(-3px); filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6)); }
+/* ═══ BURBUJA CON TOOLTIP DE UBICACIONES 🌎 ═══ */
+#usuariosConectadosBubble { 
+  position: fixed; 
+  bottom: 20px; 
+  left: 20px; 
+  z-index: 10002; 
+  display: flex; 
+  flex-direction: column; 
+  align-items: center; 
+  gap: 2px; 
+  cursor: pointer; 
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); 
+  filter: drop-shadow(0 4px 12px rgba(241, 139, 0, 0.4)); 
+  position: relative;
+}
+#usuariosConectadosBubble:hover { transform: scale(1.08) translateY(-3px); filter: drop-shadow(0 8px 20px rgba(241, 139, 0, 0.6)); }
 #usuariosConectadosBubble .bubble-count { background: linear-gradient(135deg, #10b981, #059669); color: white; font-weight: 900; font-size: 14px; min-width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; padding: 0 8px; border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.2); animation: pulseUsuarios 2s ease-in-out infinite; }
 @keyframes pulseUsuarios { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
-#usuariosConectadosBubble .bubble-icon { background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; border: 2px solid #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
+#usuariosConectadosBubble .bubble-icon { background: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; border: 2px solid #10b981; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
 #usuariosConectadosBubble.pulse-new .bubble-count { animation: pulseNew 0.8s ease-in-out 3; }
 #usuariosConectadosBubble.pulse-exit .bubble-count { animation: pulseExit 0.8s ease-in-out 3; }
 @keyframes pulseNew { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #fbbf24, #f59e0b); transform: scale(1.25); } }
 @keyframes pulseExit { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #64748b, #475569); transform: scale(0.9); } }
+
+/* ═══ TOOLTIP SIMPLE AL PASAR EL MOUSE ═══ */
+#bubbleTooltip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-8px) scale(0.9);
+  background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+  color: white;
+  padding: 12px 16px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+  border: 2px solid #f18b00;
+  z-index: 10003;
+  max-width: 300px;
+  text-align: left;
+}
+#bubbleTooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #f18b00;
+}
+#usuariosConectadosBubble:hover #bubbleTooltip {
+  opacity: 1;
+  transform: translateX(-50%) translateY(-12px) scale(1);
+}
+.tooltip-title {
+  color: #fbbf24;
+  font-weight: 900;
+  font-size: 12px;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid rgba(241, 139, 0, 0.3);
+  padding-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.tooltip-live-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #ef4444;
+  border-radius: 50%;
+  animation: blink-red 1.5s infinite;
+}
+.tooltip-location-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: 11px;
+}
+.tooltip-location-item .loc-name {
+  color: #fcd34d;
+  font-weight: 700;
+  flex: 1;
+  white-space: normal;
+  max-width: 200px;
+}
+.tooltip-location-item .loc-count {
+  background: #f18b00;
+  color: white;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 900;
+}
+.tooltip-empty {
+  color: #94a3b8;
+  font-style: italic;
+  text-align: center;
+  padding: 4px 0;
+}
+
 @media (max-width: 768px) {
 .header-container { flex-direction: column; text-align: center; padding: 14px 16px; position: sticky; top: 0; z-index: 9999; margin-bottom: 16px; border-radius: 16px; }
 .header-container.scrolled { padding: 8px 12px; border-radius: 0 0 16px 16px; }
@@ -170,13 +246,10 @@ body { padding: 10px; }
 .imagen-grid { grid-template-columns: 1fr; }
 .category-card { padding: 8px 4px; }
 #lastUpdateIndicator { display: none; }
-.category-card .tooltip-content { width: 320px; font-size: 9.5px; bottom: calc(100% + 10px); padding: 14px 16px; max-height: 320px; background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
-.tooltip-content .tooltip-header { font-size: 13px; }
-.tooltip-content .tooltip-item { font-size: 9px; }
-.tooltip-content .palabras-clave-grid { grid-template-columns: 1fr; }
 #usuariosConectadosBubble { bottom: 14px; left: 14px; }
-#usuariosConectadosBubble .bubble-icon { width: 38px; height: 38px; font-size: 22px; }
+#usuariosConectadosBubble .bubble-icon { width: 38px; height: 38px; font-size: 20px; }
 #usuariosConectadosBubble .bubble-count { font-size: 12px; min-width: 24px; height: 24px; }
+#bubbleTooltip { font-size: 10px; padding: 10px 12px; max-width: 240px; }
 }
 </style>
 </head>
@@ -194,10 +267,22 @@ body { padding: 10px; }
 </div>
 </div>
 <div class="watermark" id="watermark">MINERAR</div>
-<div id="usuariosConectadosBubble" title="Usuarios conectados en vivo">
-<div class="bubble-count" id="usuariosCount">0</div>
-<div class="bubble-icon">👷</div>
+
+<!-- BURBUJA CON TOOLTIP DE UBICACIONES 🌎 -->
+<div id="usuariosConectadosBubble">
+  <div id="bubbleTooltip">
+    <div class="tooltip-title">
+      <span class="tooltip-live-dot"></span>
+      CONECTADOS EN VIVO
+    </div>
+    <div id="tooltipContent">
+      <div class="tooltip-empty">Cargando ubicaciones...</div>
+    </div>
+  </div>
+  <div class="bubble-count" id="usuariosCount">0</div>
+  <div class="bubble-icon">👷</div>
 </div>
+
 <div id="passwordOverlay" style="display:none;">
 <div class="password-card">
 <div class="password-lock-icon">🔒</div>
@@ -212,6 +297,7 @@ body { padding: 10px; }
 <p class="text-[11px] text-slate-400 mt-2">Presioná ENTER para acceder</p>
 </div>
 </div>
+
 <div id="logoutConfirmModal">
 <div class="logout-modal-card">
 <div class="logout-icon">🔒</div>
@@ -223,6 +309,7 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
+
 <div id="newReportAlert">
 <div class="alert-card">
 <div class="alert-icon">🚨</div>
@@ -232,6 +319,7 @@ body { padding: 10px; }
 <p class="text-[10px] text-slate-400 mt-2">Cierre automático en <span id="alertCountdown">15</span>s</p>
 </div>
 </div>
+
 <div id="mainContent" class="hidden-section">
 <div class="max-w-[1700px] w-[96%] mx-auto">
 <div class="header-container">
@@ -256,6 +344,7 @@ body { padding: 10px; }
 <button onclick="abrirModalCerrarSesion()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">🔒 CERRAR SESIÓN</button>
 </div>
 </div>
+
 <div class="glass-card p-6 mb-6">
 <div class="text-center mb-4">
 <div class="flex flex-wrap items-center justify-center gap-3 mb-3">
@@ -281,6 +370,7 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
+
 <div class="grid lg:grid-cols-[280px_1fr] gap-5">
 <aside>
 <div class="glass-card p-4">
@@ -353,7 +443,9 @@ body { padding: 10px; }
 </main>
 </div>
 </div>
+
 <hr class="my-4">
+
 <div id="vcpSection" class="glass-card p-6 border-2 border-amber-200">
 <div class="text-center mb-4">
 <h2 class="text-xl font-black text-amber-800">🎯 VERIFICACIÓN DE CONTROLES PREVENTIVOS (VCP) 📋</h2>
@@ -454,6 +546,8 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
+
+<!-- MODALES -->
 <div id="resumenPasswordModal" class="hidden-section fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-[30002] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl p-6 w-[90%] max-w-md shadow-2xl border-4 border-orange-500">
 <div class="text-center">
@@ -470,17 +564,19 @@ body { padding: 10px; }
 </div>
 </div>
 </div>
+
 <div id="cerrarResumenConfirmModal" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 40001; display: none; align-items: center; justify-content: center; padding: 20px;">
 <div class="modal-bounce" style="background: white; border-radius: 24px; padding: 32px 24px; width: 100%; max-width: 440px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.5); border: 3px solid #f18b00;">
 <div style="font-size: 64px; margin-bottom: 12px; display: inline-block; animation: pulse 1.5s infinite;">📊</div>
 <h3 class="text-xl font-black text-slate-800 mb-2">CONFIRMAR SALIDA</h3>
 <p class="text-sm text-slate-500 mb-6">¿Desea cerrar el Resumen Ejecutivo?</p>
 <div class="flex gap-3">
-<button onclick="cancelarCerrarResumen()" style="flex: 1; background: #dc2626; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(220,38,38,0.3);">❌ CANCELAR</button>
-<button onclick="confirmarCerrarResumen()" style="flex: 1; background: #16a34a; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(22,163,74,0.3);">✅ SÍ, CERRAR</button>
+<button onclick="cancelarCerrarResumen()" style="flex: 1; background: #dc2626; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer;">❌ CANCELAR</button>
+<button onclick="confirmarCerrarResumen()" style="flex: 1; background: #16a34a; color: white; padding: 14px; border-radius: 12px; font-weight: 800; font-size: 14px; border: none; cursor: pointer;">✅ SÍ, CERRAR</button>
 </div>
 </div>
 </div>
+
 <div id="resumenEjecutivoPage" class="hidden-section resumen-fullscreen" style="display:none;">
 <div class="max-w-[1700px] w-[96%] mx-auto p-6">
 <div class="flex justify-between items-center mb-6 bg-white rounded-2xl shadow-lg p-4 sticky top-0 z-10">
@@ -491,8 +587,9 @@ body { padding: 10px; }
 <p class="text-xs text-slate-500">Dashboard gerencial · Datos consolidados 2026</p>
 </div>
 </div>
-<button onclick="abrirConfirmCerrarResumen()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105">🔒 CERRAR RESUMEN EJECUTIVO</button>
+<button onclick="abrirConfirmCerrarResumen()" class="bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white px-5 py-2.5 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg">🔒 CERRAR RESUMEN EJECUTIVO</button>
 </div>
+
 <div class="bg-white rounded-2xl shadow-md p-4 mb-6">
 <div class="flex flex-wrap gap-4 items-end">
 <div><label class="text-xs font-bold text-slate-500 block mb-1">🏢 SUCURSAL</label><select id="ejecutivoSucursal" class="border-2 border-orange-200 rounded-lg p-2 text-sm bg-white" onchange="actualizarResumenEjecutivo()"><option value="todas">TODAS</option><option value="MALAGUENO">MALAGUEÑO</option><option value="BARKER">BARKER</option><option value="LAPAMPITA">LA PAMPITA</option></select></div>
@@ -504,6 +601,7 @@ body { padding: 10px; }
 <button onclick="exportarResumenEjecutivoExcel()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-emerald-700 shadow-md transition-all">📊 EXCEL</button>
 </div>
 </div>
+
 <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
 <div id="kpiActosCard" class="glass-card p-5 text-center border-l-4 border-cyan-500 kpi-card-clickable" onclick="aplicarFiltroPorTipo('acto')"><div class="text-4xl font-black text-cyan-700" id="ejecTotalActos">0</div><div class="text-sm font-bold text-slate-600 mt-1">⚠️ ACTOS</div></div>
 <div id="kpiCondCard" class="glass-card p-5 text-center border-l-4 border-amber-500 kpi-card-clickable" onclick="aplicarFiltroPorTipo('condicion')"><div class="text-4xl font-black text-amber-700" id="ejecTotalCondiciones">0</div><div class="text-sm font-bold text-slate-600 mt-1">🏚️ CONDICIONES</div></div>
@@ -513,36 +611,27 @@ body { padding: 10px; }
     <div class="text-sm font-bold text-slate-600 mt-1">🔄 RESTAURAR TODO</div>
 </div>
 </div>
+
 <div class="grid md:grid-cols-2 gap-6 mb-6">
 <div class="glass-card p-5"><h3 class="text-lg font-black text-purple-800 mb-3">📊 EVOLUCIÓN MENSUAL · SUCURSALES</h3><div class="chart-container" style="height: 350px;"><canvas id="ejecutivoEvolucionSucursalesChart"></canvas></div></div>
 <div class="glass-card p-5"><h3 class="text-lg font-black text-purple-800 mb-3">📈 EVOLUCIÓN MENSUAL · VCP</h3><div class="chart-container" style="height: 350px;"><canvas id="ejecutivoVCPSucursalesChart"></canvas></div></div>
 </div>
+
 <div class="glass-card p-5 mb-6">
 <div class="flex justify-between items-center mb-4 flex-wrap gap-2"><h3 class="text-xl font-black text-purple-800">📋 DETALLE COMPLETO</h3><button onclick="aplicarFiltroPorTipo('todos')" class="text-xs bg-slate-200 hover:bg-slate-300 px-3 py-1 rounded-full">🗑️ Limpiar</button></div>
 <div class="table-scroll max-h-96"><table class="w-full text-left text-sm"><thead class="bg-purple-100 sticky top-0"><tr><th class="p-3">🏢 Sucursal</th><th>📅 Fecha</th><th>👤 Responsable</th><th>⚠️ Tipo</th><th>📝 Descripción</th><th>🏭 Sector</th><th>🔒 Estado</th></tr></thead><tbody id="ejecTablaBody"></tbody></table></div>
 </div>
+
 <div class="grid lg:grid-cols-3 gap-6 mb-6">
 <div class="bg-gradient-to-br from-red-50 to-red-100 rounded-2xl p-4 shadow-lg border-l-4 border-red-600"><h3 class="text-xl font-black text-red-800 mb-4">⚠️ TOP 5 ACTOS</h3><div id="ejecTopActos" class="space-y-2"></div></div>
 <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-2xl p-4 shadow-lg border-l-4 border-amber-600"><h3 class="text-xl font-black text-amber-800 mb-4">🏚️ TOP 5 CONDICIONES</h3><div id="ejecTopCond" class="space-y-2"></div></div>
 <div class="bg-gradient-to-br from-purple-50 to-indigo-100 rounded-2xl p-4 shadow-lg border-l-4 border-purple-600"><h3 class="text-xl font-black text-purple-800 mb-4">🏆 TOP 10 RESPONSABLES</h3><div id="ejecTopResponsables" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div></div>
 </div>
+
 <div class="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-5 shadow-lg border-l-4 border-yellow-600 mb-6"><h3 class="text-xl font-black text-yellow-800 mb-4">🔄 REINCIDENCIAS</h3><div id="ejecReincidencias" class="grid md:grid-cols-2 gap-3 max-h-64 overflow-y-auto"></div></div>
 </div>
 </div>
-<div id="detailModal" class="hidden-section fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-[30000] p-3" style="display:none;">
-<div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-4 border-purple-500 overflow-hidden">
-<div class="bg-gradient-to-r from-purple-600 to-purple-700 px-5 py-4 flex justify-between items-center">
-<h2 id="detailModalTitle" class="font-black text-white text-lg flex items-center gap-2"><span>📋</span> Detalle del Reporte</h2>
-<button onclick="cerrarDetailModal()" class="text-white/80 hover:text-white text-2xl leading-none transition-all cursor-pointer">&times;</button>
-</div>
-<div id="detailModalContent" class="overflow-y-auto max-h-[70vh] p-6"></div>
-<div class="border-t border-purple-100 px-5 py-4 bg-purple-50/30 flex justify-between items-center gap-3">
-<button id="detailModalPrevBtn" onclick="detailModalPrev()" class="bg-slate-500 hover:bg-slate-600 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">⬅ Anterior</button>
-<span id="detailModalCounter" class="font-bold text-purple-600 text-sm bg-purple-100 px-4 py-1.5 rounded-full">1/1</span>
-<button id="detailModalNextBtn" onclick="detailModalNext()" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-bold cursor-pointer transition-all">Siguiente ➡</button>
-</div>
-</div>
-</div>
+
 <div id="reportDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30003] p-4" style="display:none;">
 <div class="modal-bounce bg-white rounded-xl w-full max-w-md shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-3 flex justify-between items-center">
@@ -558,6 +647,7 @@ body { padding: 10px; }
 <div class="px-5 pb-5"><button onclick="closeReportModal()" class="w-full bg-gray-200 hover:bg-gray-300 text-gray-700 py-2.5 rounded-lg text-base font-bold cursor-pointer transition-all border-2 border-gray-300">Cerrar ✕</button></div>
 </div>
 </div>
+
 <div id="dailyReportsModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30004] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-2xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -568,6 +658,7 @@ body { padding: 10px; }
 <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30"><button onclick="closeDailyReportsModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
+
 <div id="supervisorDetailModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30005] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-orange-500 overflow-hidden">
 <div class="bg-gradient-to-r from-orange-500 to-orange-600 px-5 py-4 flex justify-between items-center">
@@ -578,6 +669,7 @@ body { padding: 10px; }
 <div class="border-t border-orange-100 px-5 py-4 bg-orange-50/30"><button onclick="closeSupervisorModal()" class="w-full bg-orange-600 hover:bg-orange-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
+
 <div id="personaVCPModal" class="hidden-section fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-[30006] p-3" style="display:none;">
 <div class="modal-bounce bg-white rounded-2xl w-full max-w-3xl shadow-2xl border-2 border-emerald-500 overflow-hidden">
 <div class="bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-4 flex justify-between items-center">
@@ -588,72 +680,169 @@ body { padding: 10px; }
 <div class="border-t border-emerald-100 px-5 py-4 bg-emerald-50/30"><button onclick="closePersonaVCPModal()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl font-bold cursor-pointer transition-all">Cerrar ✕</button></div>
 </div>
 </div>
+
 <script>
 // ═══════════════════════════════════════════════════════════════
-// 🔥 FIREBASE CONFIGURACIÓN
+// 🔥 FIREBASE CONFIGURACIÓN CON DETECCIÓN DE UBICACIÓN 🌎
 // ═══════════════════════════════════════════════════════════════
 const firebaseConfig = {
-apiKey: "AIzaSyCDYZyMeXjbKd7F4DPW1k9ll0rXMCkYExM",
-authDomain: "infominerar.firebaseapp.com",
-databaseURL: "https://infominerar-default-rtdb.firebaseio.com",
-projectId: "infominerar",
-storageBucket: "infominerar.firebasestorage.app",
-messagingSenderId: "661551649914",
-appId: "1:661551649914:web:510b9878fa5867ae3817c3",
-measurementId: "G-XC1ZRLNG2J"
+  apiKey: "AIzaSyCDYZyMeXjbKd7F4DPW1k9ll0rXMCkYExM",
+  authDomain: "infominerar.firebaseapp.com",
+  databaseURL: "https://infominerar-default-rtdb.firebaseio.com",
+  projectId: "infominerar",
+  storageBucket: "infominerar.firebasestorage.app",
+  messagingSenderId: "661551649914",
+  appId: "1:661551649914:web:510b9878fa5867ae3817c3",
+  measurementId: "G-XC1ZRLNG2J"
 };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
 const connectedRef = database.ref(".info/connected");
 const MI_ID_USUARIO = 'user_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
 let userRef = null;
+let miUbicacion = null;
 
-function actualizarContadorUsuariosUI() {
-const counterRef = database.ref('usuarios_conectados/contador');
-counterRef.on('value', (snapshot) => {
-const total = snapshot.val() || 0;
-const el = document.getElementById('usuariosCount');
-if (el) {
-const previo = parseInt(el.textContent) || 0;
-el.textContent = total;
-const bubble = document.getElementById('usuariosConectadosBubble');
-// 🔔 ALGUIEN INGRESÓ → Sonido de "puerta abriéndose"
-if (total > previo && total > 0) {
-playConexionSound();
-if (bubble) {
-bubble.classList.remove('pulse-exit');
-bubble.classList.add('pulse-new');
-setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
+// ═══ DETECTAR UBICACIÓN DEL USUARIO POR IP 🌍 ═══
+async function detectarMiUbicacion() {
+  try {
+    const response = await fetch('https://ipapi.co/json/');
+    const data = await response.json();
+    const ciudad = data.city || '';
+    const region = data.region || '';
+    const pais = data.country_name || '';
+    let ubicacion = ciudad;
+    if (region && region !== ciudad) ubicacion += `, ${region}`;
+    if (pais && !ubicacion.includes(pais)) ubicacion += `, ${pais}`;
+    miUbicacion = ubicacion || 'Ubicación desconocida 🌐';
+    console.log('📍 Mi ubicación detectada:', miUbicacion);
+    if (userRef) userRef.update({ ubicacion: miUbicacion });
+    return miUbicacion;
+  } catch (error) {
+    console.log('⚠️ No se pudo detectar ubicación:', error);
+    miUbicacion = 'Ubicación desconocida 🌐';
+    return miUbicacion;
+  }
 }
+
+// ═══ OBTENER LA UBICACIÓN A MOSTRAR PARA ESTE USUARIO ═══
+function obtenerMiUbicacionAMostrar() {
+  if (currentSucursal && ['MALAGUENO', 'BARKER', 'LAPAMPITA'].includes(currentSucursal)) {
+    const nombres = {
+      'MALAGUENO': '🏭 MALAGUEÑO',
+      'BARKER': '🏭 BARKER',
+      'LAPAMPITA': '⛏️ LA PAMPITA'
+    };
+    return nombres[currentSucursal];
+  }
+  return miUbicacion || '🌐 Ubicación desconocida';
 }
-// 🔕 ALGUIEN SE FUE → Sonido de "puerta cerrándose"
-if (total < previo && previo > 0) {
-playDesconexionSound();
-if (bubble) {
-bubble.classList.remove('pulse-new');
-bubble.classList.add('pulse-exit');
-setTimeout(() => bubble.classList.remove('pulse-exit'), 2500);
+
+// ═══ ACTUALIZAR SUCURSAL EN FIREBASE CUANDO CAMBIA ═══
+function actualizarSucursalEnFirebase() {
+  if (userRef) {
+    userRef.update({ 
+      sucursal: currentSucursal,
+      ubicacion: obtenerMiUbicacionAMostrar(),
+      timestamp: Date.now()
+    });
+  }
 }
-}
-}
-});
+
+// ═══ ACTUALIZAR EL TOOLTIP CON LAS UBICACIONES DE TODOS ═══
+function actualizarTooltipUbicaciones() {
+  const usersRef = database.ref('usuarios_conectados/users');
+  usersRef.on('value', (snapshot) => {
+    const users = snapshot.val() || {};
+    const ubicaciones = {};
+    let total = 0;
+    
+    Object.values(users).forEach(user => {
+      let ubicacionMostrar = '🌐 Desconocido';
+      if (user.sucursal && ['MALAGUENO', 'BARKER', 'LAPAMPITA'].includes(user.sucursal)) {
+        const nombres = {
+          'MALAGUENO': '🏭 MALAGUEÑO',
+          'BARKER': '🏭 BARKER',
+          'LAPAMPITA': '⛏️ LA PAMPITA'
+        };
+        ubicacionMostrar = nombres[user.sucursal];
+      } else if (user.ubicacion) {
+        ubicacionMostrar = '🌍 ' + user.ubicacion;
+      }
+      if (!ubicaciones[ubicacionMostrar]) ubicaciones[ubicacionMostrar] = 0;
+      ubicaciones[ubicacionMostrar]++;
+      total++;
+    });
+    
+    const tooltipContent = document.getElementById('tooltipContent');
+    if (tooltipContent) {
+      if (total === 0) {
+        tooltipContent.innerHTML = '<div class="tooltip-empty">Sin usuarios conectados</div>';
+      } else {
+        const sucursales = [];
+        const ciudades = [];
+        Object.entries(ubicaciones).forEach(([ubic, count]) => {
+          if (ubic.includes('MALAGUENO') || ubic.includes('BARKER') || ubic.includes('PAMPITA')) {
+            sucursales.push([ubic, count]);
+          } else {
+            ciudades.push([ubic, count]);
+          }
+        });
+        ciudades.sort((a, b) => b[1] - a[1]);
+        let html = '';
+        sucursales.forEach(([ubic, count]) => {
+          html += `<div class="tooltip-location-item"><span class="loc-name">${ubic}</span><span class="loc-count">${count}</span></div>`;
+        });
+        if (sucursales.length > 0 && ciudades.length > 0) {
+          html += '<div style="border-top:1px dashed rgba(241,139,0,0.3); margin:6px 0;"></div>';
+        }
+        ciudades.forEach(([ubic, count]) => {
+          html += `<div class="tooltip-location-item"><span class="loc-name">${ubic}</span><span class="loc-count">${count}</span></div>`;
+        });
+        tooltipContent.innerHTML = html;
+      }
+    }
+    
+    const bubbleCount = document.getElementById('usuariosCount');
+    if (bubbleCount) {
+      const previo = parseInt(bubbleCount.textContent) || 0;
+      bubbleCount.textContent = total;
+      const bubble = document.getElementById('usuariosConectadosBubble');
+      if (total > previo && total > 0) {
+        playConexionSound();
+        if (bubble) {
+          bubble.classList.remove('pulse-exit');
+          bubble.classList.add('pulse-new');
+          setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
+        }
+      } else if (total < previo && previo > 0) {
+        playDesconexionSound();
+        if (bubble) {
+          bubble.classList.remove('pulse-new');
+          bubble.classList.add('pulse-exit');
+          setTimeout(() => bubble.classList.remove('pulse-exit'), 2500);
+        }
+      }
+    }
+  });
 }
 
 function inicializarContadorUsuarios() {
-connectedRef.on("value", (snap) => {
-if (snap.val() === true) {
-userRef = database.ref('usuarios_conectados/users/' + MI_ID_USUARIO);
-userRef.onDisconnect().remove();
-userRef.set(true);
-database.ref('usuarios_conectados/users').on('value', (usersSnap) => {
-const total = usersSnap.numChildren();
-database.ref('usuarios_conectados/contador').set(total);
-});
-}
-});
-actualizarContadorUsuariosUI();
-window.addEventListener('beforeunload', () => { if (userRef) userRef.remove(); });
-window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
+  detectarMiUbicacion().then(() => {
+    connectedRef.on("value", (snap) => {
+      if (snap.val() === true) {
+        userRef = database.ref('usuarios_conectados/users/' + MI_ID_USUARIO);
+        userRef.onDisconnect().remove();
+        userRef.set({ 
+          sucursal: currentSucursal,
+          ubicacion: obtenerMiUbicacionAMostrar(),
+          timestamp: Date.now()
+        });
+        actualizarTooltipUbicaciones();
+      }
+    });
+  });
+  window.addEventListener('beforeunload', () => { if (userRef) userRef.remove(); });
+  window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -771,7 +960,7 @@ window.initAudioContext = function() { if(window.audioContextInitialized) return
 
 window.playAlarmSound = function() { if(!soundEnabled) return; if(!window.audioContextInitialized) window.initAudioContext(); if(window.audioContext && window.audioContext.state === 'suspended') window.audioContext.resume(); try { for(let cycle=0; cycle<3; cycle++) { const baseTime = window.audioContext.currentTime + (cycle*0.5); [880,1175,1568].forEach((freq,idx)=>{ const osc=window.audioContext.createOscillator(), gain=window.audioContext.createGain(); osc.connect(gain); gain.connect(window.audioContext.destination); osc.frequency.value=freq; osc.type='square'; const start=baseTime+(idx*0.12); gain.gain.setValueAtTime(0.5,start); gain.gain.exponentialRampToValueAtTime(0.01,start+0.1); osc.start(start); osc.stop(start+0.1); }); } } catch(e) {} };
 
-// 🔔 SONIDO DE ENTRADA: "Puerta abriéndose" (Pop grave + tono cálido ascendente)
+// 🔔 SONIDO DE ENTRADA: "Puerta abriéndose"
 function playConexionSound() {
     if (!soundEnabled) return;
     if (!window.audioContextInitialized) window.initAudioContext();
@@ -779,49 +968,36 @@ function playConexionSound() {
     try {
         const a = window.audioContext;
         const now = a.currentTime;
-        
-        // 1. "Thunk" grave de la puerta abriéndose (frecuencia que cae)
         const osc1 = a.createOscillator();
         const gain1 = a.createGain();
-        osc1.connect(gain1);
-        gain1.connect(a.destination);
+        osc1.connect(gain1); gain1.connect(a.destination);
         osc1.frequency.setValueAtTime(200, now);
         osc1.frequency.exponentialRampToValueAtTime(80, now + 0.12);
         osc1.type = 'sine';
         gain1.gain.setValueAtTime(0.5, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.18);
-        osc1.start(now);
-        osc1.stop(now + 0.2);
-
-        // 2. "Click" mecánico del picaporte
+        osc1.start(now); osc1.stop(now + 0.2);
         const osc2 = a.createOscillator();
         const gain2 = a.createGain();
-        osc2.connect(gain2);
-        gain2.connect(a.destination);
-        osc2.frequency.value = 1200;
-        osc2.type = 'triangle';
+        osc2.connect(gain2); gain2.connect(a.destination);
+        osc2.frequency.value = 1200; osc2.type = 'triangle';
         gain2.gain.setValueAtTime(0.25, now + 0.08);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.15);
-        osc2.start(now + 0.08);
-        osc2.stop(now + 0.15);
-
-        // 3. Tono cálido de bienvenida (ascendente)
+        osc2.start(now + 0.08); osc2.stop(now + 0.15);
         const osc3 = a.createOscillator();
         const gain3 = a.createGain();
-        osc3.connect(gain3);
-        gain3.connect(a.destination);
+        osc3.connect(gain3); gain3.connect(a.destination);
         osc3.frequency.setValueAtTime(440, now + 0.15);
         osc3.frequency.exponentialRampToValueAtTime(660, now + 0.35);
         osc3.type = 'sine';
         gain3.gain.setValueAtTime(0.001, now);
         gain3.gain.linearRampToValueAtTime(0.2, now + 0.2);
         gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-        osc3.start(now + 0.15);
-        osc3.stop(now + 0.5);
-    } catch(e) { console.log('Error sonido conexión:', e); }
+        osc3.start(now + 0.15); osc3.stop(now + 0.5);
+    } catch(e) {}
 }
 
-// 🔕 SONIDO DE SALIDA: "Puerta cerrándose" (Pop seco + tono grave descendente)
+// 🔕 SONIDO DE SALIDA: "Puerta cerrándose"
 function playDesconexionSound() {
     if (!soundEnabled) return;
     if (!window.audioContextInitialized) window.initAudioContext();
@@ -829,45 +1005,32 @@ function playDesconexionSound() {
     try {
         const a = window.audioContext;
         const now = a.currentTime;
-        
-        // 1. "Click" seco del cierre
         const osc1 = a.createOscillator();
         const gain1 = a.createGain();
-        osc1.connect(gain1);
-        gain1.connect(a.destination);
-        osc1.frequency.value = 900;
-        osc1.type = 'triangle';
+        osc1.connect(gain1); gain1.connect(a.destination);
+        osc1.frequency.value = 900; osc1.type = 'triangle';
         gain1.gain.setValueAtTime(0.3, now);
         gain1.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
-        osc1.start(now);
-        osc1.stop(now + 0.1);
-
-        // 2. "Thunk" grave del golpe de la puerta
+        osc1.start(now); osc1.stop(now + 0.1);
         const osc2 = a.createOscillator();
         const gain2 = a.createGain();
-        osc2.connect(gain2);
-        gain2.connect(a.destination);
+        osc2.connect(gain2); gain2.connect(a.destination);
         osc2.frequency.setValueAtTime(150, now + 0.05);
         osc2.frequency.exponentialRampToValueAtTime(50, now + 0.25);
         osc2.type = 'sine';
         gain2.gain.setValueAtTime(0.4, now + 0.05);
         gain2.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
-        osc2.start(now + 0.05);
-        osc2.stop(now + 0.3);
-
-        // 3. Tono descendente de despedida
+        osc2.start(now + 0.05); osc2.stop(now + 0.3);
         const osc3 = a.createOscillator();
         const gain3 = a.createGain();
-        osc3.connect(gain3);
-        gain3.connect(a.destination);
+        osc3.connect(gain3); gain3.connect(a.destination);
         osc3.frequency.setValueAtTime(500, now + 0.15);
         osc3.frequency.exponentialRampToValueAtTime(250, now + 0.4);
         osc3.type = 'sine';
         gain3.gain.setValueAtTime(0.15, now + 0.15);
         gain3.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
-        osc3.start(now + 0.15);
-        osc3.stop(now + 0.45);
-    } catch(e) { console.log('Error sonido desconexión:', e); }
+        osc3.start(now + 0.15); osc3.stop(now + 0.45);
+    } catch(e) {}
 }
 
 function playUnlockSound() { if(!soundEnabled) return; window.initAudioContext(); try { const a=new(window.AudioContext||window.webkitAudioContext)(); [523.25,659.25,783.99,1046.50].forEach((f,i)=>{ const o=a.createOscillator(),g=a.createGain(); o.connect(g);g.connect(a.destination);o.frequency.value=f;o.type='sine'; g.gain.setValueAtTime(0.3,a.currentTime+i*0.1); g.gain.exponentialRampToValueAtTime(0.001,a.currentTime+i*0.1+0.2); o.start(a.currentTime+i*0.1);o.stop(a.currentTime+i*0.1+0.2); }); } catch(e){} }
@@ -1224,7 +1387,7 @@ function closeReportModal() { const m=document.getElementById('reportDetailModal
 function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
 
-// NUEVA FUNCIÓN: Abrir modal desde TOPS y REINCIDENCIAS
+// 🔥 FUNCIÓN: Abrir modal desde TOPS y REINCIDENCIAS
 function abrirModalDesdeTop(listaDatos, index) {
     if (!listaDatos || !listaDatos[index]) return;
     const r = listaDatos[index];
@@ -1233,7 +1396,6 @@ function abrirModalDesdeTop(listaDatos, index) {
     currentModalIndex = index;
     const modal = document.getElementById('reportDetailModal');
     const content = document.getElementById('reportModalContent');
-    
     if (r.tipo === 'vcp') {
         content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-lg">${r.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
     } else {
@@ -1291,6 +1453,8 @@ document.querySelectorAll('.category-card').forEach(c => c.classList.remove('sel
 document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
 const c = SUCURSALES_CONFIG[suc]; if (c) { currentObjetivos = c.objetivos; currentShowVCP = c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
 document.getElementById(suc === 'MALAGUENO' ? 'btnMalagueno' : suc === 'BARKER' ? 'btnBarker' : 'btnLaPampita')?.classList.add('active');
+// 🔥 Actualizar Firebase con la nueva sucursal
+setTimeout(() => actualizarSucursalEnFirebase(), 100);
 if (isUnlocked) loadData();
 }
 function actualizarObjetivosUI() {
@@ -1395,9 +1559,8 @@ function aplicarFiltroPorTipo(tipo) {
     actualizarResumenEjecutivo();
 }
 
-// 🔥 FUNCIÓN MEJORADA: Ahora los TOPS son clickeables y abren el modal
+// 🔥 TOPS y REINCIDENCIAS clickeables
 function renderEjecutivoRankings(datosActos, datosVCP) {
-// TOP 5 ACTOS
 const actos = datosActos.filter(d => d.tipo === 'acto'); 
 const countActos = {};
 actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; if(!countActos[k]) countActos[k] = { count: 0, items: [] }; countActos[k].count++; countActos[k].items.push(d); });
@@ -1412,7 +1575,6 @@ if (contActos) {
     } else contActos.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
 }
 
-// TOP 5 CONDICIONES
 const conds = datosActos.filter(d => d.tipo === 'condicion'); 
 const countConds = {};
 conds.forEach(d => { let cat = d.categoria?.id || 'otros'; let desc = cat === 'berma' ? 'CI - Berma fuera de estándar' : cat === 'area' ? 'CI - Ambiente inseguro' : cat === 'orden' ? 'CI - Orden deficiente' : cat === 'senalizacion' ? 'CI - Señalización deficiente' : cat === 'equipos' ? 'CI - Equipos fuera de estándar' : cat === 'epp' ? 'AI - Falta de EPP' : cat === 'procedimientos' ? 'AI - Procedimientos inadecuados' : cat === 'conduccion' ? 'AI - Conducción insegura' : 'Otros'; if(!countConds[desc]) countConds[desc] = { count: 0, items: [] }; countConds[desc].count++; countConds[desc].items.push(d); });
@@ -1427,7 +1589,6 @@ if (contConds) {
     } else contConds.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
 }
 
-// TOP 10 RESPONSABLES
 const todosDatos = [...datosActos, ...datosVCP];
 const countResp = {}; 
 todosDatos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; if(!countResp[r]) countResp[r] = { count: 0, items: [] }; countResp[r].count++; countResp[r].items.push(d); });
@@ -1441,7 +1602,6 @@ if (contResp) {
 }
 }
 
-// 🔥 FUNCIÓN MEJORADA: REINCIDENCIAS ahora son clickeables
 function renderEjecutivoReincidencias(datos) {
 const reincMap = new Map();
 datos.forEach(d => { if (!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if (!reincMap.has(key)) reincMap.set(key, { persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set(), items: [] }); const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); item.items.push(d); });
