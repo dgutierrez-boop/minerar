@@ -126,6 +126,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 .header-left .logo-animado:hover { animation-play-state: paused; transform: scale(1.1); }
 
 /* ═══ BURBUJA CON TOOLTIP DE UBICACIONES 🌎 ═══ */
+/* === BURBUJA CON TOOLTIP MINIMALISTA === */
 #usuariosConectadosBubble { 
   position: fixed; 
   bottom: 20px; 
@@ -159,6 +160,7 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
   box-shadow: 0 2px 8px rgba(0,0,0,0.2); 
   animation: pulseUsuarios 2s ease-in-out infinite; 
 }
+@keyframes pulseUsuarios { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 #usuariosConectadosBubble .bubble-icon { 
   background: white; 
   width: 44px; 
@@ -174,9 +176,40 @@ tr.row-hoy { background-color: #fef3c7 !important; border-left: 4px solid #f18b0
 #usuariosConectadosBubble.pulse-new .bubble-count { 
   animation: pulseNew 0.8s ease-in-out 3; 
 }
-#usuariosConectadosBubble.pulse-exit .bubble-count { animation: pulseExit 0.8s ease-in-out 3; }
 @keyframes pulseNew { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #fbbf24, #f59e0b); transform: scale(1.25); } }
-@keyframes pulseExit { 0%, 100% { background: linear-gradient(135deg, #10b981, #059669); transform: scale(1); } 50% { background: linear-gradient(135deg, #64748b, #475569); transform: scale(0.9); } }
+
+/* Tooltip minimalista al lado derecho */
+#usuariosConectadosBubble .bubble-tooltip {
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%) translateX(8px);
+  background: rgba(15, 23, 42, 0.92);
+  backdrop-filter: blur(10px);
+  color: #fcd34d;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.25s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border: 1px solid rgba(241, 139, 0, 0.4);
+  z-index: 10003;
+}
+#usuariosConectadosBubble:hover .bubble-tooltip {
+  opacity: 1;
+  transform: translateY(-50%) translateX(12px);
+}
+
+@media (max-width: 768px) {
+  #usuariosConectadosBubble { bottom: 14px; left: 14px; }
+  #usuariosConectadosBubble .bubble-icon { width: 38px; height: 38px; font-size: 20px; }
+  #usuariosConectadosBubble .bubble-count { font-size: 12px; min-width: 24px; height: 24px; }
+  #usuariosConectadosBubble .bubble-tooltip { font-size: 10px; padding: 5px 10px; }
+}}
 
 /* ═══ TOOLTIP SIMPLE AL PASAR EL MOUSE ═══ */
 #bubbleTooltip {
@@ -745,7 +778,7 @@ async function detectarMiUbicacion() {
     if (pais && pais !== 'Argentina') ubicacionCompleta += `, ${pais}`;
     
     miUbicacion = ubicacionCompleta || 'Ubicación desconocida';
-    console.log(' Mi ubicación:', miUbicacion);
+    console.log('📍 Mi ubicación:', miUbicacion);
     
     if (userRef) {
       userRef.update({ ubicacion: miUbicacion });
@@ -759,7 +792,7 @@ async function detectarMiUbicacion() {
   }
 }
 
-// ══ ACTUALIZAR CONTADOR CON UBICACIONES ═══
+// ═══ ACTUALIZAR CONTADOR CON UBICACIONES ═══
 function actualizarContadorUsuariosUI() {
 const counterRef = database.ref('usuarios_conectados/contador');
 const usersRef = database.ref('usuarios_conectados/users');
@@ -782,22 +815,66 @@ setTimeout(() => bubble.classList.remove('pulse-new'), 2500);
 }
 });
 
+// Escuchar cambios en usuarios para actualizar tooltip
 usersRef.on('value', (snapshot) => {
 const users = snapshot.val() || {};
 const ubicaciones = {};
-let total = 0;
 
 Object.values(users).forEach(user => {
 const ubic = user.ubicacion || 'Ubicación desconocida';
 if (!ubicaciones[ubic]) ubicaciones[ubic] = 0;
 ubicaciones[ubic]++;
-total++;
 });
 
-actualizarTooltipUbicaciones(ubicaciones, total);
+// Actualizar tooltip con solo los nombres
+actualizarTooltipUbicaciones(ubicaciones);
 });
 }
 
+// ═══ ACTUALIZAR TOOLTIP MINIMALISTA ═══
+function actualizarTooltipUbicaciones(ubicaciones) {
+const bubble = document.getElementById('usuariosConectadosBubble');
+if (!bubble) return;
+
+// Crear tooltip si no existe
+let tooltip = bubble.querySelector('.bubble-tooltip');
+if (!tooltip) {
+tooltip = document.createElement('div');
+tooltip.className = 'bubble-tooltip';
+bubble.appendChild(tooltip);
+}
+
+// Obtener nombres únicos de ubicaciones (sin duplicados)
+const nombresUnicos = Object.keys(ubicaciones);
+
+if (nombresUnicos.length === 0) {
+tooltip.textContent = 'Sin usuarios';
+} else {
+// Mostrar solo los nombres separados por coma
+tooltip.textContent = nombresUnicos.join(', ');
+}
+}
+
+// ═══ INICIALIZAR ══
+function inicializarContadorUsuarios() {
+detectarMiUbicacion().then(() => {
+connectedRef.on("value", (snap) => {
+if (snap.val() === true) {
+userRef = database.ref('usuarios_conectados/users/' + MI_ID_USUARIO);
+userRef.onDisconnect().remove();
+userRef.set({ 
+ubicacion: miUbicacion,
+timestamp: Date.now()
+});
+
+actualizarContadorUsuariosUI();
+}
+});
+});
+
+window.addEventListener('beforeunload', () => { if (userRef) userRef.remove(); });
+window.addEventListener('pagehide', () => { if (userRef) userRef.remove(); });
+}
 // ═══ ACTUALIZAR TOOLTIP CON UBICACIONES ═══
 function actualizarTooltipUbicaciones(ubicaciones, total) {
 const bubble = document.getElementById('usuariosConectadosBubble');
