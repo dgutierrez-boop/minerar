@@ -769,7 +769,13 @@ setTimeout(() => skipVideoIntro(), 5000);
 video.addEventListener('ended', skipVideoIntro);
 }
 function skipVideoIntro() {
-if (document.exitFullscreen) document.exitFullscreen();
+if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+if (document.exitFullscreen) {
+document.exitFullscreen().catch(e => console.log("Error al salir de fullscreen:", e));
+} else if (document.webkitExitFullscreen) {
+document.webkitExitFullscreen();
+}
+}
 const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer');
 video.pause(); videoIntro.style.transition = 'opacity 0.6s ease-out'; videoIntro.style.opacity = '0';
 setTimeout(() => { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; videoIntro.style.opacity = '1'; enterMainPanel(); }, 600);
