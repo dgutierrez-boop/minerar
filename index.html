@@ -707,29 +707,22 @@ function togglePersonaOculta(nombre) {
     } else {
         nuevos = [...ocultosActuales, nombre];
     }
-    // Actualización optimista local (se ve al toque)
+    
+    // Actualización optimista para que se vea al toque
     PERSONAS_OCULTAS_GLOBAL = nuevos;
-    try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(nuevos)); } catch(e) {}
     renderListaPersonasOcultas();
     populateSupervisors();
     populateVCPPeopleFilter();
     
-    // 🔥 ESTA ES LA LÍNEA MÁGICA QUE SINCRONIZA CON TODOS
-    database.ref('personas_ocultas/global').set(nuevos).catch(err => console.error('Error guardando ocultos globales:', err));
+    // Guardar en Firebase
+    database.ref('personas_ocultas/global').set(nuevos).catch(err => console.error('Error guardando:', err));
 }
-
 function inicializarPersonasOcultasFirebase() {
     if (ocultosListenerIniciado) return;
     ocultosListenerIniciado = true;
     
-    // 1) Cargar copia local como respaldo inmediato
-    try {
-        const raw = localStorage.getItem(OCULTOS_STORAGE_KEY);
-        const arr = raw ? JSON.parse(raw) : [];
-        if (Array.isArray(arr)) PERSONAS_OCULTAS_GLOBAL = arr;
-    } catch(e) {}
-    
-    // 2) 🔥 ESCUCHAR EN TIEMPO REAL LOS CAMBIOS DE TODOS LOS COMPAÑEROS
+    // 🔥 ESCUCHAR EN TIEMPO REAL LOS CAMBIOS DE TODOS LOS COMPAÑEROS
+    // Quitamos la carga previa del localStorage para que no pise los datos de Firebase
     database.ref('personas_ocultas/global').on('value', (snap) => {
         const val = snap.val();
         PERSONAS_OCULTAS_GLOBAL = Array.isArray(val) ? val : [];
