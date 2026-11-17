@@ -289,6 +289,18 @@ body { padding: 10px; }
 <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
 <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
 </div>
+
+<!-- 👥 PANEL COLAPSABLE: OCULTAR PERSONAS INACTIVAS -->
+<details class="mt-4 bg-slate-50 rounded-xl border border-slate-300 overflow-hidden">
+<summary class="cursor-pointer px-3 py-2 text-[11px] font-bold text-slate-700 hover:bg-slate-100 transition-all select-none">
+👥 Ocultar Personas Inactivas
+<span id="ocultosCountBadge" class="ml-1 text-[9px] bg-slate-300 text-slate-700 px-1.5 py-0.5 rounded-full font-black">0</span>
+</summary>
+<div class="p-2 max-h-64 overflow-y-auto border-t border-slate-200">
+<p class="text-[9px] text-slate-500 mb-2 px-1">Tildá un nombre para ocultarlo de los desplegables (su historial sigue contando).</p>
+<div id="listaPersonasOcultas" class="space-y-1"></div>
+</div>
+</details>
 </div>
 </aside>
 <main>
@@ -667,6 +679,87 @@ let ACTOS_COND_DATA = [], VCP_DATA = [];
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
+
+// ═══════════════════════════════════════════════════════════════
+// 👥 PERSONAS OCULTAS (solo afecta desplegables, NO los datos)
+// ═══════════════════════════════════════════════════════════════
+const OCULTOS_STORAGE_KEY = 'minerar_personas_ocultas_v1';
+
+function getPersonasOcultas() {
+try {
+const raw = localStorage.getItem(OCULTOS_STORAGE_KEY);
+const arr = raw ? JSON.parse(raw) : [];
+return Array.isArray(arr) ? arr : [];
+} catch(e) { return []; }
+}
+
+function setPersonasOcultas(lista) {
+try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(lista)); } catch(e) {}
+}
+
+function estaPersonaOculta(nombre) {
+if (!nombre) return false;
+const ocultos = getPersonasOcultas();
+return ocultos.some(o => compararNombres(o, nombre));
+}
+
+function togglePersonaOculta(nombre) {
+if (!nombre) return;
+let ocultos = getPersonasOcultas();
+const yaEsta = ocultos.find(o => compararNombres(o, nombre));
+if (yaEsta) {
+ocultos = ocultos.filter(o => !compararNombres(o, nombre));
+} else {
+ocultos.push(nombre);
+}
+setPersonasOcultas(ocultos);
+renderListaPersonasOcultas();
+// Refrescar SOLO los desplegables (no tocamos gráficos ni tablas)
+populateSupervisors();
+populateVCPPeopleFilter();
+}
+
+function renderListaPersonasOcultas() {
+const cont = document.getElementById('listaPersonasOcultas');
+if (!cont) return;
+
+// Reunir TODOS los nombres de Actos + VCP (de TODAS las sucursales cargadas)
+const nombresSet = new Set();
+Object.values(ALL_ACTOS_DATA).forEach(arr => {
+(arr || []).forEach(d => { if (d.observador && d.observador.trim()) nombresSet.add(d.observador.trim()); });
+});
+Object.values(ALL_VCP_DATA).forEach(arr => {
+(arr || []).forEach(d => { if (d.personaObservada && d.personaObservada.trim()) nombresSet.add(d.personaObservada.trim()); });
+});
+
+// Deduplicar por nombre normalizado
+const mapaNorm = new Map();
+for (const n of nombresSet) {
+const k = normalizarNombre(n);
+if (!mapaNorm.has(k)) mapaNorm.set(k, n);
+}
+const nombresUnicos = Array.from(mapaNorm.values()).sort((a, b) => a.localeCompare(b, 'es'));
+
+const ocultos = getPersonasOcultas();
+const badge = document.getElementById('ocultosCountBadge');
+if (badge) badge.textContent = ocultos.length;
+
+if (nombresUnicos.length === 0) {
+cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Sin personas cargadas</p>';
+return;
+}
+
+cont.innerHTML = nombresUnicos.map(n => {
+const oculto = ocultos.some(o => compararNombres(o, n));
+const safeId = 'chk_' + btoa(unescape(encodeURIComponent(n))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
+const safeName = n.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+return `<label class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white cursor-pointer transition-all text-[10px]" for="${safeId}">
+<input type="checkbox" id="${safeId}" ${oculto ? 'checked' : ''} onchange="togglePersonaOculta('${safeName}')" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer flex-shrink-0">
+<span class="${oculto ? 'line-through text-slate-400' : 'text-slate-700'} truncate">${escapeHtml(n)}</span>
+</label>`;
+}).join('');
+}
+
 const SUCURSALES_CONFIG = {
 MALAGUENO: {
 actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv',
@@ -891,6 +984,7 @@ else if (lastSuccessfulData && lastSuccessfulData.length > 0) { ACTOS_COND_DATA 
 if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; }
 updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP);
 await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator();
+renderListaPersonasOcultas();
 } catch(e) { console.error("Error en loadData:", e); }
 finally { isUpdating = false; }
 }
@@ -952,7 +1046,8 @@ const sel = document.getElementById('supervisorSelect'); if (!sel) return;
 const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
 const nombreNormalizadoMap = new Map();
 for (const obs of observadoresRaw) { const normalizado = normalizarNombre(obs); if (!nombreNormalizadoMap.has(normalizado)) nombreNormalizadoMap.set(normalizado, obs); }
-const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).sort();
+// 👥 Filtrar personas ocultas (NO borra historial, solo las saca del desplegable)
+const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).filter(x => !estaPersonaOculta(x)).sort();
 sel.innerHTML = '<option value="todos">🔘 Todos</option>';
 supervisoresUnicos.forEach(x => {
 const count = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x)).length;
@@ -986,7 +1081,8 @@ function populateVCPPeopleFilter() {
 const counts = new Map(); VCP_DATA.forEach(v => { if (v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); });
 const sel = document.getElementById('vcpPersonFilter'); if (!sel) return;
 sel.innerHTML = '<option value="todos">👥 Todas las personas</option>';
-[...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}"> ${n} (${counts.get(n)})</option>`);
+// 👥 Filtrar personas ocultas (NO borra historial, solo las saca del desplegable)
+[...counts.keys()].filter(n => !estaPersonaOculta(n)).sort().forEach(n => sel.innerHTML += `<option value="${n}"> ${n} (${counts.get(n)})</option>`);
 updatePersonVCPStatsOnly();
 }
 function updatePersonVCPStatsOnly() {
