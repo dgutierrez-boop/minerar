@@ -707,27 +707,32 @@ function togglePersonaOculta(nombre) {
     } else {
         nuevos = [...ocultosActuales, nombre];
     }
-    
     // Actualización optimista para que se vea al toque
     PERSONAS_OCULTAS_GLOBAL = nuevos;
     renderListaPersonasOcultas();
     populateSupervisors();
     populateVCPPeopleFilter();
-    
-    // Guardar en Firebase
-    database.ref('personas_ocultas/global').set(nuevos).catch(err => console.error('Error guardando:', err));
+    // Guardar en Firebase (con manejo de error)
+    database.ref('personas_ocultas/global').set(nuevos)
+        .then(() => console.log('✅ Personas ocultas sincronizadas'))
+        .catch(err => {
+            console.error('❌ Error guardando en Firebase:', err);
+            // Revertir en caso de error
+            PERSONAS_OCULTAS_GLOBAL = ocultosActuales;
+            renderListaPersonasOcultas();
+            populateSupervisors();
+            populateVCPPeopleFilter();
+        });
 }
+
 function inicializarPersonasOcultasFirebase() {
     if (ocultosListenerIniciado) return;
     ocultosListenerIniciado = true;
-    
-    // 🔥 ESCUCHAR EN TIEMPO REAL LOS CAMBIOS DE TODOS LOS COMPAÑEROS
-    // Quitamos la carga previa del localStorage para que no pise los datos de Firebase
+    console.log('🔥 Inicializando listener de personas ocultas...');
     database.ref('personas_ocultas/global').on('value', (snap) => {
         const val = snap.val();
         PERSONAS_OCULTAS_GLOBAL = Array.isArray(val) ? val : [];
         try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(PERSONAS_OCULTAS_GLOBAL)); } catch(e) {}
-        
         // Si cambia algo, actualizamos la lista y los desplegables automáticamente
         renderListaPersonasOcultas();
         populateSupervisors();
@@ -738,42 +743,32 @@ function inicializarPersonasOcultasFirebase() {
 function renderListaPersonasOcultas() {
     const cont = document.getElementById('listaPersonasOcultas');
     if (!cont) return;
-
-    // Reunir nombres SOLO de la sucursal activa (para que cada uno vea su lista)
     const nombresSet = new Set();
     (ALL_ACTOS_DATA[currentSucursal] || []).forEach(d => { if (d.observador && d.observador.trim()) nombresSet.add(d.observador.trim()); });
     (ALL_VCP_DATA[currentSucursal] || []).forEach(d => { if (d.personaObservada && d.personaObservada.trim()) nombresSet.add(d.personaObservada.trim()); });
-
-    // Deduplicar por nombre normalizado
     const mapaNorm = new Map();
     for (const n of nombresSet) {
         const k = normalizarNombre(n);
         if (!mapaNorm.has(k)) mapaNorm.set(k, n);
     }
     const nombresUnicos = Array.from(mapaNorm.values()).sort((a, b) => a.localeCompare(b, 'es'));
-
     const ocultos = getPersonasOcultasGlobal();
     const badge = document.getElementById('ocultosCountBadge');
     if (badge) badge.textContent = ocultos.length;
-
     if (nombresUnicos.length === 0) {
         cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Sin personas cargadas</p>';
         return;
     }
-
     cont.innerHTML = nombresUnicos.map(n => {
         const oculto = ocultos.some(o => compararNombres(o, n));
         const safeId = 'chk_' + btoa(unescape(encodeURIComponent(n))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
         const safeName = n.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        
-        // Si la persona está oculta, se muestra tachada (line-through)
         return `<label class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white cursor-pointer transition-all text-[10px]" for="${safeId}">
             <input type="checkbox" id="${safeId}" ${oculto ? 'checked' : ''} onchange="togglePersonaOculta('${safeName}')" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer flex-shrink-0">
             <span class="${oculto ? 'line-through text-slate-400' : 'text-slate-700'} truncate">${escapeHtml(n)}</span>
         </label>`;
     }).join('');
 }
-
 const SUCURSALES_CONFIG = {
 MALAGUENO: {
 actosUrl: 'https://docs.google.com/spreadsheets/d/1NPfe4kQCCUMUZ5De1uKzWwxH1VS1JQNq49b7STdly8I/export?format=csv',
@@ -903,7 +898,15 @@ let indicator = document.getElementById('lastUpdateIndicator');
 if (!indicator) { indicator = document.createElement('div'); indicator.id = 'lastUpdateIndicator'; indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2'; const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling); }
 indicator.innerHTML = `📡 ${timeStr}`;
 }
-function enterMainPanel() { document.getElementById('mainContent').classList.remove('hidden-section'); loadData(); if (refreshInterval) clearInterval(refreshInterval); refreshInterval = null; console.log('✅ Panel cargado'); }
+function enterMainPanel() {
+    document.getElementById('mainContent').classList.remove('hidden-section');
+    // 🔥 Inicializar el listener de personas ocultas (UNA sola vez)
+    inicializarPersonasOcultasFirebase();
+    loadData();
+    if (refreshInterval) clearInterval(refreshInterval);
+    refreshInterval = null;
+    console.log('✅ Panel cargado');
+}
 
 function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
 function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) return {dia: d, mes: MESES_NOMBRES[m-1], valido: true}; } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) return {dia: d, mes: MESES_NOMBRES[m-1], valido: true}; } return {dia:'',mes:'',valido:false}; }
@@ -1509,7 +1512,12 @@ alert('✅ Excel exportado exitosamente');
 
 window.addEventListener('load', () => {
 const overlay = document.getElementById('passwordOverlay');
-if (tieneSesionValida()) { isUnlocked = true; overlay.style.display = 'none'; enterMainPanel(); }
+if (tieneSesionValida()) {
+    isUnlocked = true;
+    overlay.style.display = 'none';
+    inicializarPersonasOcultasFirebase(); // 🔥 AGREGAR ESTA LÍNEA
+    enterMainPanel();
+}
 else { overlay.style.display = 'flex'; document.getElementById('passwordInput')?.focus(); document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); }); }
 document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
 document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
