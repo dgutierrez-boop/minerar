@@ -681,83 +681,104 @@ let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
 
 // ═══════════════════════════════════════════════════════════════
-// 👥 PERSONAS OCULTAS (solo afecta desplegables, NO los datos)
+// 👥 PERSONAS OCULTAS · GLOBAL (sincronizado entre TODAS las sucursales)
 // ═══════════════════════════════════════════════════════════════
-const OCULTOS_STORAGE_KEY = 'minerar_personas_ocultas_v1';
+const OCULTOS_STORAGE_KEY = 'minerar_personas_ocultas_global_v2';
+let PERSONAS_OCULTAS_GLOBAL = [];
+let ocultosListenerIniciado = false;
 
-function getPersonasOcultas() {
-try {
-const raw = localStorage.getItem(OCULTOS_STORAGE_KEY);
-const arr = raw ? JSON.parse(raw) : [];
-return Array.isArray(arr) ? arr : [];
-} catch(e) { return []; }
-}
-
-function setPersonasOcultas(lista) {
-try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(lista)); } catch(e) {}
+function getPersonasOcultasGlobal() {
+    return Array.isArray(PERSONAS_OCULTAS_GLOBAL) ? PERSONAS_OCULTAS_GLOBAL : [];
 }
 
 function estaPersonaOculta(nombre) {
-if (!nombre) return false;
-const ocultos = getPersonasOcultas();
-return ocultos.some(o => compararNombres(o, nombre));
+    if (!nombre) return false;
+    const ocultos = getPersonasOcultasGlobal();
+    return ocultos.some(o => compararNombres(o, nombre));
 }
 
 function togglePersonaOculta(nombre) {
-if (!nombre) return;
-let ocultos = getPersonasOcultas();
-const yaEsta = ocultos.find(o => compararNombres(o, nombre));
-if (yaEsta) {
-ocultos = ocultos.filter(o => !compararNombres(o, nombre));
-} else {
-ocultos.push(nombre);
+    if (!nombre) return;
+    const ocultosActuales = getPersonasOcultasGlobal();
+    const yaEsta = ocultosActuales.find(o => compararNombres(o, nombre));
+    let nuevos;
+    if (yaEsta) {
+        nuevos = ocultosActuales.filter(o => !compararNombres(o, nombre));
+    } else {
+        nuevos = [...ocultosActuales, nombre];
+    }
+    // Actualización optimista local (se ve al toque)
+    PERSONAS_OCULTAS_GLOBAL = nuevos;
+    try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(nuevos)); } catch(e) {}
+    renderListaPersonasOcultas();
+    populateSupervisors();
+    populateVCPPeopleFilter();
+    
+    // 🔥 ESTA ES LA LÍNEA MÁGICA QUE SINCRONIZA CON TODOS
+    database.ref('personas_ocultas/global').set(nuevos).catch(err => console.error('Error guardando ocultos globales:', err));
 }
-setPersonasOcultas(ocultos);
-renderListaPersonasOcultas();
-// Refrescar SOLO los desplegables (no tocamos gráficos ni tablas)
-populateSupervisors();
-populateVCPPeopleFilter();
+
+function inicializarPersonasOcultasFirebase() {
+    if (ocultosListenerIniciado) return;
+    ocultosListenerIniciado = true;
+    
+    // 1) Cargar copia local como respaldo inmediato
+    try {
+        const raw = localStorage.getItem(OCULTOS_STORAGE_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        if (Array.isArray(arr)) PERSONAS_OCULTAS_GLOBAL = arr;
+    } catch(e) {}
+    
+    // 2) 🔥 ESCUCHAR EN TIEMPO REAL LOS CAMBIOS DE TODOS LOS COMPAÑEROS
+    database.ref('personas_ocultas/global').on('value', (snap) => {
+        const val = snap.val();
+        PERSONAS_OCULTAS_GLOBAL = Array.isArray(val) ? val : [];
+        try { localStorage.setItem(OCULTOS_STORAGE_KEY, JSON.stringify(PERSONAS_OCULTAS_GLOBAL)); } catch(e) {}
+        
+        // Si cambia algo, actualizamos la lista y los desplegables automáticamente
+        renderListaPersonasOcultas();
+        populateSupervisors();
+        populateVCPPeopleFilter();
+    });
 }
 
 function renderListaPersonasOcultas() {
-const cont = document.getElementById('listaPersonasOcultas');
-if (!cont) return;
+    const cont = document.getElementById('listaPersonasOcultas');
+    if (!cont) return;
 
-// Reunir TODOS los nombres de Actos + VCP (de TODAS las sucursales cargadas)
-const nombresSet = new Set();
-Object.values(ALL_ACTOS_DATA).forEach(arr => {
-(arr || []).forEach(d => { if (d.observador && d.observador.trim()) nombresSet.add(d.observador.trim()); });
-});
-Object.values(ALL_VCP_DATA).forEach(arr => {
-(arr || []).forEach(d => { if (d.personaObservada && d.personaObservada.trim()) nombresSet.add(d.personaObservada.trim()); });
-});
+    // Reunir nombres SOLO de la sucursal activa (para que cada uno vea su lista)
+    const nombresSet = new Set();
+    (ALL_ACTOS_DATA[currentSucursal] || []).forEach(d => { if (d.observador && d.observador.trim()) nombresSet.add(d.observador.trim()); });
+    (ALL_VCP_DATA[currentSucursal] || []).forEach(d => { if (d.personaObservada && d.personaObservada.trim()) nombresSet.add(d.personaObservada.trim()); });
 
-// Deduplicar por nombre normalizado
-const mapaNorm = new Map();
-for (const n of nombresSet) {
-const k = normalizarNombre(n);
-if (!mapaNorm.has(k)) mapaNorm.set(k, n);
-}
-const nombresUnicos = Array.from(mapaNorm.values()).sort((a, b) => a.localeCompare(b, 'es'));
+    // Deduplicar por nombre normalizado
+    const mapaNorm = new Map();
+    for (const n of nombresSet) {
+        const k = normalizarNombre(n);
+        if (!mapaNorm.has(k)) mapaNorm.set(k, n);
+    }
+    const nombresUnicos = Array.from(mapaNorm.values()).sort((a, b) => a.localeCompare(b, 'es'));
 
-const ocultos = getPersonasOcultas();
-const badge = document.getElementById('ocultosCountBadge');
-if (badge) badge.textContent = ocultos.length;
+    const ocultos = getPersonasOcultasGlobal();
+    const badge = document.getElementById('ocultosCountBadge');
+    if (badge) badge.textContent = ocultos.length;
 
-if (nombresUnicos.length === 0) {
-cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Sin personas cargadas</p>';
-return;
-}
+    if (nombresUnicos.length === 0) {
+        cont.innerHTML = '<p class="text-[10px] text-slate-400 text-center py-2">Sin personas cargadas</p>';
+        return;
+    }
 
-cont.innerHTML = nombresUnicos.map(n => {
-const oculto = ocultos.some(o => compararNombres(o, n));
-const safeId = 'chk_' + btoa(unescape(encodeURIComponent(n))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
-const safeName = n.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-return `<label class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white cursor-pointer transition-all text-[10px]" for="${safeId}">
-<input type="checkbox" id="${safeId}" ${oculto ? 'checked' : ''} onchange="togglePersonaOculta('${safeName}')" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer flex-shrink-0">
-<span class="${oculto ? 'line-through text-slate-400' : 'text-slate-700'} truncate">${escapeHtml(n)}</span>
-</label>`;
-}).join('');
+    cont.innerHTML = nombresUnicos.map(n => {
+        const oculto = ocultos.some(o => compararNombres(o, n));
+        const safeId = 'chk_' + btoa(unescape(encodeURIComponent(n))).replace(/[^a-zA-Z0-9]/g, '').substring(0, 20);
+        const safeName = n.replace(/\\/g, '\\\\').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        
+        // Si la persona está oculta, se muestra tachada (line-through)
+        return `<label class="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-white cursor-pointer transition-all text-[10px]" for="${safeId}">
+            <input type="checkbox" id="${safeId}" ${oculto ? 'checked' : ''} onchange="togglePersonaOculta('${safeName}')" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer flex-shrink-0">
+            <span class="${oculto ? 'line-through text-slate-400' : 'text-slate-700'} truncate">${escapeHtml(n)}</span>
+        </label>`;
+    }).join('');
 }
 
 const SUCURSALES_CONFIG = {
