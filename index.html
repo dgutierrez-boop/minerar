@@ -289,6 +289,22 @@ body { padding: 10px; }
 <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
 <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
 </div>
+
+<!-- ═══ NUEVO: OCULTAR PERSONAS INACTIVAS ═══ -->
+<div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+  <details class="group">
+    <summary class="flex items-center justify-between cursor-pointer list-none">
+      <span class="text-[10px] font-bold uppercase text-slate-600">👥 Ocultar Personas Inactivas</span>
+      <span class="text-slate-400 text-xs group-open:rotate-180 transition-transform">▼</span>
+    </summary>
+    <div class="mt-2">
+      <p class="text-[9px] text-slate-400 mb-2 italic">Tildá para ocultar de los desplegables (el historial no se borra).</p>
+      <div id="listaPersonasOcultas" class="max-h-40 overflow-y-auto space-y-1">
+        <!-- Se llena dinámicamente con JS -->
+      </div>
+    </div>
+  </details>
+</div>
 </div>
 </aside>
 <main>
@@ -664,6 +680,61 @@ let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let lastUpdateTime = Date.now(), lastSuccessfulData = null, supervisorFiltroTabla = null;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
+
+// ═══════════════════════════════════════════════════════════════
+// 🚫 PERSONAS OCULTAS (se guardan en localStorage)
+// ═══════════════════════════════════════════════════════════════
+let PERSONAS_OCULTAS = JSON.parse(localStorage.getItem('minerar_personas_ocultas') || '[]');
+
+function guardarPersonasOcultas() {
+  localStorage.setItem('minerar_personas_ocultas', JSON.stringify(PERSONAS_OCULTAS));
+}
+
+function esPersonaOculta(nombre) {
+  if (!nombre) return false;
+  const nombreNorm = normalizarNombre(nombre);
+  return PERSONAS_OCULTAS.some(oculto => normalizarNombre(oculto) === nombreNorm);
+}
+
+function togglePersonaOculta(nombre, checkbox) {
+  const nombreNorm = normalizarNombre(nombre);
+  if (checkbox.checked) {
+    if (!PERSONAS_OCULTAS.some(o => normalizarNombre(o) === nombreNorm)) {
+      PERSONAS_OCULTAS.push(nombre);
+    }
+  } else {
+    PERSONAS_OCULTAS = PERSONAS_OCULTAS.filter(o => normalizarNombre(o) !== nombreNorm);
+  }
+  guardarPersonasOcultas();
+  populateSupervisors();
+  populateVCPPeopleFilter();
+}
+
+function renderListaPersonasOcultas() {
+  const cont = document.getElementById('listaPersonasOcultas');
+  if (!cont) return;
+
+  const nombresActos = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
+  const nombresVCP = [...new Set(VCP_DATA.map(v => v.personaObservada))].filter(n => n && n.trim() !== '');
+  const todos = [...new Set([...nombresActos, ...nombresVCP])].sort();
+
+  if (todos.length === 0) {
+    cont.innerHTML = '<p class="text-[9px] text-slate-400 text-center py-2">Cargando personas...</p>';
+    return;
+  }
+
+  cont.innerHTML = todos.map(nombre => {
+    const oculto = esPersonaOculta(nombre);
+    const checked = oculto ? 'checked' : '';
+    return `
+      <label class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white transition-all cursor-pointer text-[10px]">
+        <input type="checkbox" ${checked} onchange="togglePersonaOculta('${nombre.replace(/'/g, "\\'")}', this)" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer">
+        <span class="${oculto ? 'text-slate-400 line-through' : 'text-slate-700'}">${nombre}</span>
+      </label>
+    `;
+  }).join('');
+}
+
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
@@ -891,6 +962,7 @@ else if (lastSuccessfulData && lastSuccessfulData.length > 0) { ACTOS_COND_DATA 
 if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; }
 updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP);
 await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator();
+renderListaPersonasOcultas();
 } catch(e) { console.error("Error en loadData:", e); }
 finally { isUpdating = false; }
 }
@@ -949,7 +1021,9 @@ return coincidencias >= Math.max(2, Math.floor(Math.min(p1.length, p2.length) * 
 }
 async function populateSupervisors() {
 const sel = document.getElementById('supervisorSelect'); if (!sel) return;
-const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
+const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))]
+  .filter(n => n && n.trim() !== '')
+  .filter(n => !esPersonaOculta(n));
 const nombreNormalizadoMap = new Map();
 for (const obs of observadoresRaw) { const normalizado = normalizarNombre(obs); if (!nombreNormalizadoMap.has(normalizado)) nombreNormalizadoMap.set(normalizado, obs); }
 const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).sort();
@@ -983,7 +1057,12 @@ renderGeneralTable(ordenarPorFecha(data));
 }
 function limpiarFiltroSupervisorTabla() { supervisorFiltroTabla = null; document.getElementById('supervisorSelect').value = 'todos'; updateSupervisorCard(); renderGeneralTableConFiltroSupervisor(); }
 function populateVCPPeopleFilter() {
-const counts = new Map(); VCP_DATA.forEach(v => { if (v.personaObservada) counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); });
+const counts = new Map(); 
+VCP_DATA.forEach(v => { 
+  if (v.personaObservada && !esPersonaOculta(v.personaObservada)) { 
+    counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); 
+  } 
+});
 const sel = document.getElementById('vcpPersonFilter'); if (!sel) return;
 sel.innerHTML = '<option value="todos">👥 Todas las personas</option>';
 [...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}"> ${n} (${counts.get(n)})</option>`);
@@ -1071,362 +1150,165 @@ const counts = {}; CATS.forEach(c => counts[c.id] = 0); data.forEach(e => { if (
 if (vcpCategoryChart) vcpCategoryChart.destroy();
 vcpCategoryChart = new Chart(document.getElementById('vcpCategoryChart')?.getContext('2d'), { type: 'doughnut', data: { labels: CATS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATS.map(c => counts[c.id] || 0), backgroundColor: CATS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center' } } }, plugins: [ChartDataLabels] });
 if (vcpTrendChart) vcpTrendChart.destroy();
-vcpTrendChart = new Chart(document.getElementById('vcpTrendChart')?.getContext('2d'), { type: 'line', data: { labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)), datasets: [{ label: '🎯 VCP', data: MESES_NOMBRES.map(m => data.filter(e => e.mes === m).length), borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', borderWidth: 3, fill: true, tension: 0.3, pointRadius: 4, pointBackgroundColor: '#f59e0b', pointBorderColor: 'white' }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'top', labels: { font: { size: 9 } } } }, scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } } } });
-}
-
-function renderGeneralTable(data) {
-const tb = document.getElementById('generalTableBody'); if (!tb) return; tb.innerHTML = '';
-if (!data || data.length === 0) { tb.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-slate-500"> No hay registros para mostrar</td></tr>'; return; }
-const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = MESES_NOMBRES[hoy.getMonth()];
-data.slice(0, 200).forEach((e, i) => {
-const esHoy = (e.dia === diaHoy && e.mes === mesHoy);
-const tipoDisplay = e.tipo === 'acto' ? '️ ACTO (AI)' : (e.tipo === 'condicion' ? '🏚️ COND (CI)' : '📌 Otro');
-const tipoClass = e.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : (e.tipo === 'condicion' ? 'bg-amber-100 text-amber-700' : 'bg-gray-100 text-gray-700');
-const sigla = e.tipo === 'acto' ? 'AI' : (e.tipo === 'condicion' ? 'CI' : '');
-const descConSigla = sigla ? `${sigla} - ${e.descripcion || ''}` : (e.descripcion || '');
-const tr = document.createElement('tr');
-tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer';
-tr.onclick = () => openModal(e, i, data);
-tr.innerHTML = `<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy ? '' : ''}</td><td class="p-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-bold ${tipoClass}">${tipoDisplay}</span></td><td class="p-2 font-semibold">${e.observador}</td><td class="p-2"><span class="text-[9px] text-amber-600">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</span><br>${descConSigla.substring(0, 55)}${descConSigla.length > 55 ? '...' : ''}</td><td class="p-2">${getEstadoBadgeHTML(e.cerrado, 'small')}</td>`;
-tb.appendChild(tr);
-});
-}
-function renderVCPTable(data) {
-const tb = document.getElementById('vcpTableBody'); if (!tb) return; tb.innerHTML = '';
-const sorted = ordenarPorFecha(data); const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = MESES_NOMBRES[hoy.getMonth()];
-sorted.slice(0, 50).forEach((e, i) => {
-const esHoy = (e.dia === diaHoy && e.mes === mesHoy);
-const tr = document.createElement('tr');
-tr.className = esHoy ? 'row-hoy cursor-pointer' : 'border-b hover:bg-orange-50 cursor-pointer';
-tr.onclick = () => openModal(e, i, sorted);
-tr.innerHTML = `<td class="p-2">📅 ${e.dia}/${e.mes}${esHoy ? '🔥' : ''}</td><td class="p-2 font-semibold"> ${e.personaObservada}</td><td class="p-2">🏭 ${e.sector}</td><td class="p-2">${(e.descripcion||'').substring(0,40)}${(e.descripcion||'').length>40?'...':''}</td><td class="p-2">💬 ${(e.comentarios||'').substring(0,20)}${(e.comentarios||'').length>20?'...':''}</td><td class="p-2">${getEstadoBadgeHTML(e.cerrado, 'small')}</td>`;
-tb.appendChild(tr);
+vcpTrendChart = new Chart(document.getElementById('vcpTrendChart')?.getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+    datasets: [{
+      label: '🎯 VCP',
+      data: MESES_NOMBRES.map(m => (data || VCP_DATA).filter(e => e.mes === m).length),
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16,185,129,0.1)',
+      tension: 0.3,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 5 } }
+    }
+  }
 });
 }
 
-function openModal(r, idx, data) {
-if (!isUnlocked) return; isModalOpen = true; currentModalData = data; currentModalIndex = idx;
-const modal = document.getElementById('reportDetailModal'); const content = document.getElementById('reportModalContent');
-if (r.tipo === 'vcp') {
-content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona</div><div class="font-bold text-lg">${r.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2"> Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
-} else {
-const esActo = r.tipo === 'acto'; const sigla = esActo ? 'AI' : 'CI'; const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
-content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-lg">${r.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">️ Tipo</div><span class="inline-block bg-gradient-to-r ${esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2"> Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
-}
-modal.classList.remove('hidden-section'); modal.style.display = 'flex';
-document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
-document.getElementById('btnPrev').style.display = 'inline-block';
-document.getElementById('btnNext').style.display = 'inline-block';
-}
-function closeReportModal() { const m=document.getElementById('reportDetailModal'); m.classList.add('hidden-section'); m.style.display='none'; isModalOpen=false; }
-function goToNextModal() { if(currentModalIndex<currentModalData.length-1){ currentModalIndex++; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
-function goToPreviousModal() { if(currentModalIndex>0){ currentModalIndex--; openModal(currentModalData[currentModalIndex],currentModalIndex,currentModalData); } }
-
-// 🔥 FUNCIÓN PARA ABRIR MODAL DESDE TABLA/TOPS/REINCIDENCIAS DEL RESUMEN
-function abrirModalDesdeResumen(listaDatos, index) {
-if (!listaDatos || !listaDatos[index]) return;
-const r = listaDatos[index];
-isModalOpen = true;
-currentModalData = listaDatos;
-currentModalIndex = index;
-const modal = document.getElementById('reportDetailModal');
-const content = document.getElementById('reportModalContent');
-if (r.tipo === 'vcp') {
-content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200"><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1"> Persona</div><div class="font-bold text-lg">${r.personaObservada || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1"> Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📋 Tipo</div><span class="inline-block bg-purple-500 text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">VCP</span></div></div><div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Verificado</div><p class="text-slate-800 text-base leading-relaxed font-medium">${r.descripcion || '-'}</p></div>${r.comentarios ? `<div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">💬 Observaciones</div><p class="text-slate-700 text-base leading-relaxed">${r.comentarios}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
-} else {
-const esActo = r.tipo === 'acto'; const sigla = esActo ? 'AI' : 'CI'; const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
-content.innerHTML = `<div class="space-y-3 text-base"><div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200"><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1"> Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div><div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Observador</div><div class="font-bold text-lg">${r.observador || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1"> Sector</div><div class="font-semibold">${r.sector || '-'}</div></div><div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'}</span></div></div><div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300"><div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div><p class="text-slate-800 text-base leading-relaxed font-medium">${descConSigla}</p></div>${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${r.causas}</p></div>` : ''}${r.imagen ? renderizarImagenesModal(r.imagen) : ''}<div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300"><span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}</div></div>`;
-}
-modal.classList.remove('hidden-section'); modal.style.display = 'flex';
-document.getElementById('modalCounter').innerText = `${index + 1}/${listaDatos.length}`;
-document.getElementById('btnPrev').style.display = 'inline-block';
-document.getElementById('btnNext').style.display = 'inline-block';
-}
-
-function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
-function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#f18b00'); applyGeneralFilters(); }
-function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#f18b00'); applyVCPFilters(); }
-function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#f18b00'); applyVCPFilters(); }
-function updateButtons(cid,act,col) { document.querySelectorAll(`#${cid} .btn-filter`).forEach(b=>{b.classList.remove('active');b.style.background='white';b.style.color='#475569';}); act.classList.add('active'); act.style.background=col; act.style.color='white'; }
-function limpiarFiltroGrafico() { const m=document.getElementById('monthFilter'); if(m) m.value='todo'; applyGeneralFilters(); updateTrendChart(); }
-function limpiarFiltroCausa() { selectedCausa=null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyGeneralFilters(); }
-function limpiarTodosLosFiltros() { limpiarFiltroCausa(); limpiarFiltroGrafico(); }
-function clearVCPCauseFilter() { selectedVCPCausa=null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
-function abrirModalSupervisor(tipo) {
-const s = document.getElementById('supervisorSelect').value; const m = document.getElementById('supervisorMonthSelect').value;
-if (s === 'todos') { alert("️ Seleccione un supervisor específico"); return; }
-const mesSeleccionado = m === 'todo' ? null : m.toLowerCase().trim();
-const f = ACTOS_COND_DATA.filter(e => { const coincideNombre = compararNombres(e.observador, s); const coincideMes = (mesSeleccionado === null || (e.mes || '').toLowerCase().trim() === mesSeleccionado); return coincideNombre && coincideMes; });
-const dt = (tipo === 'condicion') ? f.filter(e => e.tipo === 'condicion') : f.filter(e => e.tipo === 'acto');
-if (!dt.length) { alert(`ℹ️ No hay ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'} para ${s}${m !== 'todo' ? ` en ${m}` : ''}`); return; }
-const sorted = ordenarPorFecha(dt);
-let html = `<div class="mb-3"><p> ${m === 'todo' ? 'Todos los meses' : m}</p><p>👤 ${s}</p><p>📊 Total ${tipo === 'acto' ? 'ACTOS' : 'CONDICIONES'}: ${sorted.length}</p></div><table class="w-full text-xs"><thead class="bg-slate-100"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Estado</th></tr></thead><tbody>`;
-sorted.forEach(e => { const sigla = e.tipo === 'acto' ? 'AI' : 'CI'; html += `<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${(sigla + ' - ' + (e.descripcion || '')).substring(0, 50)}</td><td class="p-2">${getEstadoBadgeHTML(e.cerrado, 'small')}</td></tr>`; });
-html += `</tbody></table>`;
-document.getElementById('modalSupervisorTitle').innerHTML = tipo === 'acto' ? `⚠️ ACTOS de ${s}` : `🏚️ CONDICIONES de ${s}`;
-document.getElementById('supervisorModalContent').innerHTML = html;
-document.getElementById('supervisorDetailModal').classList.remove('hidden-section'); document.getElementById('supervisorDetailModal').style.display = 'flex';
-}
-function closeSupervisorModal() { document.getElementById('supervisorDetailModal').classList.add('hidden-section'); document.getElementById('supervisorDetailModal').style.display='none'; }
-function abrirModalPersonaVCP() {
-const p = document.getElementById('vcpPersonFilter').value; const m = document.getElementById('vcpPersonMonthFilter').value;
-if (p === 'todos') { alert("Seleccione una persona"); return; }
-const f = VCP_DATA.filter(e => e.personaObservada === p && (m === 'todo' || e.mes === m));
-if (!f.length) { alert(`No hay VCPs para ${p}`); return; }
-const sorted = ordenarPorFecha(f);
-let html = `<div class="mb-4 bg-orange-50 p-4 rounded"><h3>📋 VCPs de ${p}</h3><p>📅 ${m === 'todo' ? 'Todos los meses' : m}</p><p>📊 Total: ${sorted.length}</p></div><table class="w-full text-xs"><thead class="bg-orange-600 text-white"><tr><th>Fecha</th><th>Sector</th><th>Categoría</th><th>Descripción</th><th>Comentarios</th></tr></thead><tbody>`;
-sorted.forEach(e => { html += `<tr class="border-b"><td class="p-2">${e.dia}/${e.mes}</td><td class="p-2">${e.sector}</td><td class="p-2">${e.categoria?.icon || ''} ${e.categoria?.name || ''}</td><td class="p-2">${(e.descripcion || '').substring(0, 50)}</td><td class="p-2">${(e.comentarios || '').substring(0, 30)}</td></tr>`; });
-html += `</tbody></table>`;
-document.getElementById('personaVCPModalContent').innerHTML = html;
-document.getElementById('personaVCPModal').classList.remove('hidden-section'); document.getElementById('personaVCPModal').style.display = 'flex';
-}
-function closePersonaVCPModal() { document.getElementById('personaVCPModal').classList.add('hidden-section'); document.getElementById('personaVCPModal').style.display='none'; }
-function cambiarSucursal(suc) {
-currentSucursal = suc; ['btnMalagueno','btnBarker','btnLaPampita'].forEach(id => document.getElementById(id)?.classList.remove('active'));
-selectedCausa = null; selectedVCPCausa = null; state.mes = 'todo'; document.getElementById('monthFilter').value = 'todo';
-document.querySelectorAll('.category-card').forEach(c => c.classList.remove('selected'));
-document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
-const c = SUCURSALES_CONFIG[suc]; if (c) { currentObjetivos = c.objetivos; currentShowVCP = c.showVCP; actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP); }
-document.getElementById(suc === 'MALAGUENO' ? 'btnMalagueno' : suc === 'BARKER' ? 'btnBarker' : 'btnLaPampita')?.classList.add('active');
-if (isUnlocked) loadData();
-}
-function actualizarObjetivosUI() {
-document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.actos}`;
-document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${currentObjetivos.cond}`;
-document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES (${currentObjetivos.actos + currentObjetivos.cond})`;
-document.getElementById('objetivosMeta').innerHTML = `🎯 Meta: ${currentObjetivos.actos} Actos + ${currentObjetivos.cond} Condiciones = ${currentObjetivos.actos + currentObjetivos.cond} Total`;
-}
-function toggleVCPVisibility(show) { const v = document.getElementById('vcpSection'); if (v) show ? v.classList.remove('hidden-section') : v.classList.add('hidden-section'); }
-
-function applyAllFilters() { applyGeneralFilters(); if (currentShowVCP) applyVCPFilters(); updateSupervisorCard(); }
-function applyGeneralFilters() {
-let f = ACTOS_COND_DATA.filter(e => (state.mes === 'todo' || e.mes === state.mes) && (state.sector === 'general' || e.sector.includes(state.sector)) && (state.estado === 'todos' || (state.estado === 'cerrados' ? e.cerrado : !e.cerrado)));
-if (selectedCausa && selectedCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedCausa);
-const a = f.filter(e => e.tipo === 'acto'), c = f.filter(e => e.tipo === 'condicion');
-document.getElementById('kpiActos').innerText = a.length; document.getElementById('kpiCondiciones').innerText = c.length;
-const pA = Math.min(a.length / currentObjetivos.actos * 100, 100), pC = Math.min(c.length / currentObjetivos.cond * 100, 100);
-document.getElementById('actosBar').style.width = pA + '%'; document.getElementById('condBar').style.width = pC + '%';
-document.getElementById('actosPctLabel').innerText = Math.round(pA) + '%'; document.getElementById('condPctLabel').innerText = Math.round(pC) + '%';
-const up = (id, p) => { const el = document.getElementById(id); if (p >= 100) { el.innerText = '✅ Cumplido'; el.className = 'status-badge status-ok'; } else if (p > 0) { el.innerText = '📈 En Progreso'; el.className = 'status-badge status-warn'; } else { el.innerText = '⚠ Pendiente'; el.className = 'status-badge status-low'; } };
-up('actosStatus', pA); up('condStatus', pC);
-updateCategoryCards(f, 'actos'); updateChartsDona(f, 'actos'); updateTrendChart(f); renderGeneralTableConFiltroSupervisor();
+// ═══════════════════════════════════════════════════════════════
+// RESTO DE FUNCIONES (applyAllFilters, cambiarSucursal, etc.)
+// ═══════════════════════════════════════════════════════════════
+function applyAllFilters() {
+  const dataActos = ACTOS_COND_DATA.filter(e => {
+    if (state.mes !== 'todo' && e.mes !== state.mes) return false;
+    if (state.sector !== 'general' && !e.sector.includes(state.sector)) return false;
+    if (state.estado === 'cerrados' && e.cerrado !== true) return false;
+    if (state.estado === 'abiertos' && e.cerrado !== false) return false;
+    if (selectedCausa && selectedCausa !== 'todas' && e.categoria?.id !== selectedCausa) return false;
+    return true;
+  });
+  updateCategoryCards(dataActos, 'actos');
+  updateChartsDona(dataActos, 'actos');
+  updateTrendChart(dataActos);
+  renderGeneralTable(ordenarPorFecha(dataActos));
+  applyVCPFilters();
 }
 function applyVCPFilters() {
-let f = VCP_DATA.filter(e => (state.vcpMes === 'todo' || e.mes === state.vcpMes) && (state.vcpSector === 'general' || e.sector.includes(state.vcpSector)) && (state.vcpEstado === 'todos' || (state.vcpEstado === 'cerrados' ? e.cerrado : !e.cerrado)));
-if (selectedVCPCausa && selectedVCPCausa !== 'todas') f = f.filter(e => e.categoria?.id === selectedVCPCausa);
-const pct = Math.min(f.length / OBJ_VCP * 100, 100), vs = document.getElementById('vcpStatus');
-if (vs) { if (pct >= 100) vs.innerText = '✅ Cumplido'; else if (pct >= 70) vs.innerText = '📈 Casi'; else vs.innerText = '⚠ Pendiente'; }
-document.getElementById('vcpBar').style.width = pct + '%'; document.getElementById('vcpCurrent').innerText = f.length; document.getElementById('vcpPctLabel').innerText = Math.round(pct) + '%';
-updateCategoryCards(f, 'vcp'); updateVCPCharts(f); renderVCPTable(f);
+  let data = VCP_DATA;
+  if (state.vcpMes !== 'todo') data = data.filter(e => e.mes === state.vcpMes);
+  if (state.vcpSector !== 'general') data = data.filter(e => e.sector.includes(state.vcpSector));
+  if (state.vcpEstado === 'cerrados') data = data.filter(e => e.cerrado === true); else if (state.vcpEstado === 'abiertos') data = data.filter(e => e.cerrado === false);
+  if (selectedVCPCausa && selectedVCPCausa !== 'todas') data = data.filter(e => e.categoria?.id === selectedVCPCausa);
+  updateCategoryCards(data, 'vcp');
+  updateVCPCharts(data);
 }
+function limpiarTodosLosFiltros() {
+  state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
+  selectedCausa = null; selectedVCPCausa = null;
+  document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('#sectorButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#statusButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#vcpSectorButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#vcpStatusButtons .btn-filter')[0]?.classList.add('active');
+  document.getElementById('monthFilter').value = 'todo';
+  document.getElementById('vcpMonthFilter').value = 'todo';
+  document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+  document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
+  applyAllFilters();
+}
+function limpiarFiltroCausa() { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyAllFilters(); }
+function clearVCPCauseFilter() { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
+function limpiarFiltroGrafico() { state.mes = 'todo'; document.getElementById('monthFilter').value = 'todo'; applyAllFilters(); }
+function setSector(sector, btn) { state.sector = sector; document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyAllFilters(); }
+function setStatus(status, btn) { state.estado = status; document.querySelectorAll('#statusButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyAllFilters(); }
+function setVCPSector(sector, btn) { state.vcpSector = sector; document.querySelectorAll('#vcpSectorButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyVCPFilters(); }
+function setStatusVCP(status, btn) { state.vcpEstado = status; document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyVCPFilters(); }
+function cambiarSucursal(suc) {
+  currentSucursal = suc;
+  document.querySelectorAll('.sucursal-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn' + suc.charAt(0) + suc.slice(1).toLowerCase())?.classList.add('active');
+  updateSupervisorCard(); loadData();
+}
+function toggleVCPVisibility(show) { const section = document.getElementById('vcpSection'); if (section) section.style.display = show ? 'block' : 'none'; }
+function actualizarObjetivosUI() {
+  const config = SUCURSALES_CONFIG[currentSucursal];
+  document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${config.objetivos.actos + config.objetivos.cond})`;
+  document.getElementById('objetivosMeta').innerHTML = `Meta: ${config.objetivos.actos} Actos + ${config.objetivos.cond} Condiciones = ${config.objetivos.actos + config.objetivos.cond} Total`;
+  document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${config.objetivos.actos}`;
+  document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${config.objetivos.cond}`;
+  const actos = ACTOS_COND_DATA.filter(e => e.tipo === 'acto').length;
+  const cond = ACTOS_COND_DATA.filter(e => e.tipo === 'condicion').length;
+  const total = ACTOS_COND_DATA.length;
+  document.getElementById('kpiActos').innerText = actos;
+  document.getElementById('kpiCondiciones').innerText = cond;
+  const actosPct = Math.min(Math.round(actos / config.objetivos.actos * 100), 100);
+  const condPct = Math.min(Math.round(cond / config.objetivos.cond * 100), 100);
+  document.getElementById('actosBar').style.width = actosPct + '%';
+  document.getElementById('condBar').style.width = condPct + '%';
+  document.getElementById('actosPctLabel').innerText = actosPct + '%';
+  document.getElementById('condPctLabel').innerText = condPct + '%';
+  document.getElementById('actosStatus').innerText = actosPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('actosStatus').className = 'status-badge ' + (actosPct >= 100 ? 'status-ok' : 'status-warn');
+  document.getElementById('condStatus').innerText = condPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('condStatus').className = 'status-badge ' + (condPct >= 100 ? 'status-ok' : 'status-warn');
+  document.getElementById('vcpCurrent').innerText = VCP_DATA.length;
+  const vcpPct = Math.min(Math.round(VCP_DATA.length / OBJ_VCP * 100), 100);
+  document.getElementById('vcpBar').style.width = vcpPct + '%';
+  document.getElementById('vcpPctLabel').innerText = vcpPct + '%';
+  document.getElementById('vcpStatus').innerText = vcpPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('vcpStatus').className = 'status-badge ' + (vcpPct >= 100 ? 'status-ok' : 'status-warn');
+}
+function renderGeneralTable(data) {
+  const tbody = document.getElementById('generalTableBody');
+  if (!tbody) return;
+  if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-slate-400">No hay datos para mostrar</td></tr>'; return; }
+  tbody.innerHTML = data.map((d, i) => {
+    const hoy = new Date();
+    const esHoy = (parseInt(d.dia) === hoy.getDate()) && (d.mes === MESES_NOMBRES[hoy.getMonth()]);
+    return `<tr onclick="openReportModal(${i})" class="${esHoy ? 'row-hoy' : ''} border-b hover:bg-orange-50 transition-all">
+      <td class="p-2">${d.dia}/${d.mes}</td>
+      <td>${d.tipo === 'acto' ? '⚠️ Acto' : '🏚️ Condición'}</td>
+      <td>${escapeHtml(d.observador)}</td>
+      <td class="max-w-[200px] truncate">${escapeHtml(d.descripcion)}</td>
+      <td>${getEstadoBadgeHTML(d.cerrado, 'small')}</td>
+    </tr>`;
+  }).join('');
+  window.datosModalActual = data;
+}
+function openReportModal(index) {
+  const data = window.datosModalActual;
+  if (!data || !data[index]) return;
+  currentModalData = data; currentModalIndex = index;
+  const d = data[index];
+  const content = document.getElementById('reportModalContent');
+  if (!content) return;
+  content.innerHTML = `
+    <div class="flex justify-between items-center border-b pb-2">
+      <h3 class="font-bold text-lg text-slate-800">${d.tipo === 'acto' ? '⚠️ Acto Inseguro' : '🏚️ Condición Insegura'}</h3>
+      ${getEstadoBadgeHTML(d.cerrado)}
+    </div>
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <div><span class="font-bold">📅 Fecha:</span> ${d.dia}/${d.mes}</div>
+      <div><span class="font-bold">🏭 Sector:</span> ${d.sector || 'N/A'}</div>
+      <div class="col-span-2"><span class="font-bold">👤 Observador:</span> ${escapeHtml(d.observador)}</div>
+      <div class="col-span-2"><span class="font-bold">📝 Descripción:</span> ${escapeHtml(d.descripcion)}</div>
+    </div>
+    ${renderizarImagenesModal(d.imagen, "📷 REGISTRO FOTOGRÁFICO")}
+  `;
+  document.getElementById('modalCounter').innerText = (index + 1) + '/' + data.length;
+  document.getElementById('btnPrev').disabled = index === 0;
+  document.getElementById('btnNext').disabled = index === data.length - 1;
+  document.getElementById('reportDetailModal').classList.remove('hidden-section');
+  document.getElementById('reportDetailModal').style.display = 'flex';
+  isModalOpen = true;
+}
+function goToPreviousModal() { if (currentModalIndex > 0) openReportModal(currentModalIndex - 1); }
+function goToNextModal() { if (currentModalIndex < currentModalData.length - 1) openReportModal(currentModalIndex + 1); }
+function closeReportModal() { document.getElementById('reportDetailModal').classList.add('hidden-section'); document.getElementById('reportDetailModal').style.display = 'none'; isModalOpen = false; }
 
-function abrirPasswordResumen() { document.getElementById('resumenPasswordModal').classList.remove('hidden-section'); document.getElementById('resumenPasswordModal').style.display = 'flex'; }
-function cerrarPasswordResumenModal() { document.getElementById('resumenPasswordModal').classList.add('hidden-section'); document.getElementById('resumenPasswordModal').style.display = 'none'; }
-function verificarPasswordResumen() {
-const input = document.getElementById('resumenPasswordInput');
-if (input.value === PASSWORD_RESUMEN) { cerrarPasswordResumenModal(); cargarTodosDatosParaResumen().then(() => { document.getElementById('resumenEjecutivoPage').classList.remove('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display = 'block'; actualizarResumenEjecutivo(); }); }
-else { playErrorSound(); document.getElementById('resumenPasswordError').textContent = '🔒 Contraseña incorrecta'; }
-}
-function cerrarResumenEjecutivo() { document.getElementById('resumenEjecutivoPage').classList.add('hidden-section'); document.getElementById('resumenEjecutivoPage').style.display = 'none'; }
-function abrirConfirmCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) modal.style.display = 'flex'; }
-function cancelarCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) { modal.querySelector('.modal-bounce')?.classList.add('modal-bounce-out'); setTimeout(() => { modal.style.display = 'none'; modal.querySelector('.modal-bounce')?.classList.remove('modal-bounce-out'); }, 320); } }
-function confirmarCerrarResumen() { const modal = document.getElementById('cerrarResumenConfirmModal'); if (modal) { modal.querySelector('.modal-bounce')?.classList.add('modal-bounce-out'); setTimeout(() => { modal.style.display = 'none'; modal.querySelector('.modal-bounce')?.classList.remove('modal-bounce-out'); cerrarResumenEjecutivo(); }, 320); } }
-function actualizarResumenEjecutivo() {
-const sucursal = document.getElementById('ejecutivoSucursal').value, mes = document.getElementById('ejecutivoMes').value, sector = document.getElementById('ejecutivoSector').value, estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value, tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
-let datosActos = [], datosVCP = [];
-Object.keys(ALL_ACTOS_DATA).forEach(suc => {
-if (sucursal !== 'todas' && suc !== sucursal) return;
-if (ALL_ACTOS_DATA[suc]) ALL_ACTOS_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; if (estadoFiltro === 'abiertos' && estaCerrado) return; if (estadoFiltro === 'cerrados' && !estaCerrado) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp' && d.tipo !== tipoFiltro) return; datosActos.push({...d}); });
-if (ALL_VCP_DATA[suc]) ALL_VCP_DATA[suc].forEach(d => { if (mes !== 'todo' && d.mes !== mes) return; if (sector !== 'todos' && !d.sector.includes(sector)) return; if (tipoFiltro !== 'todos' && tipoFiltro !== 'vcp') return; datosVCP.push({...d}); });
+// Para asegurar que el gráfico se actualice al cambiar el tamaño de la ventana
+window.addEventListener('resize', () => {
+  if (trendChart) trendChart.resize();
 });
-if (currentFiltroTipo !== 'todos') { if (currentFiltroTipo === 'acto') datosVCP = []; else if (currentFiltroTipo === 'condicion') { datosActos = datosActos.filter(d => d.tipo === 'condicion'); datosVCP = []; } else if (currentFiltroTipo === 'vcp') datosActos = []; }
-document.getElementById('ejecTotalActos').innerText = datosActos.filter(d => d.tipo === 'acto').length;
-document.getElementById('ejecTotalCondiciones').innerText = datosActos.filter(d => d.tipo === 'condicion').length;
-document.getElementById('ejecTotalVCP').innerText = datosVCP.length;
-document.getElementById('ejecTotalGeneral').innerText = datosActos.filter(d => d.tipo === 'acto').length + datosActos.filter(d => d.tipo === 'condicion').length + datosVCP.length;
-const datosOrdenados = ordenarPorFecha([...datosActos, ...datosVCP]);
-renderEjecutivoTabla(datosOrdenados);
-renderEjecutivoRankings(datosActos, datosVCP);
-renderEjecutivoReincidencias(datosActos);
-renderEjecutivoChartsSucursales(sector, sucursal, estadoFiltro);
-}
-
-// 🔥 TABLA CON MODAL AL HACER CLIC
-function renderEjecutivoTabla(datos) {
-const tbody = document.getElementById('ejecTablaBody');
-if (!tbody) return;
-window.datosModalActual = datos;
-tbody.innerHTML = '';
-if (datos.length === 0) {
-tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-slate-500">📭 No hay datos con los filtros aplicados</td></tr>';
-return;
-}
-tbody.innerHTML = datos.slice(0, 200).map((d, index) => {
-const badge = d.sucursal === 'MALAGUENO' ? 'badge-malagueno' : d.sucursal === 'BARKER' ? 'badge-barker' : 'badge-lapampita';
-const tipo = d.tipo === 'vcp' ? '🎯 VCP' : (d.tipo === 'acto' ? '⚠️ ACTO (AI)' : '🏚️ COND (CI)');
-const tipoClass = d.tipo === 'vcp' ? 'bg-purple-100 text-purple-700' : (d.tipo === 'acto' ? 'bg-blue-100 text-blue-700' : 'bg-amber-100 text-amber-700');
-const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI';
-const sigla = d.tipo === 'acto' ? 'AI' : (d.tipo === 'condicion' ? 'CI' : '');
-const descConSigla = sigla ? `${sigla} - ${d.descripcion || '-'}` : (d.descripcion || '-');
-return `<tr class="border-b hover:bg-orange-50 cursor-pointer" onclick="abrirModalDesdeResumen(window.datosModalActual, ${index})"><td class="p-3"><span class="badge-sucursal ${badge}">${d.sucursal}</span></td><td class="p-3">${d.dia || '?'}/${d.mes || '?'}</td><td class="p-3">${escapeHtml(d.observador || d.personaObservada || '-')}</td><td class="p-3"><span class="px-2 py-0.5 rounded-full text-[10px] font-black ${tipoClass}">${tipo}</span></td><td class="p-3 max-w-xs">${escapeHtml(descConSigla.substring(0, 50))}${descConSigla.length > 50 ? '...' : ''}</td><td class="p-3">🏭 ${escapeHtml(d.sector || '-')}</td><td class="p-3">${getEstadoBadgeHTML(estaCerrado, 'small')}</td></tr>`;
-}).join('');
-}
-
-// 🔥 FILTRO POR TIPO CON RESTAURAR TODO
-function aplicarFiltroPorTipo(tipo) {
-if (tipo === 'todos') {
-currentFiltroTipo = 'todos';
-document.getElementById('ejecutivoTipoFiltro').value = 'todos';
-document.getElementById('ejecutivoSucursal').value = 'todas';
-document.getElementById('ejecutivoMes').value = 'todo';
-document.getElementById('ejecutivoSector').value = 'todos';
-document.getElementById('ejecutivoEstadoFiltro').value = 'todos';
-} else {
-currentFiltroTipo = tipo;
-document.getElementById('ejecutivoTipoFiltro').value = tipo;
-}
-document.querySelectorAll('#resumenEjecutivoPage .kpi-card-clickable').forEach(c => c.classList.remove('active'));
-if (tipo === 'acto') document.getElementById('kpiActosCard').classList.add('active');
-else if (tipo === 'condicion') document.getElementById('kpiCondCard').classList.add('active');
-else if (tipo === 'vcp') document.getElementById('kpiVCPCard').classList.add('active');
-else document.getElementById('kpiTotalCard').classList.add('active');
-actualizarResumenEjecutivo();
-}
-
-// 🔥 TOPS CON MODAL
-function renderEjecutivoRankings(datosActos, datosVCP) {
-const actos = datosActos.filter(d => d.tipo === 'acto');
-const countActos = {};
-actos.forEach(d => { const k = d.descripcion || 'Sin descripción'; if(!countActos[k]) countActos[k] = { count: 0, items: [] }; countActos[k].count++; countActos[k].items.push(d); });
-const topActos = Object.entries(countActos).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
-const contActos = document.getElementById('ejecTopActos');
-if (contActos) {
-if (topActos.length) {
-contActos.innerHTML = topActos.map(([desc, info], i) => {
-const onclickAttr = `onclick="abrirModalDesdeResumen(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
-return `<div class="zr-ranking-item" ${onclickAttr}><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${desc.length > 40 ? desc.substring(0, 40) + '...' : desc}</div><div class="text-xs">${info.count} registro${info.count > 1 ? 's' : ''} · Click para ver</div></div><div class="text-lg font-black text-red-600">${info.count}</div></div>`;
-}).join('');
-} else contActos.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
-}
-
-const conds = datosActos.filter(d => d.tipo === 'condicion');
-const countConds = {};
-conds.forEach(d => { let cat = d.categoria?.id || 'otros'; let desc = cat === 'berma' ? 'CI - Berma fuera de estándar' : cat === 'area' ? 'CI - Ambiente inseguro' : cat === 'orden' ? 'CI - Orden deficiente' : cat === 'senalizacion' ? 'CI - Señalización deficiente' : cat === 'equipos' ? 'CI - Equipos fuera de estándar' : cat === 'epp' ? 'AI - Falta de EPP' : cat === 'procedimientos' ? 'AI - Procedimientos inadecuados' : cat === 'conduccion' ? 'AI - Conducción insegura' : 'Otros'; if(!countConds[desc]) countConds[desc] = { count: 0, items: [] }; countConds[desc].count++; countConds[desc].items.push(d); });
-const topConds = Object.entries(countConds).sort((a, b) => b[1].count - a[1].count).slice(0, 5);
-const contConds = document.getElementById('ejecTopCond');
-if (contConds) {
-if (topConds.length) {
-contConds.innerHTML = topConds.map(([desc, info], i) => {
-const onclickAttr = `onclick="abrirModalDesdeResumen(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
-return `<div class="zr-ranking-item" style="border-left-color:#f18b00" ${onclickAttr}><div class="zr-rank-num zr-rank-${i + 1 <= 3 ? i + 1 : 'default'}">${i + 1}</div><div class="flex-1"><div class="font-bold">${desc.length > 40 ? desc.substring(0, 40) + '...' : desc}</div><div class="text-xs">${info.count} registro${info.count > 1 ? 's' : ''} · Click para ver</div></div><div class="text-lg font-black text-amber-600">${info.count}</div></div>`;
-}).join('');
-} else contConds.innerHTML = '<p class="text-center py-4 text-slate-400">Sin datos</p>';
-}
-
-const todosDatos = [...datosActos, ...datosVCP];
-const countResp = {};
-todosDatos.forEach(d => { const r = d.observador || d.personaObservada || 'Sin identificar'; if(!countResp[r]) countResp[r] = { count: 0, items: [] }; countResp[r].count++; countResp[r].items.push(d); });
-const topResp = Object.entries(countResp).sort((a, b) => b[1].count - a[1].count).slice(0, 10);
-const contResp = document.getElementById('ejecTopResponsables');
-if (contResp) {
-contResp.innerHTML = topResp.map(([n, info], i) => {
-const onclickAttr = `onclick="abrirModalDesdeResumen(${JSON.stringify(info.items).replace(/"/g, '&quot;')}, 0)"`;
-return `<div class="flex justify-between items-center p-2 bg-white rounded shadow-sm mb-2 cursor-pointer hover:bg-orange-50 transition-all" ${onclickAttr}><div class="flex items-center gap-3"><span class="font-bold text-lg text-orange-600 w-8">${i + 1}</span><span class="font-semibold">${n}</span></div><div class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">${info.count} reportes</div></div>`;
-}).join('');
-}
-}
-
-// 🔥 REINCIDENCIAS CON MODAL
-function renderEjecutivoReincidencias(datos) {
-const reincMap = new Map();
-datos.forEach(d => { if (!d.observador || !d.categoria?.id) return; const key = `${d.observador}|${d.categoria.id}`; if (!reincMap.has(key)) reincMap.set(key, { persona: d.observador, categoria: d.categoria, count: 0, sucursales: new Set(), items: [] }); const item = reincMap.get(key); item.count++; item.sucursales.add(d.sucursal); item.items.push(d); });
-const reincList = Array.from(reincMap.values()).filter(r => r.count >= 2).sort((a, b) => b.count - a.count).slice(0, 10);
-const cont = document.getElementById('ejecReincidencias');
-if (cont) {
-if (reincList.length) {
-cont.innerHTML = reincList.map(r => {
-const onclickAttr = `onclick="abrirModalDesdeResumen(${JSON.stringify(r.items).replace(/"/g, '&quot;')}, 0)"`;
-return `<div class="bg-white rounded-xl p-3 shadow-sm border-l-4 border-orange-500 cursor-pointer hover:bg-orange-50 transition-all" ${onclickAttr}><div class="flex justify-between"><div><span class="font-bold"> ${r.persona}</span><span class="text-xs ml-2">${r.categoria?.icon} ${r.categoria?.name}</span></div><span class="bg-red-100 text-red-700 px-2 rounded-full text-xs">${r.count}x</span></div><div class="text-xs mt-1">🏭 ${Array.from(r.sucursales).join(', ')}</div><div class="text-[10px] text-orange-600 mt-1 italic">👆 Click para ver detalles</div></div>`;
-}).join('');
-} else cont.innerHTML = '<p class="text-center py-4 text-slate-400">✅ Sin reincidencias</p>';
-}
-}
-
-function renderEjecutivoChartsSucursales(sectorFiltro, sucursalFiltro, estadoFiltro) {
-const sucursales = ['MALAGUENO', 'BARKER', 'LAPAMPITA']; const colores = { MALAGUENO: '#3b82f6', BARKER: '#10b981', LAPAMPITA: '#f59e0b' }; const nombres = { MALAGUENO: 'Malagueño', BARKER: 'Barker', LAPAMPITA: 'La Pampita' };
-const datasets = [];
-sucursales.forEach(suc => {
-if (sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return;
-const dataPorMes = MESES_NOMBRES.map(mes => { let total = 0; if (ALL_ACTOS_DATA[suc]) total = ALL_ACTOS_DATA[suc].filter(d => (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) && d.mes === mes && (estadoFiltro === 'todos' || (estadoFiltro === 'abiertos' ? !d.cerrado : d.cerrado))).length; return total; });
-datasets.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc] + '20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white' });
-});
-const ctx1 = document.getElementById('ejecutivoEvolucionSucursalesChart')?.getContext('2d');
-if (ctx1) { if (ejecutivoChartSucursales) ejecutivoChartSucursales.destroy(); ejecutivoChartSucursales = new Chart(ctx1, { type: 'line', data: { labels: MESES_SHORT, datasets: datasets }, options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } } } }); }
-const datasetsVCP = [];
-sucursales.forEach(suc => {
-if (sucursalFiltro !== 'todas' && suc !== sucursalFiltro) return; if (!ALL_VCP_DATA[suc] || !ALL_VCP_DATA[suc].length) return;
-const dataPorMes = MESES_NOMBRES.map(mes => ALL_VCP_DATA[suc].filter(d => (sectorFiltro === 'todos' || d.sector.includes(sectorFiltro)) && d.mes === mes).length);
-datasetsVCP.push({ label: nombres[suc], data: dataPorMes, borderColor: colores[suc], backgroundColor: colores[suc] + '20', borderWidth: 2, fill: false, tension: 0.3, pointRadius: 5, pointBackgroundColor: colores[suc], pointBorderColor: 'white' });
-});
-const ctx2 = document.getElementById('ejecutivoVCPSucursalesChart')?.getContext('2d');
-if (ctx2) { if (ejecutivoChartVCPSucursales) ejecutivoChartVCPSucursales.destroy(); ejecutivoChartVCPSucursales = new Chart(ctx2, { type: 'line', data: { labels: MESES_SHORT, datasets: datasetsVCP }, options: { responsive: true, maintainAspectRatio: false, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw} reportes` } } }, scales: { y: { beginAtZero: true, max: 60, ticks: { stepSize: 5 } }, x: { ticks: { font: { size: 9 } } } } } }); }
-}
-async function cargarTodosDatosParaResumen() {
-const resumenBtn = document.querySelector('.resumen-btn'); const originalText = resumenBtn?.innerHTML;
-if (resumenBtn) resumenBtn.innerHTML = ' CARGANDO DATOS...';
-try {
-ALL_ACTOS_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] }; ALL_VCP_DATA = { MALAGUENO: [], BARKER: [], LAPAMPITA: [] };
-const [malagueno, barker, lapampita] = await Promise.all([cargarDatosSucursal('MALAGUENO'), cargarDatosSucursal('BARKER'), cargarDatosSucursal('LAPAMPITA')]);
-ALL_ACTOS_DATA.MALAGUENO = malagueno.actos; ALL_VCP_DATA.MALAGUENO = malagueno.vcp;
-ALL_ACTOS_DATA.BARKER = barker.actos; ALL_VCP_DATA.BARKER = barker.vcp;
-ALL_ACTOS_DATA.LAPAMPITA = lapampita.actos; ALL_VCP_DATA.LAPAMPITA = lapampita.vcp;
-} catch (error) { console.error('❌ Error cargando datos:', error); alert('Error al cargar los datos.'); }
-finally { if (resumenBtn) resumenBtn.innerHTML = originalText || '📊 RESUMEN EJECUTIVO'; }
-}
-function exportarResumenEjecutivoExcel() {
-const wb = XLSX.utils.book_new();
-const sucursal = document.getElementById('ejecutivoSucursal').value, mes = document.getElementById('ejecutivoMes').value, sector = document.getElementById('ejecutivoSector').value, estadoFiltro = document.getElementById('ejecutivoEstadoFiltro').value, tipoFiltro = document.getElementById('ejecutivoTipoFiltro').value;
-const resumenData = [['🛡️ RESUMEN EJECUTIVO MINERAR 2026'], [`Fecha: ${new Date().toLocaleString('es-AR')}`], [], ['📋 FILTROS:'], ['Sucursal:', sucursal === 'todas' ? 'TODAS' : sucursal], ['Mes:', mes === 'todo' ? 'TODOS' : mes], ['Sector:', sector === 'todos' ? 'TODOS' : sector], ['Estado:', estadoFiltro === 'todos' ? 'TODOS' : estadoFiltro], ['Tipo:', tipoFiltro === 'todos' ? 'TODOS' : tipoFiltro], [], ['📈 INDICADORES:'], ['⚠️ TOTAL ACTOS:', document.getElementById('ejecTotalActos').innerText], ['️ TOTAL CONDICIONES:', document.getElementById('ejecTotalCondiciones').innerText], ['🎯 TOTAL VCP:', document.getElementById('ejecTotalVCP').innerText], ['📊 TOTAL GENERAL:', document.getElementById('ejecTotalGeneral').innerText]];
-const wsResumen = XLSX.utils.aoa_to_sheet(resumenData); wsResumen['!cols'] = [{wch:25}, {wch:15}]; XLSX.utils.book_append_sheet(wb, wsResumen, '📊 RESUMEN');
-const datosTabla = window.datosModalActual || [];
-if (datosTabla.length > 0) {
-const detalleData = [['📋 DETALLE COMPLETO'], [], ['Fecha', 'Sucursal', 'Responsable', 'Tipo', 'Descripción', 'Sector', 'Estado', 'Categoría']];
-datosTabla.forEach(d => { const estaCerrado = d.cerrado === true || d.cerrado === 'si' || d.cerrado === 'Si' || d.cerrado === 'SI'; const tipo = d.tipo === 'vcp' ? 'VCP' : (d.tipo === 'acto' ? 'ACTO' : 'CONDICIÓN'); detalleData.push([`${d.dia}/${d.mes}/2026`, d.sucursal, d.observador || d.personaObservada || '', tipo, d.descripcion || '', d.sector || '', estaCerrado ? 'CERRADO' : 'ABIERTO', d.categoria?.name || '']); });
-const wsDetalle = XLSX.utils.aoa_to_sheet(detalleData); wsDetalle['!cols'] = [{wch:12}, {wch:12}, {wch:20}, {wch:10}, {wch:50}, {wch:12}, {wch:10}, {wch:20}]; XLSX.utils.book_append_sheet(wb, wsDetalle, '📋 DETALLE');
-}
-XLSX.writeFile(wb, `Resumen_Ejecutivo_Minerar_${new Date().toISOString().slice(0,10)}.xlsx`);
-alert('✅ Excel exportado exitosamente');
-}
-
-window.addEventListener('load', () => {
-const overlay = document.getElementById('passwordOverlay');
-if (tieneSesionValida()) { isUnlocked = true; overlay.style.display = 'none'; enterMainPanel(); }
-else { overlay.style.display = 'flex'; document.getElementById('passwordInput')?.focus(); document.getElementById('passwordInput')?.addEventListener('keypress', e => { if(e.key === 'Enter') verifyPassword(); }); }
-document.getElementById('btnMalagueno')?.addEventListener('click', () => cambiarSucursal('MALAGUENO'));
-document.getElementById('btnBarker')?.addEventListener('click', () => cambiarSucursal('BARKER'));
-document.getElementById('btnLaPampita')?.addEventListener('click', () => cambiarSucursal('LAPAMPITA'));
-document.addEventListener('click', function initAudio(){ window.initAudioContext(); document.removeEventListener('click', initAudio); }, { once: true });
-inicializarContadorUsuarios();
-});
-document.addEventListener('DOMContentLoaded', () => {
-document.getElementById('monthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.mes = e.target.value; applyGeneralFilters(); }});
-document.getElementById('vcpMonthFilter')?.addEventListener('change', e => { if(isUnlocked){ state.vcpMes = e.target.value; applyVCPFilters(); }});
-document.getElementById('vcpPersonFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-document.getElementById('vcpPersonMonthFilter')?.addEventListener('change', updatePersonVCPStatsOnly);
-const supervisorSelect = document.getElementById('supervisorSelect'); const supervisorMonthSelect = document.getElementById('supervisorMonthSelect');
-if (supervisorSelect) supervisorSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
-if (supervisorMonthSelect) supervisorMonthSelect.addEventListener('change', () => { if (isUnlocked) updateSupervisorCard(); });
-document.addEventListener('keydown', function(e) {
-if (e.key === 'Enter' || e.key === 'Escape') {
-const rm = document.getElementById('reportDetailModal'); if (rm && !rm.classList.contains('hidden-section')) { closeReportModal(); return; }
-const sm = document.getElementById('supervisorDetailModal'); if (sm && !sm.classList.contains('hidden-section')) { closeSupervisorModal(); return; }
-const vm = document.getElementById('personaVCPModal'); if (vm && !vm.classList.contains('hidden-section')) { closePersonaVCPModal(); return; }
-const dm = document.getElementById('dailyReportsModal'); if (dm && !dm.classList.contains('hidden-section')) { closeDailyReportsModal(); return; }
-const al = document.getElementById('newReportAlert'); if (al && al.classList.contains('show')) { dismissAlert(); return; }
-}
-});
-});
-document.addEventListener('visibilitychange', () => { if(!document.hidden && isUnlocked && !isModalOpen && !isUpdating) { loadData(); } });
 </script>
 </body>
 </html>
