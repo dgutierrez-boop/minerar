@@ -289,6 +289,22 @@ body { padding: 10px; }
 <div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
 <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
 </div>
+
+<!-- ═══ NUEVO: OCULTAR PERSONAS INACTIVAS ═══ -->
+<div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200">
+  <details class="group">
+    <summary class="flex items-center justify-between cursor-pointer list-none">
+      <span class="text-[10px] font-bold uppercase text-slate-600">👥 Ocultar Personas Inactivas</span>
+      <span class="text-slate-400 text-xs group-open:rotate-180 transition-transform">▼</span>
+    </summary>
+    <div class="mt-2">
+      <p class="text-[9px] text-slate-400 mb-2 italic">Tildá para ocultar de los desplegables (el historial no se borra).</p>
+      <div id="listaPersonasOcultas" class="max-h-40 overflow-y-auto space-y-1">
+        <!-- Se llena dinámicamente con JS -->
+      </div>
+    </div>
+  </details>
+</div>
 </div>
 </aside>
 <main>
@@ -664,6 +680,61 @@ let reportesNotificadosActos = new Set(), reportesNotificadosVCP = new Set();
 let todayAlertsBySucursal = { MALAGUENO: { actos: [], vcp: [] }, BARKER: { actos: [], vcp: [] }, LAPAMPITA: { actos: [], vcp: [] } };
 let lastUpdateTime = Date.now(), lastSuccessfulData = null, supervisorFiltroTabla = null;
 let ACTOS_COND_DATA = [], VCP_DATA = [];
+
+// ═══════════════════════════════════════════════════════════════
+// 🚫 PERSONAS OCULTAS (se guardan en localStorage)
+// ═══════════════════════════════════════════════════════════════
+let PERSONAS_OCULTAS = JSON.parse(localStorage.getItem('minerar_personas_ocultas') || '[]');
+
+function guardarPersonasOcultas() {
+  localStorage.setItem('minerar_personas_ocultas', JSON.stringify(PERSONAS_OCULTAS));
+}
+
+function esPersonaOculta(nombre) {
+  if (!nombre) return false;
+  const nombreNorm = normalizarNombre(nombre);
+  return PERSONAS_OCULTAS.some(oculto => normalizarNombre(oculto) === nombreNorm);
+}
+
+function togglePersonaOculta(nombre, checkbox) {
+  const nombreNorm = normalizarNombre(nombre);
+  if (checkbox.checked) {
+    if (!PERSONAS_OCULTAS.some(o => normalizarNombre(o) === nombreNorm)) {
+      PERSONAS_OCULTAS.push(nombre);
+    }
+  } else {
+    PERSONAS_OCULTAS = PERSONAS_OCULTAS.filter(o => normalizarNombre(o) !== nombreNorm);
+  }
+  guardarPersonasOcultas();
+  populateSupervisors();
+  populateVCPPeopleFilter();
+}
+
+function renderListaPersonasOcultas() {
+  const cont = document.getElementById('listaPersonasOcultas');
+  if (!cont) return;
+
+  const nombresActos = [...new Set(ACTOS_COND_DATA.map(d => d.observador))].filter(n => n && n.trim() !== '');
+  const nombresVCP = [...new Set(VCP_DATA.map(v => v.personaObservada))].filter(n => n && n.trim() !== '');
+  const todos = [...new Set([...nombresActos, ...nombresVCP])].sort();
+
+  if (todos.length === 0) {
+    cont.innerHTML = '<p class="text-[9px] text-slate-400 text-center py-2">Cargando personas...</p>';
+    return;
+  }
+
+  cont.innerHTML = todos.map(nombre => {
+    const oculto = esPersonaOculta(nombre);
+    const checked = oculto ? 'checked' : '';
+    return `
+      <label class="flex items-center gap-2 p-1.5 rounded-lg hover:bg-white transition-all cursor-pointer text-[10px]">
+        <input type="checkbox" ${checked} onchange="togglePersonaOculta('${nombre.replace(/'/g, "\\'")}', this)" class="w-3.5 h-3.5 accent-orange-500 cursor-pointer">
+        <span class="${oculto ? 'text-slate-400 line-through' : 'text-slate-700'}">${nombre}</span>
+      </label>
+    `;
+  }).join('');
+}
+
 let categoryChart = null, trendChart = null, vcpCategoryChart = null, vcpTrendChart = null;
 let state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
 let currentModalIndex = 0, currentModalData = [], isModalOpen = false;
@@ -756,4 +827,488 @@ function verifyPassword() {
 const input = document.getElementById('passwordInput'); const errorDiv = document.getElementById('passwordError'); const overlay = document.getElementById('passwordOverlay');
 if (input.value === PASSWORD_CORRECTA) {
 playUnlockSound(); guardarSesion(); errorDiv.textContent = '';
-overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3
+overlay.innerHTML = '<div class="password-card"><div style="color:#22c55e;font-size:48px">✅</div><h3 class="text-lg font-bold text-emerald-600 mt-4">¡ACCESO CONCEDIDO!</h3><p class="text-sm text-slate-500">Cargando presentación...</p></div>';
+setTimeout(() => { overlay.style.opacity = '0'; overlay.style.transition = 'opacity 0.5s'; setTimeout(() => { overlay.style.display = 'none'; isUnlocked = true; showVideoIntro(); }, 500); }, 1200);
+} else { playErrorSound(); errorDiv.textContent = '🔒 Contraseña incorrecta'; input.value = ''; input.focus(); input.classList.add('border-red-400'); setTimeout(() => input.classList.remove('border-red-400'), 500); }
+}
+function showVideoIntro() {
+const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer');
+videoIntro.classList.add('active');
+if (videoIntro.requestFullscreen) videoIntro.requestFullscreen();
+video.play().catch(e => console.log('Autoplay prevented'));
+setTimeout(() => skipVideoIntro(), 5000);
+video.addEventListener('ended', skipVideoIntro);
+}
+function skipVideoIntro() {
+if (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement) {
+if (document.exitFullscreen) {
+document.exitFullscreen().catch(e => console.log("Error al salir de fullscreen:", e));
+} else if (document.webkitExitFullscreen) {
+document.webkitExitFullscreen();
+}
+}
+const videoIntro = document.getElementById('videoIntro'); const video = document.getElementById('introVideoPlayer');
+video.pause(); videoIntro.style.transition = 'opacity 0.6s ease-out'; videoIntro.style.opacity = '0';
+setTimeout(() => { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; videoIntro.style.opacity = '1'; enterMainPanel(); }, 600);
+}
+function abrirModalCerrarSesion() { const modal = document.getElementById('logoutConfirmModal'); if (modal) { modal.classList.add('active'); modal.style.display = 'flex'; } }
+function cancelarCerrarSesion() { const modal = document.getElementById('logoutConfirmModal'); if (modal) { modal.classList.remove('active'); modal.style.display = 'none'; } }
+function confirmarCerrarSesion() {
+borrarSesion(); if (refreshInterval) clearInterval(refreshInterval);
+document.querySelectorAll('video, audio').forEach(el => { try { el.pause(); el.muted = true; el.volume = 0; el.removeAttribute('src'); el.load(); } catch(e) {} });
+try { if (window.audioContext && window.audioContext.state !== 'closed') window.audioContext.close(); window.audioContextInitialized = false; window.audioContext = null; } catch(e) {}
+const videoIntro = document.getElementById('videoIntro'); if (videoIntro) { videoIntro.classList.remove('active'); videoIntro.style.display = 'none'; }
+setTimeout(() => { window.location.href = window.location.pathname + '?logout=' + Date.now(); }, 200);
+}
+function updateLastUpdateIndicator() {
+lastUpdateTime = Date.now(); const lastUpdate = new Date(lastUpdateTime);
+const timeStr = lastUpdate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+let indicator = document.getElementById('lastUpdateIndicator');
+if (!indicator) { indicator = document.createElement('div'); indicator.id = 'lastUpdateIndicator'; indicator.className = 'text-[9px] text-white/70 bg-black/20 px-2 py-1 rounded-full ml-2'; const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); if (refreshBtn) refreshBtn.parentNode.insertBefore(indicator, refreshBtn.nextSibling); }
+indicator.innerHTML = `📡 ${timeStr}`;
+}
+function enterMainPanel() { document.getElementById('mainContent').classList.remove('hidden-section'); loadData(); if (refreshInterval) clearInterval(refreshInterval); refreshInterval = null; console.log('✅ Panel cargado'); }
+
+function parseCSV(text) { const lines=text.split('\n').filter(l=>l.trim()), r=[]; for(let i=1;i<lines.length;i++){ const line=lines[i],cols=[];let cur='',inq=false; for(let ch of line){if(ch==='"')inq=!inq;else if(ch===','&&!inq){cols.push(cur.trim());cur='';}else cur+=ch;} cols.push(cur.trim()); if(cols.length>=10)r.push(cols); } return r; }
+function parseFecha(f) { if(!f) return {dia:'',mes:'',valido:false}; let s = f.toString().split(' ')[0].trim(), p = s.split('/'); if(p.length>=3) { let d=p[0].padStart(2,'0'), m=parseInt(p[1]), a=parseInt(p[2]); if(p[2].length===2) a=2000+a; if(m>=1 && m<=12 && a===2026) return {dia: d, mes: MESES_NOMBRES[m-1], valido: true}; } p = s.split('-'); if(p.length>=3) { let a=parseInt(p[0]), m=parseInt(p[1]), d=p[2].padStart(2,'0'); if(m>=1 && m<=12 && a===2026) return {dia: d, mes: MESES_NOMBRES[m-1], valido: true}; } return {dia:'',mes:'',valido:false}; }
+function classifyData(desc, useVCP = false) {
+if (!desc) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+const d = desc.toLowerCase();
+if (useVCP) {
+if (d.includes('orden') || d.includes('limpieza') || d.includes('aceite')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+if (d.includes('procedimiento') || d.includes('bloqueo')) return { id: 'proc', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+if (d.includes('herramienta') || d.includes('equipo')) return { id: 'equip', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+}
+if (d.includes('berma') || d.includes('talud') || d.includes('borde')) return { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' };
+if (d.includes('señal') || d.includes('cartel')) return { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' };
+if (d.includes('equipo') || d.includes('herramienta') || d.includes('maquinaria')) return { id: 'equipos', name: 'EQUIPOS Y HERRAMIENTAS', icon: '🔧', color: '#8b5cf6' };
+if (d.includes('procedimiento') || d.includes('incumplimiento') || d.includes('bloqueo')) return { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' };
+if (d.includes('epp') || d.includes('casco') || d.includes('guantes')) return { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' };
+if (d.includes('residuo') || d.includes('basura') || d.includes('limpieza')) return { id: 'orden', name: 'ORDEN, LIMPIEZA Y RESIDUOS', icon: '🧹', color: '#10b981' };
+if (d.includes('celular') || d.includes('velocidad') || d.includes('conducción')) return { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' };
+if (d.includes('visibilidad') || d.includes('polvo') || d.includes('área')) return { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' };
+return { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' };
+}
+async function cargarDatosSucursal(sucursal) {
+const config = SUCURSALES_CONFIG[sucursal]; let actosData = [], vcpData = [];
+const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = MESES_NOMBRES[hoy.getMonth()];
+if(config.actosUrl) {
+try {
+const r1 = await fetch(config.actosUrl + '&t=' + Date.now()), text = await r1.text(), rows = parseCSV(text);
+for(let i=0; i<rows.length; i++) {
+const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw;
+if(sucursal === 'MALAGUENO' && i >= 225) {
+const u = row[20] || ''; const uTrimmed = u.trim().toUpperCase();
+if(uTrimmed.startsWith('AI-') || uTrimmed.startsWith('AI.') || uTrimmed.startsWith('AI ')) { tipoRaw='Acto Inseguro'; desc=u.replace(/^AI[\s\.\-]*/i,'').trim(); }
+else if(uTrimmed.startsWith('CI-') || uTrimmed.startsWith('CI.') || uTrimmed.startsWith('CI ')) { tipoRaw='Condición Insegura'; desc=u.replace(/^CI[\s\.\-]*/i,'').trim(); }
+else { tipoRaw=''; desc=u; }
+fecha = row[11] || ''; observador = row[13] || ''; sector = row[14] || ''; cerradoRaw = row[23] || '';
+} else {
+if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
+fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || ''; sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || ''; desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
+}
+let imagenUrls = []; for(let j=0; j<row.length; j++) { const cell = row[j] ? row[j].trim() : ''; if(cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrls.push(cell); }
+const fd = parseFecha(fecha); if(!fd.valido) continue;
+let tipo = 'otro';
+if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto'; else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
+if(tipo === 'otro' && desc) { const descTrimmed = desc.trim().toUpperCase(); if(descTrimmed.startsWith('AI-') || descTrimmed.startsWith('AI.') || descTrimmed.startsWith('AI ')) { tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i,'').trim(); } else if(descTrimmed.startsWith('CI-') || descTrimmed.startsWith('CI.') || descTrimmed.startsWith('CI ')) { tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i,'').trim(); } }
+if(tipo === 'otro' && desc) tipo = inferirTipoDesdeDescripcion(desc);
+let cerrado = false; if(cerradoRaw) { const cs = cerradoRaw.toString().toLowerCase().trim(); cerrado = cs === 'si' || cs === 'sí' || cs === 'true' || cs === '1' || cs === 'x'; }
+actosData.push({ fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(), descripcion: (desc || '').trim(), cerrado, mes: fd.mes, dia: fd.dia, categoria: classifyData(desc, false), sucursal: sucursal, imagen: imagenUrls.join(',') });
+if(fd.dia === diaHoy && fd.mes === mesHoy) {
+const idUnico = `${observador}|${desc}|${sector}|${fecha}`;
+if(!reportesNotificadosActos.has(idUnico)) {
+reportesNotificadosActos.add(idUnico);
+const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+todayAlertsBySucursal[sucursal].actos.unshift({persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, sector, hora, timestamp:Date.now(), sucursal:sucursal});
+updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora);
+}
+}
+}
+} catch(e) { console.error("Error cargando actos:", e); }
+}
+if(config.showVCP && config.vcpUrl) {
+try {
+const r2 = await fetch(config.vcpUrl + '&t=' + Date.now()), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
+for(let i=0; i<rows2.length; i++) {
+const row = rows2[i]; let fr, po, sec, des, com;
+if(vm) { fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = row[vm.sector] || ''; des = row[vm.descripcion] || ''; com = row[vm.comentarios] || ''; }
+else { fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim() || 'general'; des = row[32] || ''; com = row[28] || ''; }
+let imagenUrlsVCP = []; for(let j=0; j<row.length; j++) { const cell = row[j] ? row[j].trim() : ''; if(cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrlsVCP.push(cell); }
+const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue;
+vcpData.push({ fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, descripcion: des, comentarios: com, cerrado: true, mes: fd.mes, dia: fd.dia, categoria: classifyData(des, true), sucursal: sucursal, imagen: imagenUrlsVCP.join(',') });
+if(fd.dia === diaHoy && fd.mes === mesHoy) {
+const idUnico = `${po}|${des}|${sec}|${fr}`;
+if(!reportesNotificadosVCP.has(idUnico)) {
+reportesNotificadosVCP.add(idUnico);
+const hora = fr.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+todayAlertsBySucursal[sucursal].vcp.unshift({persona:po, tipo:'🎯 VCP', descripcion:des, sector:sec, hora, timestamp:Date.now(), sucursal:sucursal});
+updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(po, sec, des, 'VCP', hora);
+}
+}
+}
+} catch(e) { console.error("Error cargando VCP:", e); }
+}
+return { actos: actosData, vcp: vcpData };
+}
+async function loadData() {
+if(!isUnlocked || isUpdating) return; isUpdating = true;
+try {
+const config = SUCURSALES_CONFIG[currentSucursal]; currentObjetivos = config.objetivos; currentShowVCP = config.showVCP;
+const result = await cargarDatosSucursal(currentSucursal);
+if (result.actos.length > 0) { ACTOS_COND_DATA = result.actos; ALL_ACTOS_DATA[currentSucursal] = result.actos; lastSuccessfulData = JSON.parse(JSON.stringify(result.actos)); }
+else if (lastSuccessfulData && lastSuccessfulData.length > 0) { ACTOS_COND_DATA = lastSuccessfulData; ALL_ACTOS_DATA[currentSucursal] = lastSuccessfulData; }
+if (result.vcp.length > 0) { VCP_DATA = result.vcp; ALL_VCP_DATA[currentSucursal] = result.vcp; }
+updateTotalCounters(); actualizarObjetivosUI(); toggleVCPVisibility(currentShowVCP);
+await populateSupervisors(); populateVCPPeopleFilter(); applyAllFilters(); updatePulseBadges(); updateRealTimeUI(); updateSupervisorCard(); updateLastUpdateIndicator();
+renderListaPersonasOcultas();
+} catch(e) { console.error("Error en loadData:", e); }
+finally { isUpdating = false; }
+}
+function forceRefreshData() {
+if (isUnlocked && !isUpdating) {
+const refreshBtn = document.querySelector('button[onclick="forceRefreshData()"]'); const originalText = refreshBtn?.innerHTML;
+if (refreshBtn) { refreshBtn.innerHTML = ' CARGANDO...'; refreshBtn.disabled = true; }
+loadData().finally(() => { if (refreshBtn) { refreshBtn.innerHTML = originalText || '⟳ ACTUALIZAR 🔄'; refreshBtn.disabled = false; } });
+}
+}
+
+function showNewReportAlert(persona, sector, desc, tipo, hora) {
+if(!soundEnabled) return;
+const alertEl = document.getElementById('newReportAlert'); const contentEl = document.getElementById('alertContent');
+if(!alertEl || !contentEl || alertEl.classList.contains('show')) return;
+const iconoTipo = tipo === 'vcp' ? '🎯' : (tipo.toLowerCase().includes('acto') ? '⚠️' : '🏚️');
+contentEl.innerHTML = `<div class="alert-person text-lg font-bold text-slate-800 mb-2"> ${escapeHtml(persona) || 'No identificado'}</div><div class="alert-sector text-sm text-indigo-600 mb-3">🏭 ${escapeHtml(sector) || 'Sector no especificado'}</div><div class="alert-desc bg-slate-50 p-3 rounded-lg mb-3">${iconoTipo} <strong>${tipo.toUpperCase()}</strong><br><span class="text-slate-700">${escapeHtml(desc) || 'Sin descripción'}</span></div><div class="alert-time text-xs text-slate-500">🕒 ${hora || new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'})}</div>`;
+alertEl.classList.add('show'); try { window.playAlarmSound(); } catch(e) {}
+let segundos = 15; const countdownEl = document.getElementById('alertCountdown'); if(countdownEl) countdownEl.textContent = segundos;
+if(alertCountdownInterval) clearInterval(alertCountdownInterval);
+alertCountdownInterval = setInterval(() => { segundos--; if(countdownEl) countdownEl.textContent = segundos; if(segundos <= 0) dismissAlert(); }, 1000);
+}
+function dismissAlert() { if(alertCountdownInterval) { clearInterval(alertCountdownInterval); alertCountdownInterval = null; } const alertEl = document.getElementById('newReportAlert'); if(alertEl) alertEl.classList.remove('show'); }
+function updatePulseBadges() {
+const badgeActos = document.getElementById('actosNovedadBadge'); const badgeVCP = document.getElementById('vcpNovedadBadge');
+const alertsActos = todayAlertsBySucursal[currentSucursal]?.actos || []; const alertsVCP = todayAlertsBySucursal[currentSucursal]?.vcp || [];
+if(badgeActos) { if(alertsActos.length > 0) { badgeActos.textContent = Math.min(alertsActos.length, 99); badgeActos.classList.remove('hidden'); } else badgeActos.classList.add('hidden'); }
+if(badgeVCP) { if(alertsVCP.length > 0) { badgeVCP.textContent = Math.min(alertsVCP.length, 99); badgeVCP.classList.remove('hidden'); } else badgeVCP.classList.add('hidden'); }
+}
+function updateTotalCounters() { document.getElementById('totalActosCond').innerText = ACTOS_COND_DATA.length; document.getElementById('totalVCP').innerText = currentShowVCP ? VCP_DATA.length : '0'; }
+function updateRealTimeUI() {
+const actCont=document.getElementById('realTimeReportsActos'), vcpCont=document.getElementById('realTimeReportsVCP'), actLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), alerts=todayAlertsBySucursal[currentSucursal];
+if(actLed) actLed.className=alerts.actos.length>0?'siren-green':'siren-red'; if(vcpLed) vcpLed.className=alerts.vcp.length>0?'siren-green':'siren-red';
+if(alerts.actos.length) actCont.innerHTML=alerts.actos.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else actCont.innerHTML='<p class="text-center py-2">📭 Sin reportes hoy</p>';
+if(alerts.vcp.length) vcpCont.innerHTML=alerts.vcp.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else vcpCont.innerHTML='<p class="text-center py-2"> Sin VCP hoy</p>';
+}
+function toggleActosAlerts() { showDailyReportsModal('actos', todayAlertsBySucursal[currentSucursal].actos); }
+function toggleVCPAlerts() { showDailyReportsModal('vcp', todayAlertsBySucursal[currentSucursal].vcp); }
+function showDailyReportsModal(type, alerts) {
+const modal=document.getElementById('dailyReportsModal'), titleEl=document.getElementById('dailyReportsTitle'), contentEl=document.getElementById('dailyReportsContent');
+titleEl.textContent=type==='actos'?'📋 REPORTES DE ACTOS HOY':'📋 REPORTES DE VCP HOY';
+if(alerts.length===0) contentEl.innerHTML='<p class="text-center py-8"> Sin reportes hoy</p>';
+else contentEl.innerHTML=alerts.map((a,i)=>`<div class="border-l-4 border-orange-500 bg-orange-50 p-4 rounded-lg mb-3"><div class="flex justify-between"><span>#${i+1}</span><span>${a.hora}</span></div><div class="font-bold">${a.persona}</div><div class="text-sm">🏭 ${a.sector}</div><div class="text-sm">${a.descripcion}</div></div>`).join('');
+modal.classList.remove('hidden-section'); modal.style.display='flex';
+}
+function closeDailyReportsModal() { const m=document.getElementById('dailyReportsModal'); m.classList.add('hidden-section'); m.style.display='none'; }
+
+function normalizarNombre(nombre) { if (!nombre) return ''; return nombre.toLowerCase().trim().replace(/,/g, ' ').replace(/\./g, '').replace(/\s+/g, ' ').split(' ').sort().join(' '); }
+function compararNombres(nombre1, nombre2) {
+if (!nombre1 || !nombre2) return false;
+const n1 = normalizarNombre(nombre1), n2 = normalizarNombre(nombre2);
+if (n1 === n2 || n1.includes(n2) || n2.includes(n1)) return true;
+const p1 = n1.split(' '), p2 = n2.split(' '); let coincidencias = 0;
+for (const a of p1) { if (a.length < 2) continue; for (const b of p2) { if (b.length < 2) continue; if (a === b || a.includes(b) || b.includes(a)) { coincidencias++; break; } } }
+return coincidencias >= Math.max(2, Math.floor(Math.min(p1.length, p2.length) * 0.8));
+}
+async function populateSupervisors() {
+const sel = document.getElementById('supervisorSelect'); if (!sel) return;
+const observadoresRaw = [...new Set(ACTOS_COND_DATA.map(d => d.observador))]
+  .filter(n => n && n.trim() !== '')
+  .filter(n => !esPersonaOculta(n));
+const nombreNormalizadoMap = new Map();
+for (const obs of observadoresRaw) { const normalizado = normalizarNombre(obs); if (!nombreNormalizadoMap.has(normalizado)) nombreNormalizadoMap.set(normalizado, obs); }
+const supervisoresUnicos = Array.from(nombreNormalizadoMap.values()).sort();
+sel.innerHTML = '<option value="todos">🔘 Todos</option>';
+supervisoresUnicos.forEach(x => {
+const count = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x)).length;
+const abiertos = ACTOS_COND_DATA.filter(d => compararNombres(d.observador, x) && !d.cerrado).length;
+sel.innerHTML += `<option value="${x.replace(/'/g, '&#39;')}">👤 ${x} (${count})${abiertos > 0 ? `<span class="abiertos-badge">${abiertos}</span>` : ''}</option>`;
+});
+updateSupervisorCard();
+}
+function updateSupervisorCard() {
+let supervisor = document.getElementById('supervisorSelect')?.value || 'todos';
+let mesSeleccionado = document.getElementById('supervisorMonthSelect')?.value || 'todo';
+let dataFiltrada = ACTOS_COND_DATA;
+if (mesSeleccionado !== 'todo') { const mesNormalizado = mesSeleccionado.toLowerCase().trim(); dataFiltrada = dataFiltrada.filter(e => (e.mes || '').toLowerCase().trim() === mesNormalizado); }
+const resultados = (supervisor === 'todos') ? dataFiltrada : dataFiltrada.filter(e => compararNombres(e.observador, supervisor));
+supervisorFiltroTabla = (supervisor === 'todos') ? null : supervisor;
+document.getElementById('supActosCount').innerText = resultados.filter(e => e.tipo === 'acto').length;
+document.getElementById('supCondCount').innerText = resultados.filter(e => e.tipo === 'condicion').length;
+renderGeneralTableConFiltroSupervisor();
+}
+function renderGeneralTableConFiltroSupervisor() {
+let data = ACTOS_COND_DATA;
+if (supervisorFiltroTabla) data = data.filter(e => compararNombres(e.observador, supervisorFiltroTabla));
+if (state.mes !== 'todo') data = data.filter(e => e.mes === state.mes);
+if (state.sector !== 'general') data = data.filter(e => e.sector.includes(state.sector));
+if (state.estado === 'cerrados') data = data.filter(e => e.cerrado === true); else if (state.estado === 'abiertos') data = data.filter(e => e.cerrado === false);
+if (selectedCausa && selectedCausa !== 'todas') data = data.filter(e => e.categoria?.id === selectedCausa);
+renderGeneralTable(ordenarPorFecha(data));
+}
+function limpiarFiltroSupervisorTabla() { supervisorFiltroTabla = null; document.getElementById('supervisorSelect').value = 'todos'; updateSupervisorCard(); renderGeneralTableConFiltroSupervisor(); }
+function populateVCPPeopleFilter() {
+const counts = new Map(); 
+VCP_DATA.forEach(v => { 
+  if (v.personaObservada && !esPersonaOculta(v.personaObservada)) { 
+    counts.set(v.personaObservada, (counts.get(v.personaObservada) || 0) + 1); 
+  } 
+});
+const sel = document.getElementById('vcpPersonFilter'); if (!sel) return;
+sel.innerHTML = '<option value="todos">👥 Todas las personas</option>';
+[...counts.keys()].sort().forEach(n => sel.innerHTML += `<option value="${n}"> ${n} (${counts.get(n)})</option>`);
+updatePersonVCPStatsOnly();
+}
+function updatePersonVCPStatsOnly() {
+const p = document.getElementById('vcpPersonFilter')?.value || 'todos', m = document.getElementById('vcpPersonMonthFilter')?.value || 'todo';
+const f = VCP_DATA.filter(v => (p === 'todos' || v.personaObservada === p) && (m === 'todo' || v.mes === m));
+document.getElementById('personVCPCount').innerText = f.length;
+document.getElementById('personLastVCP').innerText = f.length ? f.sort((a,b) => getFechaOrdenable(b) - getFechaOrdenable(a))[0].dia + '/' + f[0].mes : '-';
+}
+
+const CATS_EXPANDIDAS = [ { id: 'epp', name: 'FALTA EPP', icon: '🛡️', color: '#3b82f6' }, { id: 'orden', name: 'ORDEN Y LIMPIEZA', icon: '🧹', color: '#10b981' }, { id: 'procedimientos', name: 'PROCEDIMIENTOS', icon: '📋', color: '#f59e0b' }, { id: 'equipos', name: 'EQUIPOS', icon: '🔧', color: '#8b5cf6' }, { id: 'conduccion', name: 'CONDUCCIÓN', icon: '🚗', color: '#ef4444' }, { id: 'berma', name: 'BERMA', icon: '🧱', color: '#f97316' }, { id: 'senalizacion', name: 'SEÑALIZACIÓN', icon: '🚸', color: '#06b6d4' }, { id: 'area', name: 'ÁREA Y ENTORNO', icon: '🏗️', color: '#ea580c' }, { id: 'otros', name: 'OTROS', icon: '📌', color: '#6b7280' } ];
+function updateCategoryCards(data, type) {
+const cats = type === 'vcp' ? [{ id: 'orden', name: 'ORDEN', icon: '', color: '#10b981' }, { id: 'proc', name: 'PROCED.', icon: '📋', color: '#f59e0b' }, { id: 'equip', name: 'EQUIPOS', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'ÁREA', icon: '🏗️', color: '#ea580c' }] : CATS_EXPANDIDAS;
+const contId = type === 'vcp' ? 'vcpCategoryCards' : 'categoryCards';
+const cont = document.getElementById(contId); if (!cont) return;
+const counts = {}; cats.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+const total = data.length || 1; cont.innerHTML = ''; cont.className = type === 'vcp' ? 'grid grid-cols-2 sm:grid-cols-4 gap-3 my-3' : 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 my-3';
+const hayFiltroActivo = type === 'vcp' ? (selectedVCPCausa !== null && selectedVCPCausa !== 'todas') : (selectedCausa !== null && selectedCausa !== 'todas');
+cats.forEach(c => {
+const val = counts[c.id] || 0, pct = Math.round(val / total * 100);
+const isActive = type === 'vcp' ? selectedVCPCausa === c.id : selectedCausa === c.id;
+const div = document.createElement('div');
+div.className = `category-card p-3 text-center relative cursor-pointer transition-all duration-300 ${isActive ? 'selected shadow-lg scale-102' : (hayFiltroActivo ? 'opacado' : 'hover:shadow-md hover:-translate-y-1')}`;
+div.style.borderColor = isActive ? '#f18b00' : c.color;
+const numeroColor = isActive ? '#f18b00' : (hayFiltroActivo ? '#94a3b8' : c.color);
+div.onclick = () => { if (type === 'vcp') { selectedVCPCausa = isActive ? null : c.id; document.getElementById('clearVCPCauseBtn')?.classList.toggle('hidden-section', !selectedVCPCausa); applyVCPFilters(); } else { selectedCausa = isActive ? null : c.id; document.getElementById('clearCausaBtn')?.classList.toggle('hidden-section', !selectedCausa); applyGeneralFilters(); } };
+div.innerHTML = `<div class="text-2xl transition-transform duration-300 ${isActive ? 'scale-110' : ''}">${c.icon}</div><div class="text-[10px] font-bold mt-1 leading-tight ${hayFiltroActivo && !isActive ? 'text-slate-400' : ''}">${c.name}</div><div class="text-xl font-black transition-all duration-300" style="color: ${numeroColor}">${val}</div><div class="text-[9px] ${hayFiltroActivo && !isActive ? 'text-slate-300' : 'text-slate-500'}">${pct}%</div>`;
+cont.appendChild(div);
+});
+}
+function updateChartsDona(data, type) {
+if (type !== 'actos') return;
+const ctx = document.getElementById('categoryChart')?.getContext('2d'); if (!ctx) return;
+const counts = {}; CATS_EXPANDIDAS.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+if (categoryChart) categoryChart.destroy();
+categoryChart = new Chart(ctx, { type: 'doughnut', data: { labels: CATS_EXPANDIDAS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATS_EXPANDIDAS.map(c => counts[c.id] || 0), backgroundColor: CATS_EXPANDIDAS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 10 }] }, options: { cutout: '60%', responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { font: { size: 9 }, usePointStyle: true, boxWidth: 8 } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 11 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center' } } }, plugins: [ChartDataLabels] });
+}
+function updateTrendChart(data) {
+const ctx = document.getElementById('trendChart')?.getContext('2d'); 
+if (!ctx) return;
+const sourceData = data || ACTOS_COND_DATA;
+const aPM = MESES_NOMBRES.map(m => sourceData.filter(e => e.mes === m && e.tipo === 'acto').length);
+const cPM = MESES_NOMBRES.map(m => sourceData.filter(e => e.mes === m && e.tipo === 'condicion').length);
+if (trendChart) trendChart.destroy();
+
+trendChart = new Chart(ctx, { 
+type: 'line', 
+data: { 
+labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)), 
+datasets: [
+{ label: '⚠️ Actos', data: aPM, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', tension: 0.3, fill: true, borderWidth: 2, pointRadius: 3, pointHoverRadius: 6 }, 
+{ label: '🏚️ Condiciones', data: cPM, borderColor: '#f59e0b', backgroundColor: 'rgba(245,158,11,0.1)', tension: 0.3, fill: true, borderWidth: 2, pointRadius: 3, pointHoverRadius: 6 }
+] 
+}, 
+options: { 
+responsive: true, 
+maintainAspectRatio: false,
+layout: { padding: { top: 10, bottom: 10, left: 10, right: 10 } },
+plugins: { 
+legend: { position: 'top', labels: { font: { size: 10 }, usePointStyle: true, boxWidth: 8 } } 
+}, 
+scales: { 
+y: { 
+beginAtZero: true,
+grace: '10%',
+ticks: { font: { size: 10 } } 
+}, 
+x: { 
+ticks: { 
+  font: { size: 10 },
+  maxRotation: 0,
+  autoSkip: true,
+  maxTicksLimit: 12
+} 
+} 
+} 
+} 
+});
+}
+function updateVCPCharts(data) {
+const CATS = [{ id: 'orden', name: 'Orden', icon: '🧹', color: '#10b981' }, { id: 'proc', name: 'Proced.', icon: '⚡', color: '#f59e0b' }, { id: 'equip', name: 'Equipos', icon: '🔧', color: '#8b5cf6' }, { id: 'area', name: 'Área', icon: '🏗️', color: '#ea580c' }];
+const counts = {}; CATS.forEach(c => counts[c.id] = 0); data.forEach(e => { if (e.categoria?.id) counts[e.categoria.id] = (counts[e.categoria.id] || 0) + 1; });
+if (vcpCategoryChart) vcpCategoryChart.destroy();
+vcpCategoryChart = new Chart(document.getElementById('vcpCategoryChart')?.getContext('2d'), { type: 'doughnut', data: { labels: CATS.map(c => `${c.icon} ${c.name}`), datasets: [{ data: CATS.map(c => counts[c.id] || 0), backgroundColor: CATS.map(c => c.color), borderWidth: 2, borderColor: 'white', hoverOffset: 15 }] }, options: { cutout: '55%', plugins: { legend: { position: 'bottom', labels: { font: { size: 9 } } }, datalabels: { color: '#fff', font: { weight: 'bold', size: 10 }, formatter: (value, ctx) => { const total = ctx.dataset.data.reduce((a, b) => a + b, 0); return total > 0 ? Math.round((value / total) * 100) + '%' : '0%'; }, anchor: 'center', align: 'center' } } }, plugins: [ChartDataLabels] });
+if (vcpTrendChart) vcpTrendChart.destroy();
+vcpTrendChart = new Chart(document.getElementById('vcpTrendChart')?.getContext('2d'), {
+  type: 'line',
+  data: {
+    labels: MESES_NOMBRES.map(m => m.charAt(0).toUpperCase() + m.slice(1)),
+    datasets: [{
+      label: '🎯 VCP',
+      data: MESES_NOMBRES.map(m => (data || VCP_DATA).filter(e => e.mes === m).length),
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16,185,129,0.1)',
+      tension: 0.3,
+      fill: true
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { beginAtZero: true, ticks: { stepSize: 5 } }
+    }
+  }
+});
+}
+
+// ═══════════════════════════════════════════════════════════════
+// RESTO DE FUNCIONES (applyAllFilters, cambiarSucursal, etc.)
+// ═══════════════════════════════════════════════════════════════
+function applyAllFilters() {
+  const dataActos = ACTOS_COND_DATA.filter(e => {
+    if (state.mes !== 'todo' && e.mes !== state.mes) return false;
+    if (state.sector !== 'general' && !e.sector.includes(state.sector)) return false;
+    if (state.estado === 'cerrados' && e.cerrado !== true) return false;
+    if (state.estado === 'abiertos' && e.cerrado !== false) return false;
+    if (selectedCausa && selectedCausa !== 'todas' && e.categoria?.id !== selectedCausa) return false;
+    return true;
+  });
+  updateCategoryCards(dataActos, 'actos');
+  updateChartsDona(dataActos, 'actos');
+  updateTrendChart(dataActos);
+  renderGeneralTable(ordenarPorFecha(dataActos));
+  applyVCPFilters();
+}
+function applyVCPFilters() {
+  let data = VCP_DATA;
+  if (state.vcpMes !== 'todo') data = data.filter(e => e.mes === state.vcpMes);
+  if (state.vcpSector !== 'general') data = data.filter(e => e.sector.includes(state.vcpSector));
+  if (state.vcpEstado === 'cerrados') data = data.filter(e => e.cerrado === true); else if (state.vcpEstado === 'abiertos') data = data.filter(e => e.cerrado === false);
+  if (selectedVCPCausa && selectedVCPCausa !== 'todas') data = data.filter(e => e.categoria?.id === selectedVCPCausa);
+  updateCategoryCards(data, 'vcp');
+  updateVCPCharts(data);
+}
+function limpiarTodosLosFiltros() {
+  state = {mes:'todo',sector:'general',estado:'todos',vcpMes:'todo',vcpSector:'general',vcpEstado:'todos'};
+  selectedCausa = null; selectedVCPCausa = null;
+  document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('#sectorButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#statusButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#vcpSectorButtons .btn-filter')[0]?.classList.add('active');
+  document.querySelectorAll('#vcpStatusButtons .btn-filter')[0]?.classList.add('active');
+  document.getElementById('monthFilter').value = 'todo';
+  document.getElementById('vcpMonthFilter').value = 'todo';
+  document.getElementById('clearCausaBtn')?.classList.add('hidden-section');
+  document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section');
+  applyAllFilters();
+}
+function limpiarFiltroCausa() { selectedCausa = null; document.getElementById('clearCausaBtn')?.classList.add('hidden-section'); applyAllFilters(); }
+function clearVCPCauseFilter() { selectedVCPCausa = null; document.getElementById('clearVCPCauseBtn')?.classList.add('hidden-section'); applyVCPFilters(); }
+function limpiarFiltroGrafico() { state.mes = 'todo'; document.getElementById('monthFilter').value = 'todo'; applyAllFilters(); }
+function setSector(sector, btn) { state.sector = sector; document.querySelectorAll('#sectorButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyAllFilters(); }
+function setStatus(status, btn) { state.estado = status; document.querySelectorAll('#statusButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyAllFilters(); }
+function setVCPSector(sector, btn) { state.vcpSector = sector; document.querySelectorAll('#vcpSectorButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyVCPFilters(); }
+function setStatusVCP(status, btn) { state.vcpEstado = status; document.querySelectorAll('#vcpStatusButtons .btn-filter').forEach(b => b.classList.remove('active')); btn.classList.add('active'); applyVCPFilters(); }
+function cambiarSucursal(suc) {
+  currentSucursal = suc;
+  document.querySelectorAll('.sucursal-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('btn' + suc.charAt(0) + suc.slice(1).toLowerCase())?.classList.add('active');
+  updateSupervisorCard(); loadData();
+}
+function toggleVCPVisibility(show) { const section = document.getElementById('vcpSection'); if (section) section.style.display = show ? 'block' : 'none'; }
+function actualizarObjetivosUI() {
+  const config = SUCURSALES_CONFIG[currentSucursal];
+  document.getElementById('objetivosTitulo').innerHTML = `📊 OBJETIVOS MENSUALES ACTOS Y CONDICIONES (${config.objetivos.actos + config.objetivos.cond})`;
+  document.getElementById('objetivosMeta').innerHTML = `Meta: ${config.objetivos.actos} Actos + ${config.objetivos.cond} Condiciones = ${config.objetivos.actos + config.objetivos.cond} Total`;
+  document.getElementById('objetivoActosTexto').innerHTML = `🎯 Objetivo: ${config.objetivos.actos}`;
+  document.getElementById('objetivoCondicionesTexto').innerHTML = `🎯 Objetivo: ${config.objetivos.cond}`;
+  const actos = ACTOS_COND_DATA.filter(e => e.tipo === 'acto').length;
+  const cond = ACTOS_COND_DATA.filter(e => e.tipo === 'condicion').length;
+  const total = ACTOS_COND_DATA.length;
+  document.getElementById('kpiActos').innerText = actos;
+  document.getElementById('kpiCondiciones').innerText = cond;
+  const actosPct = Math.min(Math.round(actos / config.objetivos.actos * 100), 100);
+  const condPct = Math.min(Math.round(cond / config.objetivos.cond * 100), 100);
+  document.getElementById('actosBar').style.width = actosPct + '%';
+  document.getElementById('condBar').style.width = condPct + '%';
+  document.getElementById('actosPctLabel').innerText = actosPct + '%';
+  document.getElementById('condPctLabel').innerText = condPct + '%';
+  document.getElementById('actosStatus').innerText = actosPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('actosStatus').className = 'status-badge ' + (actosPct >= 100 ? 'status-ok' : 'status-warn');
+  document.getElementById('condStatus').innerText = condPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('condStatus').className = 'status-badge ' + (condPct >= 100 ? 'status-ok' : 'status-warn');
+  document.getElementById('vcpCurrent').innerText = VCP_DATA.length;
+  const vcpPct = Math.min(Math.round(VCP_DATA.length / OBJ_VCP * 100), 100);
+  document.getElementById('vcpBar').style.width = vcpPct + '%';
+  document.getElementById('vcpPctLabel').innerText = vcpPct + '%';
+  document.getElementById('vcpStatus').innerText = vcpPct >= 100 ? '✅ Cumplido' : '⚠️ Pendiente';
+  document.getElementById('vcpStatus').className = 'status-badge ' + (vcpPct >= 100 ? 'status-ok' : 'status-warn');
+}
+function renderGeneralTable(data) {
+  const tbody = document.getElementById('generalTableBody');
+  if (!tbody) return;
+  if (!data || data.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="text-center p-4 text-slate-400">No hay datos para mostrar</td></tr>'; return; }
+  tbody.innerHTML = data.map((d, i) => {
+    const hoy = new Date();
+    const esHoy = (parseInt(d.dia) === hoy.getDate()) && (d.mes === MESES_NOMBRES[hoy.getMonth()]);
+    return `<tr onclick="openReportModal(${i})" class="${esHoy ? 'row-hoy' : ''} border-b hover:bg-orange-50 transition-all">
+      <td class="p-2">${d.dia}/${d.mes}</td>
+      <td>${d.tipo === 'acto' ? '⚠️ Acto' : '🏚️ Condición'}</td>
+      <td>${escapeHtml(d.observador)}</td>
+      <td class="max-w-[200px] truncate">${escapeHtml(d.descripcion)}</td>
+      <td>${getEstadoBadgeHTML(d.cerrado, 'small')}</td>
+    </tr>`;
+  }).join('');
+  window.datosModalActual = data;
+}
+function openReportModal(index) {
+  const data = window.datosModalActual;
+  if (!data || !data[index]) return;
+  currentModalData = data; currentModalIndex = index;
+  const d = data[index];
+  const content = document.getElementById('reportModalContent');
+  if (!content) return;
+  content.innerHTML = `
+    <div class="flex justify-between items-center border-b pb-2">
+      <h3 class="font-bold text-lg text-slate-800">${d.tipo === 'acto' ? '⚠️ Acto Inseguro' : '🏚️ Condición Insegura'}</h3>
+      ${getEstadoBadgeHTML(d.cerrado)}
+    </div>
+    <div class="grid grid-cols-2 gap-2 text-xs">
+      <div><span class="font-bold">📅 Fecha:</span> ${d.dia}/${d.mes}</div>
+      <div><span class="font-bold">🏭 Sector:</span> ${d.sector || 'N/A'}</div>
+      <div class="col-span-2"><span class="font-bold">👤 Observador:</span> ${escapeHtml(d.observador)}</div>
+      <div class="col-span-2"><span class="font-bold">📝 Descripción:</span> ${escapeHtml(d.descripcion)}</div>
+    </div>
+    ${renderizarImagenesModal(d.imagen, "📷 REGISTRO FOTOGRÁFICO")}
+  `;
+  document.getElementById('modalCounter').innerText = (index + 1) + '/' + data.length;
+  document.getElementById('btnPrev').disabled = index === 0;
+  document.getElementById('btnNext').disabled = index === data.length - 1;
+  document.getElementById('reportDetailModal').classList.remove('hidden-section');
+  document.getElementById('reportDetailModal').style.display = 'flex';
+  isModalOpen = true;
+}
+function goToPreviousModal() { if (currentModalIndex > 0) openReportModal(currentModalIndex - 1); }
+function goToNextModal() { if (currentModalIndex < currentModalData.length - 1) openReportModal(currentModalIndex + 1); }
+function closeReportModal() { document.getElementById('reportDetailModal').classList.add('hidden-section'); document.getElementById('reportDetailModal').style.display = 'none'; isModalOpen = false; }
+
+// Para asegurar que el gráfico se actualice al cambiar el tamaño de la ventana
+window.addEventListener('resize', () => {
+  if (trendChart) trendChart.resize();
+});
+</script>
+</body>
+</html>
