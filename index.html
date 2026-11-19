@@ -320,7 +320,7 @@ button:active {
 <button onclick="setStatus('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button>
 </div>
 <div class="mt-4 p-3 bg-emerald-50 rounded-xl border border-emerald-200 cursor-pointer" onclick="toggleActosAlerts()">
-<div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700">📢 REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
+<div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-emerald-700 flex items-center gap-1"><span class="text-base">📢</span> REPORTES EN VIVO HOY</span><div id="actosLed" class="siren-red"></div></div>
 <div id="realTimeReportsActos" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
 </div>
 
@@ -442,7 +442,7 @@ button:active {
 <button onclick="setStatusVCP('abiertos', this)" class="btn-filter">⚠️ ABIERTOS</button>
 </div>
 <div class="mt-4 p-3 bg-amber-50 rounded-xl border border-amber-200 cursor-pointer" onclick="toggleVCPAlerts()">
-<div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-amber-700">📢 VCP EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div>
+<div class="flex items-center justify-between mb-2"><span class="text-[9px] font-bold uppercase text-amber-700 flex items-center gap-1"><span class="text-base">📢</span> VCP EN VIVO HOY</span><div id="vcpLed" class="siren-red"></div></div>
 <div id="realTimeReportsVCP" class="text-[9px] max-h-48 overflow-y-auto mt-2"></div>
 </div>
 </div>
@@ -1069,8 +1069,8 @@ function updateTotalCounters() { document.getElementById('totalActosCond').inner
 function updateRealTimeUI() {
 const actCont=document.getElementById('realTimeReportsActos'), vcpCont=document.getElementById('realTimeReportsVCP'), actLed=document.getElementById('actosLed'), vcpLed=document.getElementById('vcpLed'), alerts=todayAlertsBySucursal[currentSucursal];
 if(actLed) actLed.className=alerts.actos.length>0?'siren-green':'siren-red'; if(vcpLed) vcpLed.className=alerts.vcp.length>0?'siren-green':'siren-red';
-if(alerts.actos.length) actCont.innerHTML=alerts.actos.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else actCont.innerHTML='<p class="text-center py-2">📭 Sin reportes hoy</p>';
-if(alerts.vcp.length) vcpCont.innerHTML=alerts.vcp.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else vcpCont.innerHTML='<p class="text-center py-2">📭 Sin VCP hoy</p>';
+if(alerts.actos.length) actCont.innerHTML=alerts.actos.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>${a.tipo}</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else actCont.innerHTML='<p class="text-center py-2 flex items-center justify-center gap-1"><span class="text-base">📭</span> Sin reportes hoy</p>';
+if(alerts.vcp.length) vcpCont.innerHTML=alerts.vcp.map(a=>`<div class="report-item"><div class="flex justify-between"><span>🕒 ${a.hora}</span><span>VCP</span></div><div><strong>${a.persona}</strong></div><div>🏭 ${a.sector}</div><div class="truncate">${(a.descripcion||'').substring(0,60)}</div></div>`).join(''); else vcpCont.innerHTML='<p class="text-center py-2 flex items-center justify-center gap-1"><span class="text-base">📭</span> Sin VCP hoy</p>';
 }
 function toggleActosAlerts() { showDailyReportsModal('actos', todayAlertsBySucursal[currentSucursal].actos); }
 function toggleVCPAlerts() { showDailyReportsModal('vcp', todayAlertsBySucursal[currentSucursal].vcp); }
