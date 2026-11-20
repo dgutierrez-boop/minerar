@@ -1807,6 +1807,92 @@ document.addEventListener('visibilitychange', () => { if(!document.hidden && isU
 window.goToNextModal = function() { if(currentModalIndex < currentModalData.length - 1){ currentModalIndex++; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } };
 window.goToPreviousModal = function() { if(currentModalIndex > 0){ currentModalIndex--; openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); } };
 window.closeReportModal = function() { const m = document.getElementById('reportDetailModal'); if(m) { m.classList.add('hidden-section'); m.style.display = 'none'; isModalOpen = false; } };
+// 🚀 PARCHE FINAL PARA MALAGUEÑO (ignora las funciones viejas repetidas)
+window.cargarDatosSucursal = async function(sucursal) {
+  const config = SUCURSALES_CONFIG[sucursal]; let actosData = [], vcpData = [];
+  const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = MESES_NOMBRES[hoy.getMonth()];
+  
+  if(config.actosUrl) {
+    try {
+      const r1 = await fetch(config.actosUrl + '&t=' + Date.now()), text = await r1.text(), rows = parseCSV(text);
+      for(let i=0; i<rows.length; i++) {
+        const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, clasificacion = '', reportadoA = '', imagenCol = '';
+
+        if(sucursal === 'MALAGUENO') {
+          if (i >= 225) {
+            fecha = row[3] || ''; sector = row[2] || ''; observador = row[5] || '';
+            desc = row[18] || row[6] || ''; clasificacion = (row[20] || '').trim(); 
+            reportadoA = (row[16] || '').trim(); imagenCol = (row[22] || '').trim(); cerradoRaw = row[23] || ''; 
+            const uTrim = clasificacion.toUpperCase();
+            if(uTrim.startsWith('AI-') || uTrim.startsWith('AI.') || uTrim.startsWith('AI ')) tipoRaw = 'Acto Inseguro';
+            else if(uTrim.startsWith('CI-') || uTrim.startsWith('CI.') || uTrim.startsWith('CI ')) tipoRaw = 'Condición Insegura';
+            else tipoRaw = '';
+          } else {
+            fecha = row[3] || ''; tipoRaw = row[1] || ''; sector = row[2] || ''; observador = row[5] || '';
+            desc = row[6] || ''; cerradoRaw = row[23] || ''; clasificacion = (row[20] || '').trim(); reportadoA = (row[16] || '').trim(); imagenCol = (row[22] || '').trim();
+          }
+        } else {
+          if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
+          fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || '';
+          sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || '';
+          desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
+        }
+
+        let imagenUrls = [];
+        for(let j=0; j<row.length; j++) {
+          const cell = row[j] ? row[j].trim() : '';
+          if(cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrls.push(cell);
+        }
+
+        const fd = parseFecha(fecha); if(!fd.valido) continue;
+        let tipo = 'otro';
+        if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
+        else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
+        if(tipo === 'otro' && desc) {
+          const descTrim = desc.trim().toUpperCase();
+          if(descTrim.startsWith('AI-') || descTrim.startsWith('AI.') || descTrim.startsWith('AI ')) { tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i,'').trim(); }
+          else if(descTrim.startsWith('CI-') || descTrim.startsWith('CI.') || descTrim.startsWith('CI ')) { tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i,'').trim(); }
+        }
+        if(tipo === 'otro' && desc) tipo = inferirTipoDesdeDescripcion(desc);
+        let cerrado = false;
+        if(cerradoRaw) { const cs = cerradoRaw.toString().toLowerCase().trim(); cerrado = cs === 'si' || cs === 'sí' || cs === 'true' || cs === '1' || cs === 'x'; }
+
+        actosData.push({
+          fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(),
+          descripcion: (desc || '').trim(), clasificacion, reportadoA, cerrado, mes: fd.mes, dia: fd.dia,
+          categoria: classifyData(desc, false), sucursal: sucursal, imagen: imagenCol || imagenUrls.join(',')
+        });
+      }
+    } catch(e) { console.error("Error cargando actos:", e); }
+  }
+
+  if(config.showVCP && config.vcpUrl) {
+    try {
+      const r2 = await fetch(config.vcpUrl + '&t=' + Date.now()), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
+      for(let i=0; i<rows2.length; i++) {
+        const row = rows2[i]; let fr, po, sec, des, personaVCP = '', imagenColVCP = '';
+        if (sucursal === 'MALAGUENO') {
+          fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim();
+          personaVCP = (row[29] || '').trim(); des = row[31] || ''; imagenColVCP = (row[28] || '').trim();
+        } else {
+          fr = row[vm.fecha] || ''; po = (row[vm.persona] || '').trim(); sec = (row[vm.sector] || '').toLowerCase().trim() || 'general';
+          des = row[vm.descripcion] || ''; personaVCP = (row[vm.personaVCP] || '').trim(); imagenColVCP = (row[vm.imagen] || '').trim();
+        }
+        let imagenUrlsVCP = [];
+        for(let j=0; j<row.length; j++) {
+          const cell = row[j] ? row[j].trim() : '';
+          if(cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrlsVCP.push(cell);
+        }
+        const fd = parseFecha(fr.split(' ')[0]); if(!fd.valido || !po) continue;
+        vcpData.push({
+          fecha: fr, tipo: 'vcp', sector: sec, personaObservada: po, personaVCP, descripcion: des, comentarios: '',
+          cerrado: true, mes: fd.mes, dia: fd.dia, categoria: classifyData(des, true), sucursal: sucursal, imagen: imagenColVCP || imagenUrlsVCP.join(',')
+        });
+      }
+    } catch(e) { console.error("Error cargando VCP:", e); }
+  }
+  return { actos: actosData, vcp: vcpData };
+};
 </script>
 </body>
 </html>
