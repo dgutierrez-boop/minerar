@@ -1008,9 +1008,10 @@ async function cargarDatosSucursal(sucursal) {
       for(let i=0; i<rows.length; i++) {
         const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, clasificacion = '', reportadoA = '', imagenCol = '';
 
-        if(sucursal === 'MALAGUENO' && i >= 225) {
+        if(sucursal === 'MALAGUENO') {
           fecha = row[3] || ''; sector = row[2] || ''; observador = row[5] || '';
-          desc = row[18] || ''; clasificacion = (row[20] || '').trim(); reportadoA = (row[16] || '').trim();
+          desc = row[18] || row[6] || '';
+clasificacion = (row[20] || '').trim(); reportadoA = (row[16] || '').trim();
           imagenCol = (row[22] || '').trim(); cerradoRaw = row[23] || '';
           const uTrim = clasificacion.toUpperCase();
           if(uTrim.startsWith('AI-') || uTrim.startsWith('AI.') || uTrim.startsWith('AI ')) tipoRaw = 'Acto Inseguro';
@@ -1356,55 +1357,79 @@ function openModal(r, idx, data) {
   isModalOpen = true; currentModalData = data; currentModalIndex = idx;
   const modal = document.getElementById('reportDetailModal');
   const content = document.getElementById('reportModalContent');
+  
+  if (!modal || !content) return;
 
-  if (r.tipo === 'vcp') {
-    content.innerHTML = `
-      <div class="space-y-3 text-base">
-        <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200">
-          <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div>
-          <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div>
-          <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona Observada</div><div class="font-bold text-lg">${escapeHtml(r.personaObservada || '-')}</div></div>
-          <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${escapeHtml(r.sector || '-')}</div></div>
-          <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">👥 A quién se le realiza</div><div class="font-semibold">${escapeHtml(r.personaVCP || '-')}</div></div>
-        </div>
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300">
-          <div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Descripción</div>
-          <p class="text-slate-800 text-base leading-relaxed font-medium">${escapeHtml(r.descripcion || '-')}</p>
-        </div>
-        ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
-      </div>`;
-  } else {
-    const esActo = r.tipo === 'acto';
-    const sigla = esActo ? 'AI' : 'CI';
-    const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
-    content.innerHTML = `
-      <div class="space-y-3 text-base">
-        <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
-          <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div>
-          <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div>
-          <div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Reporta</div><div class="font-bold text-lg">${escapeHtml(r.observador || '-')}</div></div>
-          <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${escapeHtml(r.sector || '-')}</div></div>
-          <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'}</span></div>
-          <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">🎯 Causa Raíz</div><div class="font-semibold text-purple-700">${escapeHtml(r.clasificacion || '—')}</div></div>
-          <div class="col-span-2"><div class="text-xs text-indigo-600 font-bold uppercase mb-1">👥 Personal</div><div class="font-semibold text-indigo-700">${escapeHtml(r.reportadoA || '—')}</div></div>
-        </div>
-        <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300">
-          <div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div>
-          <p class="text-slate-800 text-base leading-relaxed font-medium">${escapeHtml(descConSigla)}</p>
-        </div>
-        ${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${escapeHtml(r.causas)}</p></div>` : ''}
-        ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
-        <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
-          <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}
-        </div>
-      </div>`;
-  }
-  modal.classList.remove('hidden-section'); modal.style.display = 'flex';
-  document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
-  document.getElementById('btnPrev').style.display = 'inline-block';
-  document.getElementById('btnNext').style.display = 'inline-block';
+  try {
+    if (r.tipo === 'vcp') {
+      content.innerHTML = `
+        <div class="space-y-3 text-base">
+          <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-purple-50 to-blue-50 p-4 rounded-xl border-2 border-purple-200">
+            <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div>
+            <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div>
+            <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">👤 Persona Observada</div><div class="font-bold text-lg">${escapeHtml(r.personaObservada || '-')}</div></div>
+            <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${escapeHtml(r.sector || '-')}</div></div>
+            <div><div class="text-xs text-purple-600 font-bold uppercase mb-1">👥 A quién se le realiza</div><div class="font-semibold">${escapeHtml(r.personaVCP || '-')}</div></div>
+          </div>
+          <div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300">
+            <div class="text-xs text-amber-700 font-bold uppercase mb-2">📝 Descripción</div>
+            <p class="text-slate-800 text-base leading-relaxed font-medium">${escapeHtml(r.descripcion || '-')}</p>
+          </div>
+          ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
+        </div>`;
+    } else {
+      const esActo = r.tipo === 'acto';
+      const sigla = esActo ? 'AI' : 'CI';
+      const descConSigla = `${sigla} - ${r.descripcion || '-'}`;
+      content.innerHTML = `
+        <div class="space-y-3 text-base">
+          <div class="grid grid-cols-2 gap-3 bg-gradient-to-br from-blue-50 to-cyan-50 p-4 rounded-xl border-2 border-blue-200">
+            <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">📅 Fecha</div><div class="font-bold">${r.fecha || '-'}</div></div>
+            <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sucursal</div><div class="font-bold">${r.sucursal || '-'}</div></div>
+            <div class="col-span-2"><div class="text-xs text-blue-600 font-bold uppercase mb-1">👤 Reporta</div><div class="font-bold text-lg">${escapeHtml(r.observador || '-')}</div></div>
+            <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">🏭 Sector</div><div class="font-semibold">${escapeHtml(r.sector || '-')}</div></div>
+            <div><div class="text-xs text-blue-600 font-bold uppercase mb-1">⚠️ Tipo</div><span class="inline-block bg-gradient-to-r ${esActo ? 'from-blue-500 to-cyan-500' : 'from-amber-500 to-orange-500'} text-white px-3 py-1 rounded-lg text-sm font-bold shadow-md">${esActo ? '⚠️ ACTO (AI)' : '🏚️ CONDICIÓN (CI)'}</span></div>
+            <div class="col-span-2"><div class="text-xs text-purple-600 font-bold uppercase mb-1">🎯 Causa Raíz</div><div class="font-semibold text-purple-700">${escapeHtml(r.clasificacion || '—')}</div></div>
+            <div class="col-span-2"><div class="text-xs text-indigo-600 font-bold uppercase mb-1">👥 Personal</div><div class="font-semibold text-indigo-700">${escapeHtml(r.reportadoA || '—')}</div></div>
+          </div>
+          <div class="bg-gradient-to-br from-slate-50 to-gray-50 p-4 rounded-xl border-2 border-slate-300">
+            <div class="text-xs text-slate-600 font-bold uppercase mb-2">📝 Descripción</div>
+            <p class="text-slate-800 text-base leading-relaxed font-medium">${escapeHtml(descConSigla)}</p>
+          </div>
+          ${r.causas ? `<div class="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border-2 border-amber-300"><div class="text-xs text-amber-700 font-bold uppercase mb-2">🔍 Causas</div><p class="text-slate-800 text-base leading-relaxed">${escapeHtml(r.causas)}</p></div>` : ''}
+          ${r.imagen ? renderizarImagenesModal(r.imagen) : ''}
+          <div class="flex justify-between items-center bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-xl border-2 border-gray-300">
+            <span class="text-sm text-gray-600 font-bold uppercase">⚙️ Estado</span>${getEstadoBadgeHTML(r.cerrado)}
+          </div>
+        </div>`;
+    }
+function closeReportModal() { 
+  const m = document.getElementById('reportDetailModal'); 
+  if(m) { m.classList.add('hidden-section'); m.style.display = 'none'; isModalOpen = false; } 
 }
-function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
+
+function goToNextModal() { 
+  if(currentModalIndex < currentModalData.length - 1){ 
+    currentModalIndex++; 
+    openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); 
+  } 
+}
+
+function goToPreviousModal() { 
+  if(currentModalIndex > 0){ 
+    currentModalIndex--; 
+    openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); 
+  } 
+}
+    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+    document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
+    document.getElementById('btnPrev').style.display = 'inline-block';
+    document.getElementById('btnNext').style.display = 'inline-block';
+  } catch (error) {
+    console.error("Error al abrir el modal:", error);
+    content.innerHTML = `<div class="p-4 text-red-600 font-bold">Ocurrió un error al mostrar este reporte. Revisá la consola.</div>`;
+  }
+}function setSector(s,b) { state.sector=s; updateButtons('sectorButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setStatus(s,b) { state.estado=s; updateButtons('statusButtons',b,'#f18b00'); applyGeneralFilters(); }
 function setVCPSector(s,b) { state.vcpSector=s; updateButtons('vcpSectorButtons',b,'#f18b00'); applyVCPFilters(); }
 function setStatusVCP(s,b) { state.vcpEstado=s; updateButtons('vcpStatusButtons',b,'#f18b00'); applyVCPFilters(); }
