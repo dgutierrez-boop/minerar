@@ -1407,21 +1407,18 @@ function closeReportModal() {
   const m = document.getElementById('reportDetailModal'); 
   if(m) { m.classList.add('hidden-section'); m.style.display = 'none'; isModalOpen = false; } 
 }
-
 function goToNextModal() { 
   if(currentModalIndex < currentModalData.length - 1){ 
     currentModalIndex++; 
     openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); 
   } 
 }
-
 function goToPreviousModal() { 
   if(currentModalIndex > 0){ 
     currentModalIndex--; 
     openModal(currentModalData[currentModalIndex], currentModalIndex, currentModalData); 
   } 
-}
-    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
+}    modal.classList.remove('hidden-section'); modal.style.display = 'flex';
     document.getElementById('modalCounter').innerText = `${idx + 1}/${data.length}`;
     document.getElementById('btnPrev').style.display = 'inline-block';
     document.getElementById('btnNext').style.display = 'inline-block';
