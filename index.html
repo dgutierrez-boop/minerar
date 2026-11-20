@@ -1081,6 +1081,89 @@ async function cargarDatosSucursal(sucursal) {
         const row = rows2[i]; let fr, po, sec, des, personaVCP = '', imagenColVCP = '';
         
         // 🌟 LÓGICA EXCLUSIVA PARA MALAGUENO (VCP)
+       async function cargarDatosSucursal(sucursal) {
+  const config = SUCURSALES_CONFIG[sucursal]; let actosData = [], vcpData = [];
+  const hoy = new Date(), diaHoy = hoy.getDate().toString().padStart(2,'0'), mesHoy = MESES_NOMBRES[hoy.getMonth()];
+  
+  if(config.actosUrl) {
+    try {
+      const r1 = await fetch(config.actosUrl + '&t=' + Date.now()), text = await r1.text(), rows = parseCSV(text);
+      for(let i=0; i<rows.length; i++) {
+        const row = rows[i]; let fecha, tipoRaw, sector, observador, desc, cerradoRaw, clasificacion = '', reportadoA = '', imagenCol = '';
+
+        // 🌟 LÓGICA EXCLUSIVA PARA MALAGUENO
+        if(sucursal === 'MALAGUENO') {
+          if (i >= 225) {
+            fecha = row[3] || ''; sector = row[2] || ''; observador = row[5] || '';
+            desc = row[18] || row[6] || ''; 
+            clasificacion = (row[20] || '').trim(); 
+            reportadoA = (row[16] || '').trim(); 
+            imagenCol = (row[22] || '').trim(); 
+            cerradoRaw = row[23] || ''; 
+            const uTrim = clasificacion.toUpperCase();
+            if(uTrim.startsWith('AI-') || uTrim.startsWith('AI.') || uTrim.startsWith('AI ')) tipoRaw = 'Acto Inseguro';
+            else if(uTrim.startsWith('CI-') || uTrim.startsWith('CI.') || uTrim.startsWith('CI ')) tipoRaw = 'Condición Insegura';
+            else tipoRaw = '';
+          } else {
+            fecha = row[3] || ''; tipoRaw = row[1] || ''; sector = row[2] || ''; observador = row[5] || '';
+            desc = row[6] || ''; cerradoRaw = row[23] || '';
+            clasificacion = (row[20] || '').trim(); reportadoA = (row[16] || '').trim(); imagenCol = (row[22] || '').trim();
+          }
+        } else {
+          // 🌟 LÓGICA INTACTA PARA BARKER Y LAPAMPITA (NO SE TOCA NADA)
+          if(row.length < Math.max(config.mapping.fecha, config.mapping.tipo, config.mapping.sector, config.mapping.observador, config.mapping.descripcion) + 1) continue;
+          fecha = row[config.mapping.fecha] || ''; tipoRaw = row[config.mapping.tipo] || '';
+          sector = row[config.mapping.sector] || ''; observador = row[config.mapping.observador] || '';
+          desc = row[config.mapping.descripcion] || ''; cerradoRaw = row[config.mapping.cerrado] || '';
+        }
+
+        let imagenUrls = [];
+        for(let j=0; j<row.length; j++) {
+          const cell = row[j] ? row[j].trim() : '';
+          if(cell && (cell.includes('drive.google.com') || cell.startsWith('http')) && !cell.includes('/spreadsheets/d/')) imagenUrls.push(cell);
+        }
+
+        const fd = parseFecha(fecha); if(!fd.valido) continue;
+        let tipo = 'otro';
+        if(tipoRaw.toLowerCase().includes('acto')) tipo = 'acto';
+        else if(tipoRaw.toLowerCase().includes('condición') || tipoRaw.toLowerCase().includes('condicion')) tipo = 'condicion';
+
+        if(tipo === 'otro' && desc) {
+          const descTrim = desc.trim().toUpperCase();
+          if(descTrim.startsWith('AI-') || descTrim.startsWith('AI.') || descTrim.startsWith('AI ')) { tipo = 'acto'; desc = desc.replace(/^AI[\s\.\-]*/i,'').trim(); }
+          else if(descTrim.startsWith('CI-') || descTrim.startsWith('CI.') || descTrim.startsWith('CI ')) { tipo = 'condicion'; desc = desc.replace(/^CI[\s\.\-]*/i,'').trim(); }
+        }
+        if(tipo === 'otro' && desc) tipo = inferirTipoDesdeDescripcion(desc);
+
+        let cerrado = false;
+        if(cerradoRaw) { const cs = cerradoRaw.toString().toLowerCase().trim(); cerrado = cs === 'si' || cs === 'sí' || cs === 'true' || cs === '1' || cs === 'x'; }
+
+        actosData.push({
+          fecha, tipo, sector: (sector || '').toLowerCase().trim(), observador: (observador || '').trim(),
+          descripcion: (desc || '').trim(), clasificacion, reportadoA, cerrado, mes: fd.mes, dia: fd.dia,
+          categoria: classifyData(desc, false), sucursal: sucursal, imagen: imagenCol || imagenUrls.join(',')
+        });
+
+        if(fd.dia === diaHoy && fd.mes === mesHoy) {
+          const idUnico = `${observador}|${desc}|${sector}|${fecha}`;
+          if(!reportesNotificadosActos.has(idUnico)) {
+            reportesNotificadosActos.add(idUnico);
+            const hora = fecha.split(' ')[1] || hoy.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});
+            todayAlertsBySucursal[sucursal].actos.unshift({persona:observador, tipo:tipo==='acto'?'⚠️ ACTO':'🏚️ COND', descripcion:desc, sector, hora, timestamp:Date.now(), sucursal:sucursal});
+            updatePulseBadges(); updateRealTimeUI(); showNewReportAlert(observador, sector, desc, tipo==='acto'?'Acto Inseguro':'Condición Insegura', hora);
+          }
+        }
+      }
+    } catch(e) { console.error("Error cargando actos:", e); }
+  }
+
+  if(config.showVCP && config.vcpUrl) {
+    try {
+      const r2 = await fetch(config.vcpUrl + '&t=' + Date.now()), text2 = await r2.text(), rows2 = parseCSV(text2), vm = config.vcpMapping;
+      for(let i=0; i<rows2.length; i++) {
+        const row = rows2[i]; let fr, po, sec, des, personaVCP = '', imagenColVCP = '';
+        
+        // 🌟 LÓGICA EXCLUSIVA PARA MALAGUENO (VCP)
         if (sucursal === 'MALAGUENO') {
           fr = row[2] || ''; po = (row[1] || '').trim(); sec = (row[3] || '').toLowerCase().trim();
           personaVCP = (row[29] || '').trim(); des = row[31] || ''; imagenColVCP = (row[28] || '').trim();
